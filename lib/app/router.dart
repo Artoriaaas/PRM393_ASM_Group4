@@ -1,3 +1,7 @@
+import '../screens/account/profile_edit_screen.dart';
+import '../screens/account/cloud_tools_screen.dart';
+import '../screens/account/export_screen.dart';
+import 'cloud_providers.dart';
 import '../screens/events/scanner_screen.dart';
 import '../screens/auth/auth_screen.dart';
 
@@ -13,7 +17,6 @@ import '../screens/events/registration_form_screen.dart';
 import '../screens/events/registration_detail_screen.dart';
 import '../screens/events/live_schedule_screen.dart';
 import '../screens/notifications/notifications_tab_screen.dart';
-import '../screens/placeholder_screen.dart';
 
 import '../screens/shell/main_shell_screen.dart';
 import '../widgets/app_loading_state.dart';
@@ -166,14 +169,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/account/edit',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const PlaceholderScreen(
-          screenCode: 'A10-edit',
-          title: 'Chỉnh sửa hồ sơ',
-          routePath: '/account/edit',
-          figmaNode: '181:2030',
-          expectedViewModel: 'AccountViewModel',
-          expectedService: 'ProfileService, AuthService',
-        ),
+        builder: (context, state) => const ProfileEditScreen(),
       ),
 
       // F4A Flow routes: Scanner & Result
@@ -198,25 +194,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/account/firebase-demo',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const PlaceholderScreen(
-          screenCode: 'L3-01',
-          title: 'Khu Demo Firebase Services',
-          routePath: '/account/firebase-demo',
-          expectedViewModel: 'FirebaseDemoViewModel',
-          expectedService:
-              'ConfigService, DiagnosticsService, NotificationService',
-        ),
+        builder: (context, state) => const CloudToolsScreen(),
       ),
       GoRoute(
         path: '/account/export',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const PlaceholderScreen(
-          screenCode: 'L3-02',
-          title: 'Xuất PDF & Upload Cloud Storage',
-          routePath: '/account/export',
-          expectedViewModel: 'ExportViewModel',
-          expectedService: 'RegistrationService, EventService, ReportService, StorageService',
-        ),
+        builder: (context, state) => const ExportScreen(),
       ),
 
       // Development Component Preview Screen
@@ -228,7 +211,40 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
     ],
   );
+  void trackRoute() {
+    final path = router.routeInformationProvider.value.uri.path;
+    final code = path.endsWith('/register')
+        ? 'A05'
+        : path.endsWith('/success')
+        ? 'A06'
+        : path.endsWith('/check-in')
+        ? 'A12'
+        : path.startsWith('/registrations/')
+        ? 'A08'
+        : path.startsWith('/events/')
+        ? 'A04'
+        : path == '/discover'
+        ? 'A02'
+        : path == '/discover/search'
+        ? 'A03'
+        : path == '/schedule'
+        ? 'A07'
+        : path == '/notifications'
+        ? 'A09'
+        : path.startsWith('/account')
+        ? 'A10'
+        : 'A01';
+    track(ref, 'view_screen', {'screen_code': code});
+    if (code == 'A04') track(ref, 'view_event_detail', {'screen_code': code});
+    if (code == 'A08') {
+      track(ref, 'view_registration_detail', {'screen_code': code});
+    }
+    if (code == 'A12') track(ref, 'view_checkin_result', {'screen_code': code});
+  }
+
+  router.routeInformationProvider.addListener(trackRoute);
   ref.onDispose(() {
+    router.routeInformationProvider.removeListener(trackRoute);
     router.dispose();
     refresh.dispose();
   });

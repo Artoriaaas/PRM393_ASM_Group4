@@ -7,7 +7,8 @@ import '../../widgets/widgets.dart';
 import '../../widgets/event_widgets.dart';
 
 class BookingFeedback extends ConsumerWidget {
-  const BookingFeedback({super.key});
+  const BookingFeedback({super.key, this.showCheckButton = true});
+  final bool showCheckButton;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final s = ref.watch(bookingProvider);
@@ -27,11 +28,12 @@ class BookingFeedback extends ConsumerWidget {
               ),
             ],
           ),
-          AppButton(
-            label: 'Kiểm tra trạng thái',
-            isLoading: s.busy,
-            onPressed: () => ref.read(bookingProvider.notifier).recover(),
-          ),
+          if (showCheckButton)
+            AppButton(
+              label: 'Kiểm tra trạng thái',
+              isLoading: s.busy,
+              onPressed: () => ref.read(bookingProvider.notifier).recover(),
+            ),
           TextButton(
             onPressed: s.busy
                 ? null

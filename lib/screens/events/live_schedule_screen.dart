@@ -30,7 +30,7 @@ class _LiveScheduleState extends ConsumerState<LiveScheduleScreen> {
     final value = ref.watch(scheduleEntriesProvider);
     final tab = ref.watch(scheduleTabProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('EventHub — Lịch tham gia')),
+      appBar: AppBar(title: const Text('Lịch tham gia')),
       body: Column(
         children: [
           Padding(

@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import '../app/cloud_providers.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/event_providers.dart';
@@ -25,6 +29,7 @@ class NotificationsViewModel extends Notifier<String?> {
   Future<String> open(AppNotification notification) async {
     final uid = ref.read(signedInUidProvider);
     if (uid == null) return '/auth/login';
+    unawaited(track(ref, 'notification_open', {'source': 'in_app'}));
     try {
       if (notification.readAt == null) {
         await ref

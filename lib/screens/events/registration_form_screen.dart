@@ -94,10 +94,11 @@ class _RegistrationFormState extends ConsumerState<RegistrationFormScreen> {
               : ListView(
                   padding: const EdgeInsets.all(AppSpacing.s16),
                   children: [
+                    const BookingFeedback(showCheckButton: false),
                     EventPanel(children: [Text(e.title), Text(eventWhen(e))]),
                     const SizedBox(height: AppSpacing.s16),
                     AppTextField(
-                      labelText: 'Họ tên',
+                      labelText: 'Họ tên *',
                       controller: name,
 
                       errorText: s.errors['name'],
@@ -105,7 +106,7 @@ class _RegistrationFormState extends ConsumerState<RegistrationFormScreen> {
                     ),
                     const SizedBox(height: AppSpacing.s16),
                     AppTextField(
-                      labelText: 'Email liên hệ',
+                      labelText: 'Email liên hệ *',
                       controller: email,
 
                       keyboardType: TextInputType.emailAddress,
@@ -135,7 +136,7 @@ class _RegistrationFormState extends ConsumerState<RegistrationFormScreen> {
                     const SizedBox(height: AppSpacing.s16),
                     if (group == 'student')
                       AppTextField(
-                        labelText: 'Khóa K',
+                        labelText: 'Khóa K *',
                         controller: cohort,
 
                         errorText: s.errors['cohort'],
@@ -161,7 +162,6 @@ class _RegistrationFormState extends ConsumerState<RegistrationFormScreen> {
                       'Nhóm và khóa do bạn tự khai, không xác minh và không giới hạn quyền đăng ký.',
                     ),
                     const SizedBox(height: AppSpacing.s16),
-                    const BookingFeedback(),
                   ],
                 ),
         ),
@@ -169,23 +169,25 @@ class _RegistrationFormState extends ConsumerState<RegistrationFormScreen> {
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.s16),
             child: AppButton(
-              label: 'Xác nhận đăng ký',
+              label: s.unresolved ? 'Kiểm tra trạng thái' : 'Xác nhận đăng ký',
               isFullWidth: true,
               isLoading: s.busy,
-              isDisabled: s.unresolved || value.asData?.value == null,
-              onPressed: () => ref
-                  .read(bookingProvider.notifier)
-                  .submit(
-                    widget.eventId,
-                    Participant(
-                      name: name.text,
-                      email: email.text,
-                      group: group,
-                      cohort: cohort.text,
-                      organization: organization.text,
-                      phone: phone.text,
-                    ),
-                  ),
+              isDisabled: !s.unresolved && value.asData?.value == null,
+              onPressed: s.unresolved
+                  ? () => ref.read(bookingProvider.notifier).recover()
+                  : () => ref
+                        .read(bookingProvider.notifier)
+                        .submit(
+                          widget.eventId,
+                          Participant(
+                            name: name.text,
+                            email: email.text,
+                            group: group,
+                            cohort: cohort.text,
+                            organization: organization.text,
+                            phone: phone.text,
+                          ),
+                        ),
             ),
           ),
         ),

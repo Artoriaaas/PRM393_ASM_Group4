@@ -6,6 +6,10 @@ import 'contracts/auth_service.dart';
 /// Baseline authentication service before Firebase setup in Step 4.
 /// Represents a non-authenticated session state; does not produce fake user logins.
 class InitialAuthService implements AuthService {
+  @override
+  bool get canChangeEmail => false;
+  @override
+  Future<void> updateName(String name) async => _unavailable();
   Never _unavailable() => throw const AuthServiceUnavailable();
   @override
   Future<void> signIn(String email, String password) async => _unavailable();

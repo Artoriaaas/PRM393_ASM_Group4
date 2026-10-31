@@ -10,6 +10,21 @@ import '../contracts/auth_service.dart';
 class FirebaseAuthService implements AuthService {
   FirebaseAuthService(this._auth);
   final firebase.FirebaseAuth _auth;
+  @override
+  bool get canChangeEmail =>
+      _auth.currentUser?.providerData.any((p) => p.providerId == 'password') ??
+      false;
+  @override
+  Future<void> updateName(String name) => _run(() async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw const AppFailure(
+        code: 'signed-out',
+        message: 'Vui lòng đăng nhập lại.',
+      );
+    }
+    await user.updateDisplayName(name);
+  });
   final _google = GoogleSignIn.instance;
   Future<void>? _googleInitialization;
 

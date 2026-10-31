@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import '../app/cloud_providers.dart';
+
 import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,6 +31,8 @@ final bookingProvider = NotifierProvider<BookingViewModel, BookingState>(
 
 class BookingViewModel extends Notifier<BookingState> {
   int _epoch = 0;
+  bool _current(String uid, int epoch) =>
+      ref.mounted && epoch == _epoch && ref.read(signedInUidProvider) == uid;
   @override
   BookingState build() {
     ref.watch(signedInUidProvider);
@@ -45,14 +51,14 @@ class BookingViewModel extends Notifier<BookingState> {
     final epoch = _epoch;
     try {
       final c = await ref.read(pendingBookingStoreProvider).read(uid);
-      if (epoch == _epoch && c != null) {
+      if (_current(uid, epoch) && c != null) {
         state = BookingState(
           pending: c,
           message: 'Có thao tác chưa rõ kết quả. Kiểm tra trạng thái trước khi gửi tiếp.',
         );
       }
     } catch (_) {
-      if (epoch == _epoch) {
+      if (_current(uid, epoch)) {
         state = const BookingState(
           message: 'Không đọc được thao tác đang chờ. Thử lại trước khi gửi.',
         );
@@ -101,9 +107,10 @@ class BookingViewModel extends Notifier<BookingState> {
     if (uid == null) return;
     final epoch = _epoch;
     state = const BookingState(busy: true);
+    unawaited(track(ref, 'booking_submit', {'action': c['action'] as String}));
     try {
       final existing = await ref.read(pendingBookingStoreProvider).read(uid);
-      if (epoch != _epoch) return;
+      if (!_current(uid, epoch)) return;
       if (existing != null) {
         state = BookingState(
           pending: existing,
@@ -112,11 +119,11 @@ class BookingViewModel extends Notifier<BookingState> {
         return;
       }
       await ref.read(pendingBookingStoreProvider).write(uid, c);
-      if (epoch != _epoch) return;
+      if (!_current(uid, epoch)) return;
       state = BookingState(pending: c);
       await _execute(c, uid, epoch);
     } catch (_) {
-      if (epoch == _epoch) {
+      if (_current(uid, epoch)) {
         state = BookingState(
           pending: state.pending,
           message: 'Chưa thể lưu thao tác an toàn. Không gửi thêm; hãy kiểm tra trạng thái.',
@@ -131,10 +138,17 @@ class BookingViewModel extends Notifier<BookingState> {
     String uid,
     int epoch,
   ) async {
-    if (epoch != _epoch) return;
+    if (!_current(uid, epoch)) return;
+    unawaited(
+      track(ref, 'booking_result', {
+        'action': c['action'] as String,
+        'result': result.status,
+      }),
+    );
+    if (!_current(uid, epoch)) return;
     if (result.terminal) {
       await ref.read(pendingBookingStoreProvider).clear(uid);
-      if (epoch != _epoch) return;
+      if (!_current(uid, epoch)) return;
       state = BookingState(
         result: result,
         message: result.status == 'rejected'
@@ -151,7 +165,7 @@ class BookingViewModel extends Notifier<BookingState> {
   }
 
   Future<void> _execute(Map<String, dynamic> c, String uid, int epoch) async {
-    if (epoch != _epoch) return;
+    if (!_current(uid, epoch)) return;
     state = BookingState(busy: true, pending: c);
     try {
       await _accept(
@@ -160,8 +174,9 @@ class BookingViewModel extends Notifier<BookingState> {
         uid,
         epoch,
       );
-    } catch (_) {
-      if (epoch == _epoch) {
+    } catch (_, stack) {
+      unawaited(diagnose(ref, 'booking_transport_failed', stack));
+      if (_current(uid, epoch)) {
         state = BookingState(
           pending: c,
           message: 'Kết nối gián đoạn hoặc dịch vụ chưa sẵn sàng. Chưa biết kết quả; hãy kiểm tra trạng thái.',
@@ -172,6 +187,11 @@ class BookingViewModel extends Notifier<BookingState> {
 
   Future<void> recover() async {
     if (state.busy) return;
+    unawaited(
+      track(ref, 'booking_recover', {
+        'action': state.pending?['action'] as String? ?? 'unknown',
+      }),
+    );
     await restore();
     final c = state.pending;
     final uid = ref.read(signedInUidProvider);
@@ -188,7 +208,7 @@ class BookingViewModel extends Notifier<BookingState> {
         epoch,
       );
     } catch (_) {
-      if (epoch == _epoch) {
+      if (_current(uid, epoch)) {
         state = BookingState(
           pending: c,
           message:

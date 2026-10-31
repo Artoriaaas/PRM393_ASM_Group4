@@ -1,3 +1,6 @@
+import '../app/cloud_providers.dart';
+import 'cloud_tools_viewmodel.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/event_providers.dart';
@@ -43,6 +46,8 @@ class EventFilterViewModel extends Notifier<EventFilter> {
     today: today ?? state.today,
   );
   void reset() => state = const EventFilter();
+  Future<void> searchSubmitted(String text) =>
+      track(ref, 'search', {'query_length': text.trim().length});
 }
 
 List<Event> filterEvents(List<Event> events, EventFilter filter, DateTime now) {
@@ -143,3 +148,15 @@ final canCancelRegistrationProvider = Provider.autoDispose.family<bool, String>(
         now.isBefore(e.startsAt);
   },
 );
+
+final recommendationFeedProvider =
+    Provider.autoDispose<AsyncValue<List<Event>>>((ref) {
+      final settings = ref.watch(cloudToolsProvider).settings;
+      return ref
+          .watch(eventFeedProvider)
+          .whenData(
+            (rows) => settings.showRecommendations
+                ? rows.take(settings.recommendationLimit).toList()
+                : [],
+          );
+    });

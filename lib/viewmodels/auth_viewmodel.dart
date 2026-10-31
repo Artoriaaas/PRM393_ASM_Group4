@@ -1,3 +1,6 @@
+import '../app/cloud_providers.dart';
+import '../app/event_providers.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/providers.dart';
@@ -65,8 +68,10 @@ class AuthViewModel extends Notifier<AuthFormState> {
       switch (mode) {
         case 'login':
           await service.signIn(email, password);
+          await track(ref, 'login', {'method': 'password'});
         case 'google':
           await service.signInWithGoogle();
+          await track(ref, 'login', {'method': 'google'});
         case 'register':
           await service.register(name, email, password);
           message = 'Đã gửi email xác nhận. Mở liên kết trong hộp thư của bạn.';
@@ -83,6 +88,18 @@ class AuthViewModel extends Notifier<AuthFormState> {
           await service.changeEmail(email, password);
           message = 'Kiểm tra hộp thư địa chỉ mới và mở liên kết xác nhận. Email tài khoản chỉ đổi khi hệ thống xác nhận.';
         case 'logout':
+          await track(ref, 'logout', {'method': 'manual'});
+          final uid = ref.read(signedInUidProvider);
+          if (uid != null) {
+            try {
+              await ref
+                  .read(cloudServicesProvider)
+                  .disablePush(uid)
+                  .timeout(const Duration(seconds: 3));
+            } catch (_) {
+              /* Auth sign-out must still proceed. */
+            }
+          }
           await service.signOut();
           state = const AuthFormState();
           return true;

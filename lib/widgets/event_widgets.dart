@@ -1,3 +1,5 @@
+import '../utils/event_formatters.dart';
+export '../utils/event_formatters.dart';
 import 'workshop_cover.dart';
 
 import 'package:flutter/material.dart';
@@ -6,20 +8,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../models/event.dart';
 import '../theme/theme.dart';
 import 'widgets.dart';
-
-String eventDate(DateTime date) {
-  final d = date.toUtc().add(const Duration(hours: 7));
-  String z(int n) => n.toString().padLeft(2, '0');
-  return '${z(d.day)}/${z(d.month)}/${d.year}';
-}
-
-String eventTime(DateTime date) {
-  final d = date.toUtc().add(const Duration(hours: 7));
-  return '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
-}
-
-String eventWhen(Event e) =>
-    '${eventTime(e.startsAt)}–${eventTime(e.endsAt)} · ${eventDate(e.startsAt)}';
 
 class EventPanel extends StatelessWidget {
   const EventPanel({super.key, required this.children});

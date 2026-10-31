@@ -1,3 +1,4 @@
+import '../../viewmodels/cloud_tools_viewmodel.dart';
 import '../../theme/theme.dart';
 
 import 'package:flutter/material.dart';
@@ -56,7 +57,7 @@ class _EventListState extends ConsumerState<EventListScreen> {
     final filterVM = ref.read(eventFilterProvider.notifier);
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.search ? 'Kết quả tìm kiếm' : 'EventHub — Khám phá'),
+        title: Text(widget.search ? 'Kết quả tìm kiếm' : 'Khám phá'),
         centerTitle: false,
       ),
       body: events.when(
@@ -64,7 +65,16 @@ class _EventListState extends ConsumerState<EventListScreen> {
         error: (_, _) =>
             EventFailure(onRetry: () => ref.invalidate(eventsProvider)),
         data: (all) {
-          final filtered = ref.watch(eventFeedProvider).asData?.value ?? [];
+          final filtered =
+              ref
+                  .watch(
+                    widget.search
+                        ? eventFeedProvider
+                        : recommendationFeedProvider,
+                  )
+                  .asData
+                  ?.value ??
+              [];
           return RefreshIndicator(
             onRefresh: () async {
               ref.invalidate(eventsProvider);
@@ -87,6 +97,7 @@ class _EventListState extends ConsumerState<EventListScreen> {
                   hintText: 'Tìm sự kiện, CLB...',
                   onChanged: (q) => filterVM.set(query: q),
                   onSubmitted: (q) {
+                    filterVM.searchSubmitted(q);
                     if (!widget.search) {
                       context.push(
                         Uri(
@@ -142,11 +153,31 @@ class _EventListState extends ConsumerState<EventListScreen> {
                   },
                   child: const Text('Xóa từ khóa và bộ lọc'),
                 ),
+                if (!widget.search)
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Dành cho bạn',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () => context.push('/discover/search'),
+                        child: const Text('Xem tất cả'),
+                      ),
+                    ],
+                  ),
                 Text(
                   '${filtered.length} sự kiện',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                if (filtered.isEmpty)
+                if (!widget.search &&
+                    !ref.watch(cloudToolsProvider).settings.showRecommendations)
+                  const Text(
+                    'Gợi ý sự kiện đang tạm ẩn. Dùng tìm kiếm hoặc Xem tất cả để xem danh sách.',
+                  )
+                else if (filtered.isEmpty)
                   const AppEmptyState(
                     title: 'Chưa tìm thấy sự kiện',
                     message: 'Thử từ khóa khác hoặc đổi bộ lọc.',

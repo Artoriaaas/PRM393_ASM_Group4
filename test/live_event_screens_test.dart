@@ -1,3 +1,7 @@
+import 'package:eventhub/screens/account/account_tab_screen.dart';
+import 'package:eventhub/screens/account/profile_edit_screen.dart';
+import 'package:eventhub/screens/account/cloud_tools_screen.dart';
+import 'package:eventhub/screens/account/export_screen.dart';
 import 'package:eventhub/app/providers.dart';
 import 'package:eventhub/app/event_providers.dart';
 import 'package:eventhub/models/auth_state.dart';
@@ -93,6 +97,10 @@ void main() {
         const RegistrationDetailScreen(id: 'r1', success: true),
         const RegistrationDetailScreen(id: 'r1'),
         const LiveScheduleScreen(),
+        const AccountTabScreen(),
+        const ProfileEditScreen(),
+        const CloudToolsScreen(),
+        const ExportScreen(),
         const RegistrationDetailScreen(id: 'r1', checkInResult: true),
       ]) {
         await show(tester, screen);
@@ -135,7 +143,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(chip);
     await tester.pump();
-    expect(find.text('Khóa K'), findsNothing);
+    expect(find.text('Khóa K *'), findsNothing);
     expect(find.text('Trường / tổ chức (tùy chọn)'), findsOneWidget);
   });
 }

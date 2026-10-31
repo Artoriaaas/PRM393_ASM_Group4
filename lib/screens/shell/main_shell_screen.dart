@@ -1,3 +1,6 @@
+import '../../widgets/event_asset_icon.dart';
+import '../../theme/app_colors.dart';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -25,23 +28,29 @@ class MainShellScreen extends StatelessWidget {
         items: const [
           AppNavigationItem(
             label: 'Khám phá',
-            icon: Icon(Icons.explore_outlined),
-            activeIcon: Icon(Icons.explore),
+            icon: EventAssetIcon('nav_search', color: AppColors.textSecondary),
+            activeIcon: EventAssetIcon('nav_search', color: AppColors.primary),
           ),
           AppNavigationItem(
             label: 'Lịch',
-            icon: Icon(Icons.calendar_today_outlined),
-            activeIcon: Icon(Icons.calendar_today),
+            icon: EventAssetIcon(
+              'nav_calendar',
+              color: AppColors.textSecondary,
+            ),
+            activeIcon: EventAssetIcon(
+              'nav_calendar',
+              color: AppColors.primary,
+            ),
           ),
           AppNavigationItem(
             label: 'Thông báo',
-            icon: Icon(Icons.notifications_outlined),
-            activeIcon: Icon(Icons.notifications),
+            icon: EventAssetIcon('nav_bell', color: AppColors.textSecondary),
+            activeIcon: EventAssetIcon('nav_bell', color: AppColors.primary),
           ),
           AppNavigationItem(
             label: 'Tài khoản',
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
+            icon: EventAssetIcon('nav_account', color: AppColors.textSecondary),
+            activeIcon: EventAssetIcon('nav_account', color: AppColors.primary),
           ),
         ],
       ),

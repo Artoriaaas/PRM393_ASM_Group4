@@ -14,7 +14,7 @@ class NotificationsTabScreen extends ConsumerWidget {
     final value = ref.watch(notificationsProvider);
     final message = ref.watch(notificationsActionProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('EventHub — Thông báo')),
+      appBar: AppBar(title: const Text('Thông báo')),
       body: value.when(
         loading: () => const AppLoadingState(),
         error: (_, _) =>

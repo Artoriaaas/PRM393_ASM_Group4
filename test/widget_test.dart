@@ -27,8 +27,11 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
 
     // Verify initial screen is Discover tab (A02)
-    expect(find.text('EventHub — Khám phá'), findsOneWidget);
-    expect(find.text('Khám phá'), findsOneWidget);
+    expect(
+      find.descendant(of: find.byType(AppBar), matching: find.text('Khám phá')),
+      findsOneWidget,
+    );
+    expect(find.text('Khám phá'), findsNWidgets(2));
     expect(find.text('Lịch'), findsOneWidget);
     expect(find.text('Thông báo'), findsOneWidget);
     expect(find.text('Tài khoản'), findsOneWidget);
@@ -36,20 +39,43 @@ void main() {
     // Switch to Schedule tab
     await tester.tap(find.text('Lịch'));
     await tester.pump(const Duration(milliseconds: 300));
-    expect(find.text('EventHub — Lịch tham gia'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(AppBar),
+        matching: find.text('Lịch tham gia'),
+      ),
+      findsOneWidget,
+    );
 
     // Switch to Notifications tab
     await tester.tap(find.text('Thông báo'));
     await tester.pump(const Duration(milliseconds: 300));
-    expect(find.text('EventHub — Thông báo'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(AppBar),
+        matching: find.text('Thông báo'),
+      ),
+      findsOneWidget,
+    );
 
     // Switch to Account tab
     await tester.tap(find.text('Tài khoản'));
     await tester.pump(const Duration(milliseconds: 300));
-    expect(find.text('EventHub — Tài khoản'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(AppBar),
+        matching: find.text('Tài khoản'),
+      ),
+      findsOneWidget,
+    );
 
     // Navigate to Dev Component Preview screen from Account tab
     final previewBtn = find.text('Xem thử Component UI (360/412dp)');
+    await tester.scrollUntilVisible(
+      previewBtn,
+      180,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(previewBtn, findsOneWidget);
     await tester.ensureVisible(previewBtn);
     await tester.pumpAndSettle();
@@ -62,7 +88,13 @@ void main() {
     // Test back button
     await tester.tap(find.byIcon(Icons.arrow_back));
     await tester.pump(const Duration(milliseconds: 300));
-    expect(find.text('EventHub — Tài khoản'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(AppBar),
+        matching: find.text('Tài khoản'),
+      ),
+      findsOneWidget,
+    );
   });
 }
 
