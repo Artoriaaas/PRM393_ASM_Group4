@@ -144,3 +144,5 @@ exports.bookingStatus = onCall(async (request) => {
   // Not found is NOT proof that an earlier in-flight request failed.
   return doc.exists ? doc.data().result : { status: "unknown" };
 });
+
+Object.assign(exports, require("./notifications"));

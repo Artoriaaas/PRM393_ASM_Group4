@@ -1,0 +1,18 @@
+{
+  "parameters": {
+    "recommendation_limit": {
+      "defaultValue": {
+        "value": "10"
+      },
+      "valueType": "NUMBER",
+      "description": "Maximum recommended events; independent of registration permissions."
+    },
+    "show_recommendations": {
+      "defaultValue": {
+        "value": "true"
+      },
+      "valueType": "BOOLEAN",
+      "description": "Show recommendations; search always remains available."
+    }
+  }
+}

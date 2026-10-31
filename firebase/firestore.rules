@@ -19,6 +19,13 @@ service cloud.firestore {
    allow update: if member() && request.auth.uid == uid && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['readAt']) && request.resource.data.readAt == request.time;
    allow create,delete: if false;
   }
+  match /users/{uid}/devices/{id} {
+   allow read,delete: if member() && request.auth.uid==uid;
+   allow create,update: if member() && request.auth.uid==uid
+    && request.resource.data.keys().hasOnly(['fid','platform','updatedAt'])
+    && request.resource.data.fid is string && request.resource.data.fid.size() < 4096
+    && request.resource.data.platform=='android' && request.resource.data.updatedAt==request.time;
+  }
   match /{document=**} {allow read,write: if false;}
  }
 }
