@@ -56,3 +56,7 @@ app.*.map.json
 functions/node_modules/
 *-debug.log
 .firebase/
+
+# Python test environments and cache
+e2e_test/.venv/
+.pytest_cache/
