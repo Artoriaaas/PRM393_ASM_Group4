@@ -4,6 +4,8 @@ Ngày lập: 30/10/2026. Nguồn: đề PDF Lab 3 gồm 18 trang, mục 3–11 v
 
 ## Cách làm để không bị rối
 
+Cập nhật theo ưu tiên của nhóm ngày 31/10/2026: dựng trước [UI prototype tương tác](docs/ui-prototype.md) để chia việc cho teammate. Đây là công việc frontend song song; các bước 4–9 chỉ hoàn thành khi đã nối dịch vụ thật và có bằng chứng. Không dùng state demo thay cho yêu cầu dữ liệu thật của bản nộp.
+
 Làm lần lượt 12 bước. Chỉ đánh dấu xong khi có đầu ra và đã đạt điều kiện kiểm tra; hoàn thành code không đồng nghĩa đã có bằng chứng. Mỗi đợt làm lưu commit có ý nghĩa, ảnh/log vào `evidence/` và cập nhật README. Không dồn Git thành một lần upload cuối. Giữ thiết kế và app đồng bộ qua `docs/design-traceability.md`.
 
 ## 1. Đối chiếu Lab 2 và chốt phạm vi triển khai

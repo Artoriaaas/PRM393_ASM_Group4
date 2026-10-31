@@ -6,6 +6,8 @@ Lab 2 đã được người dùng chốt. Thư mục này bắt đầu giai đo
 
 ## Tài liệu triển khai đã lập
 
+- **[Bộ UI prototype tương tác và hướng dẫn chia việc](docs/ui-prototype.md)** — chạy `flutter run -t lib/main_prototype.dart`; có A01–A12, catalog và state demo. Không cần Firebase, không dùng làm bằng chứng cloud.
+
 - [Đối chiếu Lab 2 → Lab 3](docs/design-traceability.md): màn, route, ViewModel, dữ liệu, flow, component và nhật ký khác biệt.
 - [Kiến trúc MVVM](docs/architecture.md): Riverpod, lớp/service, dữ liệu/quyền, transaction, theme và Firebase.
 
@@ -83,6 +85,12 @@ flutter run -d emulator-5554
 
 ## Những phần còn lại của Bước 3 / Chờ Bước 4
 
+### Bước 4 đang triển khai — 31/10/2026
+
+Đã thêm Firebase Auth adapter, Google Sign-In, A01a–d, đổi email có xác minh và đăng xuất. Xem [hướng dẫn kết nối Firebase](docs/firebase-setup.md) với Application ID, fingerprint debug và checklist test. Nhóm chưa tạo Firebase project nên chưa có config thật, chưa xác minh đăng nhập/email/OAuth trên cloud. Mở app khi thiếu config có thông báo rõ; không tạo user giả. Bốn tab và nghiệp vụ F1/F2/F4A vẫn là nền bước 3.
+
+Dependencies mới trong lockfile: firebase_core 5.1.0, firebase_auth 7.0.1, google_sign_in 7.2.0, flutter_svg 2.3.2. Android khởi tạo bằng resources sinh từ google-services.json; chưa có project để chạy FlutterFire CLI. Chưa deploy rules hoặc cấu hình cloud.
+
 ### Sửa sau review ngày 31/10/2026
 
 - Router theo session restoring/signed-out/unverified/signed-in, giữ đích nội bộ qua đăng nhập/xác minh. InitialAuthService hiện chỉ trả signed-out, nên mở app sẽ thấy login placeholder; chưa có đăng nhập thật.
@@ -93,7 +101,7 @@ flutter run -d emulator-5554
 
 - Đã dựng hoàn chỉnh khung nền tảng: Theme, Tokens, Bộ widget dùng lại, Cấu trúc MVVM + Riverpod, Khung routing 16 routes và màn hình xem thử component.
 - **Chưa thực hiện (theo kế hoạch sang Bước 4 trở đi)**:
-  - Chưa kết nối Firebase Auth và Google Sign-In thật.
+  - Đã có code Firebase Auth/Google Sign-In, còn cấu hình project nhóm và kiểm thử thật (xem phần Bước 4).
   - Chưa triển khai Cloud Functions và Firestore rules.
   - Chưa thực hiện logic nghiệp vụ F1 (đăng ký), F2 (hủy đăng ký), F4A (quét QR điểm danh).
-  - Tất cả các màn hình nghiệp vụ hiện tại được định tuyến rõ ràng đến màn `PlaceholderScreen` với cảnh báo trạng thái phát triển, không tạo dữ liệu giả hay kết quả giả.
+  - A02–A12 còn là khung phát triển/placeholder; A01 đã có form thật nhưng cần project Firebase hợp lệ. Không tạo dữ liệu giả hay kết quả giả.

@@ -102,4 +102,6 @@ ErrorState được compose từ InlineMessage + nút Thử lại; các phần m
 
 ## 7. Điểm hoàn thành bước 1
 
+Cập nhật triển khai 31/10/2026: A01a–d đã có Flutter screen và Firebase Auth adapter; Google button đã thêm. Tham chiếu [firebase-setup.md](firebase-setup.md) cho khác biệt UI: summary chỉ hiển thị khi có dữ liệu thật ở bước F1, đổi email dùng xác thực lại/link mới thay vì tạo account lần hai. Chưa đồng bộ Figma, chưa nối cloud vì chưa có project. Không thay trạng thái toàn bộ ma trận thành hoàn thành chỉ dựa trên việc viết auth.
+
 Đã có ánh xạ A01a–d/A02–A12, state/flow, component và thay đổi Lab 3. Chưa có route/widget thực hoặc bằng chứng app. **Còn thao tác đồng bộ Figma cho D01/D02/D03/D07 trước khi coi bước 1 hoàn tất toàn bộ theo kế hoạch.** Lần này người dùng yêu cầu tài liệu bước 1–2; chưa chỉnh file Figma đã chốt của Lab 2. Tiếp tục bằng bản thiết kế Lab 3 có truy vết các thay đổi này, sau đó bước 3.
