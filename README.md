@@ -2,7 +2,7 @@
 
 Lab 2 đã được người dùng chốt. Thư mục này bắt đầu giai đoạn triển khai app Flutter Android từ thiết kế đó.
 
-**Bắt đầu tại [Kế hoạch từng bước](KE-HOACH-LAB3.md).** Đã viết tài liệu bước 1–2; chưa triển khai hoặc kiểm thử app.
+**Bắt đầu tại [Kế hoạch từng bước](KE-HOACH-LAB3.md).** Đã viết tài liệu bước 1–2 và dựng nền Flutter bước 3; nghiệp vụ và Firebase chưa triển khai.
 
 ## Tài liệu triển khai đã lập
 
@@ -21,8 +21,8 @@ Lab 2 đã được người dùng chốt. Thư mục này bắt đầu giai đo
 
 - [x] Lập lộ trình thực hiện.
 - [ ] Bước 1 — Đã lập bảng đối chiếu và phạm vi; còn đồng bộ các bổ sung Lab 3 lên Figma.
-- [x] Bước 2 — Đã lập đặc tả kiến trúc, dữ liệu và mapping theme/widget; chưa có code.
-- [ ] Bước 3 — Môi trường, project và nền UI.
+- [x] Bước 2 — Đã lập đặc tả kiến trúc, dữ liệu và mapping theme/widget.
+- [x] Bước 3 — Môi trường, project và nền UI (Flutter stable, MVVM + Riverpod, Theme Be Vietnam Pro, Bộ widget nền, Khung routing 4 tab & Dev preview, verified trên Android emulator).
 - [ ] Bước 4 — Firebase và Google Sign-In.
 - [ ] Bước 5 — F1: khám phá và đăng ký.
 - [ ] Bước 6 — F2: theo dõi và hủy đăng ký.
@@ -32,3 +32,68 @@ Lab 2 đã được người dùng chốt. Thư mục này bắt đầu giai đo
 - [ ] Bước 10 — ARTEMIS và bằng chứng kiểm thử.
 - [ ] Bước 11 — AI code review và sửa lỗi.
 - [ ] Bước 12 — Báo cáo, slide, video và nộp bài.
+
+## Môi trường & Công cụ thực tế (Bước 3)
+
+- **Flutter**: Channel stable 3.47.4 (Framework revision `9584c6713b`, Engine revision `06a2e2a110`).
+- **Dart SDK**: 3.13.3.
+- **Android SDK**: 36.0.0, Platform `android-36.1`, build-tools `36.0.0` tại `C:\Users\ThinhCri\AppData\Local\Android\Sdk`.
+- **Java JDK**: OpenJDK Runtime Environment 21.0.10 (build `21.0.10+-14961533-b1163.108`) tại `C:\Program Files\Android\Android Studio\jbr\bin\java`.
+- **Android Emulator**: Version 37.1.11.0 (AVD: `Fitmate_Medium_API35` - Android 15 API 35 x86_64).
+- **ADB**: Android Debug Bridge version `1.0.41` (Version 36.0.0-13207044).
+- **Application ID đề xuất**: `com.eventhub.app` (cấu hình trong `android/app/build.gradle.kts` và `MainActivity.kt`).
+
+## Dependencies đã chọn
+
+- `flutter_riverpod: 3.4.3` — Quản lý state MVVM và dependency injection độc lập giao diện.
+- `go_router: 18.1.2` — Quản lý routing khai báo, hỗ trợ `StatefulShellRoute` cho 4 tab điều hướng persistent và navigation stack.
+- `cupertino_icons: ^1.0.8` — Bộ icon phụ trợ.
+- **Font nội bộ**: `Be Vietnam Pro` (Regular 400, Medium 500, SemiBold 600, Bold 700) lưu tại `assets/fonts/` và khai báo trong `pubspec.yaml`, không phụ thuộc tải mạng khi mở app.
+
+## Hướng dẫn cài đặt và chạy ứng dụng
+
+```powershell
+# 1. Lấy dependencies
+flutter pub get
+
+# 2. Kiểm tra format mã nguồn
+dart format --output=none --set-exit-if-changed .
+
+# 3. Phân tích tĩnh mã nguồn
+flutter analyze
+
+# 4. Chạy toàn bộ test tự động (widget & routing)
+flutter test
+
+# 5. Build file APK debug
+flutter build apk --debug
+
+# 6. Khởi động emulator và chạy app
+flutter emulators --launch Fitmate_Medium_API35
+flutter run -d emulator-5554
+```
+
+## Bằng chứng thực tế (Evidence)
+
+- [Ảnh chụp màn hình Khám phá A02](evidence/discover_screen.png) — Giao diện chính A02 với 4 tab bottom navigation, top bar, search bar và trạng thái placeholder.
+- [Ảnh chụp màn hình Xem thử Component](evidence/component_preview_live.png) — Màn hình dev xem thử toàn bộ component nền.
+- [Ảnh chụp màn hình Khung nhìn 360dp](evidence/component_preview_360dp.png) — Khung nhìn giới hạn 360 dp kiểm tra tính thích ứng, không tràn viền.
+- [Ảnh chụp cuộn xem các Component](evidence/component_preview_scroll1.png), [Scroll 2](evidence/component_preview_scroll2.png), [Scroll 3](evidence/component_preview_scroll3.png), [Scroll 4](evidence/component_preview_scroll4.png) — Nút bấm, trường nhập, tìm kiếm, status badges, loading, empty, error, palette và typography.
+- [Ảnh chụp sau khi ấn Back](evidence/after_back.png) — Điều hướng quay lại màn hình trước hợp lệ.
+
+## Những phần còn lại của Bước 3 / Chờ Bước 4
+
+### Sửa sau review ngày 31/10/2026
+
+- Router theo session restoring/signed-out/unverified/signed-in, giữ đích nội bộ qua đăng nhập/xác minh. InitialAuthService hiện chỉ trả signed-out, nên mở app sẽ thấy login placeholder; chưa có đăng nhập thật.
+- Màn `/dev/components` và các nút mở chỉ tồn tại khi debug. Trong debug có thể mở route này trực tiếp để kiểm tra component khi chưa có Firebase; không giả lập đăng nhập.
+- Nút cho xuống dòng nhãn dài; badge co theo chiều rộng, dialog cuộn khi nội dung/chữ lớn, thông báo lỗi trường hỗ trợ nhiều dòng.
+- Chạy lại `flutter test`: 15/15 pass, bao gồm auth redirect, chuyển tab với session test injected, dialog/placeholder ở 360/412 dp và text scale 200%. Đây là widget test, chưa phải ARTEMIS hay chạy lại Android.
+- Ảnh evidence cũ bên trên thuộc lần dựng trước guard; không dùng ảnh Khám phá để chứng minh app signed-out hiện mở vào A02.
+
+- Đã dựng hoàn chỉnh khung nền tảng: Theme, Tokens, Bộ widget dùng lại, Cấu trúc MVVM + Riverpod, Khung routing 16 routes và màn hình xem thử component.
+- **Chưa thực hiện (theo kế hoạch sang Bước 4 trở đi)**:
+  - Chưa kết nối Firebase Auth và Google Sign-In thật.
+  - Chưa triển khai Cloud Functions và Firestore rules.
+  - Chưa thực hiện logic nghiệp vụ F1 (đăng ký), F2 (hủy đăng ký), F4A (quét QR điểm danh).
+  - Tất cả các màn hình nghiệp vụ hiện tại được định tuyến rõ ràng đến màn `PlaceholderScreen` với cảnh báo trạng thái phát triển, không tạo dữ liệu giả hay kết quả giả.
