@@ -2,7 +2,7 @@
 
 Lab 2 đã được người dùng chốt. Thư mục này bắt đầu giai đoạn triển khai app Flutter Android từ thiết kế đó.
 
-**Bắt đầu tại [Kế hoạch từng bước](KE-HOACH-LAB3.md).** Đã viết tài liệu bước 1–2 và dựng nền Flutter bước 3; đã có UI prototype và code tích hợp xác thực; cấu hình Firebase project thật và kiểm thử cloud còn chờ.
+**Bắt đầu tại [Kế hoạch từng bước](KE-HOACH-LAB3.md).** Đã có nền Flutter, UI prototype riêng và các màn dùng service Firestore/Functions. Project `eventhub-group4` đã cấu hình; Google Sign-In được chủ dự án xác nhận thành công. Nghiệp vụ mới đã kiểm thử local, còn deploy và kiểm thử cloud.
 
 ## Tài liệu triển khai đã lập
 
@@ -25,10 +25,10 @@ Lab 2 đã được người dùng chốt. Thư mục này bắt đầu giai đo
 - [ ] Bước 1 — Đã lập bảng đối chiếu và phạm vi; còn đồng bộ các bổ sung Lab 3 lên Figma.
 - [x] Bước 2 — Đã lập đặc tả kiến trúc, dữ liệu và mapping theme/widget.
 - [x] Bước 3 — Môi trường, project và nền UI (Flutter stable, MVVM + Riverpod, Theme Be Vietnam Pro, Bộ widget nền, Khung routing 4 tab & Dev preview, verified trên Android emulator).
-- [ ] Bước 4 — Firebase và Google Sign-In.
-- [ ] Bước 5 — F1: khám phá và đăng ký.
-- [ ] Bước 6 — F2: theo dõi và hủy đăng ký.
-- [ ] Bước 7 — F4A: quét QR và kết quả điểm danh.
+- [ ] Bước 4 — Google Sign-In đã được xác nhận; còn hoàn tất các nhánh auth và bằng chứng console.
+- [ ] Bước 5 — F1: đã code/test local; chờ backend và dữ liệu cloud.
+- [ ] Bước 6 — F2: đã code/test local; còn cloud và cập nhật sự kiện/FCM.
+- [ ] Bước 7 — F4A: đã có camera/backend; còn kiểm tra QR web CLB và cloud.
 - [ ] Bước 8 — Sinh file và Cloud Storage.
 - [ ] Bước 9 — Analytics, Crashlytics, Remote Config, FCM.
 - [ ] Bước 10 — ARTEMIS và bằng chứng kiểm thử.
@@ -87,13 +87,13 @@ flutter run -d emulator-5554
 
 ### Bước 4 đang triển khai — 31/10/2026
 
-Đã thêm Firebase Auth adapter, Google Sign-In, A01a–d, đổi email có xác minh và đăng xuất. Xem [hướng dẫn kết nối Firebase](docs/firebase-setup.md) với Application ID, fingerprint debug và checklist test. Nhóm chưa tạo Firebase project nên chưa có config thật, chưa xác minh đăng nhập/email/OAuth trên cloud. Mở app khi thiếu config có thông báo rõ; không tạo user giả. Bốn tab và nghiệp vụ F1/F2/F4A vẫn là nền bước 3.
+Đã thêm Firebase Auth adapter, Google Sign-In, A01a–d, đổi email có xác minh và đăng xuất. Xem [hướng dẫn kết nối Firebase](docs/firebase-setup.md) với Application ID, fingerprint debug và checklist test. Project chung `eventhub-group4` đã có config; chủ dự án xác nhận Google đăng nhập thành công. Email/password và các nhánh lỗi còn cần test cloud. Mở app khi thiếu config có thông báo rõ; không tạo user giả. Bốn tab và nghiệp vụ F1/F2/F4A đã nối service, cần deploy backend để chạy cloud đầy đủ.
 
-Dependencies mới trong lockfile: firebase_core 5.1.0, firebase_auth 7.0.1, google_sign_in 7.2.0, flutter_svg 2.3.2. Android khởi tạo bằng resources sinh từ google-services.json; chưa có project để chạy FlutterFire CLI. Chưa deploy rules hoặc cấu hình cloud.
+Dependencies mới trong lockfile: firebase_core 5.1.0, firebase_auth 7.0.1, google_sign_in 7.2.0, flutter_svg 2.3.2. Android khởi tạo bằng resources sinh từ google-services.json; đã có config Android của project nhóm. Firestore Rules/indexes và Remote Config đã deploy; Functions/Storage còn chờ billing.
 
 ### Sửa sau review ngày 31/10/2026
 
-- Router theo session restoring/signed-out/unverified/signed-in, giữ đích nội bộ qua đăng nhập/xác minh. InitialAuthService hiện chỉ trả signed-out, nên mở app sẽ thấy login placeholder; chưa có đăng nhập thật.
+- Router theo session restoring/signed-out/unverified/signed-in, giữ đích nội bộ qua đăng nhập/xác minh. FirebaseAuthService dùng đăng nhập thật; InitialAuthService chỉ dùng khi thiếu config hoặc trong test.
 - Màn `/dev/components` và các nút mở chỉ tồn tại khi debug. Trong debug có thể mở route này trực tiếp để kiểm tra component khi chưa có Firebase; không giả lập đăng nhập.
 - Nút cho xuống dòng nhãn dài; badge co theo chiều rộng, dialog cuộn khi nội dung/chữ lớn, thông báo lỗi trường hỗ trợ nhiều dòng.
 - Chạy lại `flutter test`: 15/15 pass, bao gồm auth redirect, chuyển tab với session test injected, dialog/placeholder ở 360/412 dp và text scale 200%. Đây là widget test, chưa phải ARTEMIS hay chạy lại Android.
@@ -109,3 +109,14 @@ Dependencies mới trong lockfile: firebase_core 5.1.0, firebase_auth 7.0.1, goo
 ## Theo dõi thay đổi giao diện
 
 Lưu ảnh trước/sau và lý do theo [quy ước bằng chứng thay đổi thiết kế](evidence/design-changes/README.md), ghi vào [bảng đối chiếu](docs/design-traceability.md) và cập nhật Figma. Mục tiêu tiếp theo là app chạy dịch vụ Firebase thật dùng chung cho nhóm, phát triển từ nền UI hiện có.
+
+## Triển khai nghiệp vụ đang thực hiện (31/10/2026)
+
+Google Sign-In trên `eventhub-group4` đã được chủ dự án xác nhận. Firestore đã được chủ dự án tạo. A02–A09/A11–A12 có màn Flutter nối service Firestore/Functions, ViewModel và backend transaction; chưa deploy hoặc xác minh các flow trên cloud. Xem [thiết lập backend](docs/backend-setup.md) và [bằng chứng local](evidence/backend/validation.md). Bản `main_prototype.dart` vẫn chỉ là UI demo riêng; bản app thật dùng `lib/main.dart`.
+
+Package mới: `cloud_firestore 7.1.0`, `cloud_functions 7.0.1`, `flutter_secure_storage 11.2.0`, `mobile_scanner 7.4.3` (lockfile). Backend Node runtime 22, dependencies pin trong `functions/package.json`; Firebase CLI kiểm thử 15.34.2.
+
+
+## Trạng thái hiện hành — 01/11/2026
+
+Xem [bảng bàn giao Lab 3](docs/lab3-readiness.md). Code có profile, PDF/Storage adapter, FCM, Analytics, Crashlytics và Remote Config; không đồng nghĩa tất cả dịch vụ đã được kiểm thử cloud. Firestore Rules/indexes và Remote Config đã deploy. Functions/Storage, ARTEMIS, PR review và báo cáo cuối còn các đầu vào/bằng chứng được liệt kê trong bảng bàn giao. Các số test ở phần tiến độ cũ là kết quả tại thời điểm từng bước; kết quả mới nằm trong [validation](evidence/backend/validation.md).

@@ -1,6 +1,6 @@
 # Kiến trúc EventHub — Lab 3
 
-Ngày: 30/10/2026. **Đặc tả trước khi code**, chưa có package pin, project Firebase hay kết quả test. Áp dụng [bảng đối chiếu](design-traceability.md); scope là mobile người tham gia, CLB/admin ở web riêng.
+Ngày: 30/10/2026. Đặc tả lập trước khi code; **đã có implementation và test local cập nhật ngày 31/10/2026 ở mục cuối**. Phiên bản package đọc từ lockfiles/README, project nhóm `eventhub-group4`. Áp dụng [bảng đối chiếu](design-traceability.md); scope là mobile người tham gia, CLB/admin ở web riêng.
 
 ## 1. Lựa chọn và ranh giới
 
@@ -188,7 +188,7 @@ Thông báo: backend tạo inbox trước khi gửi FCM; inbox là nguồn chín
 
 Export: PDF chụp snapshot lịch đang xem, tên sự kiện/giờ/địa điểm/trạng thái và thời điểm xuất; không chứa contact người khác. URL tải có thể là bearer link: cảnh báo chia sẻ riêng tư trong UI, không ghi URL vào analytics/log. Rules kiểm tra user nhưng không coi URL token là truy cập riêng chỉ nhờ rules. Có thể dùng link ngắn hạn qua backend nếu cần; ghi lựa chọn lúc triển khai.
 
-A10 phân biệt login email và contact email. Google login email không sửa tùy ý; thay contact cần verify server, email cũ còn hiệu lực tới xác minh. Password provider thay email theo quy trình Auth có reauthentication; khi email provider trùng không tự gộp tài khoản mà yêu cầu đăng nhập provider gốc và liên kết có xác thực.
+Quyết định thiết kế ban đầu: A10 phân biệt login email và contact email. Triển khai hiện tại dùng email Firebase Auth, không tạo contact email riêng; Google email chỉ đọc, password provider đổi qua reauthentication và xác minh. Phần mô tả ban đầu dưới đây chưa được triển khai như một contact service riêng. Google login email không sửa tùy ý; thay contact cần verify server, email cũ còn hiệu lực tới xác minh. Password provider thay email theo quy trình Auth có reauthentication; khi email provider trùng không tự gộp tài khoản mà yêu cầu đăng nhập provider gốc và liên kết có xác thực.
 
 ## 9. Kiểm tra kiến trúc trước khi triển khai và rủi ro còn mở
 
@@ -199,3 +199,17 @@ A10 phân biệt login email và contact email. Google login email không sửa 
 - Các thay đổi UI Lab 3 D01/D02/D03/D07 chưa áp dụng Figma. Ghi nhận việc này trước khi code UI mới; không coi Lab 2 bị mở lại vì các yêu cầu mới của Lab 3.
 
 **Bước 2 đã hoàn thành ở mức thiết kế kiến trúc.** Việc tạo project, cấu hình dịch vụ, kiểm tra rules và chạy test thuộc các bước tiếp theo.
+
+## Cập nhật code nghiệp vụ 31/10/2026
+
+- Model thuần: `Event`, `Participant`, `Registration`, `BookingResult`, `AppNotification`.
+- Composition root `app/event_providers.dart` inject EventService, NotificationService và PendingBookingStore. StreamProvider/derived Provider là ViewModel trạng thái đọc (`AsyncValue`); filter/schedule/availability nằm trong `viewmodels/event_viewmodels.dart`, command state trong `BookingViewModel`. Tên class cụ thể có thể gộp nhiều màn; không tạo một class rỗng cho mỗi dòng kế hoạch.
+- `FirestoreEventService`/`FirestoreNotificationService` gọi SDK; widget không gọi Firebase. `QrCameraService` là platform adapter cung cấp preview widget camera, stream token và thao tác OS; đây là phần hiển thị native nên service này phụ thuộc Flutter, model/domain vẫn độc lập.
+- Pending command được lưu mã hóa theo UID bằng secure storage trước khi gọi mạng; retry dùng cùng operation ID/payload, không tự tạo yêu cầu mới khi kết quả chưa rõ. Không lưu mật khẩu. Khi đổi UID, ViewModel dựng state mới và bỏ kết quả async của phiên cũ; pending mã hóa chỉ khôi phục cho đúng UID. Backup Android bị tắt; Firestore disk persistence bị tắt để tránh cache riêng tư trên thiết bị dùng chung.
+- Backend Functions region `asia-southeast1`, transaction kiểm tra trên thời gian server, ledger/hash, generation, history snapshot. History/rules/QR data không do mobile ghi. Schema event triển khai dùng `startsAt`/`endsAt`; xem `backend-setup.md`.
+- Kiểm thử emulator không thay thế deploy, nguồn sự kiện thật hoặc bằng chứng cloud. A10/edit, export và instrumentation đã có code/test local; kiểm thử dịch vụ cloud và bằng chứng console chưa hoàn tất.
+
+
+## Cập nhật triển khai 01/11/2026
+
+Các mô tả “dự kiến/chưa có code/project” ở phần kế hoạch là lịch sử thiết kế. Hiện code MVVM, project eventhub-group4, Google Auth và Firestore Rules đã có; xem `lab3-readiness.md` để biết trạng thái hiện hành. Profile dùng Firebase Auth trực tiếp qua service; không có contact-email backend riêng.

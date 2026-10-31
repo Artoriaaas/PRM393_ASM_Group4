@@ -1,6 +1,6 @@
 # Đối chiếu thiết kế Lab 2 → triển khai Lab 3
 
-Ngày lập: 30/10/2026. Trạng thái: **đã lập đặc tả triển khai; chưa code, chưa kiểm thử**. Lab 2 đã được chủ dự án xác nhận chốt. Các thay đổi Lab 3 bên dưới là quyết định triển khai đề xuất, chưa được áp dụng lên Figma.
+Ngày lập: 30/10/2026. Cập nhật 31/10/2026: **đã có auth, code nghiệp vụ và test local; cloud/Figma còn các việc chưa hoàn tất**, xem bảng trạng thái code cuối tài liệu. Lab 2 đã được chủ dự án xác nhận chốt. Các thay đổi Lab 3 bên dưới là quyết định triển khai đề xuất, chưa được áp dụng lên Figma.
 
 ## 1. Nguồn và thứ tự đối chiếu
 
@@ -10,7 +10,7 @@ Ngày lập: 30/10/2026. Trạng thái: **đã lập đặc tả triển khai; c
 - Tài liệu local đã đọc: `D:/Ky8/prm323-lab2-group2/ux/persona.md`, `ux/user-flow.md`, `design/screen-spec.md`, `handoff/flutter-handoff.md`, `project/design/design-system.md` (các đường dẫn sau cùng thuộc cùng repo Lab 2).
 - Khi Markdown cũ mâu thuẫn: áp dụng đề Lab 3 cho yêu cầu mới; giữ quy tắc sản phẩm và flow đã chốt cho nghiệp vụ. Ghi quyết định tại mục 6, không âm thầm triển khai theo dòng lỗi.
 
-Các tên route/widget/ViewModel dưới đây là **thiết kế dự kiến**, không khẳng định đã tồn tại trong code. Trạng thái mọi hàng: **đã ánh xạ / chưa triển khai**. ID Figma là node thật đã đọc; mở bằng URL file với `?node-id=ID` (đổi dấu `:` thành `-`).
+Các tên route/widget/ViewModel dưới đây là **thiết kế dự kiến**, không khẳng định đã tồn tại trong code. Các hàng dưới là yêu cầu/ánh xạ thiết kế; trạng thái code thực tế được ghi riêng ở bảng cuối tài liệu, không suy ra đã hoàn thành cloud. ID Figma là node thật đã đọc; mở bằng URL file với `?node-id=ID` (đổi dấu `:` thành `-`).
 
 ## 2. Ma trận màn hình và dữ liệu
 
@@ -92,7 +92,7 @@ ErrorState được compose từ InlineMessage + nút Thử lại; các phần m
 
 | ID | Nguồn/khác biệt | Quyết định Lab 3 và lý do | Trạng thái |
 |---|---|---|---|
-| D01 | A01 chỉ email/password; Lab 3 mục 6 yêu cầu Google | Thêm Google Sign-In, giữ A01a–d để không mất màn Lab 2; backend xác định provider và verified state | Đặc tả xong; Figma/code chưa cập nhật |
+| D01 | A01 chỉ email/password; Lab 3 mục 6 yêu cầu Google | Thêm Google Sign-In, giữ A01a–d để không mất màn Lab 2; backend xác định provider và verified state | Code auth đã thêm; Figma còn chờ đồng bộ |
 | D02 | Lab 2 cho khách xem A02–A04; rubric Lab 3 yêu cầu signed-out → login | Bản nộp Lab 3 có AuthGate trước nội dung; giữ deep link để vào đúng sự kiện sau login. P03 vẫn không phải đăng ký sự kiện nhưng phải đăng nhập app | Đặc tả xong; Figma chưa cập nhật; nêu ảnh hưởng persona khi trình bày |
 | D03 | Lab 2 chưa có export/config/crash demo | Thêm L3-01/L3-02 dưới A10, không đổi bốn tab. PDF từ lịch thật, không xuất dữ liệu người khác | Đặc tả xong; Figma/code chưa cập nhật |
 | D04 | screen-spec mục 3 gọi A06 là vé QR; mục 1–2 và flow phủ nhận vé cá nhân | A06 chỉ xác nhận đăng ký; A11 quét QR web CLB; A12 không hiện email/phone | Giải quyết cho triển khai; không sửa repo Lab 2 |
@@ -102,9 +102,9 @@ ErrorState được compose từ InlineMessage + nút Thử lại; các phần m
 
 ## 7. Điểm hoàn thành bước 1
 
-Cập nhật triển khai 31/10/2026: A01a–d đã có Flutter screen và Firebase Auth adapter; Google button đã thêm. Tham chiếu [firebase-setup.md](firebase-setup.md) cho khác biệt UI: summary chỉ hiển thị khi có dữ liệu thật ở bước F1, đổi email dùng xác thực lại/link mới thay vì tạo account lần hai. Chưa đồng bộ Figma, chưa nối cloud vì chưa có project. Không thay trạng thái toàn bộ ma trận thành hoàn thành chỉ dựa trên việc viết auth.
+Cập nhật triển khai 31/10/2026: A01a–d đã có Flutter screen và Firebase Auth adapter; Google button đã thêm. Tham chiếu [firebase-setup.md](firebase-setup.md) cho khác biệt UI: summary chỉ hiển thị khi có dữ liệu thật ở bước F1, đổi email dùng xác thực lại/link mới thay vì tạo account lần hai. Chưa đồng bộ Figma. Đã cấu hình project `eventhub-group4`; chủ dự án xác nhận Google Sign-In thành công, chưa kiểm thử toàn bộ cloud. Không thay trạng thái toàn bộ ma trận thành hoàn thành chỉ dựa trên việc viết auth.
 
-Đã có ánh xạ A01a–d/A02–A12, state/flow, component và thay đổi Lab 3. Chưa có route/widget thực hoặc bằng chứng app. **Còn thao tác đồng bộ Figma cho D01/D02/D03/D07 trước khi coi bước 1 hoàn tất toàn bộ theo kế hoạch.** Lần này người dùng yêu cầu tài liệu bước 1–2; chưa chỉnh file Figma đã chốt của Lab 2. Tiếp tục bằng bản thiết kế Lab 3 có truy vết các thay đổi này, sau đó bước 3.
+Đã có ánh xạ A01a–d/A02–A12, state/flow, component và thay đổi Lab 3; đã có route/widget và bằng chứng local được ghi ở phần trạng thái code. **Còn thao tác đồng bộ Figma cho D01/D02/D03/D07 trước khi coi bước 1 hoàn tất toàn bộ theo kế hoạch.** Lần này người dùng yêu cầu tài liệu bước 1–2; chưa chỉnh file Figma đã chốt của Lab 2. Tiếp tục bằng bản thiết kế Lab 3 có truy vết các thay đổi này, sau đó bước 3.
 
 
 ## Quy trình ghi nhận thay đổi UI khi triển khai
@@ -117,3 +117,34 @@ Nguồn: đề Lab 3 trang 3 (Changes to the design), trang 11 (báo cáo và sl
 Chưa tạo bản ghi mới chỉ từ mẫu: cần ảnh thực, thay đổi cụ thể và kiểm tra trước khi ghi hoàn tất. Các quyết định tại mục 6 vẫn cần được bổ sung bằng chứng và trạng thái thực tế tương ứng.
 
 Ưu tiên hiện tại: dùng bộ UI prototype làm nền để phát triển app thật trên Firebase project chung của nhóm; lần lượt thay dữ liệu mô phỏng bằng service/ViewModel thật theo F1, F2, F4A. Không coi bản mô phỏng là đầu ra cloud hoàn chỉnh. Sửa UI phát sinh phải đi qua quy trình trên.
+
+## Trạng thái code thực tế 31/10/2026 — không thay thế ma trận yêu cầu
+
+| Màn | Code thực tế | Nguồn | Trạng thái |
+|---|---|---|---|
+| A01a–d | AuthScreen / AuthViewModel | Firebase Auth | Google sign-in chủ dự án xác nhận; các nhánh còn cần test cloud |
+| A02/A03 | EventListScreen / EventFilterViewModel + eventFeedProvider | Firestore EventService | Đã code/test local, chưa test nguồn CLB thật |
+| A04 | EventDetailScreen / eventAvailabilityProvider | EventService, registrationsProvider | Đã code; ưu tiên active registration trước điều kiện chỗ/hạn |
+| A05 | RegistrationFormScreen / BookingViewModel | bookingCommand + secure pending store | Đã code/test form, pending/replay; chưa deploy |
+| A06/A08 | RegistrationDetailScreen / registrationProvider + BookingViewModel | server-owned registration | Đã code; snapshot/confirmed, dialog hủy/recovery; chưa cloud |
+| A07 | LiveScheduleScreen / scheduleEntriesProvider | owner registrations + event streams | Đã code; tách tự hủy/CLB hủy và ended; chưa cloud |
+| A09 | NotificationsTabScreen / NotificationsViewModel | owner Firestore notifications | Đã nối in-app feed/read/navigation; FCM và event-change trigger đã code, chưa deploy/test cloud |
+| A11 | ScannerScreen / BookingViewModel + QrCameraService | native camera + callable backend | Đã code; chưa test QR từ web CLB thật |
+| A12 | RegistrationDetailScreen(checkInResult) | confirmed server checkInAt | Đã code/test privacy; chưa cloud |
+| A10/edit, L3-01/02 | ProfileEditScreen, CloudToolsScreen, ExportScreen và ViewModel | Firebase Auth, CloudServices, ReportStorage | Đã code/test local; cloud/Figma còn cần xác minh |
+
+Artwork Lab 2 dùng lại từ prototype đã dựng và SVG đã tải; dữ liệu nội dung sự kiện đọc từ Firestore, cover fallback cho nội dung khác cần review và ghi bằng chứng nếu khác thiết kế đã chốt. Chưa tuyên bố Figma đã đồng bộ hoặc mọi màn pixel-perfect.
+
+### D08 — Phục hồi thao tác mạng và nội dung cover từ dữ liệu
+
+A05/A08/A11 bổ sung nhãn sự kiện của thao tác đang chờ và nút “Thử lại cùng thao tác”. Nút gửi lại payload + operation ID cũ, không tạo đăng ký mới; lý do: backend có thể đã ghi nhận dù client mất phản hồi, cần retry idempotent. Cần review UI và đồng bộ Figma trước khi chốt; đã có ảnh đối chiếu A05 trong thư mục D08 bên dưới; các màn A08/A11 còn cần đối chiếu riêng, không coi là đã duyệt. Cover UX workshop và Acoustic dùng lại artwork đã có; fallback cho event ngoài hai artwork cần được đối chiếu riêng, không gọi là bản Final UI đã duyệt.
+
+
+### Bằng chứng thay đổi Lab 3
+
+- [D03 — Tài khoản và công cụ Firebase](../evidence/design-changes/D03-firebase-tools/README.md): baseline Figma A10 và ảnh Flutter sau thay đổi.
+- [D08 — Phục hồi A05](../evidence/design-changes/D08-network-recovery/README.md): baseline Figma A05 và trạng thái pending/retry Flutter.
+- D07: Google email chỉ đọc vì thuộc provider; không triển khai contact-email độc lập. Cần đồng bộ quyết định và màn Profile lên Figma.
+- D10: thêm màn khởi tạo Firebase đang tải/thử lại để timeout không bị hiểu nhầm là thiếu cấu hình. Có test retry; cần bổ sung state này lên Figma.
+
+Ảnh Flutter UI fixture chỉ chứng minh bố cục; không dùng làm bằng chứng nghiệp vụ cloud hoặc xác nhận thầy đã duyệt.

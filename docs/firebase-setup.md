@@ -79,7 +79,7 @@ Chạy trên Android có Google Play. Dùng tài khoản Google test riêng.
 | Quên mật khẩu | Email không hợp lệ lỗi tại ô; email hợp lệ gọi thật; link reset hoạt động |
 | Sign-out và mở lại app | Signed-out; không hiện dữ liệu user cũ |
 
-Lưu ảnh tại `evidence/step4/` và ghi project ID trong ảnh khớp JSON. Widget/unit tests với fake service chỉ chứng minh điều phối UI, không chứng minh Firebase hoạt động. Sau auth mới triển khai Firestore nghiệp vụ theo rules được test; file rules hiện tại default-deny, không deploy thay một cấu hình đang sử dụng mà chưa review.
+Lưu ảnh tại `evidence/step4/` và ghi project ID trong ảnh khớp JSON. Widget/unit tests với fake service chỉ chứng minh điều phối UI, không chứng minh Firebase hoạt động. Sau auth mới triển khai Firestore nghiệp vụ theo rules được test; Rules đã được kiểm tra ownership bằng emulator trước khi deploy.
 
 ## Xác nhận kết nối ngày 31/10/2026
 
@@ -87,3 +87,7 @@ Lưu ảnh tại `evidence/step4/` và ghi project ID trong ảnh khớp JSON. W
 - Build APK debug từ `lib/main.dart` và cài/mở trên emulator thành công.
 - Chủ dự án báo đăng nhập Google thành công. Chưa thu ảnh Auth Users console; không suy rộng thành toàn bộ test auth đã pass.
 - Ảnh màn đăng nhập có config: `evidence/step4/login-configured.png`.
+
+Firestore đã được chủ dự án xác nhận tạo ngày 31/10/2026. Firestore Rules/indexes đã deploy; Functions chưa deploy; xem `docs/backend-setup.md`. Không đánh dấu kết nối nghiệp vụ cloud hoàn tất từ việc tạo database.
+
+Remote Config defaults 10/true đã publish ngày 01/11/2026. Startup có loading/retry và timeout 45 giây.
