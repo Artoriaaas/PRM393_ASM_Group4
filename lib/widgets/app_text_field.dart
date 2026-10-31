@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_radius.dart';
@@ -84,15 +85,22 @@ class _AppTextFieldState extends State<AppTextField> {
         child: InkWell(
           onTap: () => setState(() => _isObscured = !_isObscured),
           borderRadius: BorderRadius.circular(24),
-          child: ConstrainedBox(
-            constraints: AppTouchTargets.minConstraints,
-            child: Icon(
-              _isObscured
-                  ? Icons.visibility_outlined
-                  : Icons.visibility_off_outlined,
-              size: 20,
-              color: AppColors.textSecondary,
-            ),
+          child: SizedBox(
+            width: AppTouchTargets.min,
+            height: AppTouchTargets.min,
+            child: _isObscured
+                ? Center(
+                    child: SvgPicture.asset(
+                      'assets/icons/auth_eye.svg',
+                      width: 20,
+                      height: 24,
+                    ),
+                  )
+                : const Icon(
+                    Icons.visibility_off_outlined,
+                    size: 20,
+                    color: AppColors.textSecondary,
+                  ),
           ),
         ),
       );
@@ -130,7 +138,7 @@ class _AppTextFieldState extends State<AppTextField> {
             onFieldSubmitted: widget.onSubmitted,
             validator: widget.validator,
             maxLines: widget.maxLines,
-            style: AppTypography.textTheme.bodyLarge?.copyWith(
+            style: AppTypography.textTheme.bodyMedium?.copyWith(
               color: widget.enabled
                   ? AppColors.textPrimary
                   : AppColors.textDisabled,
@@ -157,30 +165,30 @@ class _AppTextFieldState extends State<AppTextField> {
                 vertical: AppSpacing.s12,
               ),
               border: const OutlineInputBorder(
-                borderRadius: AppRadius.borderR8,
+                borderRadius: AppRadius.borderR12,
                 borderSide: BorderSide(color: AppColors.border),
               ),
               enabledBorder: const OutlineInputBorder(
-                borderRadius: AppRadius.borderR8,
+                borderRadius: AppRadius.borderR12,
                 borderSide: BorderSide(color: AppColors.border),
               ),
               focusedBorder: const OutlineInputBorder(
-                borderRadius: AppRadius.borderR8,
+                borderRadius: AppRadius.borderR12,
                 borderSide: BorderSide(
                   color: AppColors.borderFocus,
                   width: 1.5,
                 ),
               ),
               errorBorder: const OutlineInputBorder(
-                borderRadius: AppRadius.borderR8,
+                borderRadius: AppRadius.borderR12,
                 borderSide: BorderSide(color: AppColors.error),
               ),
               focusedErrorBorder: const OutlineInputBorder(
-                borderRadius: AppRadius.borderR8,
+                borderRadius: AppRadius.borderR12,
                 borderSide: BorderSide(color: AppColors.error, width: 1.5),
               ),
               disabledBorder: const OutlineInputBorder(
-                borderRadius: AppRadius.borderR8,
+                borderRadius: AppRadius.borderR12,
                 borderSide: BorderSide(color: AppColors.borderSubtle),
               ),
             ),

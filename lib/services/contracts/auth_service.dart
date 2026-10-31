@@ -5,4 +5,11 @@ abstract interface class AuthService {
   Stream<AuthState> get authStateChanges;
   AuthState get currentAuthState;
   Future<void> signOut();
+  Future<void> signIn(String email, String password);
+  Future<void> signInWithGoogle();
+  Future<void> register(String name, String email, String password);
+  Future<void> sendVerification();
+  Future<void> reloadUser();
+  Future<void> resetPassword(String email);
+  Future<void> changeEmail(String email, String password);
 }

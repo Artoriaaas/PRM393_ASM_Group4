@@ -44,10 +44,14 @@ void main() {
       );
 
       // Initially obscure icon is visibility_outlined
-      expect(find.byIcon(Icons.visibility_outlined), findsOneWidget);
+      expect(
+        tester.widget<TextField>(find.byType(TextField)).obscureText,
+        isTrue,
+      );
 
       // Tap toggle visibility
-      await tester.tap(find.byIcon(Icons.visibility_outlined));
+      expect(tester.getSize(find.bySemanticsLabel('Hiện mật khẩu')).width, 48);
+      await tester.tap(find.bySemanticsLabel('Hiện mật khẩu'));
       await tester.pump();
 
       // Icon changes to visibility_off_outlined

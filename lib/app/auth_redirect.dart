@@ -29,11 +29,17 @@ String? authRedirect(AuthState auth, Uri location, bool development) {
     return path == '/session' ? null : target('/session');
   }
   if (auth.isSignedOut) {
-    if (inAuth && path != '/auth/verify-email') return null;
+    if (inAuth &&
+        path != '/auth/verify-email' &&
+        path != '/auth/change-email') {
+      return null;
+    }
     return target('/auth/login');
   }
   if (auth.isUnverified) {
-    return path == '/auth/verify-email' ? null : target('/auth/verify-email');
+    return path == '/auth/verify-email' || path == '/auth/change-email'
+        ? null
+        : target('/auth/verify-email');
   }
   if (inAuth || path == '/session') return destination;
   return null;

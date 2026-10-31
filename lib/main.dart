@@ -2,8 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/app.dart';
+import 'app/providers.dart';
+import 'services/firebase/firebase_bootstrap.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const ProviderScope(child: EventHubApp()));
+  final ready = await initializeFirebase();
+  runApp(
+    ProviderScope(
+      overrides: [firebaseReadyProvider.overrideWithValue(ready)],
+      child: const EventHubApp(),
+    ),
+  );
 }

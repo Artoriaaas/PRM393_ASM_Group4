@@ -44,6 +44,7 @@ void main() {
     final previewBtn = find.text('Xem thử Component UI (360/412dp)');
     expect(previewBtn, findsOneWidget);
     await tester.ensureVisible(previewBtn);
+    await tester.pumpAndSettle();
     await tester.tap(previewBtn);
     await tester.pump(const Duration(milliseconds: 300));
 

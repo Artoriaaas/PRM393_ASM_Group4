@@ -1,6 +1,12 @@
 import '../../app/development.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../app/providers.dart';
+import '../../models/auth_state.dart';
+import '../../viewmodels/auth_viewmodel.dart';
+
 import 'package:go_router/go_router.dart';
 
 import '../../theme/app_colors.dart';
@@ -12,11 +18,13 @@ import '../../widgets/app_status_badge.dart';
 import '../../widgets/app_top_bar.dart';
 
 /// A10 Account Tab Screen (Placeholder in Step 3)
-class AccountTabScreen extends StatelessWidget {
+class AccountTabScreen extends ConsumerWidget {
   const AccountTabScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final session = ref.watch(sessionViewModelProvider);
+    final authForm = ref.watch(authViewModelProvider);
     return Scaffold(
       backgroundColor: AppColors.surfaceSubtle,
       appBar: const AppTopBar(
@@ -27,6 +35,21 @@ class AccountTabScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.screenMargin),
           children: [
+            if (session is AuthStateSignedIn) ...[
+              Text(
+                session.displayName ?? 'Tài khoản EventHub',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              Text(session.email),
+              const SizedBox(height: AppSpacing.s16),
+              AppButton(
+                label: 'Đăng xuất',
+                isLoading: authForm.busy,
+                onPressed: () =>
+                    ref.read(authViewModelProvider.notifier).submit('logout'),
+              ),
+              if (authForm.message != null) Text(authForm.message!),
+            ],
             Card(
               color: AppColors.surface,
               shape: const RoundedRectangleBorder(
@@ -58,7 +81,7 @@ class AccountTabScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: AppSpacing.s8),
                     Text(
-                      'Placeholder trong development. Chưa kết nối Firebase Auth và hồ sơ người dùng thật (sẽ hoàn thiện tại Bước 4).',
+                      'Hồ sơ và tiện ích Lab 3 đang được hoàn thiện. Thông tin phiên phía trên lấy từ dịch vụ xác thực khi đã kết nối.',
                       style: AppTypography.textTheme.bodyMedium?.copyWith(
                         color: AppColors.textSecondary,
                       ),

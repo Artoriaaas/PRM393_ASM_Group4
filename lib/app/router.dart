@@ -1,3 +1,5 @@
+import '../screens/auth/auth_screen.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -88,52 +90,29 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/auth/login',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const PlaceholderScreen(
-          screenCode: 'A01a',
-          title: 'Đăng nhập',
-          routePath: '/auth/login',
-          figmaNode: '275:2894 / 177:231',
-          expectedViewModel: 'AuthViewModel',
-          expectedService: 'AuthService',
-        ),
+        builder: (context, state) => const AuthScreen(mode: 'login'),
       ),
       GoRoute(
         path: '/auth/register',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const PlaceholderScreen(
-          screenCode: 'A01b',
-          title: 'Tạo tài khoản',
-          routePath: '/auth/register',
-          figmaNode: '177:409',
-          expectedViewModel: 'AuthViewModel',
-          expectedService: 'AuthService, ProfileService',
-        ),
+        builder: (context, state) => const AuthScreen(mode: 'register'),
       ),
       GoRoute(
         path: '/auth/verify-email',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const PlaceholderScreen(
-          screenCode: 'A01c',
-          title: 'Kiểm tra email',
-          routePath: '/auth/verify-email',
-          figmaNode: '177:610',
-          expectedViewModel: 'AuthViewModel',
-          expectedService: 'AuthService',
-        ),
+        builder: (context, state) => const AuthScreen(mode: 'verify'),
       ),
       GoRoute(
         path: '/auth/forgot-password',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const PlaceholderScreen(
-          screenCode: 'A01d',
-          title: 'Quên mật khẩu',
-          routePath: '/auth/forgot-password',
-          figmaNode: '177:721',
-          expectedViewModel: 'AuthViewModel',
-          expectedService: 'AuthService',
-        ),
+        builder: (context, state) => const AuthScreen(mode: 'reset'),
       ),
 
+      GoRoute(
+        path: '/auth/change-email',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const AuthScreen(mode: 'change-email'),
+      ),
       // F1 Flow routes: Search, Detail, Register, Success
       GoRoute(
         path: '/discover/search',

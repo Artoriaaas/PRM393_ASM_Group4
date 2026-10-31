@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // No product data reads/writes yet. Auth uses Firebase Authentication.
+    // Replace with tested ownership rules when implementing the data layer.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
