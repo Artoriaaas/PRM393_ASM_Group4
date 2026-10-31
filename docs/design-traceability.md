@@ -105,3 +105,15 @@ ErrorState được compose từ InlineMessage + nút Thử lại; các phần m
 Cập nhật triển khai 31/10/2026: A01a–d đã có Flutter screen và Firebase Auth adapter; Google button đã thêm. Tham chiếu [firebase-setup.md](firebase-setup.md) cho khác biệt UI: summary chỉ hiển thị khi có dữ liệu thật ở bước F1, đổi email dùng xác thực lại/link mới thay vì tạo account lần hai. Chưa đồng bộ Figma, chưa nối cloud vì chưa có project. Không thay trạng thái toàn bộ ma trận thành hoàn thành chỉ dựa trên việc viết auth.
 
 Đã có ánh xạ A01a–d/A02–A12, state/flow, component và thay đổi Lab 3. Chưa có route/widget thực hoặc bằng chứng app. **Còn thao tác đồng bộ Figma cho D01/D02/D03/D07 trước khi coi bước 1 hoàn tất toàn bộ theo kế hoạch.** Lần này người dùng yêu cầu tài liệu bước 1–2; chưa chỉnh file Figma đã chốt của Lab 2. Tiếp tục bằng bản thiết kế Lab 3 có truy vết các thay đổi này, sau đó bước 3.
+
+
+## Quy trình ghi nhận thay đổi UI khi triển khai
+
+Nguồn: đề Lab 3 trang 3 (Changes to the design), trang 11 (báo cáo và slide). Mọi thay đổi so với Final UI Lab 2 phải có lý do ở tài liệu này và đồng bộ Figma. Ảnh trước/sau lưu theo [quy ước bằng chứng](../evidence/design-changes/README.md). Không xem mọi khác biệt UI là thay đổi đã được chấp nhận; lỗi triển khai cần sửa về đúng thiết kế.
+
+| ID | Màn / flow | Trước → sau | Lý do | Bằng chứng trước/sau | Figma / commit | Trạng thái |
+|---|---|---|---|---|---|---|
+
+Chưa tạo bản ghi mới chỉ từ mẫu: cần ảnh thực, thay đổi cụ thể và kiểm tra trước khi ghi hoàn tất. Các quyết định tại mục 6 vẫn cần được bổ sung bằng chứng và trạng thái thực tế tương ứng.
+
+Ưu tiên hiện tại: dùng bộ UI prototype làm nền để phát triển app thật trên Firebase project chung của nhóm; lần lượt thay dữ liệu mô phỏng bằng service/ViewModel thật theo F1, F2, F4A. Không coi bản mô phỏng là đầu ra cloud hoàn chỉnh. Sửa UI phát sinh phải đi qua quy trình trên.

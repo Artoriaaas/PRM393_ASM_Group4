@@ -2,7 +2,7 @@
 
 Lab 2 đã được người dùng chốt. Thư mục này bắt đầu giai đoạn triển khai app Flutter Android từ thiết kế đó.
 
-**Bắt đầu tại [Kế hoạch từng bước](KE-HOACH-LAB3.md).** Đã viết tài liệu bước 1–2 và dựng nền Flutter bước 3; nghiệp vụ và Firebase chưa triển khai.
+**Bắt đầu tại [Kế hoạch từng bước](KE-HOACH-LAB3.md).** Đã viết tài liệu bước 1–2 và dựng nền Flutter bước 3; đã có UI prototype và code tích hợp xác thực; cấu hình Firebase project thật và kiểm thử cloud còn chờ.
 
 ## Tài liệu triển khai đã lập
 
@@ -105,3 +105,7 @@ Dependencies mới trong lockfile: firebase_core 5.1.0, firebase_auth 7.0.1, goo
   - Chưa triển khai Cloud Functions và Firestore rules.
   - Chưa thực hiện logic nghiệp vụ F1 (đăng ký), F2 (hủy đăng ký), F4A (quét QR điểm danh).
   - A02–A12 còn là khung phát triển/placeholder; A01 đã có form thật nhưng cần project Firebase hợp lệ. Không tạo dữ liệu giả hay kết quả giả.
+
+## Theo dõi thay đổi giao diện
+
+Lưu ảnh trước/sau và lý do theo [quy ước bằng chứng thay đổi thiết kế](evidence/design-changes/README.md), ghi vào [bảng đối chiếu](docs/design-traceability.md) và cập nhật Figma. Mục tiêu tiếp theo là app chạy dịch vụ Firebase thật dùng chung cho nhóm, phát triển từ nền UI hiện có.
