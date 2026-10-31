@@ -1,6 +1,6 @@
 # Bước 4 — Kết nối Firebase của Group4
 
-Trạng thái ngày 31/10/2026: đã viết adapter Firebase Auth và UI A01a–d; **chưa có Firebase project của nhóm, chưa chạy xác thực thật**. Không đánh dấu bước 4 hoàn thành chỉ vì widget test/build pass.
+Trạng thái ngày 31/10/2026: đã viết adapter Firebase Auth và UI A01a–d; **đã nhận cấu hình project `eventhub-group4`, package `com.eventhub.app` và OAuth web client; đăng nhập Google thật đã được chủ dự án xác nhận thành công ngày 31/10/2026; các nhánh lỗi/đăng xuất vẫn cần kiểm thử riêng**. Không đánh dấu bước 4 hoàn thành chỉ vì widget test/build pass.
 
 ## 1. Việc cần người sở hữu tài khoản thực hiện
 
@@ -80,3 +80,10 @@ Chạy trên Android có Google Play. Dùng tài khoản Google test riêng.
 | Sign-out và mở lại app | Signed-out; không hiện dữ liệu user cũ |
 
 Lưu ảnh tại `evidence/step4/` và ghi project ID trong ảnh khớp JSON. Widget/unit tests với fake service chỉ chứng minh điều phối UI, không chứng minh Firebase hoạt động. Sau auth mới triển khai Firestore nghiệp vụ theo rules được test; file rules hiện tại default-deny, không deploy thay một cấu hình đang sử dụng mà chưa review.
+
+## Xác nhận kết nối ngày 31/10/2026
+
+- Config Android đúng `eventhub-group4`, `com.eventhub.app`, OAuth web client và SHA-1 debug máy này.
+- Build APK debug từ `lib/main.dart` và cài/mở trên emulator thành công.
+- Chủ dự án báo đăng nhập Google thành công. Chưa thu ảnh Auth Users console; không suy rộng thành toàn bộ test auth đã pass.
+- Ảnh màn đăng nhập có config: `evidence/step4/login-configured.png`.
