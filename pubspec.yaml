@@ -40,7 +40,10 @@ dependencies:
   firebase_auth: ^7.0.1
   google_sign_in: ^7.2.0
   flutter_svg: ^2.3.2
-
+  cloud_firestore: ^7.1.0
+  cloud_functions: ^7.0.1
+  flutter_secure_storage: ^11.2.0
+  mobile_scanner: ^7.4.3
 dev_dependencies:
   flutter_test:
     sdk: flutter

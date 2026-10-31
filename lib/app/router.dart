@@ -1,3 +1,4 @@
+import '../screens/events/scanner_screen.dart';
 import '../screens/auth/auth_screen.dart';
 
 import 'package:flutter/material.dart';
@@ -6,10 +7,14 @@ import 'package:go_router/go_router.dart';
 
 import '../screens/account/account_tab_screen.dart';
 import '../screens/dev/component_preview_screen.dart';
-import '../screens/discover/discover_tab_screen.dart';
+import '../screens/events/event_list_screen.dart';
+import '../screens/events/event_detail_screen.dart';
+import '../screens/events/registration_form_screen.dart';
+import '../screens/events/registration_detail_screen.dart';
+import '../screens/events/live_schedule_screen.dart';
 import '../screens/notifications/notifications_tab_screen.dart';
 import '../screens/placeholder_screen.dart';
-import '../screens/schedule/schedule_tab_screen.dart';
+
 import '../screens/shell/main_shell_screen.dart';
 import '../widgets/app_loading_state.dart';
 import 'providers.dart';
@@ -52,7 +57,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/discover',
-                builder: (context, state) => const DiscoverTabScreen(),
+                builder: (context, state) => const EventListScreen(),
               ),
             ],
           ),
@@ -61,7 +66,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/schedule',
-                builder: (context, state) => const ScheduleTabScreen(),
+                builder: (context, state) => const LiveScheduleScreen(),
               ),
             ],
           ),
@@ -117,13 +122,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/discover/search',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const PlaceholderScreen(
-          screenCode: 'A03',
-          title: 'Kết quả tìm kiếm & Bộ lọc',
-          routePath: '/discover/search',
-          figmaNode: '179:599',
-          expectedViewModel: 'SearchViewModel',
-          expectedService: 'EventService',
+        builder: (context, state) => EventListScreen(
+          search: true,
+          initialQuery: state.uri.queryParameters['q'] ?? '',
         ),
       ),
       GoRoute(
@@ -131,14 +132,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
           final eventId = state.pathParameters['eventId'] ?? 'unknown';
-          return PlaceholderScreen(
-            screenCode: 'A04',
-            title: 'Chi tiết sự kiện ($eventId)',
-            routePath: '/events/$eventId',
-            figmaNode: '164:336 / 214:1681',
-            expectedViewModel: 'EventDetailViewModel',
-            expectedService: 'EventService, RegistrationService',
-          );
+          return EventDetailScreen(eventId: eventId);
         },
       ),
       GoRoute(
@@ -146,14 +140,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
           final eventId = state.pathParameters['eventId'] ?? 'unknown';
-          return PlaceholderScreen(
-            screenCode: 'A05',
-            title: 'Form đăng ký sự kiện ($eventId)',
-            routePath: '/events/$eventId/register',
-            figmaNode: '179:965',
-            expectedViewModel: 'RegistrationFormViewModel',
-            expectedService: 'RegistrationService, ProfileService',
-          );
+          return RegistrationFormScreen(eventId: eventId);
         },
       ),
       GoRoute(
@@ -161,14 +148,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
           final regId = state.pathParameters['registrationId'] ?? 'unknown';
-          return PlaceholderScreen(
-            screenCode: 'A06',
-            title: 'Xác nhận đăng ký thành công',
-            routePath: '/registrations/$regId/success',
-            figmaNode: '179:1538',
-            expectedViewModel: 'RegistrationDetailViewModel',
-            expectedService: 'RegistrationService',
-          );
+          return RegistrationDetailScreen(id: regId, success: true);
         },
       ),
 
@@ -178,15 +158,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
           final regId = state.pathParameters['registrationId'] ?? 'unknown';
-          return PlaceholderScreen(
-            screenCode: 'A08',
-            title: 'Chi tiết lượt đăng ký ($regId)',
-            routePath: '/registrations/$regId',
-            figmaNode: '181:1345',
-            expectedViewModel: 'RegistrationDetailViewModel',
-            expectedService:
-                'RegistrationService, EventService, CheckInService',
-          );
+          return RegistrationDetailScreen(id: regId);
         },
       ),
 
@@ -210,14 +182,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
           final regId = state.pathParameters['registrationId'] ?? 'unknown';
-          return PlaceholderScreen(
-            screenCode: 'A11',
-            title: 'Quét mã QR điểm danh',
-            routePath: '/registrations/$regId/scan',
-            figmaNode: '182:1804',
-            expectedViewModel: 'ScannerViewModel',
-            expectedService: 'CameraService, CheckInService',
-          );
+          return ScannerScreen(registrationId: regId);
         },
       ),
       GoRoute(
@@ -225,14 +190,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
           final regId = state.pathParameters['registrationId'] ?? 'unknown';
-          return PlaceholderScreen(
-            screenCode: 'A12',
-            title: 'Kết quả điểm danh',
-            routePath: '/registrations/$regId/check-in',
-            figmaNode: '182:1995',
-            expectedViewModel: 'CheckInResultViewModel',
-            expectedService: 'CheckInService, EventService',
-          );
+          return RegistrationDetailScreen(id: regId, checkInResult: true);
         },
       ),
 

@@ -1,3 +1,7 @@
+import 'package:eventhub/app/event_providers.dart';
+
+import 'support/fake_event_service.dart';
+
 import 'package:eventhub/app/providers.dart';
 import 'package:eventhub/models/auth_state.dart';
 import 'package:eventhub/viewmodels/session_viewmodel.dart';
@@ -12,7 +16,11 @@ void main() {
   ) async {
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [sessionViewModelProvider.overrideWith(TestSession.new)],
+        overrides: [
+          sessionViewModelProvider.overrideWith(TestSession.new),
+          eventServiceProvider.overrideWithValue(FakeEventService()),
+          pendingBookingStoreProvider.overrideWithValue(MemoryPendingStore()),
+        ],
         child: const EventHubApp(),
       ),
     );

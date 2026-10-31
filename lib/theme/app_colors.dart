@@ -12,6 +12,9 @@ class AppColors {
   static const Color onPrimaryContainer = Color(0xFF8B2C0B);
   static const Color brandSubtle = Color(0xFFFFF5F0);
 
+  static const Color coverStart = Color(0xFFA93612);
+  static const Color coverEnd = Color(0xFFF47A3B);
+
   // Surface & Text
   static const Color surface = Color(0xFFFFFFFF);
   static const Color surfaceSubtle = Color(0xFFF8F9FB);

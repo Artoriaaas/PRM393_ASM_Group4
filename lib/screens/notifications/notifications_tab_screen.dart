@@ -1,76 +1,61 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../theme/app_colors.dart';
-import '../../theme/app_radius.dart';
-import '../../theme/app_spacing.dart';
-import '../../theme/app_typography.dart';
-import '../../widgets/app_empty_state.dart';
-import '../../widgets/app_status_badge.dart';
-import '../../widgets/app_top_bar.dart';
+import '../../theme/theme.dart';
+import '../../viewmodels/notifications_viewmodel.dart';
+import '../../widgets/widgets.dart';
+import '../../widgets/event_widgets.dart';
 
-/// A09 Notifications Tab Screen (Placeholder in Step 3)
-class NotificationsTabScreen extends StatelessWidget {
+class NotificationsTabScreen extends ConsumerWidget {
   const NotificationsTabScreen({super.key});
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final value = ref.watch(notificationsProvider);
+    final message = ref.watch(notificationsActionProvider);
     return Scaffold(
-      backgroundColor: AppColors.surfaceSubtle,
-      appBar: const AppTopBar(
-        title: 'EventHub — Thông báo',
-        subtitle: 'Cập nhật lịch & phiên điểm danh',
-      ),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.screenMargin),
-          children: [
-            Card(
-              color: AppColors.surface,
-              shape: const RoundedRectangleBorder(
-                borderRadius: AppRadius.borderR12,
-                side: BorderSide(color: AppColors.border),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.s16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Row(
-                      children: [
-                        AppStatusBadge(
-                          label: 'A09 — HỘP THƯ THÔNG BÁO (BƯỚC 3 NỀN TẢNG)',
-                          variant: AppBadgeVariant.info,
-                          icon: Icon(Icons.notifications_outlined),
-                        ),
-                      ],
+      appBar: AppBar(title: const Text('EventHub — Thông báo')),
+      body: value.when(
+        loading: () => const AppLoadingState(),
+        error: (_, _) =>
+            EventFailure(onRetry: () => ref.invalidate(notificationsProvider)),
+        data: (rows) {
+          if (rows.isEmpty) {
+            return AppEmptyState(
+              title: 'Chưa có thông báo',
+              message: 'Thông báo về sự kiện và đăng ký sẽ xuất hiện tại đây.',
+              actionLabel: 'Xem lịch tham gia',
+              onAction: () => context.go('/schedule'),
+            );
+          }
+          return ListView(
+            padding: const EdgeInsets.all(AppSpacing.s16),
+            children: [
+              if (message != null) EventPanel(children: [Text(message)]),
+              for (final n in rows)
+                Card(
+                  child: ListTile(
+                    isThreeLine: true,
+                    title: Text(n.title),
+                    subtitle: Text(
+                      '${n.readAt == null ? 'Chưa đọc' : 'Đã đọc'}\n${n.body}',
                     ),
-                    const SizedBox(height: AppSpacing.s12),
-                    Text(
-                      'Hộp thư Firestore inbox & FCM Push Notification',
-                      style: AppTypography.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.s8),
-                    Text(
-                      'Placeholder trong development. Hộp thư thông báo trong app và tích hợp FCM sẽ được triển khai tại Bước 9.',
-                      style: AppTypography.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () async {
+                      final target = await ref
+                          .read(notificationsActionProvider.notifier)
+                          .open(n);
+                      if (context.mounted) context.push(target);
+                    },
+                  ),
                 ),
+              const SizedBox(height: AppSpacing.s16),
+              const Text(
+                'Thông báo vẫn có trong app khi bạn tắt thông báo đẩy.',
               ),
-            ),
-            const SizedBox(height: AppSpacing.s24),
-            const AppEmptyState(
-              icon: Icons.notifications_none_outlined,
-              title: 'Không có thông báo mới',
-              message:
-                  'Các cập nhật về sự kiện bạn đăng ký sẽ hiển thị tại đây.',
-            ),
-          ],
-        ),
+            ],
+          );
+        },
       ),
     );
   }
