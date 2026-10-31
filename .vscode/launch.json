@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "EventHub — UI Prototype (local demo)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main_prototype.dart",
+      "flutterMode": "debug"
+    },
+    {
+      "name": "EventHub — Firebase app",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart"
+    }
+  ]
+}

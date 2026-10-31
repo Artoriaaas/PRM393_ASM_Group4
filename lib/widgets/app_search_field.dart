@@ -19,6 +19,7 @@ class AppSearchField extends StatefulWidget {
     this.onSubmitted,
     this.onClear,
     this.autofocus = false,
+    this.leadingIcon,
   });
 
   final TextEditingController? controller;
@@ -27,6 +28,7 @@ class AppSearchField extends StatefulWidget {
   final ValueChanged<String>? onSubmitted;
   final VoidCallback? onClear;
   final bool autofocus;
+  final Widget? leadingIcon;
 
   @override
   State<AppSearchField> createState() => _AppSearchFieldState();
@@ -95,11 +97,13 @@ class _AppSearchFieldState extends State<AppSearchField> {
           fillColor: AppColors.surface,
           prefixIcon: ConstrainedBox(
             constraints: AppTouchTargets.minConstraints,
-            child: const Icon(
-              Icons.search,
-              size: 20,
-              color: AppColors.textSecondary,
-            ),
+            child:
+                widget.leadingIcon ??
+                const Icon(
+                  Icons.search,
+                  size: 20,
+                  color: AppColors.textSecondary,
+                ),
           ),
           suffixIcon: _hasText
               ? Semantics(
