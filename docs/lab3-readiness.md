@@ -26,3 +26,7 @@
 4. PR/AI review và bằng chứng console thật để viết báo cáo cuối.
 
 Đọc `backend-setup.md`, `analytics-plan.md`, `test-plan.md`, `code-review.md` và `e2e_test/README.md`. UI prototype vẫn có entrypoint riêng; app thật chạy `flutter run -t lib/main.dart`.
+
+## Cập nhật UI và dữ liệu mẫu 01/11/2026
+
+Khám phá tối đa 3 gợi ý; Xem tất cả mở danh sách/bộ lọc đầy đủ, tiêu đề đổi theo từ khóa. Hai event demo trên Firestore có nhãn (Mẫu), ảnh bìa và ngày 08–09/11; không thay nguồn CLB thật/QR. Sau thay đổi: 7/7 tests liên quan pass, analyze sạch, APK build/cài thành công. Kết quả toàn suite 55/55 thuộc lượt trước thay đổi; không cộng các lượt test thành số pass mới.

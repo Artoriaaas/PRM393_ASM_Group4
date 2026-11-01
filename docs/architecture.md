@@ -49,7 +49,7 @@ Mũi tên biểu diễn hướng gọi; interface không import adapter cụ th�
 | `evidence/` | Ảnh console/app, trace và bảng kết quả có nguồn |
 | `report/`, `slides/` | PDF nộp theo đề |
 
-Đây là sơ đồ thư mục tương lai; chưa tạo hàng loạt file code rỗng.
+Sơ đồ này mô tả phân lớp; tên file triển khai thực tế đối chiếu bảng cuối tài liệu.
 
 ## 3. ViewModel và dependency
 
@@ -192,10 +192,10 @@ Quyết định thiết kế ban đầu: A10 phân biệt login email và contac
 
 ## 9. Kiểm tra kiến trúc trước khi triển khai và rủi ro còn mở
 
-- Tài liệu đáp ứng cấu trúc thư mục, sơ đồ lớp, sequence và bảng VM/service của đề; chưa có code để xác minh MVVM.
+- Tài liệu đáp ứng cấu trúc thư mục, sơ đồ lớp, sequence và bảng VM/service của đề; đã có code ViewModel/service và unit/widget tests.
 - Test ưu tiên: form student/guest; register cuối chỗ có cạnh tranh; duplicate/retry; hủy vs check-in đồng thời; generation; sign-out không rò state; recovery server. Fake services chỉ trong test; build nộp dùng backend thật.
 - Bước 3 pin dependencies và kiểm tra thiết bị/ARTEMIS; bước 4 xác minh tài khoản/gói Firebase và backend. Không hứa Spark đủ cho mọi dịch vụ khi chưa kiểm tra khả năng cung cấp thực tế.
-- Cần nguồn sự kiện thật, quyền organizer và web hiển thị QR/mở phiên; chưa có endpoint hoặc project ID nên chưa ghi như đã kết nối.
+- Cần nguồn sự kiện thật, quyền organizer và web hiển thị QR/mở phiên; project chung eventhub-group4 đã cấu hình; Functions chưa deploy.
 - Các thay đổi UI Lab 3 D01/D02/D03/D07 chưa áp dụng Figma. Ghi nhận việc này trước khi code UI mới; không coi Lab 2 bị mở lại vì các yêu cầu mới của Lab 3.
 
 **Bước 2 đã hoàn thành ở mức thiết kế kiến trúc.** Việc tạo project, cấu hình dịch vụ, kiểm tra rules và chạy test thuộc các bước tiếp theo.

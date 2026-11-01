@@ -1,3 +1,5 @@
+> Tài liệu này chỉ dành cho `main_prototype.dart`. App Firebase thật và tiến độ hiện hành xem [README](../README.md) và [readiness](lab3-readiness.md). Các hướng dẫn nối backend dưới đây mô tả giai đoạn prototype, không phải công việc chưa được code hiện nay.
+
 # Bộ giao diện tương tác để chia việc
 
 Ngày 31/10/2026. Mục đích: cho nhóm xem, bấm và chỉnh UI trước khi nối toàn bộ backend. **Không phải bằng chứng hoàn thành các flow Firebase của Lab 3.**
@@ -40,7 +42,7 @@ Các file ở `lib/dev/` là bản xem thử có thể chỉnh sửa. Khi triể
 
 Ngày workshop 24/10/2026 là snapshot thiết kế từ Lab 2; bản xem thử không dùng đồng hồ hôm nay để suy ra hết hạn. Nếu chọn trạng thái Đã kết thúc trên lịch thì chuyển tab Đã kết thúc để xem biến thể.
 
-## Cách chia việc đề xuất
+## Cách chia việc cho bản demo offline
 
 - Người làm UI F1 nhận `event_screens.dart` và `registration_screens.dart`; giữ theme, review trước khi đổi component chung.
 - Người làm F2/profile nhận lịch, chi tiết đăng ký, thông báo, account; thống nhất model đăng ký và email liên hệ trước khi nối Firebase.
