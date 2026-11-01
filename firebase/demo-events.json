@@ -1,0 +1,50 @@
+[
+  {
+    "id": "demo-ux-workshop",
+    "title": "Workshop Thiết kế trải nghiệm người dùng (Mẫu)",
+    "clubName": "CLB Thiết kế FPTU",
+    "topic": "Thiết kế",
+    "coverKey": "ux-workshop",
+    "startsAt": "2026-11-08T07:00:00Z",
+    "endsAt": "2026-11-08T09:30:00+00:00",
+    "deadline": "2026-11-07T07:00:00+00:00",
+    "registrationMode": "required",
+    "location": "Phòng 204 · Campus TP.HCM",
+    "visibility": "public",
+    "status": "published",
+    "capacity": 24,
+    "activeCount": 0,
+    "isDemo": true,
+    "description": "Dữ liệu mẫu để xem giao diện Lab 3; không phải thông báo sự kiện thật của CLB.",
+    "activities": [
+      "Làm quen và giao lưu",
+      "Thực hành theo nhóm"
+    ],
+    "audience": "Người quan tâm hoạt động câu lạc bộ",
+    "preparation": "Đây là dữ liệu minh họa."
+  },
+  {
+    "id": "demo-acoustic",
+    "title": "Giao lưu Acoustic (Mẫu)",
+    "clubName": "CLB Guitar",
+    "topic": "Âm nhạc",
+    "coverKey": "acoustic",
+    "startsAt": "2026-11-09T10:00:00Z",
+    "endsAt": "2026-11-09T12:30:00+00:00",
+    "deadline": "2026-11-08T10:00:00+00:00",
+    "registrationMode": "free",
+    "location": "Sảnh B · Campus TP.HCM",
+    "visibility": "public",
+    "status": "published",
+    "capacity": 24,
+    "activeCount": 0,
+    "isDemo": true,
+    "description": "Dữ liệu mẫu để xem giao diện Lab 3; không phải thông báo sự kiện thật của CLB.",
+    "activities": [
+      "Làm quen và giao lưu",
+      "Thực hành theo nhóm"
+    ],
+    "audience": "Người quan tâm hoạt động câu lạc bộ",
+    "preparation": "Đây là dữ liệu minh họa."
+  }
+]

@@ -148,3 +148,13 @@ A05/A08/A11 bổ sung nhãn sự kiện của thao tác đang chờ và nút “
 - D10: thêm màn khởi tạo Firebase đang tải/thử lại để timeout không bị hiểu nhầm là thiếu cấu hình. Có test retry; cần bổ sung state này lên Figma.
 
 Ảnh Flutter UI fixture chỉ chứng minh bố cục; không dùng làm bằng chứng nghiệp vụ cloud hoặc xác nhận thầy đã duyệt.
+
+
+### D11 — Khám phá: bộ lọc và dữ liệu mẫu
+
+Tách nhãn CLB, sửa khoảng cách và empty state, chỉ hiện reset khi cần. Thêm hai event demo có nhãn rõ để xem giao diện theo yêu cầu chủ dự án; không dùng chúng làm bằng chứng sự kiện CLB thật. Xem [ảnh trước/sau và lý do](../evidence/design-changes/D11-discover-filters/README.md). Chưa cập nhật Figma.
+
+
+### D12 — Phân biệt Khám phá và danh sách đầy đủ
+
+01/11/2026: Khám phá chỉ có ô tìm kiếm và tối đa 3 gợi ý (vẫn tuân theo giới hạn Remote Config nếu nhỏ hơn 3), không lặp bộ lọc nâng cao/số kết quả. Xem tất cả mở danh sách đầy đủ, reset điều kiện cũ, tiêu đề “Tất cả sự kiện”; có từ khóa mới dùng “Kết quả tìm kiếm”. Bộ lọc CLB/chủ đề/ngày và số kết quả thuộc màn danh sách. Gợi ý Khám phá độc lập bộ lọc ở màn tìm kiếm khi Back. Lý do: giảm trùng vai trò hai màn theo yêu cầu người dùng; chưa cập nhật Figma.
