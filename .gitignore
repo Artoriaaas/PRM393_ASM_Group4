@@ -60,3 +60,8 @@ functions/node_modules/
 # Python test environments and cache
 e2e_test/.venv/
 .pytest_cache/
+
+# Local Firebase client configuration (download separately from the shared project)
+**/google-services.json
+**/GoogleService-Info.plist
+lib/firebase_options.dart

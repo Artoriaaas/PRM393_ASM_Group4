@@ -91,3 +91,7 @@ Lưu ảnh tại `evidence/step4/` và ghi project ID trong ảnh khớp JSON. W
 Firestore đã được chủ dự án xác nhận tạo ngày 31/10/2026. Firestore Rules/indexes đã deploy; Functions chưa deploy; xem `docs/backend-setup.md`. Không đánh dấu kết nối nghiệp vụ cloud hoàn tất từ việc tạo database.
 
 Remote Config defaults 10/true đã publish ngày 01/11/2026. Startup có loading/retry và timeout 45 giây.
+
+## Quản lý cấu hình local
+
+`google-services.json` không được theo dõi trong Git. Mỗi teammate có quyền project tải file từ Firebase Console và đặt đúng đường dẫn Android. Không commit API key, service account, token hoặc file .env. Cấu hình đã từng có trong lịch sử được loại bỏ ngày 01/11/2026; chủ project cần rà soát key trong Google Cloud Credentials, hạn chế API/app phù hợp và thay key nếu cần. Khi thay key, tải lại config local và kiểm thử Auth.
