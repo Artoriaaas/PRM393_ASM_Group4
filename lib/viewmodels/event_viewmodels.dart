@@ -153,10 +153,10 @@ final recommendationFeedProvider =
     Provider.autoDispose<AsyncValue<List<Event>>>((ref) {
       final settings = ref.watch(cloudToolsProvider).settings;
       return ref
-          .watch(eventFeedProvider)
+          .watch(eventsProvider)
           .whenData(
             (rows) => settings.showRecommendations
-                ? rows.take(settings.recommendationLimit).toList()
+                ? rows.take(settings.recommendationLimit.clamp(1, 3)).toList()
                 : [],
           );
     });

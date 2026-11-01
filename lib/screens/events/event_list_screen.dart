@@ -57,7 +57,13 @@ class _EventListState extends ConsumerState<EventListScreen> {
     final filterVM = ref.read(eventFilterProvider.notifier);
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.search ? 'Kết quả tìm kiếm' : 'Khám phá'),
+        title: Text(
+          !widget.search
+              ? 'Khám phá'
+              : filter.query.trim().isEmpty
+              ? 'Tất cả sự kiện'
+              : 'Kết quả tìm kiếm',
+        ),
         centerTitle: false,
       ),
       body: events.when(
@@ -95,8 +101,11 @@ class _EventListState extends ConsumerState<EventListScreen> {
                 AppSearchField(
                   controller: query,
                   hintText: 'Tìm sự kiện, CLB...',
-                  onChanged: (q) => filterVM.set(query: q),
+                  onChanged: (q) {
+                    if (widget.search) filterVM.set(query: q);
+                  },
                   onSubmitted: (q) {
+                    filterVM.set(query: q);
                     filterVM.searchSubmitted(q);
                     if (!widget.search) {
                       context.push(
@@ -108,51 +117,70 @@ class _EventListState extends ConsumerState<EventListScreen> {
                     }
                   },
                 ),
-                const SizedBox(height: AppSpacing.s12),
-                Wrap(
-                  spacing: AppSpacing.s8,
-                  runSpacing: AppSpacing.s8,
-                  children: [
-                    FilterChip(
-                      label: const Text('Hôm nay'),
-                      selected: filter.today,
-                      onSelected: (v) => filterVM.set(today: v),
-                    ),
-                    for (final t
-                        in all
-                            .map((e) => e.topic)
-                            .where((t) => t.isNotEmpty)
-                            .toSet())
+                if (widget.search) ...[
+                  const SizedBox(height: AppSpacing.s12),
+                  Wrap(
+                    spacing: AppSpacing.s8,
+                    runSpacing: AppSpacing.s8,
+                    children: [
                       FilterChip(
-                        label: Text(t),
-                        selected: filter.topic == t,
-                        onSelected: (v) =>
-                            filterVM.set(topic: t, clearTopic: !v),
+                        label: const Text('Hôm nay'),
+                        selected: filter.today,
+                        onSelected: (v) => filterVM.set(today: v),
                       ),
-                  ],
-                ),
-                DropdownButtonFormField<String>(
-                  initialValue: filter.club,
-                  key: ValueKey(filter.club),
-                  decoration: const InputDecoration(labelText: 'Câu lạc bộ'),
-                  items: [
-                    const DropdownMenuItem(
-                      value: null,
-                      child: Text('Tất cả CLB'),
+                      for (final t
+                          in all
+                              .map((e) => e.topic)
+                              .where((t) => t.isNotEmpty)
+                              .toSet())
+                        FilterChip(
+                          label: Text(t),
+                          selected: filter.topic == t,
+                          onSelected: (v) =>
+                              filterVM.set(topic: t, clearTopic: !v),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.s16),
+                  Text(
+                    'Câu lạc bộ',
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+                  const SizedBox(height: AppSpacing.s8),
+                  DropdownButtonFormField<String>(
+                    initialValue: filter.club,
+                    key: ValueKey(filter.club),
+                    decoration: const InputDecoration(
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
                     ),
-                    for (final c in all.map((e) => e.clubName).toSet())
-                      DropdownMenuItem(value: c, child: Text(c)),
-                  ],
-                  onChanged: (v) => filterVM.set(club: v, clearClub: v == null),
-                  isExpanded: true,
-                ),
-                TextButton(
-                  onPressed: () {
-                    query.clear();
-                    filterVM.reset();
-                  },
-                  child: const Text('Xóa từ khóa và bộ lọc'),
-                ),
+                    items: [
+                      const DropdownMenuItem(
+                        value: null,
+                        child: Text('Tất cả CLB'),
+                      ),
+                      for (final c in all.map((e) => e.clubName).toSet())
+                        DropdownMenuItem(value: c, child: Text(c)),
+                    ],
+                    onChanged: (v) =>
+                        filterVM.set(club: v, clearClub: v == null),
+                    isExpanded: true,
+                  ),
+                  if (filter.query.trim().isNotEmpty ||
+                      filter.today ||
+                      filter.topic != null ||
+                      filter.club != null)
+                    TextButton(
+                      onPressed: () {
+                        query.clear();
+                        filterVM.reset();
+                      },
+                      child: const Text('Xóa từ khóa và bộ lọc'),
+                    ),
+                ],
+                const SizedBox(height: AppSpacing.s16),
                 if (!widget.search)
                   Row(
                     children: [
@@ -163,24 +191,32 @@ class _EventListState extends ConsumerState<EventListScreen> {
                         ),
                       ),
                       TextButton(
-                        onPressed: () => context.push('/discover/search'),
+                        onPressed: () {
+                          filterVM.reset();
+                          context.push('/discover/search');
+                        },
                         child: const Text('Xem tất cả'),
                       ),
                     ],
                   ),
-                Text(
-                  '${filtered.length} sự kiện',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
+                if (widget.search)
+                  Text(
+                    '${filtered.length} sự kiện',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                 if (!widget.search &&
                     !ref.watch(cloudToolsProvider).settings.showRecommendations)
                   const Text(
                     'Gợi ý sự kiện đang tạm ẩn. Dùng tìm kiếm hoặc Xem tất cả để xem danh sách.',
                   )
                 else if (filtered.isEmpty)
-                  const AppEmptyState(
-                    title: 'Chưa tìm thấy sự kiện',
-                    message: 'Thử từ khóa khác hoặc đổi bộ lọc.',
+                  AppEmptyState(
+                    title: all.isEmpty
+                        ? 'Chưa có sự kiện'
+                        : 'Chưa tìm thấy sự kiện',
+                    message: all.isEmpty
+                        ? 'Sự kiện mới sẽ xuất hiện tại đây. Kéo xuống để cập nhật.'
+                        : 'Thử từ khóa khác hoặc đổi bộ lọc.',
                   ),
                 for (final e in filtered)
                   Padding(
