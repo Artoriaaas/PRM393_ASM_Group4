@@ -2,7 +2,7 @@ import '../services/contracts/notification_service.dart';
 import '../services/firebase/firestore_notification_service.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -19,7 +19,7 @@ final eventServiceProvider = Provider<EventService>((ref) {
   }
   return FirestoreEventService(
     FirebaseFirestore.instance,
-    FirebaseFunctions.instanceFor(region: 'asia-southeast1'),
+    FirebaseAuth.instance,
   );
 });
 final pendingBookingStoreProvider = Provider<PendingBookingStore>(

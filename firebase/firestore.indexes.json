@@ -13,6 +13,14 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "registrations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "uid", "order": "ASCENDING" },
+        { "fieldPath": "lastOperationId", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

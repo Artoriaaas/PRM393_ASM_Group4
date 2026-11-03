@@ -1,11 +1,4 @@
 {
-  "functions": [
-    {
-      "source": "functions",
-      "codebase": "eventhub",
-      "runtime": "nodejs22"
-    }
-  ],
   "firestore": {
     "rules": "firebase/firestore.rules",
     "indexes": "firebase/firestore.indexes.json"
@@ -17,19 +10,10 @@
     "firestore": {
       "port": 8080
     },
-    "functions": {
-      "port": 5001
-    },
     "ui": {
       "enabled": true
     },
-    "singleProjectMode": true,
-    "storage": {
-      "port": 9199
-    }
-  },
-  "storage": {
-    "rules": "firebase/storage.rules"
+    "singleProjectMode": true
   },
   "remoteconfig": {
     "template": "firebase/remote-config.template.json"

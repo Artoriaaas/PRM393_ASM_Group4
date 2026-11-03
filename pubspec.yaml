@@ -41,10 +41,9 @@ dependencies:
   google_sign_in: ^7.2.0
   flutter_svg: ^2.3.2
   cloud_firestore: ^7.1.0
-  cloud_functions: ^7.0.1
   flutter_secure_storage: ^11.2.0
   mobile_scanner: ^7.4.3
-  firebase_storage: ^14.0.1
+  http: ^1.6.0
   firebase_analytics: ^13.0.1
   firebase_crashlytics: ^6.0.1
   firebase_remote_config: ^7.0.1

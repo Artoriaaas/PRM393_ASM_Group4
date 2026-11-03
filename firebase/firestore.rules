@@ -2,16 +2,94 @@ rules_version = '2';
 service cloud.firestore {
  match /databases/{database}/documents {
   function member() {return request.auth != null && request.auth.token.email_verified == true;}
+  function eventPath(eventId) {return /databases/$(database)/documents/events/$(eventId);}
+  function regPath(eventId) {return /databases/$(database)/documents/registrations/$(request.auth.uid + '_' + eventId);}
+  function canRegister(eventId) {
+   let e = get(eventPath(eventId)).data;
+   return e.visibility == 'public' && e.status == 'published'
+    && e.registrationMode == 'required' && request.time < e.startsAt
+    && request.time < e.deadline && e.activeCount < e.capacity;
+  }
+  function participantValid(p) {
+   return p.keys().hasAll(['name','email','group','cohort','organization','phone'])
+    && p.keys().hasOnly(['name','email','group','cohort','organization','phone'])
+    && p.name is string && p.name.size() > 0 && p.name.size() <= 100
+    && p.email is string && p.email.size() > 3 && p.email.size() <= 254
+    && p.group in ['student','guest']
+    && p.cohort is string && p.cohort.size() <= 30
+    && p.organization is string && p.organization.size() <= 160
+    && p.phone is string && p.phone.size() <= 30
+    && (p.group != 'student' || p.cohort.size() > 0);
+  }
+  function operationValid(op) {return op is string && op.matches('^[a-f0-9]{48}$');}
+  function eventCountChange(id) {
+   let before = get(regPath(id));
+   let after = getAfter(regPath(id));
+   return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['activeCount'])
+    && request.resource.data.activeCount >= 0
+    && request.resource.data.activeCount <= resource.data.capacity
+    && after.data.uid == request.auth.uid && after.data.eventId == id
+    && operationValid(after.data.lastOperationId)
+    && ((!exists(regPath(id)) || before.data.status == 'cancelled')
+      && after.data.status == 'active'
+      && request.resource.data.activeCount == resource.data.activeCount + 1
+     || exists(regPath(id)) && before.data.status == 'active'
+      && after.data.status == 'cancelled'
+      && request.resource.data.activeCount == resource.data.activeCount - 1);
+  }
   match /events/{id} {
    allow list: if member() && resource.data.visibility == 'public';
    allow get: if member() && (!exists(/databases/$(database)/documents/events/$(id)) || resource.data.visibility == 'public');
-   allow write: if false;
+   allow update: if member() && eventCountChange(id);
+   allow create,delete: if false;
   }
   match /clubs/{id} {allow read: if member(); allow write: if false;}
   match /registrations/{id} {
    allow list: if member() && resource.data.uid == request.auth.uid;
    allow get: if member() && (!exists(/databases/$(database)/documents/registrations/$(id)) || resource.data.uid == request.auth.uid);
-   allow write: if false;
+   allow create: if member() && id == request.auth.uid + '_' + request.resource.data.eventId
+    && request.resource.data.keys().hasOnly(['uid','eventId','status','generation','participant','checkInAt','createdAt','lastOperationId'])
+    && request.resource.data.keys().hasAll(['uid','eventId','status','generation','participant','checkInAt','createdAt','lastOperationId'])
+    && request.resource.data.uid == request.auth.uid
+    && request.resource.data.status == 'active' && request.resource.data.generation == 1
+    && request.resource.data.checkInAt == null && request.resource.data.createdAt == request.time
+    && participantValid(request.resource.data.participant)
+    && operationValid(request.resource.data.lastOperationId)
+    && canRegister(request.resource.data.eventId)
+    && getAfter(eventPath(request.resource.data.eventId)).data.activeCount ==
+       get(eventPath(request.resource.data.eventId)).data.activeCount + 1;
+   allow update: if member() && resource.data.uid == request.auth.uid
+    && id == request.auth.uid + '_' + resource.data.eventId
+    && request.resource.data.uid == resource.data.uid
+    && request.resource.data.eventId == resource.data.eventId
+    && operationValid(request.resource.data.lastOperationId)
+    && request.resource.data.lastOperationId != resource.data.lastOperationId
+    && (
+      (resource.data.status == 'cancelled' && request.resource.data.status == 'active'
+       && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','generation','participant','checkInAt','createdAt','lastOperationId','qrHash'])
+       && request.resource.data.generation == resource.data.generation + 1
+       && request.resource.data.checkInAt == null
+       && request.resource.data.createdAt == request.time
+       && participantValid(request.resource.data.participant)
+       && canRegister(resource.data.eventId)
+       && getAfter(eventPath(resource.data.eventId)).data.activeCount == get(eventPath(resource.data.eventId)).data.activeCount + 1)
+      || (resource.data.status == 'active' && request.resource.data.status == 'cancelled'
+       && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','lastOperationId'])
+       && resource.data.checkInAt == null
+       && get(eventPath(resource.data.eventId)).data.status == 'published'
+       && request.time < get(eventPath(resource.data.eventId)).data.startsAt
+       && getAfter(eventPath(resource.data.eventId)).data.activeCount == get(eventPath(resource.data.eventId)).data.activeCount - 1)
+      || (resource.data.status == 'active' && request.resource.data.status == 'active'
+       && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['checkInAt','qrHash','lastOperationId'])
+       && resource.data.checkInAt == null && request.resource.data.checkInAt == request.time
+       && request.resource.data.qrHash is string && request.resource.data.qrHash.matches('^[a-f0-9]{64}$')
+       && exists(/databases/$(database)/documents/qrCredentials/$(request.resource.data.qrHash))
+       && get(/databases/$(database)/documents/qrCredentials/$(request.resource.data.qrHash)).data.eventId == resource.data.eventId
+       && get(/databases/$(database)/documents/qrCredentials/$(request.resource.data.qrHash)).data.enabled == true
+       && get(/databases/$(database)/documents/checkinSessions/$(resource.data.eventId)).data.open == true
+       && get(eventPath(resource.data.eventId)).data.status == 'published')
+    );
+   allow delete: if false;
    match /history/{entry} {allow read: if member() && get(/databases/$(database)/documents/registrations/$(id)).data.uid == request.auth.uid; allow write: if false;}
   }
   match /users/{uid}/notifications/{id} {
