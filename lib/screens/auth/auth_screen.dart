@@ -129,6 +129,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         ),
         Text(
           session is AuthStateUnverified ? session.email : state.email,
+          textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.labelLarge,
         ),
         button(

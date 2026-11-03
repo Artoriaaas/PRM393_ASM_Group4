@@ -182,22 +182,9 @@ class _EventListState extends ConsumerState<EventListScreen> {
                 ],
                 const SizedBox(height: AppSpacing.s16),
                 if (!widget.search)
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'Dành cho bạn',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          filterVM.reset();
-                          context.push('/discover/search');
-                        },
-                        child: const Text('Xem tất cả'),
-                      ),
-                    ],
+                  Text(
+                    'Dành cho bạn',
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                 if (widget.search)
                   Text(
@@ -207,7 +194,7 @@ class _EventListState extends ConsumerState<EventListScreen> {
                 if (!widget.search &&
                     !ref.watch(cloudToolsProvider).settings.showRecommendations)
                   const Text(
-                    'Gợi ý sự kiện đang tạm ẩn. Dùng tìm kiếm hoặc Xem tất cả để xem danh sách.',
+                    'Gợi ý sự kiện đang tạm ẩn. Dùng thanh tìm kiếm để tìm sự kiện.',
                   )
                 else if (filtered.isEmpty)
                   AppEmptyState(
