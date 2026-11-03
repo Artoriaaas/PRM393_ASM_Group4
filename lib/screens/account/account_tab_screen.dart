@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../app/development.dart';
 import '../../app/providers.dart';
 import '../../models/auth_state.dart';
 import '../../viewmodels/auth_viewmodel.dart';
@@ -37,10 +36,6 @@ class AccountTabScreen extends ConsumerWidget {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 Text(auth.email, textAlign: TextAlign.center),
-                const Text('Email đã xác nhận', textAlign: TextAlign.center),
-                const Text(
-                  'Xác nhận email chỉ xác minh kênh liên hệ, không chứng minh tư cách sinh viên FPTU.',
-                ),
               ],
             ),
           AppButton(
@@ -68,14 +63,6 @@ class AccountTabScreen extends ConsumerWidget {
                 ref.read(authViewModelProvider.notifier).submit('logout'),
           ),
           if (s.message != null) Text(s.message!),
-          if (developmentUiEnabled) ...[
-            const SizedBox(height: AppSpacing.s16),
-            AppButton(
-              label: 'Xem thử Component UI (360/412dp)',
-              variant: AppButtonVariant.secondary,
-              onPressed: () => context.push('/dev/components'),
-            ),
-          ],
         ],
       ),
     );

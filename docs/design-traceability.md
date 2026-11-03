@@ -158,3 +158,8 @@ Tách nhãn CLB, sửa khoảng cách và empty state, chỉ hiện reset khi c�
 ### D12 — Phân biệt Khám phá và danh sách đầy đủ
 
 01/11/2026: Khám phá chỉ có ô tìm kiếm và tối đa 3 gợi ý (vẫn tuân theo giới hạn Remote Config nếu nhỏ hơn 3), không lặp bộ lọc nâng cao/số kết quả. Xem tất cả mở danh sách đầy đủ, reset điều kiện cũ, tiêu đề “Tất cả sự kiện”; có từ khóa mới dùng “Kết quả tìm kiếm”. Bộ lọc CLB/chủ đề/ngày và số kết quả thuộc màn danh sách. Gợi ý Khám phá độc lập bộ lọc ở màn tìm kiếm khi Back. Lý do: giảm trùng vai trò hai màn theo yêu cầu người dùng; chưa cập nhật Figma.
+
+
+### D13 — Tài khoản và đích sau đăng nhập
+
+04/11/2026: bỏ nhãn “Email đã xác nhận”, đoạn giải thích FPTU và nút xem thử component khỏi A10 theo yêu cầu người dùng. Auth verification vẫn được giữ trong nghiệp vụ. Khi đăng nhập từ đích Account chuyển về Khám phá, tránh quay lại Account sau logout/login; đích đăng ký sự kiện vẫn được giữ. Chưa cập nhật Figma.

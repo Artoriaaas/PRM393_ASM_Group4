@@ -69,32 +69,9 @@ void main() {
       findsOneWidget,
     );
 
-    // Navigate to Dev Component Preview screen from Account tab
-    final previewBtn = find.text('Xem thử Component UI (360/412dp)');
-    await tester.scrollUntilVisible(
-      previewBtn,
-      180,
-      scrollable: find.byType(Scrollable).first,
-    );
-    expect(previewBtn, findsOneWidget);
-    await tester.ensureVisible(previewBtn);
-    await tester.pumpAndSettle();
-    await tester.tap(previewBtn);
-    await tester.pump(const Duration(milliseconds: 300));
-
-    // Verify Dev Component screen loaded
-    expect(find.text('Xem thử Component (Development)'), findsOneWidget);
-
-    // Test back button
-    await tester.tap(find.byIcon(Icons.arrow_back));
-    await tester.pump(const Duration(milliseconds: 300));
-    expect(
-      find.descendant(
-        of: find.byType(AppBar),
-        matching: find.text('Tài khoản'),
-      ),
-      findsOneWidget,
-    );
+    expect(find.text('Email đã xác nhận'), findsNothing);
+    expect(find.textContaining('Xác nhận email chỉ'), findsNothing);
+    expect(find.text('Xem thử Component UI (360/412dp)'), findsNothing);
   });
 }
 

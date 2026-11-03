@@ -10,6 +10,8 @@ String safeDestination(String? value) {
       uri.path.startsWith('//') ||
       uri.path.startsWith('/auth') ||
       uri.path.startsWith('/dev') ||
+      uri.path == '/account' ||
+      uri.path.startsWith('/account/') ||
       uri.path == '/session') {
     return '/discover';
   }

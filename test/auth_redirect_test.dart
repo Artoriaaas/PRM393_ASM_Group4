@@ -3,6 +3,22 @@ import 'package:eventhub/models/auth_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('account login returns to discover while event intent is retained', () {
+    expect(safeDestination('/account'), '/discover');
+    expect(safeDestination('/account/edit'), '/discover');
+    expect(
+      safeDestination('/events/workshop/register'),
+      '/events/workshop/register',
+    );
+    expect(
+      authRedirect(
+        const AuthState.signedIn(uid: 'u', email: 'a@b.c'),
+        Uri.parse('/auth/login?from=%2Faccount'),
+        false,
+      ),
+      '/discover',
+    );
+  });
   test('protects deep links and resumes after sign in', () {
     final redirect = authRedirect(
       const AuthState.signedOut(),
