@@ -30,3 +30,8 @@
 ## Cập nhật UI và dữ liệu mẫu 01/11/2026
 
 Khám phá tối đa 3 gợi ý; Xem tất cả mở danh sách/bộ lọc đầy đủ, tiêu đề đổi theo từ khóa. Hai event demo trên Firestore có nhãn (Mẫu), ảnh bìa và ngày 08–09/11; không thay nguồn CLB thật/QR. Sau thay đổi: 7/7 tests liên quan pass, analyze sạch, APK build/cài thành công. Kết quả toàn suite 55/55 thuộc lượt trước thay đổi; không cộng các lượt test thành số pass mới.
+
+
+Cập nhật 03/11/2026: chạy lại toàn bộ `flutter test`, **59/59 pass** sau sửa Khám phá. Firebase CLI truy cập được project nhóm; emulator online. Chưa xác nhận billing/Storage/Functions triển khai. Chưa có cấu hình ARTEMIS trong môi trường chạy hiện tại; `.env.example` chỉ chứa tên biến và giá trị mẫu, không chứa credential. Các hạng mục cloud/E2E/PR/report còn giữ trạng thái chờ bằng chứng.
+
+03/11/2026: chạy lại Firestore + Storage emulator, **4/4 integration tests pass** (CLI exit0); runtime Storage có cảnh báo Java deprecated và lỗi lúc shutdown sau khi tests đã pass. Đã sửa đường dẫn Rules độc lập cwd và lệnh test bật đủ hai emulator. Có script tool/deploy-cloud.ps1, chưa chạy cloud do chủ project xác nhận chưa liên kết billing. ARTEMIS chưa có host/model key.

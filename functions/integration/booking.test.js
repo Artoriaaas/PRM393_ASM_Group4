@@ -1,6 +1,7 @@
 const { test, before, after } = require("node:test");
 const assert = require("node:assert/strict");
 const { readFileSync } = require("node:fs");
+const { join } = require("node:path");
 const {
   initializeTestEnvironment,
   assertSucceeds,
@@ -27,7 +28,7 @@ before(async () => {
   process.env.GCLOUD_PROJECT = "demo-eventhub";
   env = await initializeTestEnvironment({
     projectId: "demo-eventhub",
-    firestore: { rules: readFileSync("../firebase/firestore.rules", "utf8") },
+    firestore: { rules: readFileSync(join(__dirname, "../../firebase/firestore.rules"), "utf8") },
   });
   command = require("../src/index").bookingCommand;
   db = require("firebase-admin/firestore").getFirestore();

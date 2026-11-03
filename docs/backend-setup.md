@@ -20,7 +20,7 @@ Cần Node 22 cho môi trường tương ứng runtime deploy; máy tác giả c
 cd D:\Ky8\prmlab3
 npm ci --prefix functions
 npm test --prefix functions
-npm exec --yes --package=firebase-tools@15.34.2 -- firebase emulators:exec --project demo-eventhub --only firestore "npm run test:integration --prefix functions"
+npm exec --yes --package=firebase-tools@15.34.2 -- firebase emulators:exec --project demo-eventhub --only firestore,storage "npm run test:integration --prefix functions"
 ```
 
 `demo-eventhub` tách khỏi cloud nhóm; integration tests ghi/xóa dữ liệu chỉ trên emulator. Các dòng `PERMISSION_DENIED` trong ca rules là kết quả từ chối được mong đợi.
@@ -73,3 +73,7 @@ Chỉ Firestore Rules/indexes và Remote Config đã được deploy; các lện
 - Chụp app + dữ liệu console liên quan; không đưa dữ liệu cá nhân người khác vào ảnh nộp.
 
 Nguồn API chính thức: https://firebase.google.com/docs/functions/callable ; https://firebase.google.com/docs/firestore/manage-data/transactions ; https://firebase.google.com/docs/firestore/security/rules-query .
+
+## Chạy sau khi liên kết billing
+
+Trong Firebase Console chọn Storage → Get started, chọn location phù hợp với project và tạo bucket. Sau đó chạy `./tool/deploy-cloud.ps1 -BillingConfirmed` từ PowerShell. Script luôn chọn eventhub-group4 và không tự liên kết billing. Deploy thành công vẫn phải kiểm tra Auth, đăng ký/hủy, QR từ web CLB và upload PDF; không dùng emulator pass thay cloud.

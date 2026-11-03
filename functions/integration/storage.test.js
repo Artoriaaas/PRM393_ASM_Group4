@@ -1,5 +1,6 @@
 const { test, before, after } = require("node:test");
 const { readFileSync } = require("node:fs");
+const { join } = require("node:path");
 const {
   initializeTestEnvironment,
   assertSucceeds,
@@ -12,7 +13,7 @@ before(async () => {
     throw new Error("Run with Storage emulator");
   env = await initializeTestEnvironment({
     projectId: "demo-eventhub",
-    storage: { rules: readFileSync("../firebase/storage.rules", "utf8") },
+    storage: { rules: readFileSync(join(__dirname, "../../firebase/storage.rules"), "utf8") },
   });
 });
 after(async () => {
