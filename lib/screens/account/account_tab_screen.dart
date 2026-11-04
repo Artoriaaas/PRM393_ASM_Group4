@@ -1,7 +1,6 @@
 import '../../widgets/event_asset_icon.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -57,14 +56,12 @@ class AccountTabScreen extends ConsumerWidget {
             onPressed: () =>
                 ref.read(authViewModelProvider.notifier).submit('logout'),
           ),
-          if (kDebugMode && const bool.fromEnvironment('LAB3_DIAGNOSTICS')) ...[
-            const SizedBox(height: AppSpacing.s16),
-            AppButton(
-              label: 'Chẩn đoán Lab 3',
-              variant: AppButtonVariant.secondary,
-              onPressed: () => context.push('/account/firebase-demo'),
-            ),
-          ],
+          const SizedBox(height: AppSpacing.s16),
+          AppButton(
+            label: 'Dịch vụ Firebase',
+            variant: AppButtonVariant.secondary,
+            onPressed: () => context.push('/account/firebase-demo'),
+          ),
           if (s.message != null) Text(s.message!),
         ],
       ),

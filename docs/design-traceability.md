@@ -174,6 +174,6 @@ Tách nhãn CLB, sửa khoảng cách và empty state, chỉ hiện reset khi c�
 
 04/11/2026: bỏ nhãn “Email đã xác nhận”, đoạn giải thích FPTU và nút xem thử component khỏi A10 theo yêu cầu người dùng. Auth verification vẫn được giữ trong nghiệp vụ. Khi đăng nhập từ đích Account chuyển về Khám phá, tránh quay lại Account sau logout/login; đích đăng ký sự kiện vẫn được giữ. Chưa cập nhật Figma.
 
-04/11/2026: bỏ nút “Tiện ích Firebase” khỏi A10 theo yêu cầu người dùng. Tích hợp Firebase vẫn giữ; route kiểm thử riêng không xuất hiện trong menu Tài khoản.
+04/11/2026: bỏ nút “Tiện ích Firebase” khỏi A10 theo yêu cầu người dùng. 05/11/2026: thêm lại lối vào **Dịch vụ Firebase** vì mục 3 của đề Lab 3 yêu cầu khu demo truy cập được trên Profile; màn gồm thông báo, xuất/upload, giá trị Remote Config và Crashlytics test. Không đưa nút xem thử component trở lại. Cần cập nhật Figma và lưu ảnh trước/sau của thay đổi này.
 
 04/11/2026: căn giữa địa chỉ email trên A01c “Kiểm tra email” để khớp trục của tiêu đề và các thao tác; trước đó email bị lệch trái. Cần đồng bộ Figma nếu bản thiết kế hiện dùng căn trái.

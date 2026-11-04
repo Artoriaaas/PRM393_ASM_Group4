@@ -8,10 +8,10 @@ Chỉ bắt đầu sau khi có Cloudinary preset, tài khoản Firebase test đ�
 2. Chạy:
 
    ```powershell
-   flutter run -d emulator-5554 -t lib/main.dart --dart-define=CLOUDINARY_CLOUD_NAME=<cloud-name> --dart-define=CLOUDINARY_UPLOAD_PRESET=<preset-name> --dart-define=LAB3_DIAGNOSTICS=true
+   flutter run -d emulator-5554 -t lib/main.dart --dart-define=CLOUDINARY_CLOUD_NAME=<cloud-name> --dart-define=CLOUDINARY_UPLOAD_PRESET=<preset-name>
    ```
 
-   `LAB3_DIAGNOSTICS` chỉ hiện nút chẩn đoán trong debug; không có trên bản release.
+   Mở **Tài khoản → Dịch vụ Firebase** để xem Remote Config, bật thông báo, vào trung tâm thông báo/xuất file và thử Crashlytics. Nút test crash chỉ hiện trong bản debug và cần xác nhận trước khi app đóng.
 3. Mở Firebase Console cho đúng project `eventhub-group4`, Cloudinary Media Library và bảng [test-plan.md](test-plan.md). Bật Firebase Analytics DebugView cho Android test theo hướng dẫn Firebase. Không đưa token QR, mật khẩu, email cá nhân hoặc URL PDF vào log công khai.
 
 ## Thứ tự đi qua app
@@ -26,8 +26,8 @@ Chỉ bắt đầu sau khi có Cloudinary preset, tài khoản Firebase test đ�
 | 6 | P01/P02, F4A | Đăng ký đang active; CLB mở QR trên web; thử QR sai/đóng phiên rồi QR đúng | QR sai không ghi; QR đúng ghi một `checkInAt`; quét lại giữ giờ gốc; A12 không lộ email/số điện thoại |
 | 7 | Mọi persona | Tài khoản → Xuất lịch → Tạo PDF và tải lên | PDF đúng lịch; Cloudinary Media Library có file; link mở được; thử offline để thấy lỗi |
 | 8 | FCM | Gửi test message qua Firebase Console đến Android | Nhận khi app foreground/background/terminated, tap đi đúng màn; ghi trường hợp OS chặn quyền |
-| 9 | Remote Config | Đổi hai tham số trên Console, publish, bấm fetch trong Chẩn đoán Lab 3 | Ảnh trước/sau của số gợi ý hoặc khối gợi ý |
-| 10 | Analytics/Crashlytics | Đi qua các thao tác trên; mở DebugView; thử nonfatal và test crash có xác nhận trong Chẩn đoán Lab 3 | ≥7 event đúng tên, không PII; Crashlytics dashboard có nonfatal/fatal sau khi xử lý |
+| 9 | Remote Config | Đổi hai tham số trên Console, publish, bấm fetch trong Dịch vụ Firebase | Ảnh trước/sau của số gợi ý hoặc khối gợi ý |
+| 10 | Analytics/Crashlytics | Đi qua các thao tác trên; mở DebugView; thử nonfatal và test crash có xác nhận trong Dịch vụ Firebase | ≥7 event đúng tên, không PII; Crashlytics dashboard có nonfatal/fatal sau khi xử lý |
 
 Sau mỗi flow, đăng xuất trước khi đổi tài khoản. Không dùng cùng một event hết chỗ/hết hạn để kiểm tra nhánh thành công. Đối với test offline/mất mạng, không bấm gửi lặp trước khi app kiểm tra trạng thái; ghi rõ nếu kết quả vẫn chưa xác định.
 

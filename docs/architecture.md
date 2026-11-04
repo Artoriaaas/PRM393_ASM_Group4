@@ -14,6 +14,55 @@ flowchart LR
   W[Web CLB/admin: triển khai ở Final] --> F
 ```
 
+## Cấu trúc và ranh giới lớp
+
+| Thư mục | Trách nhiệm |
+|---|---|
+| `lib/models/` | Kiểu dữ liệu và trạng thái, không gọi SDK. |
+| `lib/screens/` | Hiển thị và nhận thao tác; không truy cập Firebase/HTTP trực tiếp. |
+| `lib/viewmodels/` | Điều phối trạng thái, kiểm tra dữ liệu nhập và nghiệp vụ màn hình. |
+| `lib/services/contracts/` | Giao diện service để thay bằng fake trong test. |
+| `lib/services/firebase/` | Firebase Auth, Firestore và các SDK cloud. |
+| `lib/services/cloudinary/`, `lib/services/report/` | Upload PDF và tạo PDF từ dữ liệu đang xem. |
+| `lib/app/` | Router, provider inject service và vòng đời ứng dụng. |
+| `lib/theme/`, `lib/widgets/` | Token giao diện và widget dùng lại. |
+| `lib/utils/` | Hàm thuần, không phụ thuộc UI. |
+
+View phụ thuộc ViewModel và widget. ViewModel phụ thuộc service contract/model; Firebase và HTTP chỉ xuất hiện ở service hoặc lớp khởi tạo provider. Không đưa SDK vào `build()`.
+
+| ViewModel | Service được inject | Luồng chính |
+|---|---|---|
+| `AuthViewModel`, `SessionViewModel` | Auth service | Đăng nhập, xác nhận email, đăng xuất và điều hướng theo phiên. |
+| `EventFilterViewModel`, event/detail providers | Event service | Khám phá, tìm/lọc và chi tiết sự kiện. |
+| `BookingViewModel` | Event service, pending-operation store | Đăng ký, hủy, điểm danh và tra kết quả chưa rõ. |
+| `NotificationsViewModel` | Notification service | Hộp thư trong app và trạng thái đã đọc. |
+| `ProfileViewModel` | Profile/Auth service | Xem và sửa hồ sơ. |
+| `ExportViewModel` | Report service, report storage service | Tạo PDF, upload và hiển thị liên kết. |
+| `CloudToolsViewModel` | Cloud services | FCM, Remote Config, Crashlytics thử nghiệm. |
+
+Ví dụ trình tự F1 (chỉ hiện thành công khi Firestore xác nhận):
+
+```mermaid
+sequenceDiagram
+  actor User as Người tham gia
+  participant UI as RegistrationFormScreen
+  participant VM as BookingViewModel
+  participant Service as FirestoreEventService
+  participant DB as Firestore + Rules
+  User->>UI: Xác nhận đăng ký
+  UI->>VM: submit(form)
+  VM->>VM: Kiểm tra form, khóa gửi lặp, tạo operationId
+  VM->>Service: execute(register, operationId)
+  Service->>DB: Transaction: registration + activeCount
+  DB-->>Service: Xác nhận hoặc từ chối theo Rules
+  Service-->>VM: BookingResult
+  alt Đã xác nhận
+    VM-->>UI: Hiển thị A06
+  else Lỗi hoặc kết quả chưa rõ
+    VM-->>UI: Giữ form, cho kiểm tra trạng thái
+  end
+```
+
 Không dùng Cloud Functions hay Firebase Storage trong app. `functions/` là mã thử nghiệm cũ, không có trong `firebase.json` và không được deploy. `lib/main_prototype.dart` chỉ mô phỏng UI; bản chạy thật là `lib/main.dart`.
 
 ## Nghiệp vụ Firestore hiện tại

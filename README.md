@@ -18,6 +18,8 @@ Project Firebase dùng chung: **eventhub-group4**, application ID **com.eventhub
 
 Firestore hiện có hai sự kiện **(Mẫu)** để xem UI, không phải thông báo CLB thật. Google login đã được xác nhận. Đăng ký/hủy/QR dùng Firestore transaction và Rules đã deploy, nhưng vẫn cần test Android thật với sự kiện còn hạn và QR từ web CLB. PDF dùng Cloudinary Free; nhóm cần tạo preset theo [hướng dẫn](docs/cloudinary-setup.md). Không dùng Functions hoặc Firebase Storage.
 
+Theo đề Lab 3, **Tài khoản → Dịch vụ Firebase** mở khu demo thông báo, xuất/upload, Remote Config và Crashlytics. Cloudinary là phương án thay Firebase Storage do nhóm chọn; cần thầy chấp thuận trước khi coi mục Storage đạt yêu cầu.
+
 ## Đọc tài liệu nào?
 
 | Cần làm gì | Tài liệu |

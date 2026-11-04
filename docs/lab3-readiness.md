@@ -1,6 +1,6 @@
 # Tiến độ Lab 3 — EventHub Group 4
 
-Cập nhật 04/11/2026. Đây là trạng thái có bằng chứng; **chưa phải xác nhận bài nộp hoàn thành**. Flutter app thật chạy `lib/main.dart`, prototype offline chạy `lib/main_prototype.dart`.
+Cập nhật 05/11/2026. Đây là trạng thái có bằng chứng; **chưa phải xác nhận bài nộp hoàn thành**. Flutter app thật chạy `lib/main.dart`, prototype offline chạy `lib/main_prototype.dart`.
 
 | Yêu cầu | Đã có / đã kiểm tra | Chưa hoàn tất hoặc cần bằng chứng |
 |---|---|---|
@@ -15,6 +15,8 @@ Cập nhật 04/11/2026. Đây là trạng thái có bằng chứng; **chưa ph�
 | ARTEMIS | 25 ca test, script/fixtures, pin SDK | Chưa có host/model key và tài khoản test. Cần ≥10 ca ×3 lần, Pro exploration 15–30 phút thật, trace và pass rate |
 | AI code review | Local findings và code review plan | PR review bằng AI có ≥5 findings; ≥3 fix commits gắn findings và bằng chứng |
 | Report/slides/video | Khung tài liệu và checklist | Chỉ chốt sau khi có cloud/E2E/review evidence thật; không điền pass rate hoặc video giả |
+
+**Đối chiếu sát PDF:** Firestore transaction là nguồn dữ liệu của đăng ký/hủy/điểm danh; không gọi Cloud Functions. Danh sách hai sự kiện `(Mẫu)` vẫn là dữ liệu thử và chưa chứng minh nguồn sự kiện thật của CLB. Public REST API không phải yêu cầu đồng thời với Firestore. Khu demo Firebase hiện có lối vào trên Tài khoản. Cloudinary là thay thế Storage do nhóm chọn, **chưa có bằng chứng giảng viên chấp thuận**, và không đáp ứng nguyên dạng yêu cầu per-user Firebase Storage Rules trong đề; không đánh dấu mục Storage đạt cho đến khi được chấp thuận và kiểm thử upload thật.
 
 ## Việc cần người dùng/nhóm làm trước một lượt test cuối
 
