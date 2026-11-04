@@ -170,7 +170,7 @@ class _DemoExportScreenState extends ConsumerState<DemoExportScreen> {
       allowScenario: false,
       children: [
         const DemoMessage(
-          'Bản xem thử giao diện. Chưa tạo PDF hoặc upload lên Cloud Storage.',
+          'Bản xem thử giao diện. Chưa tạo PDF hoặc upload lên Cloudinary.',
         ),
         const DemoSummary(),
         if (!s.registered || s.scenario == DemoScenario.empty)

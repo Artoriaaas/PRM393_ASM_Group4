@@ -24,6 +24,9 @@ class ExportScreen extends ConsumerWidget {
             Text(
               'PDF sẽ chứa ${data.length} đăng ký đang hiển thị dưới đây, gồm cả lịch sử đã hủy.',
             ),
+            const Text(
+              'PDF không chứa email hoặc số điện thoại. Liên kết Cloudinary có thể được mở bởi bất kỳ ai có liên kết.',
+            ),
             for (final row in data)
               EventPanel(
                 children: [Text(row.title), Text(row.when), Text(row.status)],
@@ -33,7 +36,10 @@ class ExportScreen extends ConsumerWidget {
                 title: 'Chưa có dữ liệu để xuất',
                 message: 'Đăng ký sự kiện trước khi tạo báo cáo.',
               ),
-            if (s.busy) LinearProgressIndicator(value: s.progress),
+            if (s.busy)
+              LinearProgressIndicator(
+                value: s.progress == 0 ? null : s.progress,
+              ),
             if (s.message != null) Text(s.message!),
             if (s.url != null) ...[
               SelectableText(s.url!),

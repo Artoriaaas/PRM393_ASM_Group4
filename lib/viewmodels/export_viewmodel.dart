@@ -86,13 +86,14 @@ class ExportViewModel extends Notifier<ExportState> {
       state = ExportState(
         progress: 1,
         url: url,
-        message: 'Đã tạo và tải PDF lên Cloud Storage.',
+        message:
+            'Đã tạo và tải PDF lên Cloudinary. Ai có liên kết đều có thể xem.',
       );
       unawaited(track(ref, 'export_upload', {'byte_count': bytes.length}));
     } catch (_, stack) {
       if (_current(uid, epoch)) {
         state = const ExportState(
-          message: 'Chưa hoàn tất xuất/upload. Kiểm tra kết nối, Storage và quyền truy cập rồi thử lại.',
+          message: 'Chưa tải được PDF. Kiểm tra kết nối và cấu hình Cloudinary rồi thử lại.',
         );
       }
       unawaited(diagnose(ref, 'report_upload_failed', stack));
