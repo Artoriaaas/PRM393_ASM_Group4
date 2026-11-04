@@ -47,7 +47,7 @@ Ngày workshop 24/10/2026 là snapshot thiết kế từ Lab 2; bản xem thử 
 - Người làm UI F1 nhận `event_screens.dart` và `registration_screens.dart`; giữ theme, review trước khi đổi component chung.
 - Người làm F2/profile nhận lịch, chi tiết đăng ký, thông báo, account; thống nhất model đăng ký và email liên hệ trước khi nối Firebase.
 - Người làm F4A nhận camera/kết quả; kết nối native camera và CheckInService sau khi backend kiểm tra đủ điều kiện.
-- Người phụ trách Firebase nhận service/rules/Functions; người review kiểm tra UI với Figma và test trước khi merge.
+- Người phụ trách Firebase nhận Auth/Firestore Rules và các dịch vụ đo lường; người review kiểm tra UI với Figma và test trước khi merge.
 
 Tạo nhánh feature riêng cho mỗi phần; tránh cùng sửa một file tại một thời điểm. Nếu chia người theo module, tách màn trong file nhóm thành file riêng ở commit đầu của module. Trước khi đổi contract/service dùng chung, thống nhất tên và kiểu với nhóm.
 
@@ -58,7 +58,7 @@ Tạo nhánh feature riêng cho mỗi phần; tránh cùng sửa một file tạ
 - Có thanh điều khiển development và banner nên vùng nhìn khác bản Present; không gọi bản này khớp pixel tuyệt đối hoặc đã duyệt thay Figma.
 - Filter ngày đang giải thích mốc snapshot; search/nhóm chủ đề/CLB hoạt động trên hai fixture. Cần backend search và query thật khi làm F1.
 - Error/loading cho review và mutation demo không phải lỗi cloud thật. Không lưu qua lần khởi động; preset/catalog có thể thay state local. Dữ liệu email `example.com` là mẫu.
-- Camera, Google picker, email verification, export/PDF, upload/download URL, FCM, Remote Config và Crashlytics trong prototype chưa dùng dịch vụ thiết bị/cloud. Những phần này có nhãn mô phỏng rõ ràng.
+- Camera, Google picker, email verification, export/PDF, upload Cloudinary, FCM, Remote Config và Crashlytics trong prototype chưa dùng dịch vụ thiết bị/cloud. Những phần này có nhãn mô phỏng rõ ràng.
 - Khu Lab 3 export/config là bố cục bổ sung, cần chốt thiết kế và ghi deviation. Chính sách phát hành chưa hoàn thiện.
 - Bản production chạy bằng `flutter run -t lib/main.dart`; build nộp cũng chỉ định `-t lib/main.dart`. Target prototype từ chối chạy release. Không dùng APK prototype làm app nộp Lab 3.
 

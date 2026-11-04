@@ -1,37 +1,28 @@
-# Trạng thái bàn giao Lab 3
+# Tiến độ Lab 3 — EventHub Group 4
 
-01/11/2026. Đây là bảng thực trạng, không phải tuyên bố đã hoàn tất bài nộp.
+Cập nhật 04/11/2026. Đây là trạng thái có bằng chứng; **chưa phải xác nhận bài nộp hoàn thành**. Flutter app thật chạy `lib/main.dart`, prototype offline chạy `lib/main_prototype.dart`.
 
-| Phần | Đã có | Còn cần |
+| Yêu cầu | Đã có / đã kiểm tra | Chưa hoàn tất hoặc cần bằng chứng |
 |---|---|---|
-| Thiết kế/kiến trúc | Traceability A01–A12, MVVM, theme/component, quyết định khác biệt | Đồng bộ các thay đổi Lab 3 lên Figma và duyệt ảnh trước/sau |
-| Auth | Config project nhóm, adapter Google/password/verify/reset, chủ dự án xác nhận Google; native restore phiên | đủ nhánh hủy/lỗi/logout/Users console |
-| F1/F2/F4A | UI thật, Firestore services, callable transaction ledger/generation/QR, camera adapter, recovery và test | deploy Functions, nguồn event và QR từ web CLB thật, test cloud và native |
-| Firestore | Database đúng region; Rules/indexes test emulator và deploy cloud | dữ liệu CLB được phép dùng và E2E |
-| Profile | Name thật; Google email read-only, password email reauth/verify, giữ snapshot đăng ký | kiểm thử sửa email/reauth cloud và cập nhật Figma |
-| PDF/Storage | Sinh PDF tiếng Việt thật, upload/progress/URL adapter, Storage rules test emulator | bucket/billing/deploy và console/file proof |
-| Analytics | Plan ≥7 events, user ID, adapter/trigger, native remote_config_fetch đã thấy | từng event DebugView và ảnh console |
-| Remote Config | defaults + hai tham số, fetch/activate và UI behavior, fetch native đã thành công; defaults 10/true đã publish | before/after thay giá trị trên cloud và console đầy đủ |
-| Crashlytics | fatal handler redacted, non-fatal nhánh lỗi thật + test action, debug crash confirmation | dashboard non-fatal và crash thật; chưa chủ động crash app trong phiên này |
-| FCM | permission, register/unregister SDK17/FID, foreground + background/terminated handlers, owner device rules, server trigger | deploy Functions, permissions/FID cloud và bằng chứng ba trạng thái |
-| ARTEMIS | 25 ca/pin commit, Flash assertions + trace output, Pro opt-in script | host/model/fixtures, mỗi ca3 lần, pass rates và Pro15–30 phút thật |
-| AI review | Findings local và giới hạn được ghi rõ | PR review thật, đầu ra, ≥3 fix commits theo findings |
-| Report/slide/video | Checklist nội dung và nguồn bằng chứng | chỉ hoàn tất sau cloud/E2E/review; chưa có PDF/video giả |
+| Final UI và 3 flow | A01–A12, F1/F2/F4A, state lỗi, MVVM; 62 Flutter tests qua, `flutter analyze` sạch | So ảnh Figma và Android cuối cùng; test thao tác E2E trên máy thật/emulator |
+| Auth | Google/email/password/verify/reset và guard; Google login thật đã được chủ project xác nhận | Bằng chứng đủ nhánh lỗi/hủy và Users console cho bài nộp |
+| Firestore nghiệp vụ | Đăng ký/hủy transaction, chỗ trống, recovery, QR check-in qua Rules; 4 emulator tests mới qua; Rules/indexes deploy `eventhub-group4` ngày 04/11 | Test Android với tài khoản thật và sự kiện còn hạn; web CLB tạo QR/phiên; kiểm thử cạnh tranh hai tài khoản và phục hồi mạng. Chưa có ledger operation độc lập |
+| PDF/Cloudinary Free | PDF local tiếng Việt, upload raw PDF adapter, test mock; Firebase Storage không dùng | Nhóm tạo Cloudinary account/preset và test upload thật. Preset unsigned/URL chia sẻ công khai; cần thầy chấp nhận thay Storage trong báo cáo |
+| FCM | SDK token/permission, foreground/background/terminated handler, route theo payload | Test message thật ba trạng thái; không có push tự động theo nghiệp vụ khi chưa có web/admin gửi |
+| Analytics | Kế hoạch ≥7 events và adapter ghi event | DebugView của từng event trên thiết bị thật |
+| Crashlytics | Handler fatal/nonfatal và màn test có xác nhận | Dashboard lỗi thật và crash thử có kiểm soát |
+| Remote Config | Hai tham số mặc định đã publish, fetch/fallback/code UI | Ảnh trước/sau khi thay config thật trên Console |
+| ARTEMIS | 25 ca test, script/fixtures, pin SDK | Chưa có host/model key và tài khoản test. Cần ≥10 ca ×3 lần, Pro exploration 15–30 phút thật, trace và pass rate |
+| AI code review | Local findings và code review plan | PR review bằng AI có ≥5 findings; ≥3 fix commits gắn findings và bằng chứng |
+| Report/slides/video | Khung tài liệu và checklist | Chỉ chốt sau khi có cloud/E2E/review evidence thật; không điền pass rate hoặc video giả |
 
-## Các đầu vào đang thiếu
+## Việc cần người dùng/nhóm làm trước một lượt test cuối
 
-1. Quyết định billing của chủ project: chưa tự bật Blaze hay liên kết thẻ. Không thay dịch vụ bắt buộc nếu thầy chưa đồng ý.
-2. Nguồn event/QR CLB được phép dùng; mobile không tạo/mở phiên hoặc điều khiển web CLB.
-3. Host ARTEMIS/model và tài khoản/fixtures test riêng. Không dùng tài khoản cá nhân hoặc tự tiêu phí API.
-4. PR/AI review và bằng chứng console thật để viết báo cáo cuối.
+1. Tạo Cloudinary Free và unsigned preset giới hạn PDF/5 MB theo [cloudinary-setup.md](cloudinary-setup.md). Gửi **cloud name** và **preset name**, không gửi API secret.
+2. Chuẩn bị một sự kiện test còn hạn/chỗ trên Firestore, tài khoản email đã xác nhận và QR/phiên do web CLB tạo. Xem [backend-setup.md](backend-setup.md).
+3. Cung cấp ARTEMIS host/provider và model key qua `.env` local, không gửi key trong chat hoặc commit. Chuẩn bị tài khoản test riêng.
+4. Chạy Android app thật, test Auth → F1 → F2 → F4A → PDF → FCM/Analytics/Crashlytics/Config; chụp bằng chứng. Sau đó chạy ARTEMIS và mở PR AI review.
 
-Đọc `backend-setup.md`, `analytics-plan.md`, `test-plan.md`, `code-review.md` và `e2e_test/README.md`. UI prototype vẫn có entrypoint riêng; app thật chạy `flutter run -t lib/main.dart`.
+## Ranh giới Lab 3 → Final
 
-## Cập nhật UI và dữ liệu mẫu 01/11/2026
-
-Khám phá tối đa 3 gợi ý; Xem tất cả mở danh sách/bộ lọc đầy đủ, tiêu đề đổi theo từ khóa. Hai event demo trên Firestore có nhãn (Mẫu), ảnh bìa và ngày 08–09/11; không thay nguồn CLB thật/QR. Sau thay đổi: 7/7 tests liên quan pass, analyze sạch, APK build/cài thành công. Kết quả toàn suite 55/55 thuộc lượt trước thay đổi; không cộng các lượt test thành số pass mới.
-
-
-Cập nhật 03/11/2026: chạy lại toàn bộ `flutter test`, **59/59 pass** sau sửa Khám phá. Firebase CLI truy cập được project nhóm; emulator online. Chưa xác nhận billing/Storage/Functions triển khai. Chưa có cấu hình ARTEMIS trong môi trường chạy hiện tại; `.env.example` chỉ chứa tên biến và giá trị mẫu, không chứa credential. Các hạng mục cloud/E2E/PR/report còn giữ trạng thái chờ bằng chứng.
-
-03/11/2026: chạy lại Firestore + Storage emulator, **4/4 integration tests pass** (CLI exit0); runtime Storage có cảnh báo Java deprecated và lỗi lúc shutdown sau khi tests đã pass. Đã sửa đường dẫn Rules độc lập cwd và lệnh test bật đủ hai emulator. Có script tool/deploy-cloud.ps1, chưa chạy cloud do chủ project xác nhận chưa liên kết billing. ARTEMIS chưa có host/model key.
+Final Assignment dùng Firestore + Rules + App Check và web CLB/admin, không dùng custom backend/Functions/Storage. Code mobile đã bỏ Functions/Storage để giảm rework. Chức năng duyệt `pending → approved` và web admin chưa nằm trong Lab 3 hiện hành; sẽ cần thay đổi trạng thái đăng ký/thiết kế khi chuyển Final. Mọi khác biệt so với Figma và thay thế Storage phải ghi ảnh trước/sau và lý do ở `evidence/design-changes/`.

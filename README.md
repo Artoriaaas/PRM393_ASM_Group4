@@ -16,7 +16,7 @@ flutter run -t lib/main.dart
 
 Project Firebase dùng chung: **eventhub-group4**, application ID **com.eventhub.app**. Không tạo Firebase riêng cho từng teammate. Cấu hình Google Sign-In trên máy mới theo [Firebase setup](docs/firebase-setup.md), gồm fingerprint debug của máy đó.
 
-Firestore hiện có hai sự kiện **(Mẫu)** để xem UI, không phải thông báo CLB thật. Google login đã được xác nhận; đăng ký/hủy/điểm danh cloud còn chờ deploy Functions. Storage còn chờ cấu hình/billing. Vì vậy mở được màn không có nghĩa mọi nghiệp vụ đã chạy hoàn chỉnh.
+Firestore hiện có hai sự kiện **(Mẫu)** để xem UI, không phải thông báo CLB thật. Google login đã được xác nhận. Đăng ký/hủy/QR dùng Firestore transaction và Rules đã deploy, nhưng vẫn cần test Android thật với sự kiện còn hạn và QR từ web CLB. PDF dùng Cloudinary Free; nhóm cần tạo preset theo [hướng dẫn](docs/cloudinary-setup.md). Không dùng Functions hoặc Firebase Storage.
 
 ## Đọc tài liệu nào?
 
@@ -26,9 +26,11 @@ Firestore hiện có hai sự kiện **(Mẫu)** để xem UI, không phải th�
 | Hiểu trình tự và yêu cầu bài nộp | [Kế hoạch Lab 3](KE-HOACH-LAB3.md) |
 | Sửa code, hiểu MVVM/service | [Kiến trúc](docs/architecture.md) |
 | Cấu hình Auth trên máy mới | [Firebase setup](docs/firebase-setup.md) |
-| Schema, Rules, backend và deploy | [Backend setup](docs/backend-setup.md) |
+| Schema, Rules và deploy | [Backend setup](docs/backend-setup.md) |
+| PDF Cloudinary Free | [Cloudinary setup](docs/cloudinary-setup.md) |
 | Đối chiếu UI/Figma và thay đổi | [Design traceability](docs/design-traceability.md) |
 | Kiểm thử và bằng chứng đã chạy | [Test plan](docs/test-plan.md), [validation](evidence/backend/validation.md) |
+| Test toàn bộ một lượt trên Android | [One-pass test](docs/one-pass-test.md) |
 | Instrumentation và AI review | [Analytics](docs/analytics-plan.md), [code review](docs/code-review.md) |
 | Chạy ARTEMIS | [E2E setup](e2e_test/README.md) |
 | Chuẩn bị bài nộp | [Report](report/README.md), [Slides](slides/README.md) |
@@ -43,7 +45,7 @@ flutter test
 flutter build apk --debug -t lib/main.dart
 ```
 
-Backend dùng Node 22; cài dependencies tại `functions/` bằng `npm ci`, chạy `npm test`. Kiểm thử emulator xem backend setup. Phiên bản dependencies chính xác nằm trong lockfile.
+Kiểm thử Firestore Rules bằng emulator: `FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 node --test functions/integration/direct-firestore.test.js` sau khi khởi động emulator. Thư mục `functions/` còn mã backend thử nghiệm cũ để đối chiếu, không nằm trong bản deploy hoặc build mobile.
 
 Mỗi teammate làm nhánh riêng, review trước khi merge. Thay đổi UI cần lưu ảnh trước/sau và lý do theo [quy ước](evidence/design-changes/README.md), rồi cập nhật Figma.
 

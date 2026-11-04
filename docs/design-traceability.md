@@ -1,6 +1,14 @@
 # Đối chiếu thiết kế Lab 2 → triển khai Lab 3
 
-Ngày lập: 30/10/2026. Cập nhật 31/10/2026: **đã có auth, code nghiệp vụ và test local; cloud/Figma còn các việc chưa hoàn tất**, xem bảng trạng thái code cuối tài liệu. Lab 2 đã được chủ dự án xác nhận chốt. Các thay đổi Lab 3 bên dưới là quyết định triển khai đề xuất, chưa được áp dụng lên Figma.
+Ngày lập: 30/10/2026. Cập nhật 04/11/2026: đã có auth, code nghiệp vụ Firestore trực tiếp và test local; cloud/Figma còn các việc chưa hoàn tất. Lab 2 đã được chủ dự án xác nhận chốt. Bảng màn bên dưới là ánh xạ thiết kế, không phải bằng chứng E2E; trạng thái hiện hành ở [lab3-readiness.md](lab3-readiness.md).
+
+## Quyết định triển khai mới 04/11/2026
+
+| Màn/phạm vi | Thay đổi so với bản thiết kế trước | Vì sao |
+|---|---|---|
+| A05/A08/A11 | App ghi Firestore qua transaction, Rules bảo vệ số chỗ và QR; không gọi Cloud Functions | Hướng phát triển lên Final không dùng Functions. UI vẫn giữ cùng luồng; cần test cloud và cập nhật Figma nếu thông báo lỗi thay đổi |
+| L3-02 Xuất lịch | Upload PDF qua Cloudinary Free, không qua Firebase Storage; thêm cảnh báo liên kết có thể chia sẻ | Nhóm chọn phương án miễn phí thay Storage theo trao đổi với giảng viên. Chỉ upload PDF không có email/số điện thoại; cần ảnh trước/sau và bằng chứng giảng viên chấp nhận thay thế |
+| A09 Thông báo | FCM test bằng Console; không có push tự động theo đăng ký/hủy khi chưa có web/admin phát tin | Không có server hoặc Functions. Inbox Firestore do vai trò web/admin tạo, mobile chỉ đọc |
 
 ## 1. Nguồn và thứ tự đối chiếu
 
@@ -32,7 +40,7 @@ Các tên route/widget/ViewModel dưới đây là **thiết kế dự kiến**,
 | A11 Quét `182:1804` | `/registrations/:registrationId/scan` | ScannerScreen / ScannerViewModel | CameraService, CheckInService | Chưa quyền `182:1822`, xử lý `182:1843`, sai sự kiện `182:1866`, phiên đóng `182:1887`, không đăng ký `182:1908`, chưa rõ `182:1930`, tra trạng thái `182:1951`, hủy `182:1974`; QR không hợp lệ |
 | A12 Kết quả `182:1995` | `/registrations/:registrationId/check-in` | CheckInResultScreen / CheckInResultViewModel | CheckInService + EventService | Mới, đã ghi nhận `182:2036`, xem lại khi phiên đóng, CLB hủy `182:2074`, lỗi tải; giữ giờ gốc; không email/điện thoại |
 | L3-01 Khu demo Firebase — mới, chưa có node | `/account/firebase-demo` | FirebaseDemoScreen / FirebaseDemoViewModel | ConfigService, DiagnosticsService, NotificationService | Xem config, refresh, lỗi; mở A09/export, test crash có xác nhận rõ |
-| L3-02 Xuất và upload — mới, chưa có node | `/account/export` | ExportScreen / ExportViewModel | RegistrationService, EventService, ReportService, StorageService | Chọn phạm vi lịch, tạo PDF, đang upload/tiến độ, URL, empty/error/retry |
+| L3-02 Xuất và upload — mới, chưa có node | `/account/export` | ExportScreen / ExportViewModel | RegistrationService, EventService, PDF và Cloudinary Free | Tạo PDF từ lịch, upload Cloudinary, URL, empty/error/retry; cảnh báo URL chia sẻ được |
 
 Các state dùng cùng route và model, không tạo route riêng cho mọi spinner hoặc dialog. A01a–d vẫn được triển khai, không bị xóa vì bổ sung Google. Lỗi tải A06/A12 là lỗi lấy lại dữ liệu, không đảo ngược kết quả nghiệp vụ đã ghi nhận.
 
@@ -44,7 +52,7 @@ Các state dùng cùng route và model, không tạo route riêng cho mọi spin
 | F1 tự do — P03 | Login theo yêu cầu Lab 3 → Discover/Search hoặc deep link → EventDetail tự do → Back | Không tạo đăng ký, không thêm lịch, không QR. Hạn chế mới về đăng nhập ghi tại D02 | EventService; EventCardFree, MetadataRow |
 | F2 — P01/P02 | Schedule → RegistrationDetail → ConfirmCancelDialog → đang xử lý → Schedule cập nhật | Giữ đăng ký; quá giờ/đã điểm danh không hủy; CLB hủy khác tự hủy; mạng lỗi tra kết quả; nhánh Notifications → A04/A08; Account → Schedule | Registration/Event/Notification/ProfileService; Tabs, Summary, Dialog, Banner |
 | F4A — P01/P02 | RegistrationDetail → Scanner → server xác nhận → CheckInResult → Schedule | Camera bị từ chối; sai QR/event; chưa đăng ký về A04; phiên đóng/hủy; đã điểm danh xem giờ cũ; chưa rõ thì tra trạng thái | Camera/CheckIn/EventService; CameraViewport, ErrorState, ParticipantCard |
-| Bổ sung Lab 3 | Account → export/upload; Account → FirebaseDemo; push → A04/A08 | Quyền notification bị từ chối; file rỗng, mất mạng, permission denied; config dùng mặc định; auth hết hạn | Report/Storage/Config/Diagnostics/NotificationService |
+| Bổ sung Lab 3 | Account → export/upload; Account → FirebaseDemo; push → A04/A08 | Quyền notification bị từ chối; file rỗng, mất mạng; config dùng mặc định; auth hết hạn | Report/Cloudinary/Config/Diagnostics/NotificationService |
 
 P01: giữ mục tiêu đo từ A02 đến đăng ký ≤90 giây, QR ≤30 giây với mạng ổn định. P02: không yêu cầu email FPTU/khóa K. P03: đo đọc giờ/địa điểm ≤60 giây sau khi vào màn nội dung; yêu cầu không tạo tài khoản của persona gốc bị ảnh hưởng bởi D02, phải nêu trong báo cáo. Các mốc là mục tiêu, chưa phải kết quả test.
 
@@ -118,18 +126,18 @@ Chưa tạo bản ghi mới chỉ từ mẫu: cần ảnh thực, thay đổi c�
 
 Ưu tiên hiện tại: dùng bộ UI prototype làm nền để phát triển app thật trên Firebase project chung của nhóm; lần lượt thay dữ liệu mô phỏng bằng service/ViewModel thật theo F1, F2, F4A. Không coi bản mô phỏng là đầu ra cloud hoàn chỉnh. Sửa UI phát sinh phải đi qua quy trình trên.
 
-## Trạng thái code thực tế 31/10/2026 — không thay thế ma trận yêu cầu
+## Trạng thái code thực tế 04/11/2026 — không thay thế ma trận yêu cầu
 
 | Màn | Code thực tế | Nguồn | Trạng thái |
 |---|---|---|---|
 | A01a–d | AuthScreen / AuthViewModel | Firebase Auth | Google sign-in chủ dự án xác nhận; các nhánh còn cần test cloud |
 | A02/A03 | EventListScreen / EventFilterViewModel + eventFeedProvider | Firestore EventService | Đã code/test local, chưa test nguồn CLB thật |
 | A04 | EventDetailScreen / eventAvailabilityProvider | EventService, registrationsProvider | Đã code; ưu tiên active registration trước điều kiện chỗ/hạn |
-| A05 | RegistrationFormScreen / BookingViewModel | bookingCommand + secure pending store | Đã code/test form, pending/replay; chưa deploy |
+| A05 | RegistrationFormScreen / BookingViewModel | Firestore transaction + secure pending store | Đã code/test form, Rules/index deploy; chưa test cloud Android |
 | A06/A08 | RegistrationDetailScreen / registrationProvider + BookingViewModel | server-owned registration | Đã code; snapshot/confirmed, dialog hủy/recovery; chưa cloud |
 | A07 | LiveScheduleScreen / scheduleEntriesProvider | owner registrations + event streams | Đã code; tách tự hủy/CLB hủy và ended; chưa cloud |
-| A09 | NotificationsTabScreen / NotificationsViewModel | owner Firestore notifications | Đã nối in-app feed/read/navigation; FCM và event-change trigger đã code, chưa deploy/test cloud |
-| A11 | ScannerScreen / BookingViewModel + QrCameraService | native camera + callable backend | Đã code; chưa test QR từ web CLB thật |
+| A09 | NotificationsTabScreen / NotificationsViewModel | owner Firestore notifications | Đã nối in-app feed/read/navigation; FCM tự động theo event chưa có, chưa test ba trạng thái |
+| A11 | ScannerScreen / BookingViewModel + QrCameraService | native camera + Firestore Rules | Đã code; QR hợp lệ/sai test emulator, chưa test camera với QR web CLB thật |
 | A12 | RegistrationDetailScreen(checkInResult) | confirmed server checkInAt | Đã code/test privacy; chưa cloud |
 | A10/edit, L3-01/02 | ProfileEditScreen, CloudToolsScreen, ExportScreen và ViewModel | Firebase Auth, CloudServices, ReportStorage | Đã code/test local; cloud/Figma còn cần xác minh |
 
@@ -159,7 +167,13 @@ Tách nhãn CLB, sửa khoảng cách và empty state, chỉ hiện reset khi c�
 
 01/11/2026: Khám phá chỉ có ô tìm kiếm và tối đa 3 gợi ý (vẫn tuân theo giới hạn Remote Config nếu nhỏ hơn 3), không lặp bộ lọc nâng cao/số kết quả. Xem tất cả mở danh sách đầy đủ, reset điều kiện cũ, tiêu đề “Tất cả sự kiện”; có từ khóa mới dùng “Kết quả tìm kiếm”. Bộ lọc CLB/chủ đề/ngày và số kết quả thuộc màn danh sách. Gợi ý Khám phá độc lập bộ lọc ở màn tìm kiếm khi Back. Lý do: giảm trùng vai trò hai màn theo yêu cầu người dùng; chưa cập nhật Figma.
 
+04/11/2026: bỏ nút “Xem tất cả” trên Khám phá theo yêu cầu người dùng. Thanh tìm kiếm mở A03 để xem kết quả và dùng bộ lọc; các thẻ gợi ý vẫn tuân theo Remote Config. Lý do: tránh lặp hai cách vào danh sách từ cùng màn. Cần đồng bộ Figma.
+
 
 ### D13 — Tài khoản và đích sau đăng nhập
 
 04/11/2026: bỏ nhãn “Email đã xác nhận”, đoạn giải thích FPTU và nút xem thử component khỏi A10 theo yêu cầu người dùng. Auth verification vẫn được giữ trong nghiệp vụ. Khi đăng nhập từ đích Account chuyển về Khám phá, tránh quay lại Account sau logout/login; đích đăng ký sự kiện vẫn được giữ. Chưa cập nhật Figma.
+
+04/11/2026: bỏ nút “Tiện ích Firebase” khỏi A10 theo yêu cầu người dùng. Tích hợp Firebase vẫn giữ; route kiểm thử riêng không xuất hiện trong menu Tài khoản.
+
+04/11/2026: căn giữa địa chỉ email trên A01c “Kiểm tra email” để khớp trục của tiêu đề và các thao tác; trước đó email bị lệch trái. Cần đồng bộ Figma nếu bản thiết kế hiện dùng căn trái.

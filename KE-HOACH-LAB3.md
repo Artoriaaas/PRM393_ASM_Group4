@@ -70,13 +70,13 @@ Lập mapping token → `ThemeData` và component → widget; màu, chữ, spaci
 
 **Xong khi:** quét lại không tạo lượt trùng; mất phản hồi không tự báo thất bại/thành công; A12 xem lại được. App không mở hoặc điều khiển web CLB.
 
-## 8. Xuất file và upload Cloud Storage
+## 8. Xuất file và upload Cloudinary Free (thay Firebase Storage)
 
-**Làm:** đề xuất tạo PDF lịch tham gia từ dữ liệu hiện người dùng đang xem; upload vào đường dẫn riêng theo UID. Hiển thị tiến độ, lỗi/thử lại và download URL; rules chỉ cho chủ tài khoản truy cập thư mục của mình.
+**Làm:** tạo PDF lịch tham gia từ dữ liệu hiện người dùng đang xem, không chứa email/số điện thoại; upload qua preset Cloudinary Free giới hạn PDF/5 MB. Hiển thị trạng thái, lỗi/thử lại và URL. Đây là liên kết chia sẻ được, không có quyền truy cập riêng theo UID.
 
-**Đầu ra:** chức năng sinh file thật, upload, `firebase/storage.rules`, ảnh danh sách file console và kết quả trên app.
+**Đầu ra:** chức năng sinh file thật, upload, ảnh Cloudinary Media Library và kết quả trên app. Ghi rõ trong báo cáo thầy đã chấp nhận thay Storage.
 
-**Xong khi:** PDF khớp dữ liệu hiện tại; upload có phản hồi; tài khoản khác không đọc/ghi trái phép.
+**Xong khi:** PDF khớp dữ liệu hiện tại; upload thật có phản hồi; UI cảnh báo người có URL có thể xem. Không đưa dữ liệu nhạy cảm lên dịch vụ này.
 
 ## 9. Đo lường và các dịch vụ Firebase còn lại
 
@@ -128,3 +128,5 @@ Chạy mỗi test ≥3 lần; lưu command, trace ID/ảnh/replay từng lần, 
 
 
 Cập nhật 01/11/2026: A10/edit, export/upload và instrumentation đã có code/test local. ARTEMIS có 25 kịch bản nhưng chưa chạy host thật. Firestore Rules/indexes và Remote Config đã deploy; Functions/Storage chưa deploy. Xem docs/lab3-readiness.md cho trạng thái hiện hành thay cho ghi chú tiến độ cũ.
+
+**Cập nhật 04/11/2026:** Các đoạn tiến độ 31/10–01/11 trên là lịch sử. App hiện dùng Firestore transaction + Security Rules trực tiếp cho F1/F2/F4A; Rules/indexes mới đã deploy. Không dùng Functions/Firebase Storage. PDF dùng Cloudinary Free, còn chờ tài khoản/preset và test cloud. [Bảng tiến độ](docs/lab3-readiness.md) là nguồn trạng thái hiện hành; không cộng test lịch sử vào kết quả hiện tại.

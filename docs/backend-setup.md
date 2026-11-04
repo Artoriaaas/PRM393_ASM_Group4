@@ -1,79 +1,24 @@
-# Backend giao dịch EventHub — F1/F2/F4A
+# Firebase project `eventhub-group4` — thiết lập và kiểm thử
 
-Ngày cập nhật: 31/10/2026. Project nhóm: `eventhub-group4`. Chủ dự án xác nhận Google Sign-In chạy thành công và đã tạo Firestore. Backend dưới đây đã được kiểm tra bằng emulator; **Firestore Rules/indexes đã deploy lên project nhóm; Functions/Storage chưa deploy và flow cloud chưa kiểm thử đầy đủ**.
+Cập nhật 04/11/2026. Backend app Lab 3 dùng Firebase Auth và Firestore trực tiếp; không deploy Cloud Functions hay Firebase Storage. File PDF minh họa dùng Cloudinary Free theo [cloudinary-setup.md](cloudinary-setup.md).
 
-## Đã có trong code
+## Đã có trong project
 
-- `bookingCommand`: đăng ký, hủy, điểm danh; mỗi thao tác có operation ID cố định, request hash và transaction nguyên tử.
-- `bookingStatus`: tra kết quả từ máy chủ. Không tìm thấy operation trả `unknown`, không coi là thất bại.
-- Kiểm tra Auth + email verified, sức chứa, hạn/thời gian máy chủ, trạng thái sự kiện, chủ đăng ký và generation.
-- QR là opaque token; backend so hash với `qrCredentials`, đối chiếu event và phiên mở. Mobile chỉ quét. CLB/admin thao tác trên web riêng; chưa có web CLB vận hành trong repo này.
-- History giữ snapshot theo generation; đăng ký lại không ghi đè lịch sử cũ. Điểm danh lại giữ thời gian gốc.
-- Notification trong app được tạo cùng transaction cho đăng ký/hủy/điểm danh. Đã có mã trigger FCM và thông báo đổi lịch/CLB hủy sự kiện; chưa deploy Functions nên chưa xác minh giao tin thật.
-- Firestore Rules: chỉ người đã xác minh đọc sự kiện public; chủ tài khoản đọc đăng ký/thông báo; client không viết sức chứa/đăng ký/check-in/QR credentials. Đánh dấu read chỉ thay `readAt` bằng server timestamp.
+- Google Sign-In và email/password đã cấu hình; Google login được người dùng xác nhận trên Android.
+- Firestore database, Rules và indexes đã triển khai. Lệnh triển khai hiện tại: `./tool/deploy-cloud.ps1` (chỉ Firestore Rules/indexes, project ID cố định). Rules được kiểm thử bằng emulator trước khi deploy.
+- Remote Config hai tham số mặc định `discover_featured_limit=10`, `discover_recommendations_enabled=true` đã được publish trước đó.
+- Hai sự kiện gắn `(Mẫu)` trong Firestore để xem UI. Chúng không phải sự kiện thật của CLB. Trước demo nghiệp vụ, kiểm tra `startsAt`, `deadline`, `capacity`, `activeCount` và `status`; thời điểm qua hạn không thể đăng ký.
 
-## Chạy kiểm tra local (không cần billing)
+## Cần chuẩn bị để test nghiệp vụ thật
 
-Cần Node 22 cho môi trường tương ứng runtime deploy; máy tác giả chạy Node 24.21.0 (npm báo khác engine, test vẫn pass), Java 21 từ Android Studio. Backend dependencies pin trong `functions/package.json` và lockfile. Firebase CLI dùng 15.34.2.
+1. Dùng Android emulator hoặc máy thật, `flutter run -d <device> -t lib/main.dart` với `--dart-define` Cloudinary nếu test PDF. Không dùng `main_prototype.dart` làm bằng chứng cloud.
+2. Chọn tài khoản Firebase Auth có email đã xác nhận. Nếu dùng email/password, mở link verify trước khi vào app. Không nhập API key hoặc service account vào repo.
+3. Tạo hoặc chỉnh **sự kiện test mới** qua Firebase Console/Admin SDK có `visibility=public`, `status=published`, `registrationMode=required`, `startsAt` và `deadline` trong tương lai, `capacity>0`, `activeCount=0`. Với demo cũ ngày 08/11/2026, chỉ test khi còn hạn. Không thay số chỗ thủ công sau khi có đăng ký.
+4. Test trên app: A02→A04→A05→A06, A07/A08 hủy, re-register. Mở Firestore Console xác nhận `registrations/{uid}_{eventId}` và `events/{eventId}.activeCount` cùng thay đổi. Thử tài khoản thứ hai khi chỉ còn một chỗ.
+5. Để test QR, **web CLB** phải tạo token ngẫu nhiên dài tối thiểu 32 ký tự, lưu `sha256(token)` làm ID của `qrCredentials/{hash}` với `{eventId, enabled:true}`, đồng thời tạo `checkinSessions/{eventId}` với `{open:true}`. Web hiển thị token dưới dạng QR. App mobile chỉ quét; không có quyền tạo/mở các tài liệu này. Test QR sai, phiên đóng, quét đúng và quét trùng. Không đưa token hoặc hash vào log/báo cáo.
+6. FCM Lab 3 có thể gửi test message từ Firebase Console đến thiết bị; push tự động theo nghiệp vụ chưa có khi không dùng server/Functions. Inbox Firestore do web/admin tạo. Kiểm tra foreground, background và terminated cùng quyền thông báo.
+7. Thu bằng chứng Auth Users, Firestore, Remote Config, Analytics DebugView, Crashlytics, FCM và Cloudinary. ARTEMIS cần host/model/tài khoản test riêng; unit/emulator pass không thay cho E2E.
 
-```powershell
-cd D:\Ky8\prmlab3
-npm ci --prefix functions
-npm test --prefix functions
-npm exec --yes --package=firebase-tools@15.34.2 -- firebase emulators:exec --project demo-eventhub --only firestore,storage "npm run test:integration --prefix functions"
-```
+## Giới hạn hiện tại
 
-`demo-eventhub` tách khỏi cloud nhóm; integration tests ghi/xóa dữ liệu chỉ trên emulator. Các dòng `PERMISSION_DENIED` trong ca rules là kết quả từ chối được mong đợi.
-
-Seed tùy chọn chỉ khi emulator đang chạy: đặt `FIRESTORE_EMULATOR_HOST=127.0.0.1:8080`, `GCLOUD_PROJECT=demo-eventhub`, chạy `npm run seed --prefix functions`. Script cố ý từ chối chạy nếu không có biến emulator. Dữ liệu này là fixture để kiểm tra, không phải dữ liệu CLB thật của bản nộp. Không reset emulator đang dùng để chia sẻ dữ liệu với người khác.
-
-## Điều kiện trước khi chạy cloud
-
-1. Chủ project xác minh gói Spark/Blaze và quyết định billing. Cloud Functions cần Blaze; Cloud Storage theo chính sách hiện tại cũng cần billing. Functions là lựa chọn kiến trúc bổ sung của EventHub, không phải một trong sáu dịch vụ bắt buộc của đề; Storage là yêu cầu của đề. Dòng “Spark plan is sufficient” trong đề cần đối chiếu chính sách Storage hiện hành với thầy nếu nhóm không có billing. Không bật gói/deploy thay chủ project khi chưa có quyết định.
-2. Người deploy có quyền trên `eventhub-group4`; đăng nhập Firebase CLI bằng tài khoản đó. Không chia sẻ mật khẩu hoặc service-account key.
-3. Database Standard và location đã được chủ dự án tạo. Functions chọn `asia-southeast1`; xác nhận region thực trước deploy.
-4. Review Rules trước khi áp dụng lên một project đã có app/web khác. Rules hiện chưa cấp client organizer quyền ghi; web CLB phải dùng backend đáng tin cậy.
-5. Chốt nguồn sự kiện thật được phép sử dụng. Người quản trị nhập từ web/backend/console; không nhúng dữ liệu mẫu vào app.
-
-Sau khi các điều kiện trên được xác nhận, người deploy dùng:
-
-```powershell
-npm exec --yes --package=firebase-tools@15.34.2 -- firebase login
-npm exec --yes --package=firebase-tools@15.34.2 -- firebase deploy --only firestore:rules,firestore:indexes,functions:eventhub --project eventhub-group4
-flutter run -d emulator-5554 -t lib/main.dart
-```
-
-Chỉ Firestore Rules/indexes và Remote Config đã được deploy; các lệnh Functions/Storage dưới đây vẫn là hướng dẫn chưa thực hiện. Nếu không dùng được billing/dịch vụ bắt buộc, trao đổi với thầy theo đề trước khi chọn giải pháp tương đương. Emulator pass không thay bằng chứng console thật.
-
-## Schema event thực tế
-
-`events/{eventId}` (ID chỉ chữ/số/underscore/hyphen):
-
-| Trường | Kiểu / ý nghĩa |
-|---|---|
-| visibility | string `public` để app query; không có quyền sửa từ mobile |
-| status | string `published` hoặc `cancelled` |
-| title, clubName, location, description | string, nội dung được CLB phê duyệt |
-| startsAt, endsAt | Firestore Timestamp UTC, bắt buộc; UI hiển thị UTC+7 |
-| registrationMode | `required` hoặc `free` |
-| deadline | Timestamp bắt buộc với required |
-| capacity, activeCount | integer; activeCount khởi tạo đúng dữ liệu hiện tại, chỉ backend cập nhật |
-| topic, audience, preparation | string tùy chọn |
-| activities | array of string |
-| coverKey | `ux-workshop`/`acoustic` cho artwork Lab 2 tương ứng; bỏ trống dùng cover theo nội dung thật |
-
-`registrations/{sha256(uid,eventId)}`: uid, eventId, generation, status, participant snapshot, createdAt, cancelledAt, checkInAt. Các thời điểm là Timestamp, không dùng chuỗi ngày tháng. `operations` và `history` chỉ do backend ghi; không xóa ledger đang có request in-flight.
-
-## Kiểm tra trên cloud còn bắt buộc
-
-- Xác minh Auth Users console, hủy picker, logout và hai tài khoản.
-- F1 với dữ liệu CLB thật: tìm/lọc/empty/error/free/full/expired/cancelled, lỗi form, registration confirmed/existing, ngắt mạng và recovery.
-- F2: hủy dialog, lịch chuyển sang Đã hủy, phân biệt CLB hủy sự kiện; thông báo đọc/đích hiện tại.
-- F4A: quyền camera, mở Android Settings, QR thật do web CLB hiển thị, sai event/token/phiên đóng, lặp và recovery.
-- Chụp app + dữ liệu console liên quan; không đưa dữ liệu cá nhân người khác vào ảnh nộp.
-
-Nguồn API chính thức: https://firebase.google.com/docs/functions/callable ; https://firebase.google.com/docs/firestore/manage-data/transactions ; https://firebase.google.com/docs/firestore/security/rules-query .
-
-## Chạy sau khi liên kết billing
-
-Trong Firebase Console chọn Storage → Get started, chọn location phù hợp với project và tạo bucket. Sau đó chạy `./tool/deploy-cloud.ps1 -BillingConfirmed` từ PowerShell. Script luôn chọn eventhub-group4 và không tự liên kết billing. Deploy thành công vẫn phải kiểm tra Auth, đăng ký/hủy, QR từ web CLB và upload PDF; không dùng emulator pass thay cloud.
+`lastOperationId` nằm trên đăng ký hiện hành, chưa có ledger lịch sử độc lập. Nếu một thiết bị khác thay đổi cùng đăng ký trước khi thiết bị đầu khôi phục lệnh chưa rõ, app không thể tự suy ra kết quả cũ; phải giữ trạng thái chưa xác định. Notifications tự động theo thay đổi Firestore và web CLB/admin chưa được triển khai ở Lab 3. Các điểm này được ghi trong [lab3-readiness.md](lab3-readiness.md), không tính là chức năng cloud đã kiểm thử.

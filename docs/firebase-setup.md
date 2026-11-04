@@ -88,7 +88,7 @@ Lưu ảnh tại `evidence/step4/` và ghi project ID trong ảnh khớp JSON. W
 - Chủ dự án báo đăng nhập Google thành công. Chưa thu ảnh Auth Users console; không suy rộng thành toàn bộ test auth đã pass.
 - Ảnh màn đăng nhập có config: `evidence/step4/login-configured.png`.
 
-Firestore đã được chủ dự án xác nhận tạo ngày 31/10/2026. Firestore Rules/indexes đã deploy; Functions chưa deploy; xem `docs/backend-setup.md`. Không đánh dấu kết nối nghiệp vụ cloud hoàn tất từ việc tạo database.
+Firestore đã được chủ dự án xác nhận tạo ngày 31/10/2026. Firestore Rules/indexes cho transaction trực tiếp đã deploy 04/11/2026; app không dùng Functions. Xem `docs/backend-setup.md`. Không đánh dấu nghiệp vụ cloud hoàn tất chỉ từ việc tạo database/deploy Rules.
 
 Remote Config defaults 10/true đã publish ngày 01/11/2026. Startup có loading/retry và timeout 45 giây.
 
