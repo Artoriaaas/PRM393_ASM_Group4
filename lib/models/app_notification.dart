@@ -14,5 +14,5 @@ class AppNotification {
   final DateTime? createdAt, readAt;
   String get destination => registrationId?.isNotEmpty == true
       ? '/registrations/$registrationId'
-      : '/events/$eventId';
+      : eventId.isNotEmpty ? '/events/$eventId' : '/notifications';
 }

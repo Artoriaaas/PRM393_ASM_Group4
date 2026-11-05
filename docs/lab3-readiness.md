@@ -8,7 +8,7 @@ Cập nhật 05/11/2026. Trạng thái có bằng chứng; **chưa phải xác n
 | Auth | Google/email/password/verify/reset và guard; Google login thật đã được chủ project xác nhận | Bằng chứng đủ nhánh lỗi/hủy và Users console cho bài nộp |
 | Firestore nghiệp vụ | Đăng ký/hủy transaction, chỗ trống, recovery, QR check-in qua Rules; 4 emulator tests mới qua; Rules/indexes deploy `eventhub-group4` ngày 04/11 | Test Android với tài khoản thật và sự kiện còn hạn; fixture QR/phiên chuẩn bị qua Console cho Lab 3; kiểm thử cạnh tranh hai tài khoản và phục hồi mạng. Chưa có ledger operation độc lập |
 | PDF/Cloudinary Free | PDF local tiếng Việt, upload raw PDF adapter, test mock; upload PDF trắng thử lên `qcfqv5oj` thành công 05/11; URL cũ và mới đều tải được PDF (HTTP 200) sau khi bật PDF delivery | Chưa test thao tác trên Android vì chưa có emulator kết nối; URL public không giới hạn theo UID |
-| FCM | SDK token/permission, foreground/background/terminated handler, route theo payload | Test message thật ba trạng thái; chưa lưu đầy đủ thông báo FCM nhận được vào danh sách trong app |
+| FCM | SDK token/permission, foreground/background/terminated handler, route theo payload | Test message thật ba trạng thái; đã bổ sung lưu receipt theo UID, chống trùng; chưa xác minh nhận/lưu trên Android ở cả ba trạng thái |
 | Analytics | Kế hoạch ≥7 events và adapter ghi event | DebugView của từng event trên thiết bị thật |
 | Crashlytics | Handler fatal/nonfatal và màn test có xác nhận | Dashboard lỗi thật và crash thử có kiểm soát |
 | Remote Config | Hai tham số mặc định đã publish, fetch/fallback/code UI | Ảnh trước/sau khi thay config thật trên Console |
