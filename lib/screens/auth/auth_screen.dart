@@ -139,8 +139,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         ),
         const Text('Không thấy thư? Kiểm tra mục Spam hoặc Thư rác.'),
       ],
-      if (!ref.watch(firebaseReadyProvider) &&
-          !ref.watch(isUiPrototypeProvider))
+      if (!ref.watch(firebaseReadyProvider))
         const Text(
           'Chưa kết nối Firebase của nhóm. Các thao tác tài khoản sẽ hoạt động sau khi cấu hình project.',
         ),
@@ -252,19 +251,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           variant: AppButtonVariant.text,
         ),
     ];
-    if (ref.watch(isUiPrototypeProvider)) {
-      children.insert(
-        0,
-        const Text('UI PROTOTYPE • DỮ LIỆU MÔ PHỎNG • KHÔNG FIREBASE'),
-      );
-      children.add(
-        button(
-          'Danh sách màn prototype',
-          () => _go('/preview'),
-          variant: AppButtonVariant.text,
-        ),
-      );
-    }
     return Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(

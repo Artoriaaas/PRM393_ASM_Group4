@@ -14,7 +14,7 @@ before(async () => {
   if (!process.env.FIRESTORE_EMULATOR_HOST) throw new Error('Start Firestore emulator first.');
   env = await initializeTestEnvironment({
     projectId: 'demo-direct-booking',
-    firestore: {rules: readFileSync(join(__dirname, '../../firebase/firestore.rules'), 'utf8')},
+    firestore: {rules: readFileSync(join(__dirname, '../firestore.rules'), 'utf8')},
   });
 });
 after(async () => env?.cleanup());

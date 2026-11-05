@@ -11,7 +11,7 @@ Cập nhật 04/11/2026. Backend app Lab 3 dùng Firebase Auth và Firestore tr�
 
 ## Cần chuẩn bị để test nghiệp vụ thật
 
-1. Dùng Android emulator hoặc máy thật, `flutter run -d <device> -t lib/main.dart` với `--dart-define` Cloudinary nếu test PDF. Không dùng `main_prototype.dart` làm bằng chứng cloud.
+1. Dùng Android emulator hoặc máy thật, `flutter run -d <device> -t lib/main.dart` với `--dart-define` Cloudinary nếu test PDF.
 2. Chọn tài khoản Firebase Auth có email đã xác nhận. Nếu dùng email/password, mở link verify trước khi vào app. Không nhập API key hoặc service account vào repo.
 3. Tạo hoặc chỉnh **sự kiện test mới** qua Firebase Console/Admin SDK có `visibility=public`, `status=published`, `registrationMode=required`, `startsAt` và `deadline` trong tương lai, `capacity>0`, `activeCount=0`. Với demo cũ ngày 08/11/2026, chỉ test khi còn hạn. Không thay số chỗ thủ công sau khi có đăng ký.
 4. Test trên app: A02→A04→A05→A06, A07/A08 hủy, re-register. Mở Firestore Console xác nhận `registrations/{uid}_{eventId}` và `events/{eventId}.activeCount` cùng thay đổi. Thử tài khoản thứ hai khi chỉ còn một chỗ.

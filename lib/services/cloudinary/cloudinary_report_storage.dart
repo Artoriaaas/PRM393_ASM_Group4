@@ -11,12 +11,12 @@ class CloudinaryReportStorage implements ReportStorageService {
   CloudinaryReportStorage({
     required this.cloudName,
     required this.uploadPreset,
-    http.Client? client,
-  }) : _client = client;
+    this.client,
+  });
 
   final String cloudName;
   final String uploadPreset;
-  final http.Client? _client;
+  final http.Client? client;
 
   @override
   Future<String> upload(
@@ -42,9 +42,9 @@ class CloudinaryReportStorage implements ReportStorageService {
       ..files.add(
         http.MultipartFile.fromBytes('file', bytes, filename: '$fileId.pdf'),
       );
-    final client = _client ?? http.Client();
+    final requestClient = client ?? http.Client();
     try {
-      final streamed = await client.send(request);
+      final streamed = await requestClient.send(request);
       final response = await http.Response.fromStream(streamed);
       if (response.statusCode < 200 || response.statusCode >= 300) {
         throw StateError(
@@ -64,7 +64,7 @@ class CloudinaryReportStorage implements ReportStorageService {
       onProgress(1);
       return link.toString();
     } finally {
-      if (_client == null) client.close();
+      if (client == null) requestClient.close();
     }
   }
 

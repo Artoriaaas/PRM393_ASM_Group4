@@ -4,7 +4,6 @@ Ngày lập: 30/10/2026. Nguồn: đề PDF Lab 3 gồm 18 trang, mục 3–11 v
 
 ## Cách làm để không bị rối
 
-Cập nhật theo ưu tiên của nhóm ngày 31/10/2026: dựng trước [UI prototype tương tác](docs/ui-prototype.md) để chia việc cho teammate. Đây là công việc frontend song song; các bước 4–9 chỉ hoàn thành khi đã nối dịch vụ thật và có bằng chứng. Không dùng state demo thay cho yêu cầu dữ liệu thật của bản nộp.
 
 Làm lần lượt 12 bước. Chỉ đánh dấu xong khi có đầu ra và đã đạt điều kiện kiểm tra; hoàn thành code không đồng nghĩa đã có bằng chứng. Mỗi đợt làm lưu commit có ý nghĩa, ảnh/log vào `evidence/` và cập nhật README. Không dồn Git thành một lần upload cuối. Giữ thiết kế và app đồng bộ qua `docs/design-traceability.md`.
 
@@ -122,11 +121,6 @@ Chạy mỗi test ≥3 lần; lưu command, trace ID/ảnh/replay từng lần, 
 
 Đề còn placeholder `[date]` và `[N]` cho hạn đổi đề tài, số commit và số ngày; cần hỏi thầy giá trị cụ thể. Làm cá nhân trừ khi thầy cho phép nhóm. Nội dung yêu cầu ARTEMIS dù tên PDF/footer ghi Patrol. Google Sign-In là yêu cầu bổ sung; không mặc định nó bắt buộc xóa email/password. Lab 3 chưa triển khai chỉ vì Lab 2 đã hoàn thành.
 
-## Tiến độ triển khai ngày 31/10/2026
+## Tiến độ hiện hành
 
-Đã có cấu hình `eventhub-group4`, chủ dự án xác nhận Google Sign-In và đã tạo Firestore. Đã code backend transaction cho F1/F2/F4A, các màn dữ liệu liên quan và notification feed trong app; test local/emulator xem `evidence/backend/validation.md`. **Chưa đánh dấu bước 4–7 hoàn thành toàn bộ**: còn deploy, nguồn CLB thật, camera/QR và nhánh cloud. Chưa bật billing; Functions/Storage cần quyết định của nhóm. A10/edit, export/upload, instrumentation, ARTEMIS, AI review PR và bộ báo cáo/video vẫn còn phải triển khai/thu bằng chứng theo từng bước.
-
-
-Cập nhật 01/11/2026: A10/edit, export/upload và instrumentation đã có code/test local. ARTEMIS có 25 kịch bản nhưng chưa chạy host thật. Firestore Rules/indexes và Remote Config đã deploy; Functions/Storage chưa deploy. Xem docs/lab3-readiness.md cho trạng thái hiện hành thay cho ghi chú tiến độ cũ.
-
-**Cập nhật 04/11/2026:** Các đoạn tiến độ 31/10–01/11 trên là lịch sử. App hiện dùng Firestore transaction + Security Rules trực tiếp cho F1/F2/F4A; Rules/indexes mới đã deploy. Không dùng Functions/Firebase Storage. PDF dùng Cloudinary Free, còn chờ tài khoản/preset và test cloud. [Bảng tiến độ](docs/lab3-readiness.md) là nguồn trạng thái hiện hành; không cộng test lịch sử vào kết quả hiện tại.
+Xem [bảng tiến độ duy nhất](docs/lab3-readiness.md) và bằng chứng kiểm thử. Không dùng ghi chú lịch sử để kết luận hoàn thành.

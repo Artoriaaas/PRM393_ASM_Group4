@@ -10,7 +10,7 @@ import '../viewmodels/session_viewmodel.dart';
 
 /// Injected AuthService contract
 final firebaseReadyProvider = Provider<bool>((ref) => false);
-final isUiPrototypeProvider = Provider<bool>((ref) => false);
+
 
 final authServiceProvider = Provider<AuthService>((ref) {
   if (ref.watch(firebaseReadyProvider)) {

@@ -63,7 +63,7 @@ sequenceDiagram
   end
 ```
 
-Không dùng Cloud Functions hay Firebase Storage trong app. `functions/` là mã thử nghiệm cũ, không có trong `firebase.json` và không được deploy. `lib/main_prototype.dart` chỉ mô phỏng UI; bản chạy thật là `lib/main.dart`.
+App dùng Firestore trực tiếp và Cloudinary; không có target prototype hoặc backend Functions.
 
 ## Nghiệp vụ Firestore hiện tại
 

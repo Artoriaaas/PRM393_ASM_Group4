@@ -58,7 +58,7 @@ P01: giữ mục tiêu đo từ A02 đến đăng ký ≤90 giây, QR ≤30 giâ
 
 ## 4. Component → widget
 
-Tất cả hàng đã ánh xạ, chưa code. Variant triển khai phải đối chiếu instance thực khi dựng widget; danh sách dưới ghi trạng thái cần hỗ trợ, không khẳng định đã đọc toàn bộ property của từng variant.
+Bảng ánh xạ đã có; code đã triển khai nhưng cần kiểm tra ảnh Figma/Android trước khi chốt tương đương. Variant triển khai phải đối chiếu instance thực khi dựng widget; danh sách dưới ghi trạng thái cần hỗ trợ, không khẳng định đã đọc toàn bộ property của từng variant.
 
 | Component page 05 (node) | Widget dùng lại | State/thuộc tính |
 |---|---|---|
@@ -102,7 +102,7 @@ ErrorState được compose từ InlineMessage + nút Thử lại; các phần m
 |---|---|---|---|
 | D01 | A01 chỉ email/password; Lab 3 mục 6 yêu cầu Google | Thêm Google Sign-In, giữ A01a–d để không mất màn Lab 2; backend xác định provider và verified state | Code auth đã thêm; Figma còn chờ đồng bộ |
 | D02 | Lab 2 cho khách xem A02–A04; rubric Lab 3 yêu cầu signed-out → login | Bản nộp Lab 3 có AuthGate trước nội dung; giữ deep link để vào đúng sự kiện sau login. P03 vẫn không phải đăng ký sự kiện nhưng phải đăng nhập app | Đặc tả xong; Figma chưa cập nhật; nêu ảnh hưởng persona khi trình bày |
-| D03 | Lab 2 chưa có export/config/crash demo | Thêm L3-01/L3-02 dưới A10, không đổi bốn tab. PDF từ lịch thật, không xuất dữ liệu người khác | Đặc tả xong; Figma/code chưa cập nhật |
+| D03 | Lab 2 chưa có export/config/crash demo | Thêm L3-01/L3-02 dưới A10, không đổi bốn tab. PDF từ lịch thật, không xuất dữ liệu người khác | Code đã có; Figma và ảnh đối chiếu chưa hoàn tất |
 | D04 | screen-spec mục 3 gọi A06 là vé QR; mục 1–2 và flow phủ nhận vé cá nhân | A06 chỉ xác nhận đăng ký; A11 quét QR web CLB; A12 không hiện email/phone | Giải quyết cho triển khai; không sửa repo Lab 2 |
 | D05 | handoff cũ A01 luôn → A02; A10 chỉ logout; A12 coi đã check-in là lỗi trong bảng cũ | Giữ pending destination; A10 có edit profile như Figma `181:2030`; đã check-in trả kết quả cũ hợp lệ, không tạo mới | Giải quyết cho triển khai |
 | D06 | token cũ vùng chạm 44, frame 390; đề yêu cầu ≥48 và 360/412 | Token touchMin=48, layout adaptive 360/412, body ≥14; không kéo giãn theo một ảnh cố định | Đặc tả xong; đo lại khi có app |

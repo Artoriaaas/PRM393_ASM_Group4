@@ -1,10 +1,8 @@
 import 'package:eventhub/theme/app_theme.dart';
 import 'package:eventhub/widgets/app_button.dart';
 import 'package:eventhub/widgets/app_confirmation_dialog.dart';
-import 'package:eventhub/screens/placeholder_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
 
 void main() {
   for (final width in [360.0, 412.0]) {
@@ -40,32 +38,6 @@ void main() {
       expect(label.maxLines, isNull);
       expect(find.byType(AppButton), findsNWidgets(2));
 
-      final router = GoRouter(
-        routes: [
-          GoRoute(
-            path: '/',
-            builder: (_, _) => const PlaceholderScreen(
-              screenCode: 'A01a',
-              title: 'Đăng nhập',
-              routePath: '/auth/login',
-            ),
-          ),
-        ],
-      );
-      addTearDown(router.dispose);
-      await tester.pumpWidget(
-        MaterialApp.router(
-          theme: EventHubTheme.lightTheme,
-          routerConfig: router,
-          builder: (context, child) => MediaQuery(
-            data: MediaQuery.of(context)
-                .copyWith(textScaler: TextScaler.linear(2)),
-            child: child!,
-          ),
-        ),
-      );
-      await tester.pump();
-      expect(tester.takeException(), isNull);
     });
   }
 }
