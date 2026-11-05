@@ -7,7 +7,7 @@ Cập nhật 05/11/2026. Đây là trạng thái có bằng chứng; **chưa ph�
 | Final UI và 3 flow | A01–A12, F1/F2/F4A, state lỗi, MVVM; 62 Flutter tests qua, `flutter analyze` sạch | So ảnh Figma và Android cuối cùng; test thao tác E2E trên máy thật/emulator |
 | Auth | Google/email/password/verify/reset và guard; Google login thật đã được chủ project xác nhận | Bằng chứng đủ nhánh lỗi/hủy và Users console cho bài nộp |
 | Firestore nghiệp vụ | Đăng ký/hủy transaction, chỗ trống, recovery, QR check-in qua Rules; 4 emulator tests mới qua; Rules/indexes deploy `eventhub-group4` ngày 04/11 | Test Android với tài khoản thật và sự kiện còn hạn; web CLB tạo QR/phiên; kiểm thử cạnh tranh hai tài khoản và phục hồi mạng. Chưa có ledger operation độc lập |
-| PDF/Cloudinary Free | PDF local tiếng Việt, upload raw PDF adapter, test mock; Firebase Storage không dùng | Nhóm tạo Cloudinary account/preset và test upload thật. Preset unsigned/URL chia sẻ công khai; cần thầy chấp nhận thay Storage trong báo cáo |
+| PDF/Cloudinary Free | PDF local tiếng Việt, upload raw PDF adapter, test mock; upload PDF trắng thử lên `qcfqv5oj` thành công 05/11; URL cũ và mới đều tải được PDF (HTTP 200) sau khi bật PDF delivery | Chưa test thao tác trên Android vì chưa có emulator kết nối; URL public không giới hạn theo UID |
 | FCM | SDK token/permission, foreground/background/terminated handler, route theo payload | Test message thật ba trạng thái; không có push tự động theo nghiệp vụ khi chưa có web/admin gửi |
 | Analytics | Kế hoạch ≥7 events và adapter ghi event | DebugView của từng event trên thiết bị thật |
 | Crashlytics | Handler fatal/nonfatal và màn test có xác nhận | Dashboard lỗi thật và crash thử có kiểm soát |
@@ -16,7 +16,7 @@ Cập nhật 05/11/2026. Đây là trạng thái có bằng chứng; **chưa ph�
 | AI code review | Local findings và code review plan | PR review bằng AI có ≥5 findings; ≥3 fix commits gắn findings và bằng chứng |
 | Report/slides/video | Khung tài liệu và checklist | Chỉ chốt sau khi có cloud/E2E/review evidence thật; không điền pass rate hoặc video giả |
 
-**Đối chiếu sát PDF:** Firestore transaction là nguồn dữ liệu của đăng ký/hủy/điểm danh; không gọi Cloud Functions. Danh sách hai sự kiện `(Mẫu)` vẫn là dữ liệu thử và chưa chứng minh nguồn sự kiện thật của CLB. Public REST API không phải yêu cầu đồng thời với Firestore. Khu demo Firebase hiện có lối vào trên Tài khoản. Cloudinary là thay thế Storage do nhóm chọn, **chưa có bằng chứng giảng viên chấp thuận**, và không đáp ứng nguyên dạng yêu cầu per-user Firebase Storage Rules trong đề; không đánh dấu mục Storage đạt cho đến khi được chấp thuận và kiểm thử upload thật.
+**Đối chiếu sát PDF:** Firestore transaction là nguồn dữ liệu của đăng ký/hủy/điểm danh; không gọi Cloud Functions. Danh sách hai sự kiện `(Mẫu)` vẫn là dữ liệu thử và chưa chứng minh nguồn sự kiện thật của CLB. Public REST API không phải yêu cầu đồng thời với Firestore. Khu demo Firebase hiện có lối vào trên Tài khoản. Theo thông tin của nhóm, giảng viên cho phép Cloudinary thay Storage; cần ghi quyết định này trong báo cáo. URL public không đáp ứng quyền đọc riêng theo UID, nên mục quyền truy cập file vẫn chưa đạt.
 
 ## Việc cần người dùng/nhóm làm trước một lượt test cuối
 
