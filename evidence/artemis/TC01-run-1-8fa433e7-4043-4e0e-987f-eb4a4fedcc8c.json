@@ -1,0 +1,13 @@
+{
+  "case_id": "TC01",
+  "trace_id": "8fa433e7-4043-4e0e-987f-eb4a4fedcc8c",
+  "status": "completed",
+  "elapsed_seconds": 12.48399999999674,
+  "output": {
+    "unparsed": "EventHub is on the Discover (Khám phá) screen. The heading \"Sắp tới tại TP.HCM\" is visible, confirming the Discover page. Stopped on Discover as required."
+  },
+  "error": null,
+  "run": "1",
+  "acceptance_status": "not_passed",
+  "acceptance_note": "Setup/debug attempt. Runtime status alone is not acceptance; required observed values and login actions were not fully verified."
+}
