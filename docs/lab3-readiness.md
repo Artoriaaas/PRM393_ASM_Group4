@@ -16,7 +16,7 @@ Cập nhật 07/11/2026. Trạng thái có bằng chứng; **chưa phải xác n
 | AI code review | Local findings và code review plan | PR review bằng AI có ≥5 findings; ≥3 fix commits gắn findings và bằng chứng |
 | Report/slides/video | Khung tài liệu và checklist | Chỉ chốt sau khi có cloud/E2E/review evidence thật; không điền pass rate hoặc video giả |
 
-**Đối chiếu sát PDF:** Firestore transaction là nguồn dữ liệu của đăng ký/hủy/điểm danh; không gọi Cloud Functions. Danh sách hai sự kiện `(Mẫu)` là fixture trên Firestore thật; không phải mock hard-code trong app. Đề không bắt buộc dữ liệu do người dùng bên ngoài tạo. Public REST API không phải yêu cầu đồng thời với Firestore. Khu demo Firebase hiện có lối vào trên Tài khoản. Theo thông tin của nhóm, giảng viên cho phép Cloudinary thay Storage; cần ghi quyết định này trong báo cáo. URL public không đáp ứng quyền đọc riêng theo UID, nên mục quyền truy cập file vẫn chưa đạt.
+**Đối chiếu sát PDF:** Firestore transaction là nguồn dữ liệu của đăng ký/hủy/điểm danh; không gọi Cloud Functions. Danh sách hiện có 5 sự kiện do nhóm biên soạn trên Firestore; hai sự kiện cũ đã visibility=archived. Không có danh sách sự kiện hard-code trong app. Ảnh bìa AI là asset, cần đồng bộ Figma và disclosure. Đề không bắt buộc dữ liệu do người dùng bên ngoài tạo. Public REST API không phải yêu cầu đồng thời với Firestore. Khu demo Firebase hiện có lối vào trên Tài khoản. Theo thông tin của nhóm, giảng viên cho phép Cloudinary thay Storage; cần ghi quyết định này trong báo cáo. URL public không đáp ứng quyền đọc riêng theo UID, nên mục quyền truy cập file vẫn chưa đạt.
 
 ## Việc cần người dùng/nhóm làm trước một lượt test cuối
 
@@ -34,3 +34,32 @@ Cập nhật 07/11/2026. Trạng thái có bằng chứng; **chưa phải xác n
 - Kiểm tra local: `flutter analyze` sạch; `flutter test` 64/64; ARTEMIS collect-only nhận 25 ca. Đây không phải bằng chứng cloud hoặc E2E.
 
 **Không phải chỉ còn test:** quyền riêng tư Cloudinary vẫn thiếu dịch vụ xác thực (nhóm tạm hoãn); AI review trên PR/fix evidence, Figma đồng bộ cuối, PDF báo cáo/slides/video vẫn chưa hoàn tất. Xem thứ tự bàn giao ở [one-pass-test.md](one-pass-test.md).
+
+## Rà từng yêu cầu PDF ngày 07/11/2026
+
+Đối chiếu PDF 18 trang, source tại commit fb0517a và evidence đã lưu. Không chạy lại cloud/E2E trong lượt rà này. “Có code” không đồng nghĩa đạt toàn bộ tiêu chí.
+
+| Trang / yêu cầu | Trạng thái kiểm chứng | Việc còn lại |
+|---|---|---|
+| 1–3: Android, đề tài/persona/3 flow Lab 2, ≥8 màn Final UI | Có A01–A12 và F1/F2/F4A trong code | Chạy đủ flow/Back/nhánh lỗi trên Android và đối chiếu Final UI hiện hành |
+| 3: loading/empty/error/retry, dữ liệu Firestore hoặc REST | Có AsyncValue/state/widget và Firestore adapter, 5 event đã ghi cloud | Xác nhận nội dung từng màn và lỗi mạng; không bắt thêm REST khi đã dùng Firestore |
+| 3: sinh file từ dữ liệu đang xem, upload | Có PDF lịch, adapter Cloudinary, tiến độ/URL | Chạy upload thật trong app; quyền đọc/ghi riêng chưa đạt |
+| 3: khu demo Firebase tại Profile | Có lối vào config/notification/export/Crashlytics | Giữ vì đề yêu cầu; app chỉ fetch config, chỉnh/publish ở Console |
+| 3: thay đổi thiết kế phải ghi và cập nhật Figma | Có design-traceability và một số ảnh trước/sau | D14 ảnh bìa mới và các deviation trước còn chưa đồng bộ Figma đầy đủ |
+| 4–5: MVVM, injection, logic ngoài build, sơ đồ/thư mục/bảng VM | Đã refactor provider và có architecture.md | Kiểm tra toàn bộ fidelity/semantics, không suy ra điểm tối đa từ analyze |
+| 6: theme/tokens/widgets, ≥48dp/14sp, 360/412dp | Có theme/widgets; test layout/large text đã đạt | Đối chiếu tất cả màn, contrast và ảnh thiết bị cuối |
+| 6: Google Auth, routing, cancel, logout xóa dữ liệu user | Có code/tests; user đã xác nhận Google login thật | Ảnh signed in/out, cancel, Users console và xác nhận đổi tài khoản không giữ dữ liệu |
+| 6: file per-user path, progress, URL, owner-only access | PDF/progress/URL có; Cloudinary public hiện không kiểm tra Firebase UID và uid upload chưa tạo folder riêng | Chưa đạt per-user path/phân quyền; không tự thêm Worker/Functions. storage.rules trong repo không bảo vệ Cloudinary |
+| 7: FCM ba trạng thái, permission, inbox, tap relevant screen | Có handler/lưu receipt/route và Rules tests | Tin thật 3 trạng thái, ảnh và xác nhận lịch sử; notification-only có thể chỉ lưu sau khi mở |
+| 7: ≥7 Analytics events/params/product questions/no PII/UID | Có 14 event trong plan và tracking | DebugView cho từng event; rà ý nghĩa tham số. Không dùng lời gọi SDK làm bằng chứng server nhận |
+| 7: nonfatal thật + test crash, UID/custom key | Có diagnose ở lỗi booking/upload và test crash, UID/key | Dashboard cả hai; nút manual nonfatal không thay lỗi từ đường nghiệp vụ thật |
+| 7: ≥2 Remote Config thay đổi UI, defaults, không rebuild | Có recommendation_limit/show_recommendations và ảnh fetch trước | Hai bộ ảnh trước/sau + Console. Home cap 3: dùng 1↔3 để chứng minh limit; 5↔10 không đổi số thẻ |
+| 8–9: ≥10 ARTEMIS cases, đủ 3 flow/error/native, SDK Flash | 25 ca theo chức năng, pin runtime, assertion structured output | Chuẩn bị fixture độc lập và chạy thật; agent/model quota còn chưa ổn |
+| 9: mỗi ca ≥3 lượt, trace/replay, pass rate/avgtime/reasons | Có runner và JUnit summarizer, các lần thử TC01 thất bại được lưu | Chưa có bộ ≥10 ca ×3 lượt đạt; không tính skipped hoặc model PASS đơn lẻ |
+| 8–9: Pro exploratory 15–30 phút + issues; một test Analytics | Có explore.py và TC18 kiểm Logcat | Chưa có phiên Pro/bằng chứng TC18 đạt; tương thích Pro với Groq chưa xác minh |
+| 10: AI review PR, ≥5 findings/≥2 nhóm, quyết định, ≥3 fix commits theo ID | Chỉ có review local/6 findings | Chưa có bộ evidence PR review đáp ứng đề; không tính mọi commit cũ thành fix từ PR |
+| 10–11: repo structure/docs/pin/secret hygiene/README | Có phần lớn cấu trúc, docs/versions/AI disclosure | google-services.json local bị ignore theo lựa chọn trước của chủ repo; PDF cho phép commit, cần bảo đảm người chấm có cấu hình chạy. Tên repo nhóm cần theo thông báo thầy |
+| 11–12: report 8–12 trang, slides 12–15, video 5–10 phút | Chỉ có README khung trong report/slides | Chưa có PDF/link video cuối và chưa kiểm link trong private browser |
+| 16: xác minh cá nhân chạy test, đổi config, giải thích VM/review | Chưa đánh giá | Nhóm tự luyện sau khi có kết quả thật |
+
+Không tính Cloud Functions, Cloudflare Worker, web/admin hoặc operation ledger độc lập là yêu cầu bắt buộc Lab 3. Các phần web của teammate được giữ riêng; không dùng làm bằng chứng mobile đạt.
