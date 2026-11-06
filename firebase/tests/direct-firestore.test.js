@@ -111,7 +111,7 @@ test('push receipts are private and cannot impersonate server notifications', as
   await env.clearFirestore();
   const db = env.authenticatedContext('alice', {email_verified: true}).firestore();
   const path = 'users/alice/notifications/push_' + 'b'.repeat(64);
-  const receipt = {title:'Reminder',body:'Open the app',eventId:'workshop',type:'push_received',createdAt:serverTimestamp(),readAt:null};
+  const receipt = {title:'Reminder',body:'Open the app',eventId:'workshop',registrationId:'alice_workshop',type:'push_received',createdAt:serverTimestamp(),readAt:null};
   await assertSucceeds(writeBatch(db).set(doc(db,path),receipt).commit());
   await assertFails(getDoc(doc(env.authenticatedContext('bob', {email_verified:true}).firestore(),path)));
   await assertFails(writeBatch(db).set(doc(db,'users/bob/notifications/push_'+'c'.repeat(64)),receipt).commit());

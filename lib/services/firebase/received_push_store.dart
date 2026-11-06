@@ -17,6 +17,7 @@ Future<void> saveReceivedPush(FirebaseFirestore db, String uid, RemoteMessage me
       'title': (message.notification?.title ?? 'Thông báo').substring(0, (message.notification?.title ?? 'Thông báo').length.clamp(0, 200)),
       'body': (message.notification?.body ?? '').substring(0, (message.notification?.body ?? '').length.clamp(0, 4000)),
       'eventId': message.data['eventId'] is String && RegExp(r'^[\w-]+$').hasMatch(message.data['eventId']) ? message.data['eventId'] : '',
+      if (message.data['registrationId'] is String && RegExp(r'^[\w-]+$').hasMatch(message.data['registrationId']) && message.data['registrationId'].length <= 200) 'registrationId': message.data['registrationId'],
       'type': 'push_received', 'createdAt': FieldValue.serverTimestamp(), 'readAt': null,
     });
   });
