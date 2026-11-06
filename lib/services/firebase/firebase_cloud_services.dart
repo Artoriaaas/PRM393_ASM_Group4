@@ -135,6 +135,11 @@ class FirebaseCloudServices implements CloudServices {
     final registration = messaging.onRegistered.first.timeout(
       const Duration(seconds: 20),
     );
+    // Observe a timeout even if register() fails before we await this future.
+    // The original future remains awaited below and still reports its failure.
+    unawaited(
+      registration.then<void>((_) {}, onError: (Object _, StackTrace _) {}),
+    );
     await messaging.register();
     final token = await registration;
     await _saveToken(uid, token);
