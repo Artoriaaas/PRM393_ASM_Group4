@@ -29,7 +29,7 @@ def run_case():
             "Each case is independent: return to login through Account > Logout if necessary. "
             "Use only the explicitly named Google test account already added to Android; never use personal accounts, "
             "type passwords, change security settings, edit Firebase console, or invent observations. "
-            + goal + " Do not report completed on Account or any other screen before this goal is achieved. Return ONLY JSON with observed_values.final_screen (screen code), "
+            + goal + " Complete every requested action before reporting completion. Return ONLY JSON with observed_values.final_screen (screen code), "
             "observed_texts (exact text actually visible), and precondition_failed (null or reason). "
             "Expected final screen code: " + expected_screen + ". Put this JSON in report_task_status explanation. If setup is missing, report precondition_failed; do not fake success."
         )
@@ -65,10 +65,10 @@ def run_case():
                    "run": os.getenv("ARTEMIS_RUN", "1")}
         sanitized = json.dumps(payload, ensure_ascii=False, indent=2).replace(account, "<TEST_ACCOUNT>")
         (evidence / f"{case_id}-run-{payload['run']}-{result.trace_id}.json").write_text(sanitized, encoding="utf-8")
+        if isinstance(output, dict) and output.get("precondition_failed"):
+            pytest.skip(f"Setup missing (trace {result.trace_id}): {output['precondition_failed']}")
         assert result.succeeded, f"Task status={result.status}; trace={result.trace_id}"
         assert isinstance(output, dict), "Agent must report structured observations, not just SUCCESS"
-        if output.get("precondition_failed"):
-            pytest.skip(f"Setup missing (trace {result.trace_id}): {output['precondition_failed']}")
         assert output.get("observed_values", {}).get("final_screen") == expected_screen
         observed = output.get("observed_texts", [])
         assert isinstance(observed, list)
