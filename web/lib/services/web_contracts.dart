@@ -17,7 +17,7 @@ class WebUserProfile {
   final String? clubId;
   final String? clubName;
 
-  bool get isStaff => role == 'staff' && clubId != null && clubId!.isNotEmpty;
+  bool get isStaff => role == 'staff' && clubId != null && clubId!.trim().isNotEmpty;
   bool get isAdmin => role == 'admin';
   bool get isUser => role == 'user';
   bool get isAuthorizedForWeb => isStaff || isAdmin;
@@ -40,17 +40,29 @@ class WebUserProfile {
         if (clubName != null) 'clubName': clubName,
       };
 }
+
+class QrTokenBundle {
+  const QrTokenBundle({
+    required this.rawToken,
+    required this.qrHash,
+  });
+
+  final String rawToken;
+  final String qrHash;
+}
+
 abstract class IWebAuthService {
   WebUserProfile? get currentUser;
   Stream<WebUserProfile?> authStateChanges();
   Future<Result<WebUserProfile>> signInWithGoogle();
   Future<void> signOut();
-  Future<WebUserProfile?> fetchProfile(String uid);
+  Future<Result<WebUserProfile>> fetchProfile(String uid);
 }
 
 abstract class IClubService {
   Future<Club?> getClub(String clubId);
   Stream<List<Event>> streamClubEvents(String clubId);
+  Stream<Event?> streamEvent(String eventId);
   Future<Result<String>> createEvent(Event event);
   Future<Result<void>> updateEvent(Event event);
   Future<Result<void>> archiveEvent(String eventId);
@@ -64,10 +76,11 @@ abstract class IClubService {
     required bool open,
     required String staffUid,
   });
-  Future<Result<String>> generateAndRotateQrToken({
+  Future<Result<QrTokenBundle>> generateAndRotateQrToken({
     required String eventId,
     required String clubId,
     required String staffUid,
+    String? previousQrHash,
   });
   Stream<List<Registration>> streamEventRegistrations(String eventId);
 
@@ -83,6 +96,7 @@ abstract class IClubService {
   });
   Future<Result<void>> rejectRegistration({
     required String registrationId,
+    required String eventId,
     required String studentUid,
     required String staffUid,
     required String reason,
@@ -100,5 +114,13 @@ abstract class IClubService {
 }
 
 abstract class IWebAnalyticsService {
+  Future<void> setUserId(String? uid);
   Future<void> logEvent(String name, [Map<String, Object>? parameters]);
+}
+
+abstract class IWebRemoteConfigService {
+  Future<void> initialize();
+  bool getBool(String key, {bool defaultValue = false});
+  int getInt(String key, {int defaultValue = 0});
+  String getString(String key, {String defaultValue = ''});
 }

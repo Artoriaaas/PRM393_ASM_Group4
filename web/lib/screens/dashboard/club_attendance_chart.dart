@@ -15,7 +15,7 @@ class ClubAttendanceChart extends StatelessWidget {
   Widget build(BuildContext context) {
     if (metrics.isEmpty) {
       return Container(
-        height: 240,
+        height: 200,
         alignment: Alignment.center,
         child: Text(
           'Chưa có dữ liệu sự kiện để vẽ biểu đồ.',
@@ -28,55 +28,55 @@ class ClubAttendanceChart extends StatelessWidget {
 
     final maxVal = metrics.fold<int>(
       10,
-      (prev, m) => max(prev, max(m.capacity, max(m.approvedCount, m.checkedInCount))),
+      (prev, m) =>
+          max(prev, max(m.capacity, max(m.approvedCount, m.checkedInCount))),
     );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Legend
         Wrap(
           spacing: AppSpacing.s16,
           runSpacing: AppSpacing.s8,
           children: [
             _buildLegendItem(
               color: AppColors.info,
+              icon: Icons.people_outline,
               label: 'Sức chứa (capacity)',
             ),
             _buildLegendItem(
               color: AppColors.primary,
+              icon: Icons.how_to_reg_outlined,
               label: 'Đã duyệt (activeCount)',
             ),
             _buildLegendItem(
               color: AppColors.success,
+              icon: Icons.fact_check_outlined,
               label: 'Đã điểm danh (check-in)',
             ),
           ],
         ),
         const SizedBox(height: AppSpacing.s20),
-
-        // Chart Area
         SizedBox(
           height: 220,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              // Y-Axis labels
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text('$maxVal', style: AppTypography.textTheme.labelSmall),
-                  Text('${(maxVal / 2).round()}',
-                      style: AppTypography.textTheme.labelSmall),
+                  Text(
+                    '${(maxVal / 2).round()}',
+                    style: AppTypography.textTheme.labelSmall,
+                  ),
                   Text('0', style: AppTypography.textTheme.labelSmall),
                 ],
               ),
               const SizedBox(width: AppSpacing.s12),
               const VerticalDivider(width: 1, color: AppColors.border),
               const SizedBox(width: AppSpacing.s12),
-
-              // Bars
               Expanded(
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
@@ -96,17 +96,22 @@ class ClubAttendanceChart extends StatelessWidget {
     );
   }
 
-  Widget _buildLegendItem({required Color color, required String label}) {
+  Widget _buildLegendItem({
+    required Color color,
+    required IconData icon,
+    required String label,
+  }) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 14,
-          height: 14,
+          width: 16,
+          height: 16,
           decoration: BoxDecoration(
             color: color,
-            borderRadius: BorderRadius.circular(3),
+            borderRadius: AppRadius.borderR6,
           ),
+          child: Icon(icon, size: 11, color: AppColors.onPrimary),
         ),
         const SizedBox(width: AppSpacing.s8),
         Text(
@@ -130,36 +135,53 @@ class ClubAttendanceChart extends StatelessWidget {
     final appHeight = (item.approvedCount / maxVal) * chartHeight;
     final chkHeight = (item.checkedInCount / maxVal) * chartHeight;
 
-    return SizedBox(
-      width: 120,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              _buildBar(capHeight, AppColors.info, '${item.capacity}'),
-              const SizedBox(width: 4),
-              _buildBar(appHeight, AppColors.primary, '${item.approvedCount}'),
-              const SizedBox(width: 4),
-              _buildBar(chkHeight, AppColors.success, '${item.checkedInCount}'),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.s8),
-          const Divider(height: 1, color: AppColors.border),
-          const SizedBox(height: AppSpacing.s8),
-          Text(
-            item.eventTitle,
-            style: AppTypography.textTheme.labelSmall?.copyWith(
-              color: AppColors.textPrimary,
-              fontWeight: FontWeight.w500,
+    return Semantics(
+      container: true,
+      label:
+          'Sự kiện ${item.eventTitle}: Sức chứa ${item.capacity}, Đã duyệt ${item.approvedCount}, Đã điểm danh ${item.checkedInCount}',
+      child: SizedBox(
+        width: 120,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                _buildBar(
+                  capHeight,
+                  AppColors.info,
+                  'Sức chứa: ${item.capacity}',
+                ),
+                const SizedBox(width: AppSpacing.s4),
+                _buildBar(
+                  appHeight,
+                  AppColors.primary,
+                  'Đã duyệt: ${item.approvedCount}',
+                ),
+                const SizedBox(width: AppSpacing.s4),
+                _buildBar(
+                  chkHeight,
+                  AppColors.success,
+                  'Đã điểm danh: ${item.checkedInCount}',
+                ),
+              ],
             ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-          ),
-        ],
+            const SizedBox(height: AppSpacing.s8),
+            const Divider(height: 1, color: AppColors.border),
+            const SizedBox(height: AppSpacing.s8),
+            Text(
+              item.eventTitle,
+              style: AppTypography.textTheme.labelSmall?.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w500,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -173,7 +195,9 @@ class ClubAttendanceChart extends StatelessWidget {
         height: barHeight,
         decoration: BoxDecoration(
           color: color,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppRadius.r6),
+          ),
         ),
       ),
     );

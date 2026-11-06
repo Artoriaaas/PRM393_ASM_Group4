@@ -15,13 +15,16 @@ class ClubDashboardScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.surfaceSubtle,
       body: state.loadState.when(
-        initial: () => const Center(child: AppLoadingState()),
-        loading: (_) => const Center(child: AppLoadingState()),
+        initial: () =>
+            const Center(child: AppLoadingState(message: 'Đang tải thống kê CLB…')),
+        loading: (_) =>
+            const Center(child: AppLoadingState(message: 'Đang tải thống kê CLB…')),
         empty: (msg) => Center(
           child: AppEmptyState(
-            title: 'Chưa có dữ liệu',
-            message: msg ?? 'Chưa có hoạt động nào trong câu lạc bộ.',
-            actionLabel: 'Tạo sự kiện mới',
+            title: 'Chưa có sự kiện nào',
+            message:
+                msg ?? 'Câu lạc bộ của bạn chưa tạo sự kiện nào trên hệ thống.',
+            actionLabel: 'Tạo sự kiện đầu tiên',
             onAction: () => context.go('/events'),
           ),
         ),
@@ -49,9 +52,11 @@ class ClubDashboardScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: AppSpacing.s16,
+            runSpacing: AppSpacing.s12,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,14 +79,13 @@ class ClubDashboardScreen extends ConsumerWidget {
               ),
               AppButton(
                 label: 'Tạo sự kiện mới',
+                semanticsLabel: 'Chuyển tới màn hình quản lý sự kiện để tạo mới',
                 icon: const Icon(Icons.add, size: 18),
                 onPressed: () => context.go('/events'),
               ),
             ],
           ),
           const SizedBox(height: AppSpacing.s24),
-
-          // 3 Metric Figures Grid
           LayoutBuilder(
             builder: (context, constraints) {
               final isWide = constraints.maxWidth >= 800;
@@ -140,20 +144,22 @@ class ClubDashboardScreen extends ConsumerWidget {
             },
           ),
           const SizedBox(height: AppSpacing.s24),
-
-          // Attendance Chart Section
           Container(
             padding: const EdgeInsets.all(AppSpacing.s20),
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: AppRadius.borderR12,
               border: Border.all(color: AppColors.border),
+              boxShadow: AppShadows.elevation1,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: AppSpacing.s12,
+                  runSpacing: AppSpacing.s8,
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -175,8 +181,9 @@ class ClubDashboardScreen extends ConsumerWidget {
                       ],
                     ),
                     const AppStatusBadge(
-                      label: 'Realtime Aggregation',
+                      label: 'Tổng hợp trực tiếp',
                       variant: AppBadgeVariant.neutral,
+                      icon: Icon(Icons.query_stats),
                     ),
                   ],
                 ),
@@ -186,8 +193,6 @@ class ClubDashboardScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.s24),
-
-          // 2 Columns: Recent Pending Registrations & Upcoming Events
           LayoutBuilder(
             builder: (context, constraints) {
               final isWide = constraints.maxWidth >= 900;
@@ -218,10 +223,7 @@ class ClubDashboardScreen extends ConsumerWidget {
                       state.recentPendingRegistrations,
                     ),
                     const SizedBox(height: AppSpacing.s20),
-                    _buildRecentEventsCard(
-                      context,
-                      state.recentEvents,
-                    ),
+                    _buildRecentEventsCard(context, state.recentEvents),
                   ],
                 );
               }
@@ -242,76 +244,83 @@ class ClubDashboardScreen extends ConsumerWidget {
     required VoidCallback onTap,
     String? badgeLabel,
   }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: AppRadius.borderR12,
-      child: Container(
-        padding: const EdgeInsets.all(AppSpacing.s20),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
+    return Semantics(
+      button: true,
+      label: '$title: $value. $subtitle',
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
           borderRadius: AppRadius.borderR12,
-          border: Border.all(color: AppColors.border),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: bgColor,
-                borderRadius: AppRadius.borderR12,
-              ),
-              child: Icon(icon, color: iconColor, size: 24),
+          child: Container(
+            padding: const EdgeInsets.all(AppSpacing.s20),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: AppRadius.borderR12,
+              border: Border.all(color: AppColors.border),
             ),
-            const SizedBox(width: AppSpacing.s16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+            child: Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: bgColor,
+                    borderRadius: AppRadius.borderR12,
+                  ),
+                  child: Icon(icon, color: iconColor, size: 24),
+                ),
+                const SizedBox(width: AppSpacing.s16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Flexible(
-                        child: Text(
-                          title,
-                          style: AppTypography.textTheme.labelMedium?.copyWith(
-                            color: AppColors.textSecondary,
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              title,
+                              style: AppTypography.textTheme.labelMedium
+                                  ?.copyWith(color: AppColors.textSecondary),
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                          overflow: TextOverflow.ellipsis,
+                          if (badgeLabel != null) ...[
+                            const SizedBox(width: AppSpacing.s8),
+                            AppStatusBadge(
+                              label: badgeLabel,
+                              variant: AppBadgeVariant.warning,
+                              icon: const Icon(Icons.priority_high),
+                            ),
+                          ],
+                        ],
+                      ),
+                      const SizedBox(height: AppSpacing.s4),
+                      Text(
+                        value,
+                        style: AppTypography.textTheme.headlineSmall?.copyWith(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      if (badgeLabel != null) ...[
-                        const SizedBox(width: AppSpacing.s8),
-                        AppStatusBadge(
-                          label: badgeLabel,
-                          variant: AppBadgeVariant.warning,
+                      const SizedBox(height: AppSpacing.s4),
+                      Text(
+                        subtitle,
+                        style: AppTypography.textTheme.labelSmall?.copyWith(
+                          color: AppColors.textSecondary,
                         ),
-                      ],
+                      ),
                     ],
                   ),
-                  const SizedBox(height: AppSpacing.s4),
-                  Text(
-                    value,
-                    style: AppTypography.textTheme.headlineSmall?.copyWith(
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: AppTypography.textTheme.labelSmall?.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+                const Icon(
+                  Icons.chevron_right,
+                  color: AppColors.textSecondary,
+                  size: 20,
+                ),
+              ],
             ),
-            const Icon(
-              Icons.chevron_right,
-              color: AppColors.textSecondary,
-              size: 20,
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -334,16 +343,22 @@ class ClubDashboardScreen extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Đơn mới chờ duyệt',
-                style: AppTypography.textTheme.titleMedium?.copyWith(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.bold,
+              Expanded(
+                child: Text(
+                  'Đơn mới chờ duyệt',
+                  style: AppTypography.textTheme.titleMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              TextButton(
-                onPressed: () => context.go('/reviews'),
-                child: const Text('Xem tất cả'),
+              ConstrainedBox(
+                constraints: AppTouchTargets.minConstraints,
+                child: TextButton(
+                  onPressed: () => context.go('/reviews'),
+                  child: const Text('Xem tất cả'),
+                ),
               ),
             ],
           ),
@@ -379,7 +394,7 @@ class ClubDashboardScreen extends ConsumerWidget {
                         reg.participant.name.isNotEmpty
                             ? reg.participant.name[0].toUpperCase()
                             : 'U',
-                        style: const TextStyle(
+                        style: AppTypography.textTheme.labelMedium?.copyWith(
                           color: AppColors.primary,
                           fontWeight: FontWeight.bold,
                         ),
@@ -398,6 +413,7 @@ class ClubDashboardScreen extends ConsumerWidget {
                     trailing: const AppStatusBadge(
                       label: 'Chờ duyệt',
                       variant: AppBadgeVariant.warning,
+                      icon: Icon(Icons.schedule),
                     ),
                     onTap: () => context.go('/reviews'),
                   ),
@@ -426,16 +442,22 @@ class ClubDashboardScreen extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Sự kiện của CLB',
-                style: AppTypography.textTheme.titleMedium?.copyWith(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.bold,
+              Expanded(
+                child: Text(
+                  'Sự kiện của CLB',
+                  style: AppTypography.textTheme.titleMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              TextButton(
-                onPressed: () => context.go('/events'),
-                child: const Text('Xem tất cả'),
+              ConstrainedBox(
+                constraints: AppTouchTargets.minConstraints,
+                child: TextButton(
+                  onPressed: () => context.go('/events'),
+                  child: const Text('Xem tất cả'),
+                ),
               ),
             ],
           ),
@@ -468,7 +490,7 @@ class ClubDashboardScreen extends ConsumerWidget {
                     leading: Container(
                       width: 40,
                       height: 40,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: AppColors.primaryContainer,
                         borderRadius: AppRadius.borderR8,
                       ),
@@ -493,6 +515,7 @@ class ClubDashboardScreen extends ConsumerWidget {
                     trailing: AppStatusBadge(
                       label: _mapEventStatus(ev.status),
                       variant: _mapStatusVariant(ev.status),
+                      icon: Icon(_mapStatusIcon(ev.status)),
                     ),
                     onTap: () => context.go('/events'),
                   ),
@@ -518,5 +541,13 @@ class ClubDashboardScreen extends ConsumerWidget {
         'cancelled' => AppBadgeVariant.error,
         'archived' => AppBadgeVariant.info,
         _ => AppBadgeVariant.neutral,
+      };
+
+  IconData _mapStatusIcon(String status) => switch (status) {
+        'published' => Icons.public,
+        'draft' => Icons.edit_note,
+        'cancelled' => Icons.cancel_outlined,
+        'archived' => Icons.archive_outlined,
+        _ => Icons.info_outline,
       };
 }

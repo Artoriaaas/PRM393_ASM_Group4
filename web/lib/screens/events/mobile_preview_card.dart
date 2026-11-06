@@ -33,28 +33,29 @@ class MobilePreviewCard extends StatelessWidget {
   final String preparation;
   final List<String> activities;
 
+  String _formatDateTime(DateTime dt) {
+    final dd = dt.day.toString().padLeft(2, '0');
+    final mm = dt.month.toString().padLeft(2, '0');
+    final hh = dt.hour.toString().padLeft(2, '0');
+    final min = dt.minute.toString().padLeft(2, '0');
+    return '$dd/$mm/${dt.year} • $hh:$min';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 340,
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: AppRadius.borderR24,
         border: Border.all(color: AppColors.border, width: 2),
-        boxShadow: const [
-          BoxShadow(
-            color: Color.fromRGBO(0, 0, 0, 0.08),
-            offset: Offset(0, 10),
-            blurRadius: 24,
-          ),
-        ],
+        boxShadow: AppShadows.elevation2,
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: AppRadius.borderR24,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Mobile Simulated Status Bar
             Container(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.s16,
@@ -73,15 +74,13 @@ class MobilePreviewCard extends StatelessWidget {
                   const Row(
                     children: [
                       Icon(Icons.wifi, size: 14),
-                      SizedBox(width: 4),
+                      SizedBox(width: AppSpacing.s4),
                       Icon(Icons.battery_full, size: 14),
                     ],
                   ),
                 ],
               ),
             ),
-
-            // Event Header Cover
             Container(
               height: 140,
               padding: const EdgeInsets.all(AppSpacing.s16),
@@ -99,18 +98,31 @@ class MobilePreviewCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      AppStatusBadge(
-                        label: registrationMode == 'free'
-                            ? 'Tham gia tự do'
-                            : 'Yêu cầu đăng ký',
-                        variant: registrationMode == 'free'
-                            ? AppBadgeVariant.info
-                            : AppBadgeVariant.warning,
+                      Flexible(
+                        child: AppStatusBadge(
+                          label: registrationMode == 'free'
+                              ? 'Tham gia tự do'
+                              : 'Yêu cầu đăng ký',
+                          variant: registrationMode == 'free'
+                              ? AppBadgeVariant.info
+                              : AppBadgeVariant.warning,
+                          icon: Icon(
+                            registrationMode == 'free'
+                                ? Icons.lock_open_outlined
+                                : Icons.how_to_reg_outlined,
+                          ),
+                        ),
                       ),
-                      const CircleAvatar(
+                      CircleAvatar(
                         radius: 14,
-                        backgroundColor: Colors.white24,
-                        child: Icon(Icons.share, size: 14, color: Colors.white),
+                        backgroundColor: AppColors.onPrimary.withValues(
+                          alpha: 0.24,
+                        ),
+                        child: const Icon(
+                          Icons.share,
+                          size: 14,
+                          color: AppColors.onPrimary,
+                        ),
                       ),
                     ],
                   ),
@@ -126,14 +138,11 @@ class MobilePreviewCard extends StatelessWidget {
                 ],
               ),
             ),
-
-            // Body Info
             Padding(
               padding: const EdgeInsets.all(AppSpacing.s16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Club & Topic
                   Row(
                     children: [
                       const Icon(
@@ -158,13 +167,12 @@ class MobilePreviewCard extends StatelessWidget {
                         AppStatusBadge(
                           label: topic,
                           variant: AppBadgeVariant.neutral,
+                          icon: const Icon(Icons.sell_outlined),
                         ),
                       ],
                     ],
                   ),
                   const SizedBox(height: AppSpacing.s12),
-
-                  // Location
                   Row(
                     children: [
                       const Icon(
@@ -186,8 +194,6 @@ class MobilePreviewCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: AppSpacing.s8),
-
-                  // Time
                   Row(
                     children: [
                       const Icon(
@@ -196,17 +202,27 @@ class MobilePreviewCard extends StatelessWidget {
                         color: AppColors.textSecondary,
                       ),
                       const SizedBox(width: AppSpacing.s8),
-                      Text(
-                        '${startsAt.day}/${startsAt.month}/${startsAt.year} • ${startsAt.hour}:${startsAt.minute.toString().padLeft(2, '0')}',
-                        style: AppTypography.textTheme.labelSmall?.copyWith(
-                          color: AppColors.textSecondary,
+                      Expanded(
+                        child: Text(
+                          _formatDateTime(startsAt),
+                          style: AppTypography.textTheme.labelSmall?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                         ),
                       ),
                     ],
                   ),
+                  if (registrationMode != 'free' && deadline != null) ...[
+                    const SizedBox(height: AppSpacing.s4),
+                    Text(
+                      'Hạn đăng ký: ${_formatDateTime(deadline!)}',
+                      style: AppTypography.textTheme.labelSmall?.copyWith(
+                        color: AppColors.warning,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: AppSpacing.s12),
-
-                  // Capacity Progress
                   if (registrationMode != 'free') ...[
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -228,7 +244,7 @@ class MobilePreviewCard extends StatelessWidget {
                     ),
                     const SizedBox(height: AppSpacing.s4),
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: AppRadius.borderR6,
                       child: const LinearProgressIndicator(
                         value: 0.0,
                         backgroundColor: AppColors.border,
@@ -238,26 +254,32 @@ class MobilePreviewCard extends StatelessWidget {
                     ),
                     const SizedBox(height: AppSpacing.s12),
                   ],
-
-                  // Description snippet
                   Text(
                     description.isEmpty
                         ? 'Mô tả chi tiết sự kiện sẽ hiển thị tại đây...'
                         : description,
                     style: AppTypography.textTheme.bodyMedium?.copyWith(
                       color: AppColors.textPrimary,
-                      height: 1.4,
                     ),
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                   ),
+                  if (activities.isNotEmpty) ...[
+                    const SizedBox(height: AppSpacing.s8),
+                    Text(
+                      'Hoạt động (${activities.length}): ${activities.join(" • ")}',
+                      style: AppTypography.textTheme.labelSmall?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                   const SizedBox(height: AppSpacing.s16),
-
-                  // Simulated CTA Button
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    decoration: BoxDecoration(
+                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.s12),
+                    decoration: const BoxDecoration(
                       color: AppColors.primary,
                       borderRadius: AppRadius.borderR8,
                     ),

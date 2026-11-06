@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../screens/auth/sign_in_screen.dart';
@@ -9,12 +10,23 @@ import '../screens/reviews/review_queue_screen.dart';
 import '../screens/announcements/club_announcements_screen.dart';
 import '../viewmodels/web_auth_viewmodel.dart';
 
-final webRouterProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(webAuthViewModelProvider);
+class _RouterRefreshListenable extends ChangeNotifier {
+  void notify() => notifyListeners();
+}
 
-  return GoRouter(
+final webRouterProvider = Provider<GoRouter>((ref) {
+  final refreshNotifier = _RouterRefreshListenable();
+  ref.onDispose(refreshNotifier.dispose);
+
+  ref.listen<WebAuthUIState>(webAuthViewModelProvider, (_, next) {
+    refreshNotifier.notify();
+  });
+
+  final router = GoRouter(
     initialLocation: '/login',
+    refreshListenable: refreshNotifier,
     redirect: (context, state) {
+      final authState = ref.read(webAuthViewModelProvider);
       final isLoggingIn = state.uri.path == '/login';
 
       if (authState is WebAuthSuccess) {
@@ -22,11 +34,7 @@ final webRouterProvider = Provider<GoRouter>((ref) {
         return null;
       }
 
-      if (authState is WebAuthRejected) {
-        return '/login';
-      }
-
-      if (authState is! WebAuthSuccess && !isLoggingIn) {
+      if (!isLoggingIn) {
         return '/login';
       }
 
@@ -71,4 +79,7 @@ final webRouterProvider = Provider<GoRouter>((ref) {
       ),
     ],
   );
+
+  ref.onDispose(router.dispose);
+  return router;
 });

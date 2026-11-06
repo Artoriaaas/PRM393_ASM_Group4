@@ -3,17 +3,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:eventhub_core/eventhub_core.dart';
 import 'package:eventhub_web/app/providers.dart';
-import 'package:eventhub_web/screens/dashboard/club_dashboard_screen.dart';
 import 'package:eventhub_web/screens/dashboard/club_attendance_chart.dart';
+import 'package:eventhub_web/screens/dashboard/club_dashboard_screen.dart';
 import 'package:eventhub_web/screens/events/club_events_screen.dart';
 import 'package:eventhub_web/screens/events/live_qr_panel_screen.dart';
-import 'package:eventhub_web/services/fake_web_services.dart';
 import 'package:eventhub_web/services/web_contracts.dart';
+import 'support/fake_web_services.dart';
 
 void main() {
-  group('Stage 2 — Dashboard & Events & Live QR Check-in', () {
+  group('Stage 2 — Dashboard, 4 LoadStates, Events & Live QR Rotation', () {
     late FakeWebAuthService fakeAuth;
     late FakeClubService fakeClub;
+    late FakeWebAnalyticsService fakeAnalytics;
 
     setUp(() {
       fakeAuth = FakeWebAuthService(
@@ -26,6 +27,7 @@ void main() {
           clubName: 'Câu lạc bộ IT',
         ),
       );
+      fakeAnalytics = FakeWebAnalyticsService();
 
       final demoEvents = [
         Event(
@@ -95,8 +97,52 @@ void main() {
       );
     });
 
-    testWidgets('Dashboard renders 3 figures, chart and quick lists',
-        (tester) async {
+    testWidgets(
+      'Dashboard explicitly handles loading, error with Retry, and empty state with CTA',
+      (tester) async {
+        final emptyAndFailingClub = FakeClubService(
+          shouldFailLoad: true,
+          loadDelay: const Duration(milliseconds: 80),
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              webAuthServiceProvider.overrideWithValue(fakeAuth),
+              clubServiceProvider.overrideWithValue(emptyAndFailingClub),
+              webAnalyticsServiceProvider.overrideWithValue(fakeAnalytics),
+            ],
+            child: MaterialApp(
+              theme: EventHubTheme.lightTheme,
+              home: const ClubDashboardScreen(),
+            ),
+          ),
+        );
+
+        // 1. Loading state
+        await tester.pump(const Duration(milliseconds: 10));
+        expect(find.byType(AppLoadingState), findsOneWidget);
+
+        // 2. Error state + Retry button
+        await tester.pumpAndSettle();
+        expect(find.byType(AppErrorState), findsOneWidget);
+        expect(find.text('Thử lại'), findsOneWidget);
+
+        // Recover to Empty state via Retry
+        emptyAndFailingClub.shouldFailLoad = false;
+        emptyAndFailingClub.loadDelay = Duration.zero;
+        await tester.tap(find.text('Thử lại'));
+        await tester.pumpAndSettle();
+
+        // 3. Empty state with "Tạo sự kiện đầu tiên" CTA
+        expect(find.byType(AppEmptyState), findsOneWidget);
+        expect(find.text('Tạo sự kiện đầu tiên'), findsOneWidget);
+      },
+    );
+
+    testWidgets('Dashboard renders 3 figures, chart and quick lists', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(1280, 900);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
@@ -107,6 +153,7 @@ void main() {
           overrides: [
             webAuthServiceProvider.overrideWithValue(fakeAuth),
             clubServiceProvider.overrideWithValue(fakeClub),
+            webAnalyticsServiceProvider.overrideWithValue(fakeAnalytics),
           ],
           child: MaterialApp(
             theme: EventHubTheme.lightTheme,
@@ -117,99 +164,147 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Check Header & 3 Metrics
       expect(find.text('Bảng điều khiển CLB'), findsOneWidget);
       expect(find.text('Sự kiện đang mở'), findsOneWidget);
       expect(find.text('Đơn chờ duyệt'), findsOneWidget);
       expect(find.text('Đã duyệt / Điểm danh'), findsOneWidget);
 
-      // Check Chart presence
       expect(find.byType(ClubAttendanceChart), findsOneWidget);
       expect(find.text('Sức chứa (capacity)'), findsOneWidget);
       expect(find.text('Đã duyệt (activeCount)'), findsOneWidget);
 
-      // Check Quick lists
       expect(find.text('Đơn mới chờ duyệt'), findsOneWidget);
       expect(find.text('Tran Thi B'), findsOneWidget);
       expect(find.text('Sự kiện của CLB'), findsOneWidget);
       expect(find.text('Hội thảo AI & Flutter 2026'), findsWidgets);
     });
 
-    testWidgets('ClubEventsScreen filters by status and archives event cleanly',
-        (tester) async {
-      tester.view.physicalSize = const Size(1280, 900);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
+    testWidgets(
+      'ClubEventsScreen filters by status, clears filter, and renders cleanly on narrow 360dp',
+      (tester) async {
+        tester.view.physicalSize = const Size(360, 800);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            webAuthServiceProvider.overrideWithValue(fakeAuth),
-            clubServiceProvider.overrideWithValue(fakeClub),
-          ],
-          child: MaterialApp(
-            theme: EventHubTheme.lightTheme,
-            home: const ClubEventsScreen(),
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              webAuthServiceProvider.overrideWithValue(fakeAuth),
+              clubServiceProvider.overrideWithValue(fakeClub),
+              webAnalyticsServiceProvider.overrideWithValue(fakeAnalytics),
+            ],
+            child: MaterialApp(
+              theme: EventHubTheme.lightTheme,
+              home: const ClubEventsScreen(),
+            ),
           ),
-        ),
-      );
+        );
 
-      await tester.pumpAndSettle();
+        await tester.pumpAndSettle();
 
-      // Both events visible
-      expect(find.text('Hội thảo AI & Flutter 2026'), findsOneWidget);
-      expect(find.text('Workshop Git & CI/CD'), findsOneWidget);
+        expect(find.text('Hội thảo AI & Flutter 2026'), findsOneWidget);
+        expect(find.text('Workshop Git & CI/CD'), findsOneWidget);
 
-      // Filter to draft only
-      await tester.tap(find.text('Bản nháp (draft)'));
-      await tester.pumpAndSettle();
+        await tester.tap(find.text('Bản nháp (draft)'));
+        await tester.pumpAndSettle();
 
-      expect(find.text('Hội thảo AI & Flutter 2026'), findsNothing);
-      expect(find.text('Workshop Git & CI/CD'), findsOneWidget);
+        expect(find.text('Hội thảo AI & Flutter 2026'), findsNothing);
+        expect(find.text('Workshop Git & CI/CD'), findsOneWidget);
 
-      // Back to all
-      await tester.tap(find.text('Tất cả'));
-      await tester.pumpAndSettle();
-      expect(find.text('Hội thảo AI & Flutter 2026'), findsOneWidget);
-    });
+        await tester.tap(find.text('Đã hủy (cancelled)'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(AppEmptyState), findsOneWidget);
+        await tester.ensureVisible(find.text('Xóa bộ lọc'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Xóa bộ lọc'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Hội thảo AI & Flutter 2026'), findsOneWidget);
+      },
+    );
 
     testWidgets(
-        'LiveQrPanelScreen displays large QR, toggles session and shows live checkin count',
-        (tester) async {
-      tester.view.physicalSize = const Size(1280, 900);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
+      'LiveQrPanelScreen guards draft events, toggles session with int analytics, rotates & disables old QR, and hides student email',
+      (tester) async {
+        tester.view.physicalSize = const Size(1280, 900);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            webAuthServiceProvider.overrideWithValue(fakeAuth),
-            clubServiceProvider.overrideWithValue(fakeClub),
-          ],
-          child: const MaterialApp(
-            home: LiveQrPanelScreen(eventId: 'ev_1'),
+        // 1. Draft event ev_2 is guarded even if navigated directly
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              webAuthServiceProvider.overrideWithValue(fakeAuth),
+              clubServiceProvider.overrideWithValue(fakeClub),
+              webAnalyticsServiceProvider.overrideWithValue(fakeAnalytics),
+            ],
+            child: MaterialApp(
+              theme: EventHubTheme.lightTheme,
+              home: const LiveQrPanelScreen(eventId: 'ev_2'),
+            ),
           ),
-        ),
-      );
+        );
+        await tester.pumpAndSettle();
 
-      await tester.pumpAndSettle();
+        expect(
+          find.text('Chưa mở điều phối QR cho sự kiện này'),
+          findsOneWidget,
+        );
+        expect(fakeClub.qrCredentials, isEmpty);
 
-      expect(find.text('Điểm danh QR Trực tiếp'), findsOneWidget);
-      expect(find.text('Phiên đang đóng'), findsOneWidget);
-      expect(find.text('Mở phiên điểm danh'), findsOneWidget);
+        // 2. Published required event ev_1 opens QR panel cleanly
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              webAuthServiceProvider.overrideWithValue(fakeAuth),
+              clubServiceProvider.overrideWithValue(fakeClub),
+              webAnalyticsServiceProvider.overrideWithValue(fakeAnalytics),
+            ],
+            child: MaterialApp(
+              theme: EventHubTheme.lightTheme,
+              home: const LiveQrPanelScreen(eventId: 'ev_1'),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      // Toggle open session
-      await tester.tap(find.text('Mở phiên điểm danh'));
-      await tester.pumpAndSettle();
+        expect(find.text('Điểm danh QR Trực tiếp'), findsOneWidget);
+        expect(find.text('Phiên đang đóng'), findsOneWidget);
+        expect(fakeClub.qrCredentials.length, 1);
+        final firstHash = fakeClub.qrCredentials.keys.single;
+        expect(fakeClub.qrCredentials[firstHash]!.enabled, isTrue);
 
-      expect(find.text('Phiên đang mở'), findsOneWidget);
-      expect(find.text('Đóng phiên'), findsOneWidget);
+        // Open session -> Analytics uses int (1), never bool!
+        await tester.tap(find.text('Mở phiên điểm danh'));
+        await tester.pumpAndSettle();
 
-      // Verify participant in realtime list
-      expect(find.text('Nguyen Van A'), findsOneWidget);
-      expect(find.text('Chưa điểm danh'), findsOneWidget);
-    });
+        expect(find.text('Phiên đang mở'), findsOneWidget);
+        expect(
+          fakeAnalytics.loggedEvents.any(
+            (e) => e.$1 == 'qr_session_toggled' && e.$2?['open'] == 1,
+          ),
+          isTrue,
+        );
+
+        // Rotate QR -> old QR credential disabled, new QR credential enabled
+        await tester.tap(find.text('Làm mới QR'));
+        await tester.pumpAndSettle();
+
+        expect(fakeClub.qrCredentials.length, 2);
+        expect(fakeClub.qrCredentials[firstHash]!.enabled, isFalse);
+        final enabledCredentials = fakeClub.qrCredentials.values
+            .where((c) => c.enabled)
+            .toList();
+        expect(enabledCredentials.length, 1);
+
+        // Participant name & cohort shown, personal email omitted on hall projection
+        expect(find.text('Nguyen Van A'), findsOneWidget);
+        expect(find.textContaining('K17'), findsOneWidget);
+        expect(find.textContaining('a@fpt.edu.vn'), findsNothing);
+      },
+    );
   });
 }

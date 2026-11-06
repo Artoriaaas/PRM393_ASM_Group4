@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eventhub_core/eventhub_core.dart';
 import '../app/providers.dart';
 import 'web_auth_viewmodel.dart';
+
+const Object _unset = Object();
 
 class AnnouncementsState {
   const AnnouncementsState({
@@ -25,16 +28,20 @@ class AnnouncementsState {
     List<Announcement>? announcements,
     List<Event>? events,
     bool? isPublishing,
-    String? successMessage,
-    String? errorMessage,
+    Object? successMessage = _unset,
+    Object? errorMessage = _unset,
   }) {
     return AnnouncementsState(
       loadState: loadState ?? this.loadState,
       announcements: announcements ?? this.announcements,
       events: events ?? this.events,
       isPublishing: isPublishing ?? this.isPublishing,
-      successMessage: successMessage ?? this.successMessage,
-      errorMessage: errorMessage ?? this.errorMessage,
+      successMessage: identical(successMessage, _unset)
+          ? this.successMessage
+          : successMessage as String?,
+      errorMessage: identical(errorMessage, _unset)
+          ? this.errorMessage
+          : errorMessage as String?,
     );
   }
 }
@@ -42,55 +49,60 @@ class AnnouncementsState {
 class AnnouncementsViewModel extends Notifier<AnnouncementsState> {
   @override
   AnnouncementsState build() {
-    state = const AnnouncementsState(loadState: LoadState.loading());
-    _initStreams();
-    return state;
-  }
-
-  void _initStreams() {
-    final authState = ref.read(webAuthViewModelProvider);
-    final user = authState is WebAuthSuccess ? authState.user : null;
-    final clubId = user?.clubId ?? '';
-
+    final clubId = ref.watch(currentClubIdProvider);
     if (clubId.isEmpty) {
-      state = state.copyWith(
-        loadState: const LoadState.error(
+      return const AnnouncementsState(
+        loadState: LoadState.error(
           failure: AppFailure(
             code: 'club_not_found',
-            message: 'Không tìm thấy thông tin câu lạc bộ.',
+            message: 'Không tìm thấy thông tin câu lạc bộ được phân công.',
           ),
         ),
       );
-      return;
     }
 
-    final clubService = ref.read(clubServiceProvider);
+    final clubService = ref.watch(clubServiceProvider);
 
-    // Stream Events for dropdown
-    final eventsSub = clubService.streamClubEvents(clubId).listen((events) {
-      state = state.copyWith(events: events);
-    });
+    final eventsSub = clubService.streamClubEvents(clubId).listen(
+      (events) {
+        if (!ref.mounted) return;
+        state = state.copyWith(events: events);
+      },
+      onError: (_) {},
+    );
     ref.onDispose(eventsSub.cancel);
 
-    // Stream Announcements
-    final annSub =
-        clubService.streamClubAnnouncements(clubId).listen((announcements) {
-      state = state.copyWith(
-        loadState: announcements.isEmpty
-            ? const LoadState.empty(
-                message: 'Chưa có thông báo nào được phát hành.')
-            : LoadState.data(data: announcements),
-        announcements: announcements,
-      );
-    }, onError: (err) {
-      state = state.copyWith(
-        loadState: LoadState.error(
-          failure: AppFailure(code: 'stream_error', message: err.toString()),
-        ),
-      );
-    });
+    final annSub = clubService.streamClubAnnouncements(clubId).listen(
+      (announcements) {
+        if (!ref.mounted) return;
+        state = state.copyWith(
+          loadState: announcements.isEmpty
+              ? const LoadState.empty(
+                  message: 'Chưa có thông báo nào được phát hành.',
+                )
+              : LoadState.data(data: announcements),
+          announcements: announcements,
+        );
+      },
+      onError: (Object err) {
+        if (!ref.mounted) return;
+        state = state.copyWith(
+          loadState: LoadState.error(
+            failure: AppFailure(
+              code: 'stream_error',
+              message: 'Không thể tải lịch sử thông báo: $err',
+              isRetryable: true,
+            ),
+          ),
+        );
+      },
+    );
     ref.onDispose(annSub.cancel);
+
+    return const AnnouncementsState(loadState: LoadState.loading());
   }
+
+  void retry() => ref.invalidateSelf();
 
   Future<Result<String>> publish({
     required String title,
@@ -104,22 +116,24 @@ class AnnouncementsViewModel extends Notifier<AnnouncementsState> {
       errorMessage: null,
     );
 
-    final authState = ref.read(webAuthViewModelProvider);
-    final user = authState is WebAuthSuccess ? authState.user : null;
+    final user = ref.read(currentStaffProfileProvider);
     final staffUid = user?.uid ?? '';
     final clubId = user?.clubId ?? '';
-    final clubName = user?.clubName ?? 'Câu lạc bộ';
+    final clubName =
+        ref.read(activeClubProvider(clubId)).asData?.value?.name ??
+        user?.clubName ??
+        'Câu lạc bộ';
 
     final announcement = Announcement(
-      id: 'ann_${DateTime.now().millisecondsSinceEpoch}',
+      id: '',
       title: title.trim(),
       body: body.trim(),
       scope: scope,
       clubId: clubId,
       clubName: clubName,
-      eventId: eventId,
+      eventId: scope == 'event' ? eventId : null,
       authorUid: staffUid,
-      authorRole: 'staff',
+      authorRole: user?.role ?? 'staff',
       createdAt: DateTime.now(),
     );
 
@@ -127,21 +141,26 @@ class AnnouncementsViewModel extends Notifier<AnnouncementsState> {
     final analytics = ref.read(webAnalyticsServiceProvider);
 
     final res = await clubService.publishAnnouncement(announcement);
+    if (!ref.mounted) return res;
 
     res.when(
       success: (id) {
-        analytics.logEvent('announcement_published', {
-          'id': id,
-          'scope': scope,
-        });
+        unawaited(
+          analytics.logEvent('announcement_published', {
+            'announcement_id': id,
+            'scope': scope,
+          }),
+        );
         state = state.copyWith(
           isPublishing: false,
           successMessage: 'Đã phát hành thông báo thành công!',
+          errorMessage: null,
         );
       },
       failure: (failure) {
         state = state.copyWith(
           isPublishing: false,
+          successMessage: null,
           errorMessage: failure.message,
         );
       },

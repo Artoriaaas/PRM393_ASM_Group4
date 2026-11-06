@@ -4,14 +4,23 @@ import 'package:eventhub_core/eventhub_core.dart';
 import '../../viewmodels/review_queue_viewmodel.dart';
 import 'reject_reason_dialog.dart';
 
-class ReviewQueueScreen extends ConsumerWidget {
+class ReviewQueueScreen extends ConsumerStatefulWidget {
   const ReviewQueueScreen({super.key});
 
-  void _handleApprove(
-    BuildContext context,
-    WidgetRef ref,
-    Registration reg,
-  ) {
+  @override
+  ConsumerState<ReviewQueueScreen> createState() => _ReviewQueueScreenState();
+}
+
+class _ReviewQueueScreenState extends ConsumerState<ReviewQueueScreen> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _handleApprove(BuildContext context, Registration reg) {
     showDialog(
       context: context,
       builder: (ctx) => AppConfirmationDialog(
@@ -27,25 +36,30 @@ class ReviewQueueScreen extends ConsumerWidget {
     );
   }
 
-  void _handleReject(
-    BuildContext context,
-    WidgetRef ref,
-    Registration reg,
-  ) async {
+  Future<void> _handleReject(BuildContext context, Registration reg) async {
     final reason = await showDialog<String>(
       context: context,
-      builder: (_) => RejectReasonDialog(
-        participantName: reg.participant.name,
-      ),
+      builder: (_) => RejectReasonDialog(participantName: reg.participant.name),
     );
 
-    if (reason != null && reason.isNotEmpty) {
-      ref.read(reviewQueueViewModelProvider.notifier).reject(reg, reason: reason);
+    if (reason != null && reason.isNotEmpty && mounted) {
+      await ref
+          .read(reviewQueueViewModelProvider.notifier)
+          .reject(reg, reason: reason);
     }
   }
 
+  String _formatSubmittedAt(DateTime? dt) {
+    if (dt == null) return 'Chưa rõ thời điểm gửi';
+    final dd = dt.day.toString().padLeft(2, '0');
+    final mm = dt.month.toString().padLeft(2, '0');
+    final hh = dt.hour.toString().padLeft(2, '0');
+    final min = dt.minute.toString().padLeft(2, '0');
+    return 'Gửi lúc $dd/$mm/${dt.year} $hh:$min';
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final state = ref.watch(reviewQueueViewModelProvider);
 
     return Scaffold(
@@ -55,9 +69,11 @@ class ReviewQueueScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top Bar
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: AppSpacing.s16,
+              runSpacing: AppSpacing.s12,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,6 +96,7 @@ class ReviewQueueScreen extends ConsumerWidget {
                 ),
                 if (state.isProcessing)
                   const Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       SizedBox(
                         width: 18,
@@ -93,61 +110,69 @@ class ReviewQueueScreen extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: AppSpacing.s20),
-
             if (state.actionMessage != null) ...[
-              Container(
-                padding: const EdgeInsets.all(AppSpacing.s12),
-                decoration: BoxDecoration(
-                  color: AppColors.successContainer,
-                  borderRadius: AppRadius.borderR8,
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.check_circle_outline,
-                        color: AppColors.success, size: 20),
-                    const SizedBox(width: AppSpacing.s8),
-                    Expanded(
-                      child: Text(
-                        state.actionMessage!,
-                        style: AppTypography.textTheme.bodyMedium?.copyWith(
-                          color: AppColors.onSuccessContainer,
-                          fontWeight: FontWeight.w600,
+              Semantics(
+                liveRegion: true,
+                child: Container(
+                  padding: const EdgeInsets.all(AppSpacing.s12),
+                  decoration: const BoxDecoration(
+                    color: AppColors.successContainer,
+                    borderRadius: AppRadius.borderR8,
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.check_circle_outline,
+                        color: AppColors.success,
+                        size: 20,
+                      ),
+                      const SizedBox(width: AppSpacing.s8),
+                      Expanded(
+                        child: Text(
+                          state.actionMessage!,
+                          style: AppTypography.textTheme.bodyMedium?.copyWith(
+                            color: AppColors.onSuccessContainer,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: AppSpacing.s16),
             ],
-
             if (state.errorMessage != null) ...[
-              Container(
-                padding: const EdgeInsets.all(AppSpacing.s12),
-                decoration: BoxDecoration(
-                  color: AppColors.errorContainer,
-                  borderRadius: AppRadius.borderR8,
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.error_outline,
-                        color: AppColors.error, size: 20),
-                    const SizedBox(width: AppSpacing.s8),
-                    Expanded(
-                      child: Text(
-                        state.errorMessage!,
-                        style: AppTypography.textTheme.bodyMedium?.copyWith(
-                          color: AppColors.onErrorContainer,
+              Semantics(
+                liveRegion: true,
+                child: Container(
+                  padding: const EdgeInsets.all(AppSpacing.s12),
+                  decoration: const BoxDecoration(
+                    color: AppColors.errorContainer,
+                    borderRadius: AppRadius.borderR8,
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        color: AppColors.error,
+                        size: 20,
+                      ),
+                      const SizedBox(width: AppSpacing.s8),
+                      Expanded(
+                        child: Text(
+                          state.errorMessage!,
+                          style: AppTypography.textTheme.bodyMedium?.copyWith(
+                            color: AppColors.onErrorContainer,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: AppSpacing.s16),
             ],
-
-            // Filter & Search Controls
             Container(
               padding: const EdgeInsets.all(AppSpacing.s16),
               decoration: BoxDecoration(
@@ -158,87 +183,124 @@ class ReviewQueueScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 3,
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isWide = constraints.maxWidth >= 720;
+                      final searchWidget = Semantics(
+                        textField: true,
+                        label:
+                            'Tìm kiếm người đăng ký theo họ tên, email hoặc khóa K',
                         child: AppSearchField(
+                          controller: _searchController,
                           hintText: 'Tìm theo họ tên, email hoặc khóa K...',
                           onChanged: (q) => ref
                               .read(reviewQueueViewModelProvider.notifier)
                               .setSearchQuery(q),
+                          onClear: () => ref
+                              .read(reviewQueueViewModelProvider.notifier)
+                              .setSearchQuery(''),
                         ),
-                      ),
-                      const SizedBox(width: AppSpacing.s16),
-                      // Event Filter Dropdown
-                      Expanded(
-                        flex: 2,
-                        child: DropdownButtonFormField<String>(
-                          initialValue: state.eventFilter,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: AppColors.surfaceSubtle,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.s12,
-                              vertical: AppSpacing.s8,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: AppRadius.borderR8,
-                              borderSide: const BorderSide(color: AppColors.border),
-                            ),
+                      );
+
+                      final eventDropdown = DropdownButtonFormField<String>(
+                        key: ValueKey('event_filter_${state.eventFilter}'),
+                        initialValue: state.eventFilter,
+                        isExpanded: true,
+                        decoration: const InputDecoration(
+                          filled: true,
+                          fillColor: AppColors.surfaceSubtle,
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: AppSpacing.s12,
+                            vertical: AppSpacing.s12,
                           ),
-                          items: [
-                            const DropdownMenuItem(
-                              value: 'all',
-                              child: Text('Tất cả sự kiện CLB'),
-                            ),
-                            ...state.events.map(
-                              (e) => DropdownMenuItem(
-                                value: e.id,
-                                child: Text(
-                                  e.title,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                          border: OutlineInputBorder(
+                            borderRadius: AppRadius.borderR8,
+                            borderSide: BorderSide(color: AppColors.border),
+                          ),
+                        ),
+                        items: [
+                          const DropdownMenuItem(
+                            value: 'all',
+                            child: Text('Tất cả sự kiện CLB'),
+                          ),
+                          ...state.events.map(
+                            (e) => DropdownMenuItem(
+                              value: e.id,
+                              child: Text(
+                                e.title,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
+                          ),
+                        ],
+                        onChanged: (val) {
+                          if (val != null) {
+                            ref
+                                .read(reviewQueueViewModelProvider.notifier)
+                                .setEventFilter(val);
+                          }
+                        },
+                      );
+
+                      if (isWide) {
+                        return Row(
+                          children: [
+                            Expanded(flex: 3, child: searchWidget),
+                            const SizedBox(width: AppSpacing.s16),
+                            Expanded(flex: 2, child: eventDropdown),
                           ],
-                          onChanged: (val) {
-                            if (val != null) {
-                              ref
-                                  .read(reviewQueueViewModelProvider.notifier)
-                                  .setEventFilter(val);
-                            }
-                          },
-                        ),
-                      ),
-                    ],
+                        );
+                      }
+                      return Column(
+                        children: [
+                          searchWidget,
+                          const SizedBox(height: AppSpacing.s12),
+                          eventDropdown,
+                        ],
+                      );
+                    },
                   ),
                   const SizedBox(height: AppSpacing.s16),
-
                   Wrap(
                     alignment: WrapAlignment.spaceBetween,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     spacing: AppSpacing.s16,
                     runSpacing: AppSpacing.s12,
                     children: [
-                      // Status tabs
                       Wrap(
                         spacing: AppSpacing.s8,
                         runSpacing: AppSpacing.s8,
                         children: [
-                          _buildStatusTab(ref, 'Chờ duyệt', 'pending', state.statusFilter),
-                          _buildStatusTab(ref, 'Đã duyệt', 'approved', state.statusFilter),
-                          _buildStatusTab(ref, 'Bị từ chối', 'rejected', state.statusFilter),
-                          _buildStatusTab(ref, 'Đã hủy', 'cancelled', state.statusFilter),
-                          _buildStatusTab(ref, 'Tất cả', 'all', state.statusFilter),
+                          _buildStatusTab(
+                            'Chờ duyệt',
+                            'pending',
+                            state.statusFilter,
+                          ),
+                          _buildStatusTab(
+                            'Đã duyệt',
+                            'approved',
+                            state.statusFilter,
+                          ),
+                          _buildStatusTab(
+                            'Bị từ chối',
+                            'rejected',
+                            state.statusFilter,
+                          ),
+                          _buildStatusTab(
+                            'Đã hủy',
+                            'cancelled',
+                            state.statusFilter,
+                          ),
+                          _buildStatusTab('Tất cả', 'all', state.statusFilter),
                         ],
                       ),
-
-                      // Group filter
                       SegmentedButton<String>(
                         segments: const [
                           ButtonSegment(value: 'all', label: Text('Tất cả')),
-                          ButtonSegment(value: 'student', label: Text('Sinh viên')),
+                          ButtonSegment(
+                            value: 'student',
+                            label: Text('Sinh viên'),
+                          ),
                           ButtonSegment(value: 'guest', label: Text('Khách')),
                         ],
                         selected: {state.groupFilter},
@@ -254,33 +316,49 @@ class ReviewQueueScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.s20),
-
-            // Registrations Table (Handling 4 LoadStates)
             state.loadState.when(
-              initial: () => const Center(child: AppLoadingState()),
-              loading: (_) => const Center(child: AppLoadingState()),
+              initial: () => const Center(
+                child: AppLoadingState(message: 'Đang tải hàng đợi xét duyệt…'),
+              ),
+              loading: (_) => const Center(
+                child: AppLoadingState(message: 'Đang tải hàng đợi xét duyệt…'),
+              ),
               empty: (msg) => Center(
                 child: AppEmptyState(
                   title: 'Hàng đợi trống',
-                  message: msg ?? 'Không có đơn nào khớp với bộ lọc hiện tại.',
+                  message: msg ?? 'Chưa có đơn đăng ký nào trong câu lạc bộ.',
                 ),
               ),
               error: (failure, _) => Center(
                 child: AppErrorState(
                   title: 'Lỗi tải đơn đăng ký',
                   message: failure.message,
+                  onRetry: () =>
+                      ref.read(reviewQueueViewModelProvider.notifier).retry(),
                 ),
               ),
               data: (regs, updatedAt, isStale) {
                 if (regs.isEmpty) {
-                  return const Center(
+                  return Center(
                     child: AppEmptyState(
                       title: 'Không có đơn phù hợp',
-                      message: 'Thử đổi tiêu chí tìm kiếm hoặc trạng thái xét duyệt.',
+                      message:
+                          'Không có đơn nào khớp với bộ lọc hiện tại.',
+                      actionLabel: 'Hiển thị tất cả đơn',
+                      onAction: () {
+                        _searchController.clear();
+                        ref
+                            .read(reviewQueueViewModelProvider.notifier)
+                            .resetFilters();
+                      },
                     ),
                   );
                 }
-                return _buildRegistrationsTable(context, ref, regs, state.events);
+                return _buildRegistrationsTable(
+                  context,
+                  regs,
+                  state.eventsById,
+                );
               },
             ),
           ],
@@ -289,32 +367,34 @@ class ReviewQueueScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatusTab(
-    WidgetRef ref,
-    String label,
-    String key,
-    String current,
-  ) {
+  Widget _buildStatusTab(String label, String key, String current) {
     final isSelected = current == key;
-    return ChoiceChip(
-      label: Text(label),
+    return Semantics(
+      button: true,
       selected: isSelected,
-      onSelected: (_) => ref
-          .read(reviewQueueViewModelProvider.notifier)
-          .setStatusFilter(key),
-      selectedColor: AppColors.brandSubtle,
-      labelStyle: TextStyle(
-        color: isSelected ? AppColors.primary : AppColors.textPrimary,
-        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+      label: 'Lọc trạng thái đơn: $label',
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: AppTouchTargets.min),
+        child: ChoiceChip(
+          label: Text(label),
+          selected: isSelected,
+          onSelected: (_) => ref
+              .read(reviewQueueViewModelProvider.notifier)
+              .setStatusFilter(key),
+          selectedColor: AppColors.brandSubtle,
+          labelStyle: AppTypography.textTheme.labelMedium?.copyWith(
+            color: isSelected ? AppColors.primary : AppColors.textPrimary,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildRegistrationsTable(
     BuildContext context,
-    WidgetRef ref,
     List<Registration> regs,
-    List<Event> events,
+    Map<String, Event> eventsById,
   ) {
     return Container(
       decoration: BoxDecoration(
@@ -330,45 +410,32 @@ class ReviewQueueScreen extends ConsumerWidget {
             const Divider(height: 1, color: AppColors.border),
         itemBuilder: (context, index) {
           final reg = regs[index];
-          final event = events.where((e) => e.id == reg.eventId).firstOrNull;
+          final event = eventsById[reg.eventId];
 
-          return Padding(
-            padding: const EdgeInsets.all(AppSpacing.s16),
-            child: Row(
-              children: [
-                // Avatar
-                CircleAvatar(
-                  backgroundColor: AppColors.primaryContainer,
-                  child: Text(
-                    reg.participant.name.isNotEmpty
-                        ? reg.participant.name[0].toUpperCase()
-                        : 'U',
-                    style: const TextStyle(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.s16),
+          return Semantics(
+            container: true,
+            label:
+                'Đơn đăng ký của ${reg.participant.name}, trạng thái ${_mapStatusLabel(reg.status)}',
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.s16),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final isWide = constraints.maxWidth >= 920;
 
-                // Participant Info
-                Expanded(
-                  flex: 3,
-                  child: Column(
+                  final participantSection = Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: AppSpacing.s8,
+                        runSpacing: AppSpacing.s4,
                         children: [
-                          Flexible(
-                            child: Text(
-                              reg.participant.name,
-                              style: AppTypography.textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                              overflow: TextOverflow.ellipsis,
+                          Text(
+                            reg.participant.name,
+                            style: AppTypography.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(width: AppSpacing.s8),
                           AppStatusBadge(
                             label: reg.participant.group == 'student'
                                 ? 'Sinh viên FPTU'
@@ -376,18 +443,30 @@ class ReviewQueueScreen extends ConsumerWidget {
                             variant: reg.participant.group == 'student'
                                 ? AppBadgeVariant.info
                                 : AppBadgeVariant.neutral,
+                            icon: Icon(
+                              reg.participant.group == 'student'
+                                  ? Icons.school_outlined
+                                  : Icons.person_outline,
+                            ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: AppSpacing.s4),
                       Text(
                         '${reg.participant.email} • ${reg.participant.group == 'student' ? reg.participant.cohort : reg.participant.organization} • SĐT: ${reg.participant.phone.isEmpty ? 'Không có' : reg.participant.phone}',
                         style: AppTypography.textTheme.labelSmall?.copyWith(
                           color: AppColors.textSecondary,
                         ),
                       ),
+                      const SizedBox(height: AppSpacing.s4),
+                      Text(
+                        _formatSubmittedAt(reg.createdAt),
+                        style: AppTypography.textTheme.labelSmall?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
                       if (reg.isRejected && reg.reason != null) ...[
-                        const SizedBox(height: 4),
+                        const SizedBox(height: AppSpacing.s4),
                         Text(
                           'Lý do từ chối: ${reg.reason}',
                           style: AppTypography.textTheme.labelSmall?.copyWith(
@@ -397,14 +476,9 @@ class ReviewQueueScreen extends ConsumerWidget {
                         ),
                       ],
                     ],
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.s16),
+                  );
 
-                // Event & Capacity
-                Expanded(
-                  flex: 2,
-                  child: Column(
+                  final eventSection = Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
@@ -415,58 +489,122 @@ class ReviewQueueScreen extends ConsumerWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: AppSpacing.s4),
                       Text(
                         event != null
-                            ? 'Còn ${event.capacity - event.activeCount}/${event.capacity} chỗ'
-                            : 'Không rõ sức chứa',
+                            ? 'Còn ${event.available}/${event.capacity} chỗ (${event.activeCount}/${event.capacity})'
+                            : 'Đang đồng bộ sức chứa',
                         style: AppTypography.textTheme.labelSmall?.copyWith(
                           color: AppColors.textSecondary,
                         ),
                       ),
                     ],
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.s16),
+                  );
 
-                // Status Badge
-                AppStatusBadge(
-                  label: _mapStatusLabel(reg.status),
-                  variant: _mapStatusVariant(reg.status),
-                ),
-                const SizedBox(width: AppSpacing.s16),
+                  final badgeWidget = AppStatusBadge(
+                    label: _mapStatusLabel(reg.status),
+                    variant: _mapStatusVariant(reg.status),
+                    icon: Icon(_mapStatusIcon(reg.status)),
+                  );
 
-                // Action Buttons (Only for Pending)
-                if (reg.isPending) ...[
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.success,
-                      foregroundColor: AppColors.onSuccess,
-                      elevation: 0,
-                    ),
-                    onPressed: () => _handleApprove(context, ref, reg),
-                    child: const Text('Duyệt (Approve)'),
-                  ),
-                  const SizedBox(width: AppSpacing.s8),
-                  OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.error,
-                      side: const BorderSide(color: AppColors.error),
-                    ),
-                    onPressed: () => _handleReject(context, ref, reg),
-                    child: const Text('Từ chối (Reject)'),
-                  ),
-                ] else ...[
-                  const SizedBox(
-                    width: 180,
-                    child: Text(
-                      'Đã xử lý',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: AppColors.textDisabled),
-                    ),
-                  ),
-                ],
-              ],
+                  final actionsWidget = reg.isPending
+                      ? Wrap(
+                          spacing: AppSpacing.s8,
+                          runSpacing: AppSpacing.s8,
+                          children: [
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                minHeight: AppTouchTargets.min,
+                              ),
+                              child: ElevatedButton.icon(
+                                icon: const Icon(Icons.check, size: 16),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.success,
+                                  foregroundColor: AppColors.onSuccess,
+                                  elevation: 0,
+                                ),
+                                onPressed: () => _handleApprove(context, reg),
+                                label: const Text('Duyệt (Approve)'),
+                              ),
+                            ),
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                minHeight: AppTouchTargets.min,
+                              ),
+                              child: OutlinedButton.icon(
+                                icon: const Icon(Icons.close, size: 16),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: AppColors.error,
+                                  side: const BorderSide(
+                                    color: AppColors.error,
+                                  ),
+                                ),
+                                onPressed: () => _handleReject(context, reg),
+                                label: const Text('Từ chối (Reject)'),
+                              ),
+                            ),
+                          ],
+                        )
+                      : SizedBox(
+                          width: isWide ? 180 : null,
+                          child: Text(
+                            'Đã xử lý',
+                            textAlign: isWide
+                                ? TextAlign.center
+                                : TextAlign.start,
+                            style: AppTypography.textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textDisabled,
+                            ),
+                          ),
+                        );
+
+                  if (isWide) {
+                    return Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: AppColors.primaryContainer,
+                          child: Text(
+                            reg.participant.name.isNotEmpty
+                                ? reg.participant.name[0].toUpperCase()
+                                : 'U',
+                            style: AppTypography.textTheme.labelMedium
+                                ?.copyWith(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.s16),
+                        Expanded(flex: 3, child: participantSection),
+                        const SizedBox(width: AppSpacing.s16),
+                        Expanded(flex: 2, child: eventSection),
+                        const SizedBox(width: AppSpacing.s16),
+                        badgeWidget,
+                        const SizedBox(width: AppSpacing.s16),
+                        actionsWidget,
+                      ],
+                    );
+                  }
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(child: eventSection),
+                          const SizedBox(width: AppSpacing.s8),
+                          badgeWidget,
+                        ],
+                      ),
+                      const SizedBox(height: AppSpacing.s12),
+                      participantSection,
+                      const SizedBox(height: AppSpacing.s12),
+                      actionsWidget,
+                    ],
+                  );
+                },
+              ),
             ),
           );
         },
@@ -488,5 +626,13 @@ class ReviewQueueScreen extends ConsumerWidget {
         'rejected' => AppBadgeVariant.error,
         'cancelled' => AppBadgeVariant.neutral,
         _ => AppBadgeVariant.neutral,
+      };
+
+  IconData _mapStatusIcon(String status) => switch (status) {
+        'pending' => Icons.schedule,
+        'approved' => Icons.check_circle_outline,
+        'rejected' => Icons.cancel_outlined,
+        'cancelled' => Icons.remove_circle_outline,
+        _ => Icons.info_outline,
       };
 }
