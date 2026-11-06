@@ -1,8 +1,7 @@
 import 'package:eventhub/app/app.dart';
 import 'package:eventhub/app/router.dart';
-import 'package:eventhub/app/providers.dart';
-import 'package:eventhub/models/auth_state.dart';
 import 'package:eventhub/viewmodels/session_viewmodel.dart';
+import 'package:eventhub/models/auth_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../app/providers.dart';
-import '../app/event_providers.dart';
+import '../viewmodels/session_viewmodel.dart';
 
 class ProfileState {
   const ProfileState({

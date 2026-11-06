@@ -1,5 +1,5 @@
-import 'cloud_providers.dart';
-import 'event_providers.dart';
+import '../viewmodels/cloud_state.dart';
+import '../viewmodels/event_data_providers.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../app/event_providers.dart';
+import '../../viewmodels/event_data_providers.dart';
 import '../../services/device/qr_camera_service.dart';
 import '../../viewmodels/booking_viewmodel.dart';
 import '../../theme/theme.dart';

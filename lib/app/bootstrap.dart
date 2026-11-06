@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/firebase/firebase_bootstrap.dart';
 import '../theme/theme.dart';
 import '../widgets/widgets.dart';
-import 'providers.dart';
+import '../viewmodels/session_viewmodel.dart';
 import 'app.dart';
 
 class FirebaseAppBootstrap extends StatefulWidget {

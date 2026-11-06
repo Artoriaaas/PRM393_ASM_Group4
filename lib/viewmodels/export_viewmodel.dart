@@ -3,9 +3,9 @@ import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../app/event_providers.dart';
-import '../app/cloud_providers.dart';
-import '../app/report_providers.dart';
+import '../viewmodels/event_data_providers.dart';
+import '../viewmodels/cloud_state.dart';
+import '../services/report_providers.dart';
 import '../models/report_row.dart';
 import '../utils/event_formatters.dart' show eventWhen;
 

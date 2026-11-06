@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:eventhub/app/providers.dart';
+import 'package:eventhub/viewmodels/session_viewmodel.dart';
 import 'package:eventhub/services/initial_auth_service.dart';
 import 'package:eventhub/utils/app_failure.dart';
 import 'package:eventhub/viewmodels/auth_viewmodel.dart';

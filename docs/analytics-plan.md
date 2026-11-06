@@ -8,7 +8,7 @@ Lập trước khi thêm tracking (31/10/2026). Analytics không được làm t
 | logout | Người dùng đăng xuất | method:string manual | Phiên kết thúc thế nào? | DebugView |
 | search | A02/A03 gửi tìm kiếm | query_length:int | Người dùng có dùng tìm kiếm? | DebugView |
 | view_event_detail | Mở A04 | screen_code:string A04 | Bao nhiêu lượt xem detail? | DebugView |
-| view_registration_detail | Mở A08/A06 | screen_code:string | Người dùng xem đăng ký ở đâu? | DebugView |
+| view_registration_detail | Mở A08 | screen_code:string | Người dùng xem đăng ký ở đâu? | DebugView |
 | view_checkin_result | Mở A12 | screen_code:string A12 | Bao nhiêu lượt xem kết quả? | DebugView |
 | booking_submit | Gửi command đăng ký/hủy/checkin | action:string | Flow nào được dùng? | DebugView |
 | booking_result | Backend confirmed/rejected/unknown | action:string, result:string | Flow nào có lỗi/phục hồi? | DebugView |
@@ -22,3 +22,5 @@ Lập trước khi thêm tracking (31/10/2026). Analytics không được làm t
 Có thể bổ sung event sau nhưng phải cập nhật bảng trước khi instrument. Không coi việc gọi SDK thành bằng chứng event đã nhận trên console.
 
 Enable DebugView trên máy thử: `adb shell setprop debug.firebase.analytics.app com.eventhub.app`; mở Analytics → DebugView và chạy từng trigger. Chụp từng event + params vào `evidence/analytics/`. Tắt bằng `adb shell setprop debug.firebase.analytics.app .none.`. Bảng kết quả console hiện chưa có.
+
+Screen identity được quản lý tại `lib/utils/screen_identity.dart`: A01a–d riêng biệt; A11 quét QR; LAB3_EXPORT và LAB3_FIREBASE riêng khu demo. Route khởi tạo/development/không tồn tại không phát view_screen. Không đưa ID hoặc query vào screen_code.

@@ -4,9 +4,9 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:async';
 
-import 'package:eventhub/app/providers.dart';
-import 'package:eventhub/app/cloud_providers.dart';
-import 'package:eventhub/app/report_providers.dart';
+import 'package:eventhub/viewmodels/session_viewmodel.dart';
+import 'package:eventhub/viewmodels/cloud_state.dart';
+import 'package:eventhub/services/report_providers.dart';
 import 'package:eventhub/models/auth_state.dart';
 import 'package:eventhub/models/report_row.dart';
 import 'package:eventhub/models/cloud_settings.dart';
@@ -15,7 +15,6 @@ import 'package:eventhub/services/contracts/report_services.dart';
 import 'package:eventhub/services/report/pdf_report_service.dart';
 import 'package:eventhub/viewmodels/cloud_tools_viewmodel.dart';
 import 'package:eventhub/viewmodels/export_viewmodel.dart';
-import 'package:eventhub/viewmodels/session_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

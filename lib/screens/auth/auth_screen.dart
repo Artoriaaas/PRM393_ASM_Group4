@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../app/providers.dart';
+import '../../viewmodels/session_viewmodel.dart';
 import '../../app/auth_redirect.dart';
 import '../../models/auth_state.dart';
 import '../../theme/theme.dart';

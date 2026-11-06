@@ -1,4 +1,4 @@
-import 'package:eventhub/app/event_providers.dart';
+import 'package:eventhub/viewmodels/event_data_providers.dart';
 import 'package:eventhub/models/event.dart';
 import 'package:eventhub/screens/events/event_list_screen.dart';
 import 'package:eventhub/viewmodels/event_viewmodels.dart';

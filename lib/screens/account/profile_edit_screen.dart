@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../app/providers.dart';
+import '../../viewmodels/session_viewmodel.dart';
 import '../../models/auth_state.dart';
 import '../../viewmodels/profile_viewmodel.dart';
 import '../../theme/theme.dart';

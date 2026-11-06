@@ -37,7 +37,6 @@ void main() {
       final label = tester.widget<Text>(find.text('Xác nhận hủy đăng ký'));
       expect(label.maxLines, isNull);
       expect(find.byType(AppButton), findsNWidgets(2));
-
     });
   }
 }

@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import '../app/cloud_providers.dart';
+import '../viewmodels/cloud_state.dart';
 
 import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../app/event_providers.dart';
+import '../viewmodels/event_data_providers.dart';
 import '../models/event.dart';
 
 class BookingState {

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../app/providers.dart';
+import '../services/auth_providers.dart';
+export '../services/auth_providers.dart';
 import '../models/auth_state.dart';
 
 class SessionViewModel extends Notifier<AuthState> {
@@ -18,3 +19,11 @@ class SessionViewModel extends Notifier<AuthState> {
     await ref.read(authServiceProvider).signOut();
   }
 }
+
+final sessionViewModelProvider = NotifierProvider<SessionViewModel, AuthState>(
+  SessionViewModel.new,
+);
+final signedInUidProvider = Provider<String?>((ref) {
+  final auth = ref.watch(sessionViewModelProvider);
+  return auth is AuthStateSignedIn ? auth.uid : null;
+});

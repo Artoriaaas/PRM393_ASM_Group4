@@ -1,10 +1,9 @@
-import 'package:eventhub/app/event_providers.dart';
+import 'package:eventhub/viewmodels/event_data_providers.dart';
 
 import 'support/fake_event_service.dart';
 
-import 'package:eventhub/app/providers.dart';
-import 'package:eventhub/models/auth_state.dart';
 import 'package:eventhub/viewmodels/session_viewmodel.dart';
+import 'package:eventhub/models/auth_state.dart';
 import 'package:eventhub/app/app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

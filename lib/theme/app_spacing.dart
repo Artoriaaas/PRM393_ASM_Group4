@@ -20,4 +20,5 @@ class AppSpacing {
   static const double sectionGap = s24;
   static const double itemGap = s12;
   static const double elementGap = s8;
+  static const double inputVertical = 14.0;
 }

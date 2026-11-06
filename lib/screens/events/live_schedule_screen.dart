@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../app/event_providers.dart';
+import '../../viewmodels/event_data_providers.dart';
 import '../../models/event.dart';
 import '../../viewmodels/event_viewmodels.dart';
 import '../../viewmodels/booking_viewmodel.dart';
@@ -72,7 +72,11 @@ class _LiveScheduleState extends ConsumerState<LiveScheduleScreen> {
                   padding: const EdgeInsets.all(AppSpacing.s16),
                   children: [
                     for (final entry in rows)
-                      _ScheduleItem(entry.registration, event: entry.event),
+                      _ScheduleItem(
+                        entry.registration,
+                        event: entry.event,
+                        ended: entry.ended,
+                      ),
                   ],
                 );
               },
@@ -85,9 +89,10 @@ class _LiveScheduleState extends ConsumerState<LiveScheduleScreen> {
 }
 
 class _ScheduleItem extends ConsumerWidget {
-  const _ScheduleItem(this.r, {required this.event});
+  const _ScheduleItem(this.r, {required this.event, required this.ended});
   final Registration r;
   final Event? event;
+  final bool ended;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final e = event;
@@ -102,7 +107,6 @@ class _ScheduleItem extends ConsumerWidget {
         ],
       );
     }
-    final ended = scheduleBucket(r, e, DateTime.now()) == 1;
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.s16),
       child: EventPanel(
