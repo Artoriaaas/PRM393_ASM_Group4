@@ -42,7 +42,7 @@ def run_case():
             trace_id = re.sub(r'[^\w-]', '_', str(payload.get('trace_id') or uuid.uuid4()))
             (evidence / f'{case_id}-run-{run_id}-{trace_id}.json').write_text(serialized, encoding='utf-8')
         try:
-            result = asyncio.run(client.run(instruction, profile="flash", device_serial=os.getenv("ARTEMIS_DEVICE", "emulator-5554"), timeout=600))
+            result = asyncio.run(client.run(instruction, profile="flash", device_serial=os.getenv("ARTEMIS_DEVICE", "emulator-5554"), timeout=int(os.getenv("ARTEMIS_CASE_TIMEOUT_SECONDS", "1800"))))
         except Exception as exc:
             save({'case_id': case_id, 'status': 'client_error', 'acceptance_status': 'not_passed',
                   'elapsed_seconds': time.monotonic() - started, 'error_type': type(exc).__name__})

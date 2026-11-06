@@ -44,3 +44,9 @@ Sau khi cấu hình các biến ở trên, thử `pytest e2e_test -k TC01 -v`. K
 Có thể dùng `-Selection 'TC01 or TC03'` để chẩn đoán một nhóm; không dùng kết quả nhóm nhỏ thay cho yêu cầu bao phủ toàn bộ flow. Script chạy 3 lượt, lưu JUnit và `summary.csv` tại một thư mục có timestamp trong `evidence/artemis/local-runs/` (gitignore vì log có thể chứa dữ liệu tài khoản). Bảng tính theo kết quả pytest cuối cùng, kể cả assertion bổ sung của TC18, không theo status tự báo của model. Skipped không tính là pass; thiếu 3 lượt phải review. Đây là thời gian pytest đo cho từng ca.
 
 Trước nộp: kiểm tra/ẩn dữ liệu riêng tư trong XML và trace, sao chép bằng chứng đã duyệt sang thư mục evidence được theo dõi Git, bổ sung lý do từng lỗi/skipped và liên kết replay. Script không tự reset dữ liệu cloud; chuẩn bị fixture độc lập theo test-plan trước mỗi ca.
+
+## Groq slow mode
+
+Local runtime `ARTEMIS_MIN_MODEL_INTERVAL_SECONDS=90` giãn nhịp mỗi model call; `ARTEMIS_MODEL_MAX_TOKENS=1024` giới hạn output. Pytest `ARTEMIS_CASE_TIMEOUT_SECONDS` mặc định 1800 giây để không timeout chỉ vì nhịp chậm. Chạy tuần tự; không chạy nhiều model task song song. Đây là cấu hình tương thích, không bỏ assertion hoặc thay thế yêu cầu 3 lượt/ca. Phiên Pro vẫn phải 15–30 phút thật.
+
+Transport pacing: `ARTEMIS_GROQ_HTTP_INTERVAL_SECONDS=90` applies to all OpenAI-compatible model HTTP requests from the runtime, including auxiliary observations and SDK retries. With this set, use `ARTEMIS_MIN_MODEL_INTERVAL_SECONDS=0` to avoid double delays. Test timeout can be set via `ARTEMIS_CASE_TIMEOUT_SECONDS` (seconds). This local runtime patch is disclosed; do not claim it is unmodified upstream.

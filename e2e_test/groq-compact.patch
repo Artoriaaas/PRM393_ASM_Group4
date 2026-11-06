@@ -61,7 +61,7 @@ index 3c21cf8..0219d0e 100644
 -- **Failure (`status="failed"`)**: If the task is genuinely impossible due to paywalls, unrecoverable crashes, or hitting an absolute dead end after sensible fallbacks, call `report_task_status(status="failed", ...)` with the exact blocking reason.
 +Mandatory: perform ALL requested actions even if the final screen is already visible at startup. For login tests, actually log out and sign in; merely observing Discover is insufficient. report_task_status.explanation MUST contain a JSON string matching the user-requested schema, not prose. Use exact required screen codes from the instruction. If any required step was skipped, report failed, never completed.
 diff --git a/artemis/agents/flash/runner.py b/artemis/agents/flash/runner.py
-index 3ea3f68..0dcb8be 100644
+index 3ea3f68..5cc279c 100644
 --- a/artemis/agents/flash/runner.py
 +++ b/artemis/agents/flash/runner.py
 @@ -17,8 +17,8 @@
@@ -168,7 +168,7 @@ index 3ea3f68..0dcb8be 100644
 +            if isinstance(value, list):
 +                return [compact(v) for v in value]
 +            return value
-+        bound_llm = llm.bind_tools([compact(convert_to_openai_tool(t)) for t in current_tools])
++        bound_llm = llm.bind_tools([compact(convert_to_openai_tool(t)) for t in current_tools], max_tokens=int(os.getenv("ARTEMIS_MODEL_MAX_TOKENS", "1024")))
 +
 +        # Keep one live screenshot; full evidence remains in DataEngine.
 +        latest = next((i for i in range(len(messages)-1, 0, -1) if isinstance(messages[i], HumanMessage)), len(messages)-1)
@@ -190,3 +190,46 @@ index 3ea3f68..0dcb8be 100644
              # estimate (same as the Pro operator).
              ledger.record_prompt_tokens(
                  step_token_usage.get("prompt_tokens"),
+diff --git a/artemis/llm/router.py b/artemis/llm/router.py
+index f2e6b42..b6c12d6 100644
+--- a/artemis/llm/router.py
++++ b/artemis/llm/router.py
+@@ -84,6 +84,22 @@ class ModelProvider(StrEnum):
+         return provider
+ 
+ 
++# Local Groq Free transport pacing. All SDK retries/observer calls share it.
++_groq_gate = None
++_groq_last_request = 0.0
++
++async def _pace_groq_request(request):
++    import asyncio, time
++    global _groq_gate, _groq_last_request
++    interval = float(os.getenv("ARTEMIS_GROQ_HTTP_INTERVAL_SECONDS", "0"))
++    if interval <= 0 or request.url.host != "api.groq.com":
++        return
++    if _groq_gate is None:
++        _groq_gate = asyncio.Lock()
++    async with _groq_gate:
++        await asyncio.sleep(max(0.0, interval - (time.monotonic() - _groq_last_request)))
++        _groq_last_request = time.monotonic()
++
+ class ModelEndpoint(BaseModel):
+     """Configuration definition for an LLM/VLM model endpoint."""
+ 
+@@ -282,6 +298,7 @@ class ModelFactory:
+ 
+         elif provider == ModelProvider.OPENAI:
+             from langchain_openai import ChatOpenAI
++            import httpx
+ 
+             api_key = (
+                 endpoint.api_key
+@@ -298,6 +315,7 @@ class ModelFactory:
+                 "api_key": api_key,
+                 "base_url": base_url,
+                 "timeout": endpoint.timeout_seconds,
++                "http_async_client": httpx.AsyncClient(event_hooks={"request": [_pace_groq_request]}),
+             }
+             if endpoint.reasoning_effort:
+                 kwargs["reasoning_effort"] = endpoint.reasoning_effort
