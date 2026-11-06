@@ -13,3 +13,9 @@ Pending: healthy emulator and dedicated Google test account; then SDK daemon, re
 ## Follow-up
 
 Local SDK server started successfully on loopback port 8001 with Groq model configured. TC01 was submitted but rejected before execution (HTTP 409 device locked/not ready). Android diagnostics show com.android.systemui ANR after cold boot, despite keyguard showing=false/deviceLocked=0. These setup attempts are not passing runs and not application failures. Dedicated account was supplied privately; omitted from evidence. A healthy Android device is required before regression can continue.
+
+## Groq compact retry
+
+Shortened prompt/tool descriptions, kept navigation tools and latest observation with bounded history (local patch disclosed). Fixed SDK Flash result omission by reading the exact session report through the host steps API; missing/wrong structured observations still fail assertions. TC01 explicitly requires logout/login before Discover.
+
+Session fc739a62-16b6-4d88-a089-706a575e548f produced actual tap actions, but repeatedly targeted Google sign-in without completing login. Groq repeatedly returned 429 (~40-second waits). Run stopped rather than counted as passed. Current combination is not validated for the required regression or Pro suite. No app login defect is established by these agent failures.

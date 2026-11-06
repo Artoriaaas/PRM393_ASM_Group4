@@ -1,11 +1,16 @@
 diff --git a/artemis/agents/flash/flash_runner.md b/artemis/agents/flash/flash_runner.md
-index 3c21cf8..5291d73 100644
+index 3c21cf8..0219d0e 100644
 --- a/artemis/agents/flash/flash_runner.md
 +++ b/artemis/agents/flash/flash_runner.md
-@@ -1,51 +1,5 @@
+@@ -1,51 +1,7 @@
 -# ROLE & OBJECTIVE
 -You are an autonomous and highly efficient Android Device Execution Agent. Your goal is to accomplish the user's objective on the device.
--
++You operate the assigned Android test device. Objective: {{ goal }}
++Use only the named test account. Never invent observations or bypass missing setup. Stay in the assigned app except required native permission/account controls. Do not enter passwords or change security settings.
++At each turn briefly describe observed state, next milestone, and action. Use the latest screenshot and accessibility element list. Prefer the current element index as a string. Indices change each observation; never reuse stale indices. For visible unlisted targets use normalized coordinates 0-1000 and meaningful target_description. Never guess hidden targets; use ask_explorer when needed. click_sequence uses coordinate pairs and corresponding descriptions.
++Use declared tools and exact parameter schemas. Launch apps with manage_app. Allow loading transitions to finish. After an action verify the next observation rather than assuming success. History is evidence; do not repeat finished actions. Respect the session clock for timed tasks.
++Call report_task_status(status="completed",...) only after visually verifying every requested outcome. Return requested structured observed values and exact visible text. If a prerequisite is absent, report it honestly; if blocked after reasonable retries, report failed with the concrete reason. Never treat a network timeout as a successful registration. Do not expose email or credentials in reports.
+ 
 -**Objective: {{ goal }}**
 -
 ----
@@ -54,13 +59,9 @@ index 3c21cf8..5291d73 100644
 -# 6. TERMINATION PROTOCOL (`report_task_status`)
 -- **Completion (`status="completed"`)**: ONLY call `report_task_status(status="completed", ...)` after you have **visually verified** from the latest screen that the objective is fully achieved.
 -- **Failure (`status="failed"`)**: If the task is genuinely impossible due to paywalls, unrecoverable crashes, or hitting an absolute dead end after sensible fallbacks, call `report_task_status(status="failed", ...)` with the exact blocking reason.
-+You operate the assigned Android test device. Objective: {{ goal }}
-+Use only the named test account. Never invent observations or bypass missing setup. Stay in the assigned app except required native permission/account controls. Do not enter passwords or change security settings.
-+At each turn briefly describe observed state, next milestone, and action. Use the latest screenshot and accessibility element list. Prefer the current element index as a string. Indices change each observation; never reuse stale indices. For visible unlisted targets use normalized coordinates 0-1000 and meaningful target_description. Never guess hidden targets; use ask_explorer when needed. click_sequence uses coordinate pairs and corresponding descriptions.
-+Use declared tools and exact parameter schemas. Launch apps with manage_app. Allow loading transitions to finish. After an action verify the next observation rather than assuming success. History is evidence; do not repeat finished actions. Respect the session clock for timed tasks.
-+Call report_task_status(status="completed",...) only after visually verifying every requested outcome. Return requested structured observed values and exact visible text. If a prerequisite is absent, report it honestly; if blocked after reasonable retries, report failed with the concrete reason. Never treat a network timeout as a successful registration. Do not expose email or credentials in reports.
++Mandatory: perform ALL requested actions even if the final screen is already visible at startup. For login tests, actually log out and sign in; merely observing Discover is insufficient. report_task_status.explanation MUST contain a JSON string matching the user-requested schema, not prose. Use exact required screen codes from the instruction. If any required step was skipped, report failed, never completed.
 diff --git a/artemis/agents/flash/runner.py b/artemis/agents/flash/runner.py
-index 3ea3f68..2780e61 100644
+index 3ea3f68..2eba3dd 100644
 --- a/artemis/agents/flash/runner.py
 +++ b/artemis/agents/flash/runner.py
 @@ -17,8 +17,8 @@
@@ -92,6 +93,15 @@ index 3ea3f68..2780e61 100644
      first keys the observation screenshot to its visual-transition summary,
      all of them feed the chunk ledger. ``actions`` collects the outcome of
      every device action so the turn's execution result can be rendered.
+@@ -220,7 +220,7 @@ class FlashRunner:
+             from artemis.mcp.action_manifest import filter_declarations
+ 
+             tools = filter_declarations(tools, actuator, "flash")
+-        return tools
++        return [t for t in tools if t.name in {"click", "long_press", "input_text", "swipe", "press_key", "manage_app", "wait_for_delay", "report_task_status", "ask_explorer", "click_sequence"}]
+ 
+     def _prune_intermediate_screenshots(self, messages: list[BaseMessage]) -> None:
+         """Prunes binary screenshot blocks from intermediate observation messages."""
 @@ -307,7 +307,7 @@ class FlashRunner:
      ) -> tuple[str | None, UserGuidance | None]:
          """Consumes this turn's injected instruction: ``(instruction, guidance)``.
@@ -105,8 +115,8 @@ index 3ea3f68..2780e61 100644
              blocks.append(
                  {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"}}
              )
-+        if xml_list and len(str(xml_list)) > 2500:
-+            xml_list = str(xml_list)[:2500] + "\n[Accessibility list truncated for quota; use current screenshot for remaining visible elements.]"
++        if xml_list and len(str(xml_list)) > 1000:
++            xml_list = str(xml_list)[:1000] + "\n[Accessibility list truncated for quota; use current screenshot for remaining visible elements.]"
          if xml_list:
              blocks.append({"type": "text", "text": f"{PRO_UI_LIST_MARKER}\n{xml_list}"})
          ephemeral: list[int] = []
@@ -137,7 +147,7 @@ index 3ea3f68..2780e61 100644
              # next observation tail, never a tool-message image. The image
              # carrier follows the model's provider (tool_result_messages).
              raw_blocks = exec_result.raw_result if name not in action_names else None
-@@ -884,7 +886,14 @@ class FlashRunner:
+@@ -884,7 +886,23 @@ class FlashRunner:
      async def _invoke_model(self, llm, current_tools: list, messages: list[BaseMessage]):
          """Binds the active tools and invokes the model through the LLM gateway."""
          # Bind active tools
@@ -145,15 +155,24 @@ index 3ea3f68..2780e61 100644
 +        from langchain_core.utils.function_calling import convert_to_openai_tool
 +        def compact(value):
 +            if isinstance(value, dict):
-+                return {k: (v[:100] if k == "description" and isinstance(v, str) else compact(v)) for k, v in value.items()}
++                return {k: (v[:35] if k == "description" and isinstance(v, str) else compact(v)) for k, v in value.items()}
 +            if isinstance(value, list):
 +                return [compact(v) for v in value]
 +            return value
 +        bound_llm = llm.bind_tools([compact(convert_to_openai_tool(t)) for t in current_tools])
++
++        # Keep one live screenshot; full evidence remains in DataEngine.
++        latest = next((i for i in range(len(messages)-1, 0, -1) if isinstance(messages[i], HumanMessage)), len(messages)-1)
++        history = []
++        for message in messages[1:latest]:
++            content = message.content
++            if isinstance(content, str): history.append(content)
++            elif isinstance(content, list): history.extend(b.get("text", "") for b in content if isinstance(b, dict) and b.get("type") == "text")
++        messages = [messages[0], HumanMessage(content="Recent execution history (may be truncated):\n" + "\n".join(history)[-1200:]), *messages[latest:]]
  
          # Invoke Model. Streaming, live-token UI deltas, classified
          # retries, and pause/resume are all owned by the LLM gateway
-@@ -1112,7 +1121,7 @@ class FlashRunner:
+@@ -1112,7 +1130,7 @@ class FlashRunner:
              # size, never the session-wide meter (which any agent overwrites).
              # The prompt as sent (``messages`` minus the just-appended reply)
              # rides along so the ledger can calibrate its chars-per-token

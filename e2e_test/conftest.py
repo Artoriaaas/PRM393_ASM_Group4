@@ -3,6 +3,7 @@ import json
 import os
 import re
 import time
+import urllib.request
 from pathlib import Path
 
 import pytest
@@ -28,14 +29,31 @@ def run_case():
             "Each case is independent: return to login through Account > Logout if necessary. "
             "Use only the explicitly named Google test account already added to Android; never use personal accounts, "
             "type passwords, change security settings, edit Firebase console, or invent observations. "
-            + goal + " Return ONLY JSON with observed_values.final_screen (screen code), "
+            + goal + " Do not report completed on Account or any other screen before this goal is achieved. Return ONLY JSON with observed_values.final_screen (screen code), "
             "observed_texts (exact text actually visible), and precondition_failed (null or reason). "
-            "If setup is missing, report precondition_failed; do not fake success."
+            "Expected final screen code: " + expected_screen + ". Put this JSON in report_task_status explanation. If setup is missing, report precondition_failed; do not fake success."
         )
         started = time.monotonic()
         result = asyncio.run(client.run(instruction, profile="flash", device_serial=os.getenv("ARTEMIS_DEVICE", "emulator-5554"), timeout=600))
         duration = time.monotonic() - started
         output = result.output
+        # Pinned host omits Flash final reports from TaskResult. Read the
+        # report actually recorded in that exact session, never invent output.
+        if output is None:
+            with urllib.request.urlopen(
+                f"{base.rstrip('/')}/api/sessions/{result.trace_id}/steps", timeout=15
+            ) as response:
+                steps = json.load(response)
+            for step in reversed(steps if isinstance(steps, list) else []):
+                action = step.get("action_taken") or {}
+                if isinstance(action, str):
+                    try:
+                        action = json.loads(action)
+                    except json.JSONDecodeError:
+                        continue
+                if action.get("action") == "report_task_status":
+                    output = (action.get("args") or {}).get("explanation")
+                    break
         if isinstance(output, str):
             output = re.sub(r"^```(?:json)?\s*|\s*```$", "", output.strip())
             try:
