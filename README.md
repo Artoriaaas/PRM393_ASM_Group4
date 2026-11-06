@@ -59,3 +59,7 @@ Môi trường kiểm tra source: Flutter **3.47.4**, Dart **3.13.3**, Python **
 AI sử dụng theo lịch sử nhóm: Stitch hỗ trợ thiết kế ban đầu, Antigravity hỗ trợ code, Codex hỗ trợ triển khai/review local/refactor/tài liệu, ARTEMIS với Groq hỗ trợ thử E2E. Xem `docs/code-review.md`; chưa có bằng chứng AI review trên PR hoàn chỉnh. **Video demo: chưa quay/chưa có link nộp.**
 
 Bàn giao 07/11: analyze sạch, 64 test Flutter đạt, 25 ca ARTEMIS được thu thập (chưa tính đạt). Quyền riêng tư Cloudinary, xác nhận cloud/ARTEMIS và tài liệu nộp vẫn mở; trạng thái chi tiết chỉ ghi tại `docs/lab3-readiness.md`.
+
+## Phần teammate vừa bổ sung
+
+`web/` và `packages/core/` được giữ từ nhánh main của nhóm. Phần bàn giao này chỉ xác minh mobile Lab 3; không tuyên bố web đã đạt. Root `flutter analyze` chỉ kiểm tra mobile; kiểm tra riêng từng package bằng `cd packages/core` hoặc `cd web`, rồi `flutter pub get`, `flutter analyze`, `flutter test`. Không dùng web mock làm bằng chứng mobile chạy Firestore thật.
