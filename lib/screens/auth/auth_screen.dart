@@ -5,10 +5,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/providers.dart';
 import '../../app/auth_redirect.dart';
-import '../../models/auth_state.dart';
-import '../../theme/theme.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 import '../../viewmodels/auth_viewmodel.dart';
-import '../../widgets/widgets.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key, required this.mode});
