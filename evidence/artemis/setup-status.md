@@ -19,3 +19,7 @@ Local SDK server started successfully on loopback port 8001 with Groq model conf
 Shortened prompt/tool descriptions, kept navigation tools and latest observation with bounded history (local patch disclosed). Fixed SDK Flash result omission by reading the exact session report through the host steps API; missing/wrong structured observations still fail assertions. TC01 explicitly requires logout/login before Discover.
 
 Session fc739a62-16b6-4d88-a089-706a575e548f produced actual tap actions, but repeatedly targeted Google sign-in without completing login. Groq repeatedly returned 429 (~40-second waits). Run stopped rather than counted as passed. Current combination is not validated for the required regression or Pro suite. No app login defect is established by these agent failures.
+
+## Retry 07/11/2026
+
+TC03 submitted through pytest on emulator-5554, session 4f928a29-c418-4e37-924a-bbf53ce9847d. Runtime recorded only one step and at least four HTTP 429 quota responses; task explicitly stopped. Not accepted, not an app failure conclusion. Do not run 3 full repetitions until model quota permits actual navigation.

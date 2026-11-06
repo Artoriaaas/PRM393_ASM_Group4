@@ -1,6 +1,6 @@
 # Kiến trúc EventHub — Lab 3
 
-Cập nhật 06/11/2026. Mobile là Flutter Android theo MVVM với Riverpod. CLB và admin dùng web riêng; app mobile không có quyền điều khiển web CLB.
+Cập nhật 07/11/2026. Mobile là Flutter Android theo MVVM với Riverpod. CLB và admin dùng web riêng; app mobile không có quyền điều khiển web CLB.
 
 ## Luồng dữ liệu
 
@@ -83,3 +83,7 @@ PDF chứa tên sự kiện, CLB, thời gian, địa điểm và trạng thái;
 ## Phần phải kiểm tra trên cloud
 
 Emulator đã xác minh Rules cho đăng ký, hủy, QR hợp lệ và giả mạo. Cần chạy trên Android với project thật và ghi bằng chứng: Auth, Firestore transaction, QR/phiên fixture do người quản lý chuẩn bị qua Console cho Lab 3 (web CLB thuộc Final), PDF Cloudinary, FCM ba trạng thái, Analytics DebugView, Crashlytics, Remote Config trước/sau. ARTEMIS và AI review PR vẫn cần môi trường/tài khoản riêng. Bảng trạng thái hiện hành ở [lab3-readiness.md](lab3-readiness.md).
+
+## Packages và tương thích sau merge
+
+`packages/core/` chứa lớp dùng chung do teammate thêm; `web/` là package web riêng. Mobile vẫn dùng các model lib/models và một số widget/theme local; không tuyên bố toàn bộ đã migrate sang core. Root analyze kiểm mobile, từng package kiểm riêng. Rules giữ luồng Lab3 đăng ký trực tiếp cho event không có clubId và luồng web xét duyệt cho event có clubId; mobile không được tự bỏ clubId ở event. Không thêm workflow duyệt vào các event Lab3 đã chốt.

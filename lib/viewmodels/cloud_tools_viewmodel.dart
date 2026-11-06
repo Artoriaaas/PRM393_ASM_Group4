@@ -23,19 +23,22 @@ final cloudToolsProvider =
     );
 
 class CloudToolsViewModel extends Notifier<CloudToolsState> {
+  int _epoch = 0;
   @override
   CloudToolsState build() {
     ref.watch(signedInUidProvider);
+    _epoch++;
     return const CloudToolsState();
   }
 
   Future<void> refresh() async {
     if (state.busy) return;
+    final epoch = _epoch;
     final previous = state.settings;
     state = CloudToolsState(busy: true, settings: previous);
     try {
       final settings = await ref.read(cloudServicesProvider).fetchSettings();
-      if (ref.mounted) {
+      if (ref.mounted && epoch == _epoch) {
         state = CloudToolsState(
           settings: settings,
           message: 'Đã nhận và kích hoạt cấu hình.',
@@ -43,7 +46,7 @@ class CloudToolsViewModel extends Notifier<CloudToolsState> {
       }
       await track(ref, 'remote_config_fetch', {'result': 'success'});
     } catch (_) {
-      if (ref.mounted) {
+      if (ref.mounted && epoch == _epoch) {
         state = CloudToolsState(
           settings: previous,
           message: 'Chưa lấy được cấu hình mới. Giữ giá trị đang dùng.',

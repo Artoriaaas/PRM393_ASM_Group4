@@ -564,3 +564,16 @@ test('legacy mobile active registration without clubId can cancel atomically onc
   assert.equal((await getDoc(doc(db,'registrations/alice_legacy-mobile'))).data().status,'cancelled');
   await assertFails(updateDoc(doc(db,'events/legacy-mobile'),{activeCount:-1}));
 });
+
+test('direct Lab 3 event registration stays atomic without bypassing web approval', async () => {
+  await seedSystem({eventId:'direct-lab3'});
+  await env.withSecurityRulesDisabled(async c => {
+    const db=c.firestore();const e=(await db.doc('events/direct-lab3').get()).data();delete e.clubId;
+    await db.doc('events/direct-lab3').set(e);
+  });
+  const db=authedDb('alice');const b=writeBatch(db);
+  b.set(doc(db,'registrations/alice_direct-lab3'),{uid:'alice',eventId:'direct-lab3',status:'active',generation:1,participant,checkInAt:null,createdAt:serverTimestamp(),lastOperationId:op1});
+  b.update(doc(db,'events/direct-lab3'),{activeCount:1});
+  await assertSucceeds(b.commit());
+  await assertFails(updateDoc(doc(db,'events/direct-lab3'),{activeCount:2}));
+});
