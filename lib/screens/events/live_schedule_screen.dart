@@ -57,7 +57,14 @@ class _LiveScheduleState extends ConsumerState<LiveScheduleScreen> {
             child: value.when(
               loading: () => const AppLoadingState(),
               error: (_, _) => EventFailure(
-                onRetry: () => ref.invalidate(registrationsProvider),
+                onRetry: () {
+                  for (final r
+                      in ref.read(registrationsProvider).asData?.value ??
+                          <Registration>[]) {
+                    ref.invalidate(eventProvider(r.eventId));
+                  }
+                  ref.invalidate(registrationsProvider);
+                },
               ),
               data: (rows) {
                 if (rows.isEmpty) {

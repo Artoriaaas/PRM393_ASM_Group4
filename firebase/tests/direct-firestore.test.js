@@ -135,3 +135,15 @@ test('QR exact lookup and active-owner session reads never allow list or writes'
   await assertFails(getDocs(collection(db, 'checkinSessions')));
   await assertFails(updateDoc(doc(db, 'checkinSessions/session-read'), {open: true}));
 });
+
+test('archived event stays readable to its registrant but not other users or public lists', async () => {
+  await seed('archived-event');
+  const alice = userDb();
+  await assertSucceeds(registerBatch(alice, 'alice', 'archived-event'));
+  await env.withSecurityRulesDisabled(async c => {
+    await c.firestore().doc('events/archived-event').update({visibility: 'archived'});
+  });
+  await assertSucceeds(getDoc(doc(alice, 'events/archived-event')));
+  await assertFails(getDoc(doc(userDb('bob'), 'events/archived-event')));
+  await assertFails(getDocs(collection(alice, 'events')));
+});

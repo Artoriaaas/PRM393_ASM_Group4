@@ -39,7 +39,8 @@ service cloud.firestore {
   }
   match /events/{id} {
    allow list: if member() && resource.data.visibility == 'public';
-   allow get: if member() && (!exists(/databases/$(database)/documents/events/$(id)) || resource.data.visibility == 'public');
+   allow get: if member() && (!exists(/databases/$(database)/documents/events/$(id)) || resource.data.visibility == 'public'
+    || (exists(regPath(id)) && get(regPath(id)).data.uid == request.auth.uid));
    allow update: if member() && eventCountChange(id);
    allow create,delete: if false;
   }
