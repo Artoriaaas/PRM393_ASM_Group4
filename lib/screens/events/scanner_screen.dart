@@ -19,8 +19,9 @@ final qrCameraProvider = Provider.autoDispose<QrCameraService>((ref) {
 });
 
 class ScannerScreen extends ConsumerStatefulWidget {
-  const ScannerScreen({super.key, required this.registrationId});
+  const ScannerScreen({super.key, required this.registrationId, this.eventId});
   final String registrationId;
+  final String? eventId;
   @override
   ConsumerState<ScannerScreen> createState() => _ScannerState();
 }
@@ -106,11 +107,14 @@ class _ScannerState extends ConsumerState<ScannerScreen>
         data: (r) {
           if (r == null || !r.active) {
             return AppEmptyState(
-              title: 'Cần đăng ký hợp lệ',
+              title: r == null ? 'Cần đăng ký hợp lệ' : 'Đăng ký đã hủy',
               message:
                   'Tài khoản chưa có đăng ký đang hoạt động cho sự kiện này.',
-              actionLabel: 'Về khám phá',
-              onAction: () => context.go('/discover'),
+              actionLabel: r == null && widget.eventId == null
+                  ? 'Về khám phá'
+                  : 'Xem sự kiện',
+              onAction: () =>
+                  context.go(r == null ? '/discover' : '/events/${r.eventId}'),
             );
           }
           return ListView(

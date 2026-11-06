@@ -9,6 +9,7 @@ class Event {
     this.deadline,
     this.description = '',
     this.coverKey = '',
+    this.coverUrl = '',
     this.topic = '',
     this.audience = '',
     this.preparation = '',
@@ -19,6 +20,7 @@ class Event {
     this.activeCount = 0,
   });
   final String coverKey;
+  final String coverUrl;
   final String id,
       title,
       clubName,
@@ -150,6 +152,7 @@ String bookingMessage(String? code) => switch (code) {
   'cannot-cancel' =>
     'Không thể hủy khi đã điểm danh, sự kiện đã bắt đầu hoặc đã hủy.',
   'invalid-participant' => 'Kiểm tra lại các trường thông tin tham gia.',
+  'checkin-rejected' => 'Chưa thể ghi nhận điểm danh. Kiểm tra trạng thái đăng ký và phiên rồi thử lại.',
   'invalid-qr' => 'Mã QR không hợp lệ.',
   'wrong-event' => 'Mã QR không đúng sự kiện.',
   'session-closed' => 'Phiên điểm danh đang đóng.',

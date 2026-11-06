@@ -177,3 +177,7 @@ Tách nhãn CLB, sửa khoảng cách và empty state, chỉ hiện reset khi c�
 04/11/2026: bỏ nút “Tiện ích Firebase” khỏi A10 theo yêu cầu người dùng. 05/11/2026: thêm lại lối vào **Dịch vụ Firebase** vì mục 3 của đề Lab 3 yêu cầu khu demo truy cập được trên Profile; màn gồm thông báo, xuất/upload, giá trị Remote Config và Crashlytics test. Không đưa nút xem thử component trở lại. Cần cập nhật Figma và lưu ảnh trước/sau của thay đổi này.
 
 04/11/2026: căn giữa địa chỉ email trên A01c “Kiểm tra email” để khớp trục của tiêu đề và các thao tác; trước đó email bị lệch trái. Cần đồng bộ Figma nếu bản thiết kế hiện dùng căn trái.
+
+### D14 — Ảnh bìa theo sự kiện
+
+07/11/2026: thay cover cam trên 5 sự kiện bằng ảnh minh họa AI riêng (thiết kế, acoustic, cầu lông, trồng cây, nghề nghiệp). Firestore chọn ảnh qua coverKey; hỗ trợ coverUrl HTTPS cho nội dung sau này. Ảnh bundled để không thay đổi preset Cloudinary PDF. Lý do: phân biệt sự kiện theo yêu cầu chủ dự án; cần đồng bộ Figma. Danh sách sự kiện vẫn lấy từ Firestore, không có seed tự chạy trong app.

@@ -1,3 +1,4 @@
+import '../services/contracts/event_service.dart';
 import '../viewmodels/cloud_state.dart';
 import 'cloud_tools_viewmodel.dart';
 
@@ -182,3 +183,14 @@ final recommendationFeedProvider =
                 : [],
           );
     });
+
+final checkinSessionProvider = StreamProvider.autoDispose.family<bool, String>((
+  ref,
+  id,
+) {
+  final service = ref.watch(eventServiceProvider);
+  if (service is CheckinSessionService) {
+    return (service as CheckinSessionService).watchCheckinSession(id);
+  }
+  return Stream.value(false);
+});

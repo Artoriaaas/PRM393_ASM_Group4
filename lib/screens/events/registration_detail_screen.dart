@@ -71,6 +71,10 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
                   message: 'Liên hệ CLB để được hỗ trợ.',
                 );
               }
+              final session =
+                  r.active && r.checkInAt == null && e.status == 'published'
+                  ? ref.watch(checkinSessionProvider(e.id))
+                  : null;
               return ListView(
                 padding: const EdgeInsets.all(AppSpacing.s16),
                 children: [
@@ -82,10 +86,44 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
                   if (widget.checkInResult)
                     Text(
                       r.checkInAt != null
-                          ? 'Bạn đã điểm danh'
+                          ? (ref.read(bookingProvider).result?.status ==
+                                        'checked-in' &&
+                                    ref.read(bookingProvider).result?.code !=
+                                        'already-checked-in'
+                                ? 'Điểm danh thành công'
+                                : 'Bạn đã điểm danh')
                           : 'Chưa có xác nhận điểm danh',
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
+                  if (widget.checkInResult && r.checkInAt != null)
+                    const Text('Đưa màn hình này cho CLB kiểm tra.'),
+                  if (!widget.checkInResult &&
+                      r.active &&
+                      r.checkInAt == null &&
+                      e.status == 'published') ...[
+                    if (session!.isLoading) const AppLoadingState(),
+                    if (session.hasError)
+                      EventFailure(
+                        onRetry: () =>
+                            ref.invalidate(checkinSessionProvider(e.id)),
+                      ),
+                    if (session.asData != null)
+                      EventPanel(
+                        children: [
+                          Text(
+                            session.asData!.value
+                                ? 'Phiên điểm danh đang mở. Quét mã QR do CLB hiển thị tại sự kiện.'
+                                : 'Phiên điểm danh đang đóng. Kiểm tra lại khi CLB mở phiên.',
+                          ),
+                        ],
+                      ),
+                    if (!ref.watch(canCancelRegistrationProvider(r.id)))
+                      const EventPanel(
+                        children: [
+                          Text('Sự kiện đã bắt đầu. Không thể hủy đăng ký.'),
+                        ],
+                      ),
+                  ],
                   AppStatusBadge(
                     label: !r.active
                         ? 'Đã hủy đăng ký'
@@ -136,8 +174,10 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
                     const SizedBox(height: AppSpacing.s12),
                     AppButton(
                       label: r.checkInAt != null ? 'Xem xác nhận' : 'Quét QR',
+                      isDisabled:
+                          r.checkInAt == null && session?.asData?.value != true,
                       onPressed: () => context.push(
-                        '/registrations/${r.id}/${r.checkInAt != null ? 'check-in' : 'scan'}',
+                        '/registrations/${r.id}/${r.checkInAt != null ? 'check-in' : 'scan'}?eventId=${e.id}',
                       ),
                     ),
                   ],

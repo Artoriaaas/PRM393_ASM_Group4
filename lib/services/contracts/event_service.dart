@@ -14,3 +14,7 @@ abstract interface class PendingBookingStore {
   Future<void> write(String uid, Map<String, dynamic> command);
   Future<void> clear(String uid);
 }
+
+abstract interface class CheckinSessionService {
+  Stream<bool> watchCheckinSession(String eventId);
+}

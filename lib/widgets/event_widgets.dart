@@ -93,7 +93,42 @@ class EventSummary extends StatelessWidget {
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       if (cover) ...[
-        if (['ux-workshop', 'acoustic'].contains(event.coverKey))
+        if (RegExp(r'^[a-z0-9-]+$').hasMatch(event.coverKey) &&
+            [
+              'ux-design',
+              'acoustic-live',
+              'badminton',
+              'green-campus',
+              'career-connect',
+            ].contains(event.coverKey))
+          ClipRRect(
+            borderRadius: AppRadius.borderR16,
+            child: AspectRatio(
+              aspectRatio: 2,
+              child: Image.asset(
+                'assets/event-covers/${event.coverKey == 'acoustic-live' ? 'acoustic' : event.coverKey}.jpg',
+                fit: BoxFit.cover,
+                semanticLabel: 'Ảnh bìa ${event.title}',
+              ),
+            ),
+          )
+        else if (Uri.tryParse(event.coverUrl)?.scheme == 'https')
+          ClipRRect(
+            borderRadius: AppRadius.borderR16,
+            child: AspectRatio(
+              aspectRatio: 2,
+              child: Image.network(
+                event.coverUrl,
+                fit: BoxFit.cover,
+                semanticLabel: 'Ảnh bìa ${event.title}',
+                errorBuilder: (_, _, _) => GenericEventCover(event),
+                loadingBuilder: (_, child, progress) => progress == null
+                    ? child
+                    : const Center(child: CircularProgressIndicator()),
+              ),
+            ),
+          )
+        else if (['ux-workshop', 'acoustic'].contains(event.coverKey))
           WorkshopCover(free: event.coverKey == 'acoustic')
         else
           GenericEventCover(event),

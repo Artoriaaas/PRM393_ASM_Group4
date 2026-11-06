@@ -28,6 +28,42 @@ class ProfileViewModel extends Notifier<ProfileState> {
     return const ProfileState();
   }
 
+  Future<void> resendEmail(String password) async {
+    final email = state.pendingEmail;
+    if (email == null || state.busy) return;
+    if (password.isEmpty) {
+      state = ProfileState(
+        pendingEmail: email,
+        errors: {'password': 'Nhập mật khẩu hiện tại để gửi lại xác nhận.'},
+      );
+      return;
+    }
+    final uid = ref.read(signedInUidProvider);
+    final epoch = _epoch;
+    state = ProfileState(busy: true, pendingEmail: email);
+    try {
+      await ref.read(authServiceProvider).changeEmail(email, password);
+      if (ref.mounted &&
+          epoch == _epoch &&
+          ref.read(signedInUidProvider) == uid) {
+        state = ProfileState(
+          saved: true,
+          pendingEmail: email,
+          message: 'Đã gửi lại liên kết xác nhận đến email mới.',
+        );
+      }
+    } catch (_) {
+      if (ref.mounted &&
+          epoch == _epoch &&
+          ref.read(signedInUidProvider) == uid) {
+        state = ProfileState(
+          pendingEmail: email,
+          message: 'Chưa gửi lại được xác nhận. Kiểm tra kết nối và thử lại.',
+        );
+      }
+    }
+  }
+
   Future<void> save({
     required String name,
     required String currentEmail,

@@ -111,6 +111,13 @@ class _ProfileEditState extends ConsumerState<ProfileEditScreen> {
                 children: [
                   const Text('Email mới — chờ xác nhận'),
                   Text(s.pendingEmail!),
+                  AppButton(
+                    label: 'Gửi lại email xác nhận',
+                    isDisabled: s.busy,
+                    onPressed: () => ref
+                        .read(profileProvider.notifier)
+                        .resendEmail(password.text),
+                  ),
                 ],
               ),
             if (s.message != null) EventPanel(children: [Text(s.message!)]),

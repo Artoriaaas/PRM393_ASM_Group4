@@ -7,7 +7,7 @@ Cập nhật 04/11/2026. Backend app Lab 3 dùng Firebase Auth và Firestore tr�
 - Google Sign-In và email/password đã cấu hình; Google login được người dùng xác nhận trên Android.
 - Firestore database, Rules và indexes đã triển khai. Lệnh triển khai hiện tại: `./tool/deploy-cloud.ps1` (chỉ Firestore Rules/indexes, project ID cố định). Rules được kiểm thử bằng emulator trước khi deploy.
 - Remote Config hai tham số mặc định `discover_featured_limit=10`, `discover_recommendations_enabled=true` đã được publish trước đó.
-- Hai sự kiện gắn `(Mẫu)` trong Firestore để xem UI. Chúng không phải sự kiện thật của CLB. Trước demo nghiệp vụ, kiểm tra `startsAt`, `deadline`, `capacity`, `activeCount` và `status`; thời điểm qua hạn không thể đăng ký.
+- Có 5 sự kiện do nhóm biên soạn trên Firestore, xem `event-catalog.json`. Không tuyên bố đây là thông báo CLB đã xác nhận. Trước kiểm thử, kiểm tra hạn/chỗ; hai document demo cũ đã chuyển visibility=archived, giữ tham chiếu lịch sử.
 
 ## Cần chuẩn bị để test nghiệp vụ thật
 

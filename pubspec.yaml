@@ -76,6 +76,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/icons/
+    - assets/event-covers/
 
   fonts:
     - family: Be Vietnam Pro
