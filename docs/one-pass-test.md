@@ -1,6 +1,6 @@
 # Một lượt kiểm thử Lab 3 trên Android
 
-Chỉ bắt đầu sau khi có Cloudinary preset, tài khoản Firebase test đã xác nhận email, sự kiện còn hạn/chỗ và QR/phiên do web CLB chuẩn bị. Test trên `lib/main.dart`, không dùng prototype offline. Ghi ảnh và thời điểm từng bước; test nào chưa chạy ghi **chưa kiểm thử**.
+Chỉ bắt đầu sau khi có Cloudinary preset, tài khoản Firebase test đã xác nhận email, sự kiện còn hạn/chỗ và QR/phiên fixture do người quản lý chuẩn bị qua Firebase Console. Test trên `lib/main.dart`, không dùng prototype offline. Ghi ảnh và thời điểm từng bước; test nào chưa chạy ghi **chưa kiểm thử**.
 
 ## Chuẩn bị
 
@@ -19,11 +19,11 @@ Chỉ bắt đầu sau khi có Cloudinary preset, tài khoản Firebase test đ�
 | Bước | Persona / flow | Thao tác chính | Kiểm tra và bằng chứng |
 |---|---|---|---|
 | 1 | P01/P02/P03, Auth | Đăng nhập Google hoặc email/password; thử sai/hủy; email chưa xác minh | Vào Khám phá sau thành công; Auth Users và state lỗi đúng |
-| 2 | P01 sinh viên, F1 | Tìm workshop → chi tiết → form; bỏ trống K rồi sửa → xác nhận | Lỗi tại K; A06; Firestore đăng ký + số chỗ tăng cùng nhau |
+| 2 | P01 sinh viên, F1 | Tìm workshop → chi tiết → form; bỏ trống K rồi sửa → xác nhận | Lỗi tại K; A06; Firestore đăng ký + activeCount tăng, số chỗ trống giảm cùng nhau |
 | 3 | P02 khách, F1 | Tài khoản test khác → đăng ký workshop khác/còn chỗ; chọn Khách ngoài trường | Không hỏi K; A06 và dữ liệu snapshot đúng |
 | 4 | P03 xem tự do, F1 | Mở sự kiện `registrationMode=free` | Chỉ xem giờ/địa điểm; không có đăng ký/QR/lịch |
 | 5 | P01/P02, F2 | Lịch → chi tiết → dialog hủy → Giữ; mở lại → Xác nhận hủy | Giữ không thay dữ liệu; hủy chuyển lịch sử và số chỗ giảm một lần |
-| 6 | P01/P02, F4A | Đăng ký đang active; CLB mở QR trên web; thử QR sai/đóng phiên rồi QR đúng | QR sai không ghi; QR đúng ghi một `checkInAt`; quét lại giữ giờ gốc; A12 không lộ email/số điện thoại |
+| 6 | P01/P02, F4A | Đăng ký đang active; Dùng QR/phiên fixture được chuẩn bị trước; thử QR sai/đóng phiên rồi QR đúng | QR sai không ghi; QR đúng ghi một `checkInAt`; quét lại giữ giờ gốc; A12 không lộ email/số điện thoại |
 | 7 | Mọi persona | Tài khoản → Xuất lịch → Tạo PDF và tải lên | PDF đúng lịch; Cloudinary Media Library có file; link mở được; thử offline để thấy lỗi |
 | 8 | FCM | Gửi test message qua Firebase Console đến Android | Nhận khi app foreground/background/terminated, tap đi đúng màn; ghi trường hợp OS chặn quyền |
 | 9 | Remote Config | Đổi hai tham số trên Console, publish, bấm fetch trong Dịch vụ Firebase | Ảnh trước/sau của số gợi ý hoặc khối gợi ý |
@@ -34,3 +34,9 @@ Sau mỗi flow, đăng xuất trước khi đổi tài khoản. Không dùng cù
 ## Sau lượt thủ công
 
 Chạy ARTEMIS ít nhất 10 ca, mỗi ca 3 lần độc lập và một phiên Pro exploration 15–30 phút theo [e2e_test/README.md](../e2e_test/README.md). Lưu trace và pass rate thật. Mở PR để AI review, tổng hợp ít nhất 5 findings và ít nhất 3 fix commits theo findings. Cuối cùng mới điền report 8–12 trang, slides 12–15 và video 5–10 phút từ bằng chứng thật. Xem [lab3-readiness.md](lab3-readiness.md) để biết mục nào còn thiếu.
+
+## Những việc không thể chốt bằng thao tác test
+
+- **Cloudinary riêng tư:** preset public hiện tại chưa đáp ứng trang 6: “security rules allow each user to read and write only their own folder”. Đổi folder hoặc giấu URL không tạo phân quyền. Nhóm đang hoãn dịch vụ kiểm tra Firebase UID trước khi cấp quyền file; không đánh dấu mục này đạt.
+- **PR AI review:** theo trang 10, cần đầu ra review trên PR, ≥5 findings/≥2 nhóm, quyết định cho từng finding và ≥3 commit fix gắn ID. Các commit sửa source local chưa tự động thay thế bằng chứng PR.
+- **Figma và bài nộp:** cập nhật thay đổi đã ghi trong design-traceability; dùng ảnh/trace thực tế để hoàn thiện report 8–12 trang, slides 12–15 trang và video 5–10 phút. Khung tài liệu chưa phải bản nộp.
