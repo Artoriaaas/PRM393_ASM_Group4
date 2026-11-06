@@ -18,6 +18,7 @@ class FirestoreEventService implements EventService {
       id: doc.id,
       title: d['title'] as String? ?? '',
       coverKey: d['coverKey'] as String? ?? '',
+      coverUrl: d['coverUrl'] as String? ?? '',
       clubName: d['clubName'] as String? ?? '',
       location: d['location'] as String? ?? '',
       startsAt: _date(d['startsAt'])!,

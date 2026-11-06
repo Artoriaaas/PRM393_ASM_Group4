@@ -9,6 +9,7 @@ class Event {
     this.deadline,
     this.description = '',
     this.coverKey = '',
+    this.coverUrl = '',
     this.topic = '',
     this.audience = '',
     this.preparation = '',
@@ -19,6 +20,7 @@ class Event {
     this.activeCount = 0,
   });
   final String coverKey;
+  final String coverUrl;
   final String id,
       title,
       clubName,

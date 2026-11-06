@@ -16,7 +16,7 @@ flutter run -t lib/main.dart
 
 Project Firebase dùng chung: **eventhub-group4**, application ID **com.eventhub.app**. Không tạo Firebase riêng cho từng teammate. Cấu hình Google Sign-In trên máy mới theo [Firebase setup](docs/firebase-setup.md), gồm fingerprint debug của máy đó.
 
-Firestore hiện có hai sự kiện **(Mẫu)** để xem UI, không phải thông báo CLB thật. Google login đã được xác nhận. Đăng ký/hủy/QR dùng Firestore transaction và Rules đã deploy, nhưng vẫn cần test Android thật với sự kiện còn hạn và QR/phiên fixture chuẩn bị qua Firebase Console cho Lab 3. PDF dùng Cloudinary Free; preset đã kiểm tra upload/download theo [hướng dẫn](docs/cloudinary-setup.md). Không dùng Functions hoặc Firebase Storage.
+Firestore có 5 sự kiện nội dung do nhóm biên soạn, ảnh bìa được tạo bằng AI và đóng gói trong app; danh sách/nội dung đọc từ Firestore. Hai sự kiện cũ đã ẩn khỏi danh sách công khai. Google login đã được xác nhận. Đăng ký/hủy/QR dùng Firestore transaction và Rules đã deploy, nhưng vẫn cần test Android thật với sự kiện còn hạn và QR/phiên fixture chuẩn bị qua Firebase Console cho Lab 3. PDF dùng Cloudinary Free; preset đã kiểm tra upload/download theo [hướng dẫn](docs/cloudinary-setup.md). Không dùng Functions hoặc Firebase Storage.
 
 Theo đề Lab 3, **Tài khoản → Dịch vụ Firebase** mở khu demo thông báo, xuất/upload, Remote Config và Crashlytics. Giảng viên đã cho phép Cloudinary thay Firebase Storage. Quyền truy cập file riêng theo tài khoản vẫn chưa đạt với preset public hiện tại.
 
