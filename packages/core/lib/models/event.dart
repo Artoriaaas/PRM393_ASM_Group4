@@ -135,9 +135,11 @@ class Registration {
   final DateTime? reviewedAt;
   final String? qrHash;
   final String lastOperationId;
-  bool get active => status == 'active' || status == 'approved';
+  bool get active =>
+      status == 'pending' || status == 'approved' || status == 'active';
   bool get isPending => status == 'pending';
   bool get isApproved => status == 'approved';
+  bool get canCheckIn => status == 'approved' || status == 'active';
   bool get isRejected => status == 'rejected';
   bool get isCancelled => status == 'cancelled';
   bool get isCheckedIn => checkInAt != null;
@@ -177,6 +179,7 @@ String bookingMessage(String? code) => switch (code) {
   'wrong-event' => 'Mã QR không đúng sự kiện.',
   'session-closed' => 'Phiên điểm danh đang đóng.',
   'event-not-found' => 'Không tìm thấy sự kiện.',
+  'not-approved' => 'Đơn đăng ký đang chờ CLB duyệt, chưa thể điểm danh.',
   'operation-conflict' =>
     'Nội dung thao tác đã thay đổi. Hãy kiểm tra kết quả cũ trước.',
   _ => 'Chưa thể hoàn tất thao tác. Hãy tải lại dữ liệu và thử lại.',
