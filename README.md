@@ -16,7 +16,9 @@ flutter run -t lib/main.dart
 
 Project Firebase dùng chung: **eventhub-group4**, application ID **com.eventhub.app**. Không tạo Firebase riêng cho từng teammate. Cấu hình Google Sign-In trên máy mới theo [Firebase setup](docs/firebase-setup.md), gồm fingerprint debug của máy đó.
 
-Firestore hiện có hai sự kiện **(Mẫu)** để xem UI, không phải thông báo CLB thật. Google login đã được xác nhận. Đăng ký/hủy/QR dùng Firestore transaction và Rules đã deploy, nhưng vẫn cần test Android thật với sự kiện còn hạn và QR từ web CLB. PDF dùng Cloudinary Free; nhóm cần tạo preset theo [hướng dẫn](docs/cloudinary-setup.md). Không dùng Functions hoặc Firebase Storage.
+Firestore hiện có hai sự kiện **(Mẫu)** để xem UI, không phải thông báo CLB thật. Google login đã được xác nhận. Đăng ký/hủy/QR dùng Firestore transaction và Rules đã deploy, nhưng vẫn cần test Android thật với sự kiện còn hạn và QR từ web CLB. PDF dùng Cloudinary Free; preset đã kiểm tra upload/download theo [hướng dẫn](docs/cloudinary-setup.md). Không dùng Functions hoặc Firebase Storage.
+
+Theo đề Lab 3, **Tài khoản → Dịch vụ Firebase** mở khu demo thông báo, xuất/upload, Remote Config và Crashlytics. Giảng viên đã cho phép Cloudinary thay Firebase Storage. Quyền truy cập file riêng theo tài khoản vẫn chưa đạt với preset public hiện tại.
 
 ## Đọc tài liệu nào?
 
@@ -35,7 +37,6 @@ Firestore hiện có hai sự kiện **(Mẫu)** để xem UI, không phải th�
 | Chạy ARTEMIS | [E2E setup](e2e_test/README.md) |
 | Chuẩn bị bài nộp | [Report](report/README.md), [Slides](slides/README.md) |
 
-Bản UI demo offline chỉ dùng xem bố cục: `flutter run -t lib/main_prototype.dart`. Xem [hướng dẫn prototype](docs/ui-prototype.md); không dùng target này để chứng minh Firebase hoặc nộp bản production.
 
 ## Kiểm tra trước khi gửi thay đổi
 
@@ -45,7 +46,7 @@ flutter test
 flutter build apk --debug -t lib/main.dart
 ```
 
-Kiểm thử Firestore Rules bằng emulator: `FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 node --test functions/integration/direct-firestore.test.js` sau khi khởi động emulator. Thư mục `functions/` còn mã backend thử nghiệm cũ để đối chiếu, không nằm trong bản deploy hoặc build mobile.
+Kiểm thử Rules: xem `firebase/tests/README.md`. Chỉ chạy với emulator, không tác động dữ liệu cloud.
 
 Mỗi teammate làm nhánh riêng, review trước khi merge. Thay đổi UI cần lưu ảnh trước/sau và lý do theo [quy ước](evidence/design-changes/README.md), rồi cập nhật Figma.
 

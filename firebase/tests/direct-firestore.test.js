@@ -14,7 +14,7 @@ before(async () => {
   if (!process.env.FIRESTORE_EMULATOR_HOST) throw new Error('Start Firestore emulator first.');
   env = await initializeTestEnvironment({
     projectId: 'demo-direct-booking',
-    firestore: {rules: readFileSync(join(__dirname, '../../firebase/firestore.rules'), 'utf8')},
+    firestore: {rules: readFileSync(join(__dirname, '../firestore.rules'), 'utf8')},
   });
 });
 after(async () => env?.cleanup());
@@ -106,4 +106,14 @@ test('cancelled registration can be recreated with next generation, unverified u
   assert.equal((await getDoc(ref)).data().generation, 2);
   const unverified = env.authenticatedContext('eve', {email_verified: false}).firestore();
   await assertFails(registerBatch(unverified, 'eve', 'direct-d'));
+});
+test('push receipts are private and cannot impersonate server notifications', async () => {
+  await env.clearFirestore();
+  const db = env.authenticatedContext('alice', {email_verified: true}).firestore();
+  const path = 'users/alice/notifications/push_' + 'b'.repeat(64);
+  const receipt = {title:'Reminder',body:'Open the app',eventId:'workshop',registrationId:'alice_workshop',type:'push_received',createdAt:serverTimestamp(),readAt:null};
+  await assertSucceeds(writeBatch(db).set(doc(db,path),receipt).commit());
+  await assertFails(getDoc(doc(env.authenticatedContext('bob', {email_verified:true}).firestore(),path)));
+  await assertFails(writeBatch(db).set(doc(db,'users/bob/notifications/push_'+'c'.repeat(64)),receipt).commit());
+  await assertFails(writeBatch(db).set(doc(db,'users/alice/notifications/push_'+'d'.repeat(64)),{...receipt,type:'registration_confirmed'}).commit());
 });

@@ -53,7 +53,7 @@ app.*.map.json
 .widget_preview/
 
 # Backend tooling
-functions/node_modules/
+**/node_modules/
 *-debug.log
 .firebase/
 

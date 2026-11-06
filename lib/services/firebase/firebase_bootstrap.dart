@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'received_push_store.dart';
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
@@ -58,5 +60,6 @@ Future<bool> initializeFirebase() async {
 @pragma('vm:entry-point')
 Future<void> firebaseBackgroundMessage(RemoteMessage message) async {
   await Firebase.initializeApp();
-  // Notification payload is presented by Android. Canonical in-app data is server-owned.
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+  if (uid != null) await saveReceivedPush(FirebaseFirestore.instance, uid, message);
 }

@@ -95,7 +95,16 @@ service cloud.firestore {
   match /users/{uid}/notifications/{id} {
    allow read: if member() && request.auth.uid == uid;
    allow update: if member() && request.auth.uid == uid && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['readAt']) && request.resource.data.readAt == request.time;
-   allow create,delete: if false;
+   allow create: if member() && request.auth.uid == uid
+    && id.matches('push_[a-f0-9]{64}')
+    && request.resource.data.keys().hasOnly(['title','body','eventId','registrationId','type','createdAt','readAt'])
+    && request.resource.data.title is string && request.resource.data.title.size() <= 200
+    && request.resource.data.body is string && request.resource.data.body.size() <= 4000
+    && request.resource.data.eventId is string && request.resource.data.eventId.size() <= 200
+    && (!('registrationId' in request.resource.data) || (request.resource.data.registrationId is string && request.resource.data.registrationId.matches('^[a-zA-Z0-9_-]{1,200}$')))
+    && request.resource.data.type == 'push_received'
+    && request.resource.data.createdAt == request.time && request.resource.data.readAt == null;
+   allow delete: if false;
   }
   match /users/{uid}/devices/{id} {
    allow read,delete: if member() && request.auth.uid==uid;

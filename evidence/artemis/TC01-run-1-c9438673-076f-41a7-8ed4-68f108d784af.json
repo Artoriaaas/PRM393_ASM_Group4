@@ -1,0 +1,11 @@
+{
+  "case_id": "TC01",
+  "trace_id": "c9438673-076f-41a7-8ed4-68f108d784af",
+  "status": "cancelled",
+  "elapsed_seconds": 46.125,
+  "output": null,
+  "error": null,
+  "run": "1",
+  "acceptance_status": "not_passed",
+  "acceptance_note": "Setup/debug attempt. Runtime status alone is not acceptance; required observed values and login actions were not fully verified."
+}

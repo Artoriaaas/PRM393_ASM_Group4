@@ -3,7 +3,7 @@ import subprocess
 import pytest
 
 CASES = [
- ("TC01", "Sign in with Google account {account}. Stop at Discover.", "A02", "Sắp tới", False),
+ ("TC01", "If already signed in, use Account > Logout. Then sign in with Google account {account}, navigate to Discover and verify its heading Sắp tới. Stop only on Discover.", "A02", "Sắp tới", False),
  ("TC02", "At login tap Google then cancel Android account picker. Stop at login and read cancellation feedback.", "A01a", "Đăng nhập", False),
  ("TC03", "Sign in with {account}. Search for a deliberately unmatched term zzz_no_event_8362. Submit search.", "A03", "Chưa tìm thấy", False),
  ("TC04", "Sign in with {account}. Search {event}, select its card and read event details.", "A04", "Giới thiệu", True),

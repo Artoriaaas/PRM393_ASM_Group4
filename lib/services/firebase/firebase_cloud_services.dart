@@ -1,3 +1,4 @@
+import 'received_push_store.dart';
 import '../../utils/push_destination.dart';
 
 import 'dart:async';
@@ -39,6 +40,7 @@ class FirebaseCloudServices implements CloudServices {
       if (opened) _queuedMessage = message;
       return;
     }
+    unawaited(saveReceivedPush(db, _uid!, message).catchError((_) {}));
     final target = pushDestination(message.data, _uid, opened: opened);
     if (!_disposed && target != null) _targets.add(target);
   }

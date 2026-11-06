@@ -69,7 +69,7 @@ void main() {
       findsOneWidget,
     );
 
-    expect(find.text('Tiện ích Firebase'), findsNothing);
+    expect(find.text('Dịch vụ Firebase'), findsOneWidget);
     expect(find.text('Email đã xác nhận'), findsNothing);
     expect(find.textContaining('Xác nhận email chỉ'), findsNothing);
     expect(find.text('Xem thử Component UI (360/412dp)'), findsNothing);

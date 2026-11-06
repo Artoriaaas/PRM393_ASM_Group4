@@ -191,12 +191,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
 
       // Lab 3 Additional Screens
-      if (development && const bool.fromEnvironment('LAB3_DIAGNOSTICS'))
-        GoRoute(
-          path: '/account/firebase-demo',
-          parentNavigatorKey: _rootNavigatorKey,
-          builder: (context, state) => const CloudToolsScreen(),
-        ),
+      GoRoute(
+        path: '/account/firebase-demo',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const CloudToolsScreen(),
+      ),
       GoRoute(
         path: '/account/export',
         parentNavigatorKey: _rootNavigatorKey,
