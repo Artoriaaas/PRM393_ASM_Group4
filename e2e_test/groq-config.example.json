@@ -1,0 +1,17 @@
+{
+  "default": {
+    "provider": "openai",
+    "model": "qwen/qwen3.8-27b",
+    "fallback": {
+      "provider": "openai",
+      "model": "qwen/qwen3.8-27b"
+    }
+  },
+  "agent": {
+    "flash": {
+      "step_summarizer": {
+        "enabled": false
+      }
+    }
+  }
+}

@@ -22,3 +22,11 @@ TC19–TC25 bao phủ free/full/expired/cancelled, mạng và QR/quyền camera;
 Sau regression: một session profile Pro 15–30 phút trên host thật, lưu trace/replay và vấn đề tìm thấy. Chưa tự chạy hoặc trả tiền API khi chưa có host/model/credentials của nhóm. Không thay bằng test Flutter/emulator rồi gọi là ARTEMIS.
 
 Exploratory: sau khi host/model/budget sẵn sàng, đặt `ARTEMIS_ALLOW_PRO=1` và chạy `uv run --project e2e_test python e2e_test/explore.py`. Script ghi thời gian thật và không tính đạt nếu dưới 15 phút; chưa thực thi phiên Pro này.
+
+## Groq local compatibility setup (2026-11-06)
+
+Upstream pin remains unchanged; local modifications are disclosed in `groq-compact.patch`. Apply only to a clean checkout of the pinned commit with `git apply`. Copy `groq-config.example.json` to the runtime's `config/artemis.jsonc`; set OPENAI_API_KEY locally to the Groq credential and OPENAI_BASE_URL to https://api.groq.com/openai/v1. No keys are in these files.
+
+Changes shorten Flash instructions/tool descriptions and cap the accessibility list at 2500 characters while retaining the screenshot. Background Gemini summarization is disabled. Tool names, argument schemas and test assertions are preserved. Full traces remain local. This is an experimental compatibility configuration, not a passing test suite.
+
+Actual TC01 retry: 86.19 seconds, failed structured-output assertion (`output=None`). Runtime marked its trace PASS with zero steps/images; pytest correctly rejected it. Do not count the runtime PASS label as evidence. Groq also returned quota errors during the run. The regression suite and Pro exploration are still incomplete.
