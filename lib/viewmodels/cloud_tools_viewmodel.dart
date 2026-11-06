@@ -34,6 +34,7 @@ class CloudToolsViewModel extends Notifier<CloudToolsState> {
   Future<void> refresh() async {
     if (state.busy) return;
     final epoch = _epoch;
+    final uid = ref.read(signedInUidProvider);
     final previous = state.settings;
     state = CloudToolsState(busy: true, settings: previous);
     try {
@@ -44,7 +45,11 @@ class CloudToolsViewModel extends Notifier<CloudToolsState> {
           message: 'Đã nhận và kích hoạt cấu hình.',
         );
       }
-      await track(ref, 'remote_config_fetch', {'result': 'success'});
+      if (ref.mounted &&
+          epoch == _epoch &&
+          ref.read(signedInUidProvider) == uid) {
+        await track(ref, 'remote_config_fetch', {'result': 'success'});
+      }
     } catch (_) {
       if (ref.mounted && epoch == _epoch) {
         state = CloudToolsState(
@@ -52,7 +57,11 @@ class CloudToolsViewModel extends Notifier<CloudToolsState> {
           message: 'Chưa lấy được cấu hình mới. Giữ giá trị đang dùng.',
         );
       }
-      await track(ref, 'remote_config_fetch', {'result': 'error'});
+      if (ref.mounted &&
+          epoch == _epoch &&
+          ref.read(signedInUidProvider) == uid) {
+        await track(ref, 'remote_config_fetch', {'result': 'error'});
+      }
     }
   }
 
@@ -79,18 +88,24 @@ class CloudToolsViewModel extends Notifier<CloudToolsState> {
   }
 
   Future<void> nonFatal() async {
+    final epoch = _epoch;
+    final uid = ref.read(signedInUidProvider);
     try {
       await ref
           .read(cloudServicesProvider)
           .report('manual_non_fatal_test', StackTrace.current);
-      if (ref.mounted) {
+      if (ref.mounted &&
+          epoch == _epoch &&
+          ref.read(signedInUidProvider) == uid) {
         state = CloudToolsState(
           settings: state.settings,
           message: 'Đã gọi ghi lỗi non-fatal. Cần xác minh trên dashboard.',
         );
       }
     } catch (_) {
-      if (ref.mounted) {
+      if (ref.mounted &&
+          epoch == _epoch &&
+          ref.read(signedInUidProvider) == uid) {
         state = CloudToolsState(
           settings: state.settings,
           message: 'Chưa gửi được lỗi thử nghiệm.',
