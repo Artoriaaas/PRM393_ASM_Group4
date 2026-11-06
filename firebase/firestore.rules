@@ -93,7 +93,7 @@ service cloud.firestore {
 
     function staffEventMetadataUpdate() {
       return isStaffOf(resource.data.clubId)
-        && request.resource.data.clubId == resource.data.clubId
+        && request.resource.data.get('clubId', '') == resource.data.get('clubId', '')
         && request.resource.data.activeCount == resource.data.activeCount
         && request.resource.data.status in ['draft', 'published', 'cancelled', 'archived']
         && request.resource.data.registrationMode in ['required', 'free']
@@ -264,7 +264,7 @@ service cloud.firestore {
           && id == request.auth.uid + '_' + resource.data.eventId
           && request.resource.data.uid == resource.data.uid
           && request.resource.data.eventId == resource.data.eventId
-          && request.resource.data.clubId == resource.data.clubId
+          && request.resource.data.get('clubId', '') == resource.data.get('clubId', '')
           && operationValid(request.resource.data.lastOperationId)
           && request.resource.data.lastOperationId != resource.data.lastOperationId
           && (
@@ -329,7 +329,7 @@ service cloud.firestore {
           && resource.data.status == 'pending'
           && request.resource.data.uid == resource.data.uid
           && request.resource.data.eventId == resource.data.eventId
-          && request.resource.data.clubId == resource.data.clubId
+          && request.resource.data.get('clubId', '') == resource.data.get('clubId', '')
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
                'status', 'reason', 'reviewedBy', 'reviewedAt'
              ])

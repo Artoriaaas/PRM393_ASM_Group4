@@ -549,3 +549,18 @@ test('archived event stays readable only to its registrant or club staff', async
   await assertFails(getDoc(doc(authedDb('bob'), 'events/archived-event')));
   await assertFails(getDocs(collection(authedDb('alice'), 'events')));
 });
+
+test('legacy mobile active registration without clubId can cancel atomically once', async () => {
+  await seedSystem({eventId:'legacy-mobile'});
+  await env.withSecurityRulesDisabled(async c => {
+    await c.firestore().doc('events/legacy-mobile').update({activeCount:1});
+    await c.firestore().doc('registrations/alice_legacy-mobile').set({uid:'alice',eventId:'legacy-mobile',status:'active',generation:1,participant,checkInAt:null,createdAt:Timestamp.now(),lastOperationId:op1});
+  });
+  const db = authedDb('alice');
+  const batch = writeBatch(db);
+  batch.update(doc(db,'registrations/alice_legacy-mobile'),{status:'cancelled',lastOperationId:op2});
+  batch.update(doc(db,'events/legacy-mobile'),{activeCount:0});
+  await assertSucceeds(batch.commit());
+  assert.equal((await getDoc(doc(db,'registrations/alice_legacy-mobile'))).data().status,'cancelled');
+  await assertFails(updateDoc(doc(db,'events/legacy-mobile'),{activeCount:-1}));
+});
