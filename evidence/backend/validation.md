@@ -30,3 +30,19 @@ Cập nhật 03/11/2026: chạy lại toàn bộ `flutter test`, **59/59 pass** 
 - Firebase CLI deploy `firestore:rules,firestore:indexes` lên đúng project `eventhub-group4`: exit 0, Rules compile thành công. Không deploy Functions/Storage.
 - Cloudinary adapter test mock **2/2 pass**, chưa upload thật vì nhóm chưa tạo account/preset. Android APK build mới đang được kiểm tra; kết quả chỉ ghi sau khi lệnh hoàn tất.
 - Chưa có bằng chứng E2E nghiệp vụ trên cloud, ARTEMIS, FCM ba trạng thái, Analytics DebugView đủ event, Crashlytics dashboard, Cloudinary Media Library, PR AI review, báo cáo/video.
+
+## Cập nhật 07/11/2026 — Hoàn thành Đồng bộ Liên Vai Trò (Cross-Role Flows & Shared Core)
+
+- **Shared Core Package (`packages/core/`)**: Đã hoàn tất cutover 100% import trên toàn bộ Mobile (`lib/`, `test/`) và Web (`web/`) sang `package:eventhub_core/eventhub_core.dart`. Đã xóa sạch 36 file duplicate trong `lib/{theme,models,utils,services/contracts,widgets/app_*}`.
+- **Firestore Security Rules (`firebase/firestore.rules`)**:
+  - Nâng cấp bộ rules phân quyền 3 vai trò (`user`, `staff`, `admin`) với đầy đủ helper: `isUser()`, `isStaffOf(clubId)`, `isAdmin()`.
+  - Bảo vệ luồng `pending -> approved` (chỉ `staff`/`admin` được duyệt và tăng nguyên tử `activeCount + 1 <= capacity` + gửi inbox notification).
+  - Bảo vệ luồng `pending -> rejected` (bắt buộc lý do từ chối 3..300 ký tự, `activeCount` giữ nguyên + gửi inbox notification).
+  - Bảo vệ luồng hủy đơn: hủy đơn `pending` không đổi `activeCount`; hủy đơn `approved` giảm nguyên tử `activeCount - 1`.
+  - Bảo vệ phiên QR: mở/đóng phiên `checkinSessions`, tạo & xoay mã băm SHA-256 `qrCredentials`, chặn sinh viên chưa duyệt quét QR, chặn quét lặp và chặn quét sau khi đóng phiên hoặc xoay mã.
+  - Bảo vệ thông báo CLB `announcements`: chỉ `staff` cùng `clubId` hoặc `admin` mới được tạo; cấm người dùng tạo thông báo mạo danh.
+  - Bảo vệ tài khoản `users/{uid}`: sinh viên tự tạo hồ sơ `role == 'user'`; cấm người dùng tự leo quyền; `admin` không được tự đổi role của chính mình.
+- **Kiểm thử Firestore Emulator (`firebase/tests/direct-firestore.test.js`)**: **5/5 ca test pass 100% (exit 0)** bao phủ đầy đủ cả ca Allowed và Denied cho tất cả các role trên mọi collection.
+- **Kiểm thử Mobile (`test/`)**: **61/61 tests pass 100%** bao gồm các ca kiểm tra chặn vai trò quản trị trên mobile (`MobileRoleRejectionScreen`), hiển thị lý do từ chối và cho phép đăng ký lại sau khi hủy/từ chối.
+- **Kiểm thử Web (`web/test/`)**: **12/12 tests pass 100%**; `flutter build web` thành công.
+- **Linter**: `flutter analyze` đạt **0 lỗi, 0 cảnh báo** trên toàn bộ `lib`, `test`, `packages/core` và `web`.

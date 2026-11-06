@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:eventhub_core/eventhub_core.dart';
 import '../../viewmodels/qr_checkin_viewmodel.dart';
-import '../../viewmodels/club_events_viewmodel.dart';
 
 class LiveQrPanelScreen extends ConsumerWidget {
   const LiveQrPanelScreen({
@@ -14,13 +13,75 @@ class LiveQrPanelScreen extends ConsumerWidget {
 
   final String eventId;
 
+  String _formatEventWindow(Event event) {
+    final dd = event.startsAt.day.toString().padLeft(2, '0');
+    final mm = event.startsAt.month.toString().padLeft(2, '0');
+    final sh = event.startsAt.hour.toString().padLeft(2, '0');
+    final sm = event.startsAt.minute.toString().padLeft(2, '0');
+    final eh = event.endsAt.hour.toString().padLeft(2, '0');
+    final em = event.endsAt.minute.toString().padLeft(2, '0');
+    return '$dd/$mm/${event.startsAt.year} • $sh:$sm – $eh:$em • ${event.location}';
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final qrState = ref.watch(qrCheckinViewModelProvider(eventId));
-    final eventsState = ref.watch(clubEventsViewModelProvider);
-    final event = eventsState.allEvents
-        .where((e) => e.id == eventId)
-        .firstOrNull;
+
+    if (!qrState.eventLoaded && qrState.isLoading) {
+      return const Scaffold(
+        backgroundColor: AppColors.surfaceSubtle,
+        body: Center(
+          child: AppLoadingState(
+            message: 'Đang tải thông tin phiên điểm danh QR…',
+          ),
+        ),
+      );
+    }
+
+    final event = qrState.event;
+    if (event == null) {
+      if (qrState.errorMessage != null) {
+        return Scaffold(
+          backgroundColor: AppColors.surfaceSubtle,
+          body: Center(
+            child: AppErrorState(
+              title: 'Không thể tải phiên điểm danh',
+              message: qrState.errorMessage!,
+              onRetry: () =>
+                  ref.read(qrCheckinViewModelProvider(eventId).notifier).retry(),
+            ),
+          ),
+        );
+      }
+      return Scaffold(
+        backgroundColor: AppColors.surfaceSubtle,
+        body: Center(
+          child: AppEmptyState(
+            title: 'Không tìm thấy sự kiện',
+            message:
+                'Sự kiện không tồn tại hoặc không thuộc phạm vi Câu lạc bộ của bạn.',
+            actionLabel: 'Quay lại danh sách sự kiện',
+            onAction: () => context.go('/events'),
+          ),
+        ),
+      );
+    }
+
+    if (!qrState.isEligibleForQrCheckin) {
+      return Scaffold(
+        backgroundColor: AppColors.surfaceSubtle,
+        body: Center(
+          child: AppEmptyState(
+            icon: Icons.qr_code_2,
+            title: 'Chưa mở điều phối QR cho sự kiện này',
+            message:
+                'Panel điểm danh QR chỉ khả dụng cho sự kiện ở chế độ "Yêu cầu đăng ký (required)" và đang "Công bố (published)".',
+            actionLabel: 'Quay lại danh sách sự kiện',
+            onAction: () => context.go('/events'),
+          ),
+        ),
+      );
+    }
 
     final isSessionOpen = qrState.isSessionOpen;
     final totalApproved = qrState.totalApproved;
@@ -33,29 +94,34 @@ class LiveQrPanelScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top Navigation & Breadcrumb
             Row(
               children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  tooltip: 'Quay lại danh sách sự kiện',
-                  onPressed: () => context.go('/events'),
+                ConstrainedBox(
+                  constraints: AppTouchTargets.minConstraints,
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    tooltip: 'Quay lại danh sách sự kiện',
+                    onPressed: () => context.go('/events'),
+                  ),
                 ),
                 const SizedBox(width: AppSpacing.s8),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: AppSpacing.s12,
+                        runSpacing: AppSpacing.s8,
                         children: [
                           Text(
                             'Điểm danh QR Trực tiếp',
-                            style: AppTypography.textTheme.headlineMedium?.copyWith(
-                              color: AppColors.textPrimary,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: AppTypography.textTheme.headlineMedium
+                                ?.copyWith(
+                                  color: AppColors.textPrimary,
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
-                          const SizedBox(width: AppSpacing.s12),
                           AppStatusBadge(
                             label: isSessionOpen
                                 ? 'Phiên đang mở'
@@ -72,7 +138,7 @@ class LiveQrPanelScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: AppSpacing.s4),
                       Text(
-                        event?.title ?? 'Sự kiện #$eventId',
+                        '${event.title} • ${_formatEventWindow(event)}',
                         style: AppTypography.textTheme.bodyMedium?.copyWith(
                           color: AppColors.textSecondary,
                         ),
@@ -83,34 +149,37 @@ class LiveQrPanelScreen extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: AppSpacing.s24),
-
             if (qrState.errorMessage != null) ...[
-              Container(
-                padding: const EdgeInsets.all(AppSpacing.s12),
-                decoration: BoxDecoration(
-                  color: AppColors.errorContainer,
-                  borderRadius: AppRadius.borderR8,
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.error_outline,
-                        color: AppColors.error, size: 20),
-                    const SizedBox(width: AppSpacing.s8),
-                    Expanded(
-                      child: Text(
-                        qrState.errorMessage!,
-                        style: AppTypography.textTheme.bodyMedium?.copyWith(
-                          color: AppColors.onErrorContainer,
+              Semantics(
+                liveRegion: true,
+                child: Container(
+                  padding: const EdgeInsets.all(AppSpacing.s12),
+                  decoration: const BoxDecoration(
+                    color: AppColors.errorContainer,
+                    borderRadius: AppRadius.borderR8,
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        color: AppColors.error,
+                        size: 20,
+                      ),
+                      const SizedBox(width: AppSpacing.s8),
+                      Expanded(
+                        child: Text(
+                          qrState.errorMessage!,
+                          style: AppTypography.textTheme.bodyMedium?.copyWith(
+                            color: AppColors.onErrorContainer,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: AppSpacing.s16),
             ],
-
-            // 2-Column Responsive Layout
             LayoutBuilder(
               builder: (context, constraints) {
                 final isWide = constraints.maxWidth >= 950;
@@ -118,7 +187,6 @@ class LiveQrPanelScreen extends ConsumerWidget {
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Left Column: Presentation Stage (QR Code)
                       SizedBox(
                         width: 440,
                         child: _buildQrPresentationStage(
@@ -129,7 +197,6 @@ class LiveQrPanelScreen extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(width: AppSpacing.s24),
-                      // Right Column: Realtime Attendance Table
                       Expanded(
                         child: _buildRealtimeAttendancePanel(
                           context,
@@ -140,25 +207,19 @@ class LiveQrPanelScreen extends ConsumerWidget {
                       ),
                     ],
                   );
-                } else {
-                  return Column(
-                    children: [
-                      _buildQrPresentationStage(
-                        context,
-                        ref,
-                        event,
-                        qrState,
-                      ),
-                      const SizedBox(height: AppSpacing.s24),
-                      _buildRealtimeAttendancePanel(
-                        context,
-                        qrState,
-                        totalApproved,
-                        checkedInCount,
-                      ),
-                    ],
-                  );
                 }
+                return Column(
+                  children: [
+                    _buildQrPresentationStage(context, ref, event, qrState),
+                    const SizedBox(height: AppSpacing.s24),
+                    _buildRealtimeAttendancePanel(
+                      context,
+                      qrState,
+                      totalApproved,
+                      checkedInCount,
+                    ),
+                  ],
+                );
               },
             ),
           ],
@@ -170,7 +231,7 @@ class LiveQrPanelScreen extends ConsumerWidget {
   Widget _buildQrPresentationStage(
     BuildContext context,
     WidgetRef ref,
-    Event? event,
+    Event event,
     QrCheckinState state,
   ) {
     final isSessionOpen = state.isSessionOpen;
@@ -182,20 +243,13 @@ class LiveQrPanelScreen extends ConsumerWidget {
         color: AppColors.surface,
         borderRadius: AppRadius.borderR16,
         border: Border.all(color: AppColors.border),
-        boxShadow: const [
-          BoxShadow(
-            color: Color.fromRGBO(0, 0, 0, 0.06),
-            offset: Offset(0, 4),
-            blurRadius: 16,
-          ),
-        ],
+        boxShadow: AppShadows.elevation1,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Event Title & Badge on projector
           Text(
-            event?.title ?? 'Sự kiện EventHub',
+            event.title,
             style: AppTypography.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
@@ -204,42 +258,44 @@ class LiveQrPanelScreen extends ConsumerWidget {
           ),
           const SizedBox(height: AppSpacing.s4),
           Text(
-            'Chiếu màn hình này tại hội trường sự kiện',
+            _formatEventWindow(event),
             style: AppTypography.textTheme.labelSmall?.copyWith(
               color: AppColors.textSecondary,
             ),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: AppSpacing.s16),
-
-          // Big QR Box
-          Container(
-            padding: const EdgeInsets.all(AppSpacing.s16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: AppRadius.borderR12,
-              border: Border.all(
-                color: isSessionOpen ? AppColors.primary : AppColors.border,
-                width: isSessionOpen ? 3 : 1,
+          Semantics(
+            label: isSessionOpen
+                ? 'Mã QR điểm danh đang mở cho sự kiện ${event.title}'
+                : 'Mã QR đang tạm khóa vì phiên điểm danh đang đóng',
+            child: Container(
+              padding: const EdgeInsets.all(AppSpacing.s16),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: AppRadius.borderR12,
+                border: Border.all(
+                  color: isSessionOpen ? AppColors.primary : AppColors.border,
+                  width: isSessionOpen ? 3 : 1,
+                ),
               ),
-            ),
-            child: qrToken.isEmpty
-                ? const SizedBox(
-                    width: 240,
-                    height: 240,
-                    child: Center(child: CircularProgressIndicator()),
-                  )
-                : Opacity(
-                    opacity: isSessionOpen ? 1.0 : 0.35,
-                    child: QrImageView(
-                      data: qrToken,
-                      version: QrVersions.auto,
-                      size: 240.0,
+              child: qrToken.isEmpty
+                  ? const SizedBox(
+                      width: 240,
+                      height: 240,
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  : Opacity(
+                      opacity: isSessionOpen ? 1.0 : 0.35,
+                      child: QrImageView(
+                        data: qrToken,
+                        version: QrVersions.auto,
+                        size: 240.0,
+                      ),
                     ),
-                  ),
+            ),
           ),
           const SizedBox(height: AppSpacing.s16),
-
-          // Instructions
           Container(
             padding: const EdgeInsets.all(AppSpacing.s12),
             decoration: BoxDecoration(
@@ -261,7 +317,7 @@ class LiveQrPanelScreen extends ConsumerWidget {
                 Expanded(
                   child: Text(
                     isSessionOpen
-                        ? 'Sinh viên mở Mobile App -> Vé sự kiện -> Quét mã QR để điểm danh.'
+                        ? 'Sinh viên mở Mobile App → Lịch tham gia → Quét mã QR để điểm danh.'
                         : 'Phiên điểm danh đang đóng. Hãy mở phiên để sinh viên có thể điểm danh.',
                     style: AppTypography.textTheme.bodyMedium?.copyWith(
                       color: AppColors.textPrimary,
@@ -272,29 +328,30 @@ class LiveQrPanelScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.s24),
-
-          // Session & QR Controls
-          Row(
+          Wrap(
+            spacing: AppSpacing.s12,
+            runSpacing: AppSpacing.s12,
+            alignment: WrapAlignment.center,
             children: [
-              Expanded(
-                child: AppButton(
-                  label: isSessionOpen ? 'Đóng phiên' : 'Mở phiên điểm danh',
-                  variant: isSessionOpen
-                      ? AppButtonVariant.secondary
-                      : AppButtonVariant.primary,
-                  icon: Icon(
-                    isSessionOpen ? Icons.stop_circle_outlined : Icons.play_circle_outline,
-                    size: 18,
-                  ),
-                  isLoading: state.isToggling,
-                  onPressed: () => ref
-                      .read(qrCheckinViewModelProvider(eventId).notifier)
-                      .toggleSession(!isSessionOpen),
+              AppButton(
+                label: isSessionOpen ? 'Đóng phiên' : 'Mở phiên điểm danh',
+                variant: isSessionOpen
+                    ? AppButtonVariant.secondary
+                    : AppButtonVariant.primary,
+                icon: Icon(
+                  isSessionOpen
+                      ? Icons.stop_circle_outlined
+                      : Icons.play_circle_outline,
+                  size: 18,
                 ),
+                isLoading: state.isToggling,
+                onPressed: () => ref
+                    .read(qrCheckinViewModelProvider(eventId).notifier)
+                    .toggleSession(!isSessionOpen),
               ),
-              const SizedBox(width: AppSpacing.s12),
               AppButton(
                 label: 'Làm mới QR',
+                semanticsLabel: 'Tạo mới mã QR và vô hiệu hóa mã QR cũ',
                 variant: AppButtonVariant.secondary,
                 icon: const Icon(Icons.refresh, size: 18),
                 isLoading: state.isGeneratingQr,
@@ -329,7 +386,6 @@ class LiveQrPanelScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -346,7 +402,7 @@ class LiveQrPanelScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: AppSpacing.s4),
                     Text(
-                      'Tự động đồng bộ ngay khi sinh viên quét QR trên Mobile',
+                      'Tự động đồng bộ ngay khi sinh viên quét QR trên Mobile (ẩn email/SĐT bảo vệ quyền riêng tư)',
                       style: AppTypography.textTheme.labelSmall?.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -360,23 +416,22 @@ class LiveQrPanelScreen extends ConsumerWidget {
                 variant: checkedInCount == totalApproved && totalApproved > 0
                     ? AppBadgeVariant.success
                     : AppBadgeVariant.info,
+                icon: const Icon(Icons.how_to_reg),
               ),
             ],
           ),
           const SizedBox(height: AppSpacing.s16),
-
-          // Progress Bar
-          LinearProgressIndicator(
-            value: percent,
-            backgroundColor: AppColors.surfaceSubtle,
-            valueColor: const AlwaysStoppedAnimation(AppColors.success),
-            minHeight: 8,
-            borderRadius: BorderRadius.circular(4),
+          ClipRRect(
+            borderRadius: AppRadius.borderR6,
+            child: LinearProgressIndicator(
+              value: percent,
+              backgroundColor: AppColors.surfaceSubtle,
+              valueColor: const AlwaysStoppedAnimation(AppColors.success),
+              minHeight: 8,
+            ),
           ),
           const SizedBox(height: AppSpacing.s16),
           const Divider(height: 1, color: AppColors.border),
-
-          // Participant Realtime List
           if (state.approvedRegistrations.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: AppSpacing.s40),
@@ -399,19 +454,22 @@ class LiveQrPanelScreen extends ConsumerWidget {
               itemBuilder: (context, index) {
                 final reg = state.approvedRegistrations[index];
                 final isCheckedIn = reg.isCheckedIn;
+                final affiliation = reg.participant.group == 'student'
+                    ? 'Sinh viên FPTU • ${reg.participant.cohort}'
+                    : 'Khách • ${reg.participant.organization.isEmpty ? "Ngoài trường" : reg.participant.organization}';
 
                 return Material(
                   color: Colors.transparent,
                   child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(vertical: 4),
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.s4,
+                    ),
                     leading: CircleAvatar(
                       backgroundColor: isCheckedIn
                           ? AppColors.successContainer
                           : AppColors.surfaceSubtle,
                       child: Icon(
-                        isCheckedIn
-                            ? Icons.check
-                            : Icons.person_outline,
+                        isCheckedIn ? Icons.check : Icons.person_outline,
                         color: isCheckedIn
                             ? AppColors.onSuccessContainer
                             : AppColors.textSecondary,
@@ -425,7 +483,7 @@ class LiveQrPanelScreen extends ConsumerWidget {
                       ),
                     ),
                     subtitle: Text(
-                      '${reg.participant.email} • ${reg.participant.group == 'student' ? reg.participant.cohort : reg.participant.organization}',
+                      affiliation,
                       style: AppTypography.textTheme.labelSmall?.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -438,15 +496,16 @@ class LiveQrPanelScreen extends ConsumerWidget {
                               const AppStatusBadge(
                                 label: 'Đã điểm danh',
                                 variant: AppBadgeVariant.success,
+                                icon: Icon(Icons.check_circle_outline),
                               ),
                               if (reg.checkInAt != null) ...[
-                                const SizedBox(height: 2),
+                                const SizedBox(height: AppSpacing.s4),
                                 Text(
                                   '${reg.checkInAt!.hour.toString().padLeft(2, '0')}:${reg.checkInAt!.minute.toString().padLeft(2, '0')}:${reg.checkInAt!.second.toString().padLeft(2, '0')}',
-                                  style: AppTypography.textTheme.labelSmall?.copyWith(
-                                    color: AppColors.textSecondary,
-                                    fontSize: 10,
-                                  ),
+                                  style: AppTypography.textTheme.labelSmall
+                                      ?.copyWith(
+                                        color: AppColors.textSecondary,
+                                      ),
                                 ),
                               ],
                             ],
@@ -454,6 +513,7 @@ class LiveQrPanelScreen extends ConsumerWidget {
                         : const AppStatusBadge(
                             label: 'Chưa điểm danh',
                             variant: AppBadgeVariant.neutral,
+                            icon: Icon(Icons.schedule),
                           ),
                   ),
                 );

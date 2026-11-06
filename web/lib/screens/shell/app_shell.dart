@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eventhub_core/eventhub_core.dart';
 import '../../app/providers.dart';
-import '../../viewmodels/web_auth_viewmodel.dart';
 import '../../services/web_contracts.dart';
+import '../../viewmodels/web_auth_viewmodel.dart';
 
 class AppShell extends ConsumerWidget {
   const AppShell({
@@ -43,19 +43,18 @@ class AppShell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(webAuthViewModelProvider);
-    final user = authState is WebAuthSuccess ? authState.user : null;
-    final clubId = user?.clubId ?? '';
-
+    final user = ref.watch(currentStaffProfileProvider);
+    final clubId = ref.watch(currentClubIdProvider);
     final pendingCount = ref.watch(pendingRegistrationsBadgeCountProvider(clubId));
     final activeClubAsync = ref.watch(activeClubProvider(clubId));
 
     final selectedIndex = _calculateSelectedIndex(currentLocation);
+    final clubDisplayName =
+        activeClubAsync.asData?.value?.name ?? user?.clubName ?? 'Câu lạc bộ';
 
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth >= 1024) {
-          // Desktop Layout (>= 1024 dp)
           return Scaffold(
             backgroundColor: AppColors.surfaceSubtle,
             body: Row(
@@ -64,7 +63,7 @@ class AppShell extends ConsumerWidget {
                   context,
                   ref,
                   user,
-                  activeClubAsync.value?.name ?? user?.clubName ?? 'Câu lạc bộ',
+                  clubDisplayName,
                   selectedIndex,
                   pendingCount,
                 ),
@@ -80,7 +79,6 @@ class AppShell extends ConsumerWidget {
             ),
           );
         } else if (constraints.maxWidth >= 600) {
-          // Tablet Layout (600..1023 dp)
           return Scaffold(
             backgroundColor: AppColors.surfaceSubtle,
             body: Row(
@@ -93,17 +91,18 @@ class AppShell extends ConsumerWidget {
                   backgroundColor: AppColors.surface,
                   selectedIconTheme:
                       const IconThemeData(color: AppColors.primary),
-                  selectedLabelTextStyle: const TextStyle(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12,
-                  ),
-                  unselectedLabelTextStyle: const TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 12,
-                  ),
+                  selectedLabelTextStyle:
+                      AppTypography.textTheme.labelSmall?.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                  unselectedLabelTextStyle:
+                      AppTypography.textTheme.labelSmall?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                   leading: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.s16),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: AppSpacing.s16),
                     child: Container(
                       padding: const EdgeInsets.all(AppSpacing.s8),
                       decoration: const BoxDecoration(
@@ -121,13 +120,21 @@ class AppShell extends ConsumerWidget {
                     child: Align(
                       alignment: Alignment.bottomCenter,
                       child: Padding(
-                        padding: const EdgeInsets.only(bottom: AppSpacing.s16),
-                        child: IconButton(
-                          icon: const Icon(Icons.logout, size: 20),
-                          tooltip: 'Đăng xuất',
-                          onPressed: () => ref
-                              .read(webAuthViewModelProvider.notifier)
-                              .signOut(),
+                        padding:
+                            const EdgeInsets.only(bottom: AppSpacing.s16),
+                        child: Semantics(
+                          button: true,
+                          label: 'Đăng xuất tài khoản',
+                          child: ConstrainedBox(
+                            constraints: AppTouchTargets.minConstraints,
+                            child: IconButton(
+                              icon: const Icon(Icons.logout, size: 20),
+                              tooltip: 'Đăng xuất',
+                              onPressed: () => ref
+                                  .read(webAuthViewModelProvider.notifier)
+                                  .signOut(),
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -166,7 +173,6 @@ class AppShell extends ConsumerWidget {
             ),
           );
         } else {
-          // Mobile Layout (< 600 dp)
           return Scaffold(
             backgroundColor: AppColors.surfaceSubtle,
             appBar: AppBar(
@@ -181,15 +187,24 @@ class AppShell extends ConsumerWidget {
                 ),
               ),
               actions: [
-                IconButton(
-                  icon: const Icon(Icons.logout),
-                  tooltip: 'Đăng xuất',
-                  onPressed: () =>
-                      ref.read(webAuthViewModelProvider.notifier).signOut(),
+                Semantics(
+                  button: true,
+                  label: 'Đăng xuất tài khoản',
+                  child: ConstrainedBox(
+                    constraints: AppTouchTargets.minConstraints,
+                    child: IconButton(
+                      icon: const Icon(Icons.logout),
+                      tooltip: 'Đăng xuất',
+                      onPressed: () => ref
+                          .read(webAuthViewModelProvider.notifier)
+                          .signOut(),
+                    ),
+                  ),
                 ),
               ],
             ),
             drawer: Drawer(
+              backgroundColor: AppColors.surface,
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
@@ -238,24 +253,7 @@ class AppShell extends ConsumerWidget {
                     leading: const Icon(Icons.how_to_reg_outlined),
                     title: const Text('Duyệt đăng ký'),
                     trailing: pendingCount > 0
-                        ? Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.primary,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              '$pendingCount',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          )
+                        ? _buildPendingCountBadge(pendingCount)
                         : null,
                     selected: selectedIndex == 2,
                     onTap: () {
@@ -308,7 +306,6 @@ class AppShell extends ConsumerWidget {
       ),
       child: Column(
         children: [
-          // Logo & Title
           Padding(
             padding: const EdgeInsets.all(AppSpacing.s20),
             child: Row(
@@ -350,8 +347,6 @@ class AppShell extends ConsumerWidget {
             ),
           ),
           const Divider(height: 1, color: AppColors.border),
-
-          // Club Identification Card
           Container(
             margin: const EdgeInsets.all(AppSpacing.s16),
             padding: const EdgeInsets.all(AppSpacing.s12),
@@ -365,7 +360,7 @@ class AppShell extends ConsumerWidget {
                 Container(
                   width: 36,
                   height: 36,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: AppColors.primaryContainer,
                     borderRadius: AppRadius.borderR8,
                   ),
@@ -389,10 +384,13 @@ class AppShell extends ConsumerWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: AppSpacing.s4),
                       AppStatusBadge(
-                        label: user?.role == 'admin' ? 'Quản trị viên' : 'Trưởng CLB',
+                        label: user?.role == 'admin'
+                            ? 'Quản trị viên'
+                            : 'Trưởng CLB',
                         variant: AppBadgeVariant.info,
+                        icon: const Icon(Icons.verified_user_outlined),
                       ),
                     ],
                   ),
@@ -400,8 +398,6 @@ class AppShell extends ConsumerWidget {
               ],
             ),
           ),
-
-          // Navigation Links
           Expanded(
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s12),
@@ -410,6 +406,7 @@ class AppShell extends ConsumerWidget {
                   icon: Icons.dashboard_outlined,
                   selectedIcon: Icons.dashboard,
                   label: 'Bảng điều khiển',
+                  semanticsLabel: 'Mở màn hình Bảng điều khiển CLB',
                   isSelected: selectedIndex == 0,
                   onTap: () => _onDestinationSelected(context, 0),
                 ),
@@ -418,6 +415,7 @@ class AppShell extends ConsumerWidget {
                   icon: Icons.event_outlined,
                   selectedIcon: Icons.event,
                   label: 'Quản lý sự kiện',
+                  semanticsLabel: 'Mở màn hình Quản lý sự kiện CLB',
                   isSelected: selectedIndex == 1,
                   onTap: () => _onDestinationSelected(context, 1),
                 ),
@@ -426,6 +424,9 @@ class AppShell extends ConsumerWidget {
                   icon: Icons.how_to_reg_outlined,
                   selectedIcon: Icons.how_to_reg,
                   label: 'Duyệt đăng ký',
+                  semanticsLabel: pendingCount > 0
+                      ? 'Mở màn hình Duyệt đăng ký, có $pendingCount đơn chờ duyệt'
+                      : 'Mở màn hình Duyệt đăng ký',
                   badgeCount: pendingCount,
                   isSelected: selectedIndex == 2,
                   onTap: () => _onDestinationSelected(context, 2),
@@ -435,14 +436,13 @@ class AppShell extends ConsumerWidget {
                   icon: Icons.campaign_outlined,
                   selectedIcon: Icons.campaign,
                   label: 'Thông báo CLB',
+                  semanticsLabel: 'Mở màn hình Thông báo CLB',
                   isSelected: selectedIndex == 3,
                   onTap: () => _onDestinationSelected(context, 3),
                 ),
               ],
             ),
           ),
-
-          // User info and Logout Footer
           const Divider(height: 1, color: AppColors.border),
           Padding(
             padding: const EdgeInsets.all(AppSpacing.s16),
@@ -455,7 +455,7 @@ class AppShell extends ConsumerWidget {
                     (user?.displayName.isNotEmpty == true)
                         ? user!.displayName[0].toUpperCase()
                         : 'U',
-                    style: const TextStyle(
+                    style: AppTypography.textTheme.labelMedium?.copyWith(
                       color: AppColors.primary,
                       fontWeight: FontWeight.bold,
                     ),
@@ -486,15 +486,22 @@ class AppShell extends ConsumerWidget {
                     ],
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(
-                    Icons.logout_outlined,
-                    size: 20,
-                    color: AppColors.textSecondary,
+                Semantics(
+                  button: true,
+                  label: 'Đăng xuất tài khoản',
+                  child: ConstrainedBox(
+                    constraints: AppTouchTargets.minConstraints,
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.logout_outlined,
+                        size: 20,
+                        color: AppColors.textSecondary,
+                      ),
+                      tooltip: 'Đăng xuất',
+                      onPressed: () =>
+                          ref.read(webAuthViewModelProvider.notifier).signOut(),
+                    ),
                   ),
-                  tooltip: 'Đăng xuất',
-                  onPressed: () =>
-                      ref.read(webAuthViewModelProvider.notifier).signOut(),
                 ),
               ],
             ),
@@ -504,67 +511,81 @@ class AppShell extends ConsumerWidget {
     );
   }
 
+  Widget _buildPendingCountBadge(int count) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.s8,
+        vertical: AppSpacing.s4,
+      ),
+      decoration: const BoxDecoration(
+        color: AppColors.primary,
+        borderRadius: AppRadius.borderFull,
+      ),
+      child: Text(
+        '$count',
+        style: AppTypography.textTheme.labelSmall?.copyWith(
+          color: AppColors.onPrimary,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
   Widget _buildNavItem({
     required IconData icon,
     required IconData selectedIcon,
     required String label,
+    required String semanticsLabel,
     required bool isSelected,
     required VoidCallback onTap,
     int badgeCount = 0,
   }) {
-    final bgColor =
-        isSelected ? AppColors.brandSubtle : Colors.transparent;
+    final bgColor = isSelected ? AppColors.brandSubtle : Colors.transparent;
     final fgColor = isSelected ? AppColors.primary : AppColors.textPrimary;
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: AppRadius.borderR8,
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.s12,
-          vertical: AppSpacing.s12,
-        ),
-        decoration: BoxDecoration(
-          color: bgColor,
+    return Semantics(
+      button: true,
+      selected: isSelected,
+      label: semanticsLabel,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
           borderRadius: AppRadius.borderR8,
-        ),
-        child: Row(
-          children: [
-            Icon(
-              isSelected ? selectedIcon : icon,
-              color: fgColor,
-              size: 20,
-            ),
-            const SizedBox(width: AppSpacing.s12),
-            Expanded(
-              child: Text(
-                label,
-                style: AppTypography.textTheme.bodyMedium?.copyWith(
-                  color: fgColor,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                ),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: AppTouchTargets.min),
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.s12,
+                vertical: AppSpacing.s12,
               ),
-            ),
-            if (badgeCount > 0)
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 2,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  '$badgeCount',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
+              decoration: BoxDecoration(
+                color: bgColor,
+                borderRadius: AppRadius.borderR8,
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    isSelected ? selectedIcon : icon,
+                    color: fgColor,
+                    size: 20,
                   ),
-                ),
+                  const SizedBox(width: AppSpacing.s12),
+                  Expanded(
+                    child: Text(
+                      label,
+                      style: AppTypography.textTheme.bodyMedium?.copyWith(
+                        color: fgColor,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                  if (badgeCount > 0) _buildPendingCountBadge(badgeCount),
+                ],
               ),
-          ],
+            ),
+          ),
         ),
       ),
     );
