@@ -15,14 +15,12 @@ class SignInScreen extends ConsumerWidget {
       return RoleRejectionScreen(
         reason: authState.reason,
         user: authState.user,
-        onSignOut: () =>
-            ref.read(webAuthViewModelProvider.notifier).signOut(),
+        onSignOut: () => ref.read(webAuthViewModelProvider.notifier).signOut(),
       );
     }
 
     final isLoading = authState is WebAuthLoading;
-    final errorMessage =
-        authState is WebAuthError ? authState.message : null;
+    final errorMessage = authState is WebAuthError ? authState.message : null;
 
     return Scaffold(
       backgroundColor: AppColors.surfaceSubtle,
@@ -37,19 +35,12 @@ class SignInScreen extends ConsumerWidget {
                 color: AppColors.surface,
                 borderRadius: AppRadius.borderR16,
                 border: Border.all(color: AppColors.border),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color.fromRGBO(0, 0, 0, 0.08),
-                    offset: Offset(0, 8),
-                    blurRadius: 24,
-                  ),
-                ],
+                boxShadow: AppShadows.elevation2,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Brand Header
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -72,16 +63,16 @@ class SignInScreen extends ConsumerWidget {
                           children: [
                             Text(
                               'EventHub',
-                              style: AppTypography.textTheme.headlineMedium?.copyWith(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: AppTypography.textTheme.headlineMedium
+                                  ?.copyWith(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             ),
                             Text(
                               'Cổng Quản Trị CLB & Admin',
-                              style: AppTypography.textTheme.labelMedium?.copyWith(
-                                color: AppColors.textSecondary,
-                              ),
+                              style: AppTypography.textTheme.labelMedium
+                                  ?.copyWith(color: AppColors.textSecondary),
                             ),
                           ],
                         ),
@@ -89,7 +80,6 @@ class SignInScreen extends ConsumerWidget {
                     ],
                   ),
                   const SizedBox(height: AppSpacing.s32),
-
                   Text(
                     'Đăng nhập tài khoản',
                     style: AppTypography.textTheme.titleLarge?.copyWith(
@@ -107,57 +97,59 @@ class SignInScreen extends ConsumerWidget {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: AppSpacing.s24),
-
                   if (errorMessage != null) ...[
-                    Container(
-                      padding: const EdgeInsets.all(AppSpacing.s12),
-                      decoration: BoxDecoration(
-                        color: AppColors.errorContainer,
-                        borderRadius: AppRadius.borderR8,
-                        border: Border.all(
-                          color: AppColors.error.withValues(alpha: 0.3),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.error_outline,
-                            color: AppColors.error,
-                            size: 20,
+                    Semantics(
+                      liveRegion: true,
+                      label: 'Thông báo lỗi đăng nhập: $errorMessage',
+                      child: Container(
+                        padding: const EdgeInsets.all(AppSpacing.s12),
+                        decoration: BoxDecoration(
+                          color: AppColors.errorContainer,
+                          borderRadius: AppRadius.borderR8,
+                          border: Border.all(
+                            color: AppColors.error.withValues(alpha: 0.3),
                           ),
-                          const SizedBox(width: AppSpacing.s8),
-                          Expanded(
-                            child: Text(
-                              errorMessage,
-                              style: AppTypography.textTheme.bodyMedium?.copyWith(
-                                color: AppColors.onErrorContainer,
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.error_outline,
+                              color: AppColors.error,
+                              size: 20,
+                            ),
+                            const SizedBox(width: AppSpacing.s8),
+                            Expanded(
+                              child: Text(
+                                errorMessage,
+                                style: AppTypography.textTheme.bodyMedium
+                                    ?.copyWith(
+                                      color: AppColors.onErrorContainer,
+                                    ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                     const SizedBox(height: AppSpacing.s20),
                   ],
-
-                  // Google Sign-In Button
                   AppButton(
                     label: isLoading
                         ? 'Đang xác thực...'
                         : 'Đăng nhập bằng Google',
+                    semanticsLabel: 'Đăng nhập vào cổng quản trị bằng Google',
                     icon: const Icon(Icons.login, size: 20),
+                    isFullWidth: true,
                     isLoading: isLoading,
                     onPressed: isLoading
                         ? null
                         : () => ref
-                            .read(webAuthViewModelProvider.notifier)
-                            .signInWithGoogle(),
+                              .read(webAuthViewModelProvider.notifier)
+                              .signInWithGoogle(),
                   ),
-
                   const SizedBox(height: AppSpacing.s24),
                   const Divider(color: AppColors.border),
                   const SizedBox(height: AppSpacing.s16),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

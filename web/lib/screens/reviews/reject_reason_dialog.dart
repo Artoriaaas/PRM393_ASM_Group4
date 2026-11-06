@@ -120,26 +120,32 @@ class _RejectReasonDialogState extends State<RejectReasonDialog> {
                 ),
                 const SizedBox(height: AppSpacing.s20),
 
-                Wrap(
-                  alignment: WrapAlignment.end,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: AppSpacing.s12,
-                  runSpacing: AppSpacing.s8,
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Hủy bỏ'),
-                    ),
-                    AppButton(
-                      label: 'Xác nhận từ chối',
-                      variant: AppButtonVariant.primary,
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          Navigator.of(context).pop(_controller.text.trim());
-                        }
-                      },
-                    ),
-                  ],
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Wrap(
+                    alignment: WrapAlignment.end,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: AppSpacing.s12,
+                    runSpacing: AppSpacing.s8,
+                    children: [
+                      ConstrainedBox(
+                        constraints: AppTouchTargets.minConstraints,
+                        child: TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text('Hủy bỏ'),
+                        ),
+                      ),
+                      AppButton(
+                        label: 'Xác nhận từ chối',
+                        variant: AppButtonVariant.primary,
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            Navigator.of(context).pop(_controller.text.trim());
+                          }
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

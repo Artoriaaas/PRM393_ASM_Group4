@@ -5,8 +5,21 @@ import 'package:eventhub_core/eventhub_core.dart';
 import '../../viewmodels/club_events_viewmodel.dart';
 import 'event_editor_dialog.dart';
 
-class ClubEventsScreen extends ConsumerWidget {
+class ClubEventsScreen extends ConsumerStatefulWidget {
   const ClubEventsScreen({super.key});
+
+  @override
+  ConsumerState<ClubEventsScreen> createState() => _ClubEventsScreenState();
+}
+
+class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   void _openEventEditor(BuildContext context, [Event? event]) {
     showDialog<bool>(
@@ -16,7 +29,7 @@ class ClubEventsScreen extends ConsumerWidget {
     );
   }
 
-  void _confirmArchive(BuildContext context, WidgetRef ref, Event event) {
+  void _confirmArchive(BuildContext context, Event event) {
     showDialog(
       context: context,
       builder: (ctx) => AppConfirmationDialog(
@@ -32,7 +45,7 @@ class ClubEventsScreen extends ConsumerWidget {
     );
   }
 
-  void _confirmCancel(BuildContext context, WidgetRef ref, Event event) {
+  void _confirmCancel(BuildContext context, Event event) {
     showDialog(
       context: context,
       builder: (ctx) => AppConfirmationDialog(
@@ -40,6 +53,7 @@ class ClubEventsScreen extends ConsumerWidget {
         message:
             'CẢNH BÁO: Hủy sự kiện "${event.title}" sẽ đóng toàn bộ lượt đăng ký và điểm danh. Người tham gia đã đăng ký sẽ thấy thông báo sự kiện bị hủy.',
         confirmLabel: 'Xác nhận hủy',
+        isDestructive: true,
         onConfirm: () {
           Navigator.of(ctx).pop();
           ref.read(clubEventsViewModelProvider.notifier).cancelEvent(event.id);
@@ -48,8 +62,13 @@ class ClubEventsScreen extends ConsumerWidget {
     );
   }
 
+  void _clearAllFilters() {
+    _searchController.clear();
+    ref.read(clubEventsViewModelProvider.notifier).clearFilters();
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final state = ref.watch(clubEventsViewModelProvider);
 
     return Scaffold(
@@ -59,9 +78,11 @@ class ClubEventsScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top Bar
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: AppSpacing.s16,
+              runSpacing: AppSpacing.s12,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,14 +105,70 @@ class ClubEventsScreen extends ConsumerWidget {
                 ),
                 AppButton(
                   label: 'Tạo sự kiện mới',
+                  semanticsLabel: 'Mở biểu mẫu tạo sự kiện mới cho câu lạc bộ',
                   icon: const Icon(Icons.add, size: 18),
                   onPressed: () => _openEventEditor(context),
                 ),
               ],
             ),
             const SizedBox(height: AppSpacing.s20),
-
-            // Search and Status Filters
+            if (state.actionMessage != null) ...[
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.s12),
+                decoration: const BoxDecoration(
+                  color: AppColors.successContainer,
+                  borderRadius: AppRadius.borderR8,
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.check_circle_outline,
+                      color: AppColors.success,
+                      size: 20,
+                    ),
+                    const SizedBox(width: AppSpacing.s8),
+                    Expanded(
+                      child: Text(
+                        state.actionMessage!,
+                        style: AppTypography.textTheme.bodyMedium?.copyWith(
+                          color: AppColors.onSuccessContainer,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.s16),
+            ],
+            if (state.errorMessage != null) ...[
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.s12),
+                decoration: const BoxDecoration(
+                  color: AppColors.errorContainer,
+                  borderRadius: AppRadius.borderR8,
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      color: AppColors.error,
+                      size: 20,
+                    ),
+                    const SizedBox(width: AppSpacing.s8),
+                    Expanded(
+                      child: Text(
+                        state.errorMessage!,
+                        style: AppTypography.textTheme.bodyMedium?.copyWith(
+                          color: AppColors.onErrorContainer,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.s16),
+            ],
             Container(
               padding: const EdgeInsets.all(AppSpacing.s16),
               decoration: BoxDecoration(
@@ -102,42 +179,63 @@ class ClubEventsScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AppSearchField(
-                    hintText: 'Tìm theo tên sự kiện, địa điểm hoặc chủ đề...',
-                    onChanged: (q) => ref
-                        .read(clubEventsViewModelProvider.notifier)
-                        .setSearchQuery(q),
+                  Semantics(
+                    textField: true,
+                    label: 'Ô tìm kiếm sự kiện theo tên, địa điểm hoặc chủ đề',
+                    child: AppSearchField(
+                      controller: _searchController,
+                      hintText:
+                          'Tìm theo tên sự kiện, địa điểm hoặc chủ đề...',
+                      onChanged: (q) => ref
+                          .read(clubEventsViewModelProvider.notifier)
+                          .setSearchQuery(q),
+                      onClear: () => ref
+                          .read(clubEventsViewModelProvider.notifier)
+                          .setSearchQuery(''),
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.s16),
                   Wrap(
                     spacing: AppSpacing.s8,
                     runSpacing: AppSpacing.s8,
                     children: [
-                      _buildFilterChip(ref, 'Tất cả', 'all', state.statusFilter),
+                      _buildFilterChip('Tất cả', 'all', state.statusFilter),
                       _buildFilterChip(
-                          ref, 'Đang mở (published)', 'published', state.statusFilter),
+                        'Đang mở (published)',
+                        'published',
+                        state.statusFilter,
+                      ),
                       _buildFilterChip(
-                          ref, 'Bản nháp (draft)', 'draft', state.statusFilter),
+                        'Bản nháp (draft)',
+                        'draft',
+                        state.statusFilter,
+                      ),
                       _buildFilterChip(
-                          ref, 'Đã hủy (cancelled)', 'cancelled', state.statusFilter),
+                        'Đã hủy (cancelled)',
+                        'cancelled',
+                        state.statusFilter,
+                      ),
                       _buildFilterChip(
-                          ref, 'Lưu trữ (archived)', 'archived', state.statusFilter),
+                        'Lưu trữ (archived)',
+                        'archived',
+                        state.statusFilter,
+                      ),
                     ],
                   ),
                 ],
               ),
             ),
             const SizedBox(height: AppSpacing.s20),
-
-            // Events List Content (Handling 4 LoadStates)
             state.loadState.when(
-              initial: () => const Center(child: AppLoadingState()),
-              loading: (_) => const Center(child: AppLoadingState()),
+              initial: () =>
+                  const Center(child: AppLoadingState(message: 'Đang tải sự kiện…')),
+              loading: (_) =>
+                  const Center(child: AppLoadingState(message: 'Đang tải sự kiện…')),
               empty: (msg) => Center(
                 child: AppEmptyState(
                   title: 'Chưa có sự kiện',
-                  message: msg ?? 'Không tìm thấy sự kiện nào khớp bộ lọc.',
-                  actionLabel: 'Tạo sự kiện mới',
+                  message: msg ?? 'Câu lạc bộ chưa khởi tạo sự kiện nào.',
+                  actionLabel: 'Tạo sự kiện đầu tiên',
                   onAction: () => _openEventEditor(context),
                 ),
               ),
@@ -145,6 +243,8 @@ class ClubEventsScreen extends ConsumerWidget {
                 child: AppErrorState(
                   title: 'Không thể tải sự kiện',
                   message: failure.message,
+                  onRetry: () =>
+                      ref.read(clubEventsViewModelProvider.notifier).retry(),
                 ),
               ),
               data: (events, updatedAt, isStale) {
@@ -152,20 +252,14 @@ class ClubEventsScreen extends ConsumerWidget {
                   return Center(
                     child: AppEmptyState(
                       title: 'Không có kết quả',
-                      message: 'Không tìm thấy sự kiện nào với bộ lọc hiện tại.',
+                      message:
+                          'Không tìm thấy sự kiện nào khớp với bộ lọc hiện tại.',
                       actionLabel: 'Xóa bộ lọc',
-                      onAction: () {
-                        ref
-                            .read(clubEventsViewModelProvider.notifier)
-                            .setStatusFilter('all');
-                        ref
-                            .read(clubEventsViewModelProvider.notifier)
-                            .setSearchQuery('');
-                      },
+                      onAction: _clearAllFilters,
                     ),
                   );
                 }
-                return _buildEventsTable(context, ref, events);
+                return _buildEventsTable(context, events);
               },
             ),
           ],
@@ -175,31 +269,34 @@ class ClubEventsScreen extends ConsumerWidget {
   }
 
   Widget _buildFilterChip(
-    WidgetRef ref,
     String label,
     String statusKey,
     String currentFilter,
   ) {
     final isSelected = currentFilter == statusKey;
-    return ChoiceChip(
-      label: Text(label),
+    return Semantics(
+      button: true,
       selected: isSelected,
-      onSelected: (_) => ref
-          .read(clubEventsViewModelProvider.notifier)
-          .setStatusFilter(statusKey),
-      selectedColor: AppColors.brandSubtle,
-      labelStyle: TextStyle(
-        color: isSelected ? AppColors.primary : AppColors.textPrimary,
-        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+      label: 'Lọc sự kiện theo trạng thái: $label',
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: AppTouchTargets.min),
+        child: ChoiceChip(
+          label: Text(label),
+          selected: isSelected,
+          onSelected: (_) => ref
+              .read(clubEventsViewModelProvider.notifier)
+              .setStatusFilter(statusKey),
+          selectedColor: AppColors.brandSubtle,
+          labelStyle: AppTypography.textTheme.labelMedium?.copyWith(
+            color: isSelected ? AppColors.primary : AppColors.textPrimary,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildEventsTable(
-    BuildContext context,
-    WidgetRef ref,
-    List<Event> events,
-  ) {
+  Widget _buildEventsTable(BuildContext context, List<Event> events) {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -217,31 +314,16 @@ class ClubEventsScreen extends ConsumerWidget {
           final canCheckIn =
               event.status == 'published' && event.mode == 'required';
 
-          return Padding(
-            padding: const EdgeInsets.all(AppSpacing.s16),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Event Icon
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: AppColors.brandSubtle,
-                    borderRadius: AppRadius.borderR12,
-                  ),
-                  child: const Icon(
-                    Icons.event_note,
-                    color: AppColors.primary,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.s16),
-
-                // Title & Details
-                Expanded(
-                  flex: 3,
-                  child: Column(
+          return Semantics(
+            container: true,
+            label:
+                'Sự kiện ${event.title}, trạng thái ${_mapStatusLabel(event.status)}, ${event.mode == "free" ? "Tham gia tự do" : "Đã duyệt ${event.activeCount} trên ${event.capacity}"}',
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.s16),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final isWide = constraints.maxWidth >= 820;
+                  final titleSection = Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
@@ -249,10 +331,11 @@ class ClubEventsScreen extends ConsumerWidget {
                           Expanded(
                             child: Text(
                               event.title,
-                              style: AppTypography.textTheme.titleMedium?.copyWith(
-                                color: AppColors.textPrimary,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: AppTypography.textTheme.titleMedium
+                                  ?.copyWith(
+                                    color: AppColors.textPrimary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -261,25 +344,21 @@ class ClubEventsScreen extends ConsumerWidget {
                           AppStatusBadge(
                             label: _mapStatusLabel(event.status),
                             variant: _mapStatusVariant(event.status),
+                            icon: Icon(_mapStatusIcon(event.status)),
                           ),
                         ],
                       ),
                       const SizedBox(height: AppSpacing.s4),
                       Text(
-                        '${event.startsAt.day}/${event.startsAt.month}/${event.startsAt.year} • ${event.location} • Chủ đề: ${event.topic.isEmpty ? 'Chung' : event.topic}',
+                        '${event.startsAt.day.toString().padLeft(2, "0")}/${event.startsAt.month.toString().padLeft(2, "0")}/${event.startsAt.year} • ${event.location} • Chủ đề: ${event.topic.isEmpty ? "Chung" : event.topic}',
                         style: AppTypography.textTheme.labelSmall?.copyWith(
                           color: AppColors.textSecondary,
                         ),
                       ),
                     ],
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.s16),
+                  );
 
-                // Capacity / Mode
-                Expanded(
-                  flex: 2,
-                  child: Column(
+                  final capacitySection = Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
@@ -292,88 +371,152 @@ class ClubEventsScreen extends ConsumerWidget {
                         ),
                       ),
                       if (event.mode == 'required') ...[
-                        const SizedBox(height: 4),
-                        LinearProgressIndicator(
-                          value: event.capacity > 0
-                              ? (event.activeCount / event.capacity).clamp(0.0, 1.0)
-                              : 0.0,
-                          backgroundColor: AppColors.surfaceSubtle,
-                          valueColor: const AlwaysStoppedAnimation(AppColors.primary),
-                          minHeight: 4,
+                        const SizedBox(height: AppSpacing.s4),
+                        ClipRRect(
+                          borderRadius: AppRadius.borderR6,
+                          child: LinearProgressIndicator(
+                            value: event.capacity > 0
+                                ? (event.activeCount / event.capacity).clamp(
+                                    0.0,
+                                    1.0,
+                                  )
+                                : 0.0,
+                            backgroundColor: AppColors.surfaceSubtle,
+                            valueColor: const AlwaysStoppedAnimation(
+                              AppColors.primary,
+                            ),
+                            minHeight: 4,
+                          ),
                         ),
                       ],
                     ],
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.s16),
+                  );
 
-                // Action Buttons
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Live Checkin Panel
-                    ElevatedButton.icon(
-                      icon: const Icon(Icons.qr_code, size: 16),
-                      label: const Text('Điểm danh QR'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            canCheckIn ? AppColors.primary : AppColors.surfaceSubtle,
-                        foregroundColor:
-                            canCheckIn ? AppColors.onPrimary : AppColors.textDisabled,
-                        elevation: 0,
+                  final actionsSection = Wrap(
+                    spacing: AppSpacing.s8,
+                    runSpacing: AppSpacing.s8,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          minHeight: AppTouchTargets.min,
+                        ),
+                        child: ElevatedButton.icon(
+                          icon: const Icon(Icons.qr_code, size: 16),
+                          label: const Text('Điểm danh QR'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: canCheckIn
+                                ? AppColors.primary
+                                : AppColors.surfaceSubtle,
+                            foregroundColor: canCheckIn
+                                ? AppColors.onPrimary
+                                : AppColors.textDisabled,
+                            elevation: 0,
+                          ),
+                          onPressed: canCheckIn
+                              ? () => context.go('/events/${event.id}/checkin')
+                              : null,
+                        ),
                       ),
-                      onPressed: canCheckIn
-                          ? () => context.go('/events/${event.id}/checkin')
-                          : null,
-                    ),
-                    const SizedBox(width: AppSpacing.s8),
+                      ConstrainedBox(
+                        constraints: AppTouchTargets.minConstraints,
+                        child: IconButton(
+                          icon: const Icon(Icons.edit_outlined, size: 20),
+                          tooltip: 'Chỉnh sửa sự kiện',
+                          onPressed: () => _openEventEditor(context, event),
+                        ),
+                      ),
+                      ConstrainedBox(
+                        constraints: AppTouchTargets.minConstraints,
+                        child: PopupMenuButton<String>(
+                          tooltip: 'Tác vụ khác',
+                          icon: const Icon(Icons.more_vert, size: 20),
+                          onSelected: (val) {
+                            if (val == 'cancel') {
+                              _confirmCancel(context, event);
+                            } else if (val == 'archive') {
+                              _confirmArchive(context, event);
+                            }
+                          },
+                          itemBuilder: (context) => [
+                            if (event.status != 'cancelled')
+                              const PopupMenuItem(
+                                value: 'cancel',
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.cancel_outlined,
+                                      color: AppColors.error,
+                                      size: 18,
+                                    ),
+                                    SizedBox(width: AppSpacing.s8),
+                                    Text(
+                                      'Hủy sự kiện',
+                                      style: TextStyle(color: AppColors.error),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            if (event.status != 'archived')
+                              const PopupMenuItem(
+                                value: 'archive',
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.archive_outlined,
+                                      color: AppColors.textSecondary,
+                                      size: 18,
+                                    ),
+                                    SizedBox(width: AppSpacing.s8),
+                                    Text('Lưu trữ (Archive)'),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
 
-                    IconButton(
-                      icon: const Icon(Icons.edit_outlined, size: 20),
-                      tooltip: 'Chỉnh sửa sự kiện',
-                      onPressed: () => _openEventEditor(context, event),
-                    ),
-
-                    PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_vert, size: 20),
-                      onSelected: (val) {
-                        if (val == 'cancel') {
-                          _confirmCancel(context, ref, event);
-                        } else if (val == 'archive') {
-                          _confirmArchive(context, ref, event);
-                        }
-                      },
-                      itemBuilder: (context) => [
-                        if (event.status != 'cancelled')
-                          const PopupMenuItem(
-                            value: 'cancel',
-                            child: Row(
-                              children: [
-                                Icon(Icons.cancel_outlined,
-                                    color: AppColors.error, size: 18),
-                                SizedBox(width: 8),
-                                Text('Hủy sự kiện',
-                                    style: TextStyle(color: AppColors.error)),
-                              ],
-                            ),
+                  if (isWide) {
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: const BoxDecoration(
+                            color: AppColors.brandSubtle,
+                            borderRadius: AppRadius.borderR12,
                           ),
-                        if (event.status != 'archived')
-                          const PopupMenuItem(
-                            value: 'archive',
-                            child: Row(
-                              children: [
-                                Icon(Icons.archive_outlined,
-                                    color: AppColors.textSecondary, size: 18),
-                                SizedBox(width: 8),
-                                Text('Lưu trữ (Archive)'),
-                              ],
-                            ),
+                          child: const Icon(
+                            Icons.event_note,
+                            color: AppColors.primary,
+                            size: 24,
                           ),
+                        ),
+                        const SizedBox(width: AppSpacing.s16),
+                        Expanded(flex: 3, child: titleSection),
+                        const SizedBox(width: AppSpacing.s16),
+                        Expanded(flex: 2, child: capacitySection),
+                        const SizedBox(width: AppSpacing.s16),
+                        actionsSection,
                       ],
-                    ),
-                  ],
-                ),
-              ],
+                    );
+                  }
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      titleSection,
+                      const SizedBox(height: AppSpacing.s12),
+                      capacitySection,
+                      const SizedBox(height: AppSpacing.s12),
+                      actionsSection,
+                    ],
+                  );
+                },
+              ),
             ),
           );
         },
@@ -395,5 +538,13 @@ class ClubEventsScreen extends ConsumerWidget {
         'cancelled' => AppBadgeVariant.error,
         'archived' => AppBadgeVariant.info,
         _ => AppBadgeVariant.neutral,
+      };
+
+  IconData _mapStatusIcon(String status) => switch (status) {
+        'published' => Icons.public,
+        'draft' => Icons.edit_note,
+        'cancelled' => Icons.cancel_outlined,
+        'archived' => Icons.archive_outlined,
+        _ => Icons.info_outline,
       };
 }

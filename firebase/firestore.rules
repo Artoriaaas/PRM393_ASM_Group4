@@ -1,128 +1,432 @@
 rules_version = '2';
 service cloud.firestore {
- match /databases/{database}/documents {
-  function member() {return request.auth != null && request.auth.token.email_verified == true;}
-  function eventPath(eventId) {return /databases/$(database)/documents/events/$(eventId);}
-  function regPath(eventId) {return /databases/$(database)/documents/registrations/$(request.auth.uid + '_' + eventId);}
-  function canRegister(eventId) {
-   let e = get(eventPath(eventId)).data;
-   return e.visibility == 'public' && e.status == 'published'
-    && e.registrationMode == 'required' && request.time < e.startsAt
-    && request.time < e.deadline && e.activeCount < e.capacity;
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+    function member() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+    function userDocPath(uid) {
+      return /databases/$(database)/documents/users/$(uid);
+    }
+    function myRole() {
+      return exists(userDocPath(request.auth.uid))
+        ? get(userDocPath(request.auth.uid)).data.role
+        : 'user';
+    }
+    function myClubId() {
+      return exists(userDocPath(request.auth.uid))
+        && ('clubId' in get(userDocPath(request.auth.uid)).data)
+        && get(userDocPath(request.auth.uid)).data.clubId is string
+        ? get(userDocPath(request.auth.uid)).data.clubId
+        : '';
+    }
+    function isUser() {
+      return member() && myRole() == 'user';
+    }
+    function isAdmin() {
+      return member() && myRole() == 'admin';
+    }
+    function isStaff() {
+      return member() && myRole() == 'staff' && myClubId().size() > 0;
+    }
+    function isStaffOf(clubId) {
+      return isAdmin() || (isStaff() && clubId is string && myClubId() == clubId);
+    }
+
+    function eventPath(eventId) {
+      return /databases/$(database)/documents/events/$(eventId);
+    }
+    function regPath(eventId) {
+      return /databases/$(database)/documents/registrations/$(request.auth.uid + '_' + eventId);
+    }
+    function canRegister(eventId) {
+      let e = get(eventPath(eventId)).data;
+      return e.visibility == 'public'
+        && e.status == 'published'
+        && e.registrationMode == 'required'
+        && request.time < e.startsAt
+        && request.time < e.deadline
+        && e.activeCount < e.capacity;
+    }
+    function participantValid(p) {
+      return p is map
+        && p.keys().hasAll(['name', 'email', 'group', 'cohort', 'organization', 'phone'])
+        && p.keys().hasOnly(['name', 'email', 'group', 'cohort', 'organization', 'phone'])
+        && p.name is string && p.name.size() > 0 && p.name.size() <= 100
+        && p.email is string && p.email.size() > 3 && p.email.size() <= 254
+        && p.group in ['student', 'guest']
+        && p.cohort is string && p.cohort.size() <= 30
+        && p.organization is string && p.organization.size() <= 160
+        && p.phone is string && p.phone.size() <= 30
+        && (p.group != 'student' || p.cohort.size() > 0);
+    }
+    function operationValid(op) {
+      return op is string && op.matches('^[a-f0-9]{48}$');
+    }
+
+    function userEventCancelDecrement(id) {
+      let before = get(regPath(id));
+      let after = getAfter(regPath(id));
+      return isUser()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['activeCount'])
+        && request.resource.data.activeCount >= 0
+        && request.resource.data.activeCount == resource.data.activeCount - 1
+        && exists(regPath(id))
+        && before.data.status in ['approved', 'active']
+        && after.data.status == 'cancelled'
+        && after.data.uid == request.auth.uid
+        && after.data.eventId == id
+        && operationValid(after.data.lastOperationId);
+    }
+
+    function staffEventSeatIncrement() {
+      let changed = request.resource.data.diff(resource.data).affectedKeys();
+      return isStaffOf(resource.data.clubId)
+        && 'activeCount' in changed
+        && changed.hasOnly(['activeCount', 'updatedAt'])
+        && request.resource.data.activeCount == resource.data.activeCount + 1
+        && request.resource.data.activeCount <= resource.data.capacity
+        && (!('updatedAt' in changed) || request.resource.data.updatedAt == request.time);
+    }
+
+    function staffEventMetadataUpdate() {
+      return isStaffOf(resource.data.clubId)
+        && request.resource.data.clubId == resource.data.clubId
+        && request.resource.data.activeCount == resource.data.activeCount
+        && request.resource.data.status in ['draft', 'published', 'cancelled', 'archived']
+        && request.resource.data.registrationMode in ['required', 'free']
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 120
+        && request.resource.data.capacity is int
+        && request.resource.data.capacity >= 0
+        && (request.resource.data.registrationMode == 'free'
+            || request.resource.data.capacity >= resource.data.activeCount)
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    match /users/{uid} {
+      allow get: if (signedIn() && request.auth.uid == uid) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if signedIn()
+        && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['role', 'displayName', 'email', 'createdAt'])
+        && request.resource.data.role == 'user'
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() <= 120
+        && request.resource.data.email is string
+        && request.resource.data.email.size() <= 254
+        && request.resource.data.createdAt == request.time;
+      allow update: if (
+          signedIn()
+          && request.auth.uid == uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName', 'email', 'updatedAt'])
+          && request.resource.data.role == resource.data.role
+        ) || (
+          isAdmin()
+          && request.auth.uid != uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['role', 'clubId', 'clubName', 'updatedAt'])
+          && request.resource.data.role in ['user', 'staff', 'admin']
+          && (request.resource.data.role != 'staff'
+              || ('clubId' in request.resource.data
+                  && request.resource.data.clubId is string
+                  && request.resource.data.clubId.size() > 0))
+        );
+      allow delete: if false;
+
+      match /notifications/{id} {
+        allow read: if member() && request.auth.uid == uid;
+        allow update: if member()
+          && request.auth.uid == uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['readAt'])
+          && request.resource.data.readAt == request.time;
+        allow create: if (
+            member()
+            && request.auth.uid == uid
+            && id.matches('push_[a-f0-9]{64}')
+            && request.resource.data.keys().hasOnly(['title', 'body', 'eventId', 'registrationId', 'type', 'createdAt', 'readAt'])
+            && request.resource.data.title is string && request.resource.data.title.size() <= 200
+            && request.resource.data.body is string && request.resource.data.body.size() <= 4000
+            && request.resource.data.eventId is string && request.resource.data.eventId.size() <= 200
+            && (!('registrationId' in request.resource.data)
+                || (request.resource.data.registrationId is string
+                    && request.resource.data.registrationId.matches('^[a-zA-Z0-9_-]{1,200}$')))
+            && request.resource.data.type == 'push_received'
+            && request.resource.data.createdAt == request.time
+            && request.resource.data.readAt == null
+          ) || (
+            (isStaff() || isAdmin())
+            && request.resource.data.keys().hasOnly(['title', 'body', 'eventId', 'registrationId', 'type', 'createdAt', 'readAt'])
+            && request.resource.data.title is string && request.resource.data.title.size() > 0 && request.resource.data.title.size() <= 200
+            && request.resource.data.body is string && request.resource.data.body.size() > 0 && request.resource.data.body.size() <= 4000
+            && request.resource.data.eventId is string && request.resource.data.eventId.size() > 0 && request.resource.data.eventId.size() <= 200
+            && exists(eventPath(request.resource.data.eventId))
+            && isStaffOf(get(eventPath(request.resource.data.eventId)).data.clubId)
+            && (!('registrationId' in request.resource.data)
+                || request.resource.data.registrationId == null
+                || (request.resource.data.registrationId is string
+                    && request.resource.data.registrationId.matches('^[a-zA-Z0-9_-]{1,200}$')))
+            && request.resource.data.type in ['registration_approved', 'registration_rejected', 'event_updated']
+            && request.resource.data.createdAt == request.time
+            && request.resource.data.readAt == null
+          );
+        allow delete: if false;
+      }
+
+      match /devices/{id} {
+        allow read, delete: if member() && request.auth.uid == uid;
+        allow create, update: if member()
+          && request.auth.uid == uid
+          && request.resource.data.keys().hasOnly(['fid', 'platform', 'updatedAt'])
+          && request.resource.data.fid is string && request.resource.data.fid.size() < 4096
+          && request.resource.data.platform == 'android'
+          && request.resource.data.updatedAt == request.time;
+      }
+    }
+
+    match /clubs/{id} {
+      allow read: if member();
+      allow create, update: if isAdmin()
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 120
+        && request.resource.data.status in ['active', 'archived'];
+      allow delete: if false;
+    }
+
+    match /events/{id} {
+      allow list: if member()
+        && (resource.data.visibility == 'public' || isStaffOf(resource.data.clubId));
+      allow get: if member()
+        && (!exists(eventPath(id))
+            || resource.data.visibility == 'public'
+            || (exists(regPath(id)) && get(regPath(id)).data.uid == request.auth.uid)
+            || isStaffOf(resource.data.clubId));
+      allow create: if isStaffOf(request.resource.data.clubId)
+        && request.resource.data.clubId is string
+        && request.resource.data.clubId.size() > 0
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 120
+        && request.resource.data.registrationMode in ['required', 'free']
+        && request.resource.data.visibility == 'public'
+        && request.resource.data.status in ['draft', 'published']
+        && request.resource.data.capacity is int
+        && request.resource.data.capacity >= 0
+        && request.resource.data.activeCount == 0
+        && request.resource.data.startsAt is timestamp
+        && request.resource.data.endsAt is timestamp
+        && request.resource.data.endsAt > request.resource.data.startsAt
+        && request.resource.data.updatedAt == request.time;
+      allow update: if userEventCancelDecrement(id)
+        || staffEventSeatIncrement()
+        || staffEventMetadataUpdate();
+      allow delete: if false;
+    }
+
+    match /registrations/{id} {
+      allow list: if member()
+        && (resource.data.uid == request.auth.uid || isStaffOf(resource.data.clubId));
+      allow get: if member()
+        && (!exists(/databases/$(database)/documents/registrations/$(id))
+            || resource.data.uid == request.auth.uid
+            || isStaffOf(resource.data.clubId));
+      allow create: if isUser()
+        && id == request.auth.uid + '_' + request.resource.data.eventId
+        && request.resource.data.keys().hasOnly([
+             'uid', 'eventId', 'clubId', 'status', 'generation', 'participant',
+             'reason', 'reviewedBy', 'reviewedAt', 'checkInAt', 'createdAt', 'lastOperationId'
+           ])
+        && request.resource.data.keys().hasAll([
+             'uid', 'eventId', 'clubId', 'status', 'generation', 'participant',
+             'checkInAt', 'createdAt', 'lastOperationId'
+           ])
+        && request.resource.data.uid == request.auth.uid
+        && exists(eventPath(request.resource.data.eventId))
+        && request.resource.data.clubId == get(eventPath(request.resource.data.eventId)).data.clubId
+        && request.resource.data.status == 'pending'
+        && request.resource.data.generation == 1
+        && request.resource.data.checkInAt == null
+        && (!('reason' in request.resource.data) || request.resource.data.reason == null)
+        && (!('reviewedBy' in request.resource.data) || request.resource.data.reviewedBy == null)
+        && (!('reviewedAt' in request.resource.data) || request.resource.data.reviewedAt == null)
+        && request.resource.data.createdAt == request.time
+        && participantValid(request.resource.data.participant)
+        && operationValid(request.resource.data.lastOperationId)
+        && canRegister(request.resource.data.eventId)
+        && getAfter(eventPath(request.resource.data.eventId)).data.activeCount
+           == get(eventPath(request.resource.data.eventId)).data.activeCount;
+      allow update: if (
+          isUser()
+          && resource.data.uid == request.auth.uid
+          && id == request.auth.uid + '_' + resource.data.eventId
+          && request.resource.data.uid == resource.data.uid
+          && request.resource.data.eventId == resource.data.eventId
+          && request.resource.data.clubId == resource.data.clubId
+          && operationValid(request.resource.data.lastOperationId)
+          && request.resource.data.lastOperationId != resource.data.lastOperationId
+          && (
+            // 1. Re-register after cancelled or rejected -> pending
+            (
+              resource.data.status in ['cancelled', 'rejected']
+              && request.resource.data.status == 'pending'
+              && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+                   'status', 'generation', 'participant', 'reason', 'reviewedBy',
+                   'reviewedAt', 'checkInAt', 'createdAt', 'lastOperationId', 'qrHash'
+                 ])
+              && request.resource.data.generation == resource.data.generation + 1
+              && request.resource.data.checkInAt == null
+              && (!('reason' in request.resource.data) || request.resource.data.reason == null)
+              && (!('reviewedBy' in request.resource.data) || request.resource.data.reviewedBy == null)
+              && (!('reviewedAt' in request.resource.data) || request.resource.data.reviewedAt == null)
+              && request.resource.data.createdAt == request.time
+              && participantValid(request.resource.data.participant)
+              && canRegister(resource.data.eventId)
+              && getAfter(eventPath(resource.data.eventId)).data.activeCount
+                 == get(eventPath(resource.data.eventId)).data.activeCount
+            )
+            // 2. Cancel pending registration (no activeCount change)
+            || (
+              resource.data.status == 'pending'
+              && request.resource.data.status == 'cancelled'
+              && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'lastOperationId'])
+              && resource.data.checkInAt == null
+              && getAfter(eventPath(resource.data.eventId)).data.activeCount
+                 == get(eventPath(resource.data.eventId)).data.activeCount
+            )
+            // 3. Cancel approved registration (decrements activeCount - 1)
+            || (
+              resource.data.status in ['approved', 'active']
+              && request.resource.data.status == 'cancelled'
+              && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'lastOperationId'])
+              && resource.data.checkInAt == null
+              && get(eventPath(resource.data.eventId)).data.status == 'published'
+              && request.time < get(eventPath(resource.data.eventId)).data.startsAt
+              && getAfter(eventPath(resource.data.eventId)).data.activeCount
+                 == get(eventPath(resource.data.eventId)).data.activeCount - 1
+            )
+            // 4. QR Check-in for approved registration
+            || (
+              resource.data.status == 'approved'
+              && request.resource.data.status == 'approved'
+              && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['checkInAt', 'qrHash', 'lastOperationId'])
+              && resource.data.checkInAt == null
+              && request.resource.data.checkInAt == request.time
+              && request.resource.data.qrHash is string
+              && request.resource.data.qrHash.matches('^[a-f0-9]{64}$')
+              && exists(/databases/$(database)/documents/qrCredentials/$(request.resource.data.qrHash))
+              && get(/databases/$(database)/documents/qrCredentials/$(request.resource.data.qrHash)).data.eventId == resource.data.eventId
+              && get(/databases/$(database)/documents/qrCredentials/$(request.resource.data.qrHash)).data.enabled == true
+              && exists(/databases/$(database)/documents/checkinSessions/$(resource.data.eventId))
+              && get(/databases/$(database)/documents/checkinSessions/$(resource.data.eventId)).data.open == true
+              && get(eventPath(resource.data.eventId)).data.status == 'published'
+            )
+          )
+        ) || (
+          isStaffOf(resource.data.clubId)
+          && resource.data.status == 'pending'
+          && request.resource.data.uid == resource.data.uid
+          && request.resource.data.eventId == resource.data.eventId
+          && request.resource.data.clubId == resource.data.clubId
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+               'status', 'reason', 'reviewedBy', 'reviewedAt'
+             ])
+          && request.resource.data.reviewedBy == request.auth.uid
+          && request.resource.data.reviewedAt == request.time
+          && (
+            // Staff/Admin Approve -> increments event activeCount + 1
+            (
+              request.resource.data.status == 'approved'
+              && (!('reason' in request.resource.data)
+                  || request.resource.data.reason == null
+                  || (request.resource.data.reason is string && request.resource.data.reason.size() <= 300))
+              && get(eventPath(resource.data.eventId)).data.status == 'published'
+              && get(eventPath(resource.data.eventId)).data.activeCount
+                 < get(eventPath(resource.data.eventId)).data.capacity
+              && getAfter(eventPath(resource.data.eventId)).data.activeCount
+                 == get(eventPath(resource.data.eventId)).data.activeCount + 1
+            )
+            // Staff/Admin Reject -> requires reason 3..300 chars, activeCount unchanged
+            || (
+              request.resource.data.status == 'rejected'
+              && request.resource.data.reason is string
+              && request.resource.data.reason.size() >= 3
+              && request.resource.data.reason.size() <= 300
+              && getAfter(eventPath(resource.data.eventId)).data.activeCount
+                 == get(eventPath(resource.data.eventId)).data.activeCount
+            )
+          )
+        );
+      allow delete: if false;
+
+      match /history/{entry} {
+        allow read: if member()
+          && get(/databases/$(database)/documents/registrations/$(id)).data.uid == request.auth.uid;
+        allow write: if false;
+      }
+    }
+
+    match /checkinSessions/{eventId} {
+      allow get: if member() && ((exists(regPath(eventId)) && get(regPath(eventId)).data.status == 'active') || isStaffOf(resource.data.clubId));
+      allow list: if isAdmin() || (isStaff() && resource.data.clubId == myClubId());
+      allow create, update: if exists(eventPath(eventId))
+        && isStaffOf(get(eventPath(eventId)).data.clubId)
+        && request.resource.data.keys().hasOnly(['eventId', 'clubId', 'open', 'updatedBy', 'updatedAt'])
+        && request.resource.data.eventId == eventId
+        && request.resource.data.clubId == get(eventPath(eventId)).data.clubId
+        && request.resource.data.open is bool
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if false;
+    }
+
+    match /qrCredentials/{qrHash} {
+      allow get: if (member() && qrHash.matches('^[a-f0-9]{64}$')) || isStaffOf(resource.data.clubId);
+      allow list: if isStaffOf(resource.data.clubId);
+      allow create: if qrHash.matches('^[a-f0-9]{64}$')
+        && exists(eventPath(request.resource.data.eventId))
+        && isStaffOf(get(eventPath(request.resource.data.eventId)).data.clubId)
+        && request.resource.data.keys().hasOnly(['eventId', 'clubId', 'enabled', 'createdBy', 'createdAt'])
+        && request.resource.data.clubId == get(eventPath(request.resource.data.eventId)).data.clubId
+        && request.resource.data.enabled == true
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time;
+      allow update: if isStaffOf(resource.data.clubId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['enabled'])
+        && request.resource.data.enabled is bool;
+      allow delete: if false;
+    }
+
+    match /announcements/{id} {
+      allow read: if member();
+      allow create: if request.resource.data.keys().hasOnly([
+            'title', 'body', 'scope', 'clubId', 'clubName',
+            'eventId', 'authorUid', 'authorRole', 'createdAt'
+          ])
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 120
+        && request.resource.data.body is string
+        && request.resource.data.body.size() > 0
+        && request.resource.data.body.size() <= 1000
+        && request.resource.data.authorUid == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && (
+          (isStaff()
+            && request.resource.data.scope in ['club', 'event']
+            && request.resource.data.clubId == myClubId()
+            && request.resource.data.authorRole == 'staff')
+          || (isAdmin()
+            && request.resource.data.scope in ['club', 'event', 'global']
+            && request.resource.data.authorRole == 'admin')
+        );
+      allow update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
   }
-  function participantValid(p) {
-   return p.keys().hasAll(['name','email','group','cohort','organization','phone'])
-    && p.keys().hasOnly(['name','email','group','cohort','organization','phone'])
-    && p.name is string && p.name.size() > 0 && p.name.size() <= 100
-    && p.email is string && p.email.size() > 3 && p.email.size() <= 254
-    && p.group in ['student','guest']
-    && p.cohort is string && p.cohort.size() <= 30
-    && p.organization is string && p.organization.size() <= 160
-    && p.phone is string && p.phone.size() <= 30
-    && (p.group != 'student' || p.cohort.size() > 0);
-  }
-  function operationValid(op) {return op is string && op.matches('^[a-f0-9]{48}$');}
-  function eventCountChange(id) {
-   let before = get(regPath(id));
-   let after = getAfter(regPath(id));
-   return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['activeCount'])
-    && request.resource.data.activeCount >= 0
-    && request.resource.data.activeCount <= resource.data.capacity
-    && after.data.uid == request.auth.uid && after.data.eventId == id
-    && operationValid(after.data.lastOperationId)
-    && ((!exists(regPath(id)) || before.data.status == 'cancelled')
-      && after.data.status == 'active'
-      && request.resource.data.activeCount == resource.data.activeCount + 1
-     || exists(regPath(id)) && before.data.status == 'active'
-      && after.data.status == 'cancelled'
-      && request.resource.data.activeCount == resource.data.activeCount - 1);
-  }
-  match /events/{id} {
-   allow list: if member() && resource.data.visibility == 'public';
-   allow get: if member() && (!exists(/databases/$(database)/documents/events/$(id)) || resource.data.visibility == 'public'
-    || (exists(regPath(id)) && get(regPath(id)).data.uid == request.auth.uid));
-   allow update: if member() && eventCountChange(id);
-   allow create,delete: if false;
-  }
-  match /clubs/{id} {allow read: if member(); allow write: if false;}
-  match /registrations/{id} {
-   allow list: if member() && resource.data.uid == request.auth.uid;
-   allow get: if member() && (!exists(/databases/$(database)/documents/registrations/$(id)) || resource.data.uid == request.auth.uid);
-   allow create: if member() && id == request.auth.uid + '_' + request.resource.data.eventId
-    && request.resource.data.keys().hasOnly(['uid','eventId','status','generation','participant','checkInAt','createdAt','lastOperationId'])
-    && request.resource.data.keys().hasAll(['uid','eventId','status','generation','participant','checkInAt','createdAt','lastOperationId'])
-    && request.resource.data.uid == request.auth.uid
-    && request.resource.data.status == 'active' && request.resource.data.generation == 1
-    && request.resource.data.checkInAt == null && request.resource.data.createdAt == request.time
-    && participantValid(request.resource.data.participant)
-    && operationValid(request.resource.data.lastOperationId)
-    && canRegister(request.resource.data.eventId)
-    && getAfter(eventPath(request.resource.data.eventId)).data.activeCount ==
-       get(eventPath(request.resource.data.eventId)).data.activeCount + 1;
-   allow update: if member() && resource.data.uid == request.auth.uid
-    && id == request.auth.uid + '_' + resource.data.eventId
-    && request.resource.data.uid == resource.data.uid
-    && request.resource.data.eventId == resource.data.eventId
-    && operationValid(request.resource.data.lastOperationId)
-    && request.resource.data.lastOperationId != resource.data.lastOperationId
-    && (
-      (resource.data.status == 'cancelled' && request.resource.data.status == 'active'
-       && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','generation','participant','checkInAt','createdAt','lastOperationId','qrHash'])
-       && request.resource.data.generation == resource.data.generation + 1
-       && request.resource.data.checkInAt == null
-       && request.resource.data.createdAt == request.time
-       && participantValid(request.resource.data.participant)
-       && canRegister(resource.data.eventId)
-       && getAfter(eventPath(resource.data.eventId)).data.activeCount == get(eventPath(resource.data.eventId)).data.activeCount + 1)
-      || (resource.data.status == 'active' && request.resource.data.status == 'cancelled'
-       && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','lastOperationId'])
-       && resource.data.checkInAt == null
-       && get(eventPath(resource.data.eventId)).data.status == 'published'
-       && request.time < get(eventPath(resource.data.eventId)).data.startsAt
-       && getAfter(eventPath(resource.data.eventId)).data.activeCount == get(eventPath(resource.data.eventId)).data.activeCount - 1)
-      || (resource.data.status == 'active' && request.resource.data.status == 'active'
-       && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['checkInAt','qrHash','lastOperationId'])
-       && resource.data.checkInAt == null && request.resource.data.checkInAt == request.time
-       && request.resource.data.qrHash is string && request.resource.data.qrHash.matches('^[a-f0-9]{64}$')
-       && exists(/databases/$(database)/documents/qrCredentials/$(request.resource.data.qrHash))
-       && get(/databases/$(database)/documents/qrCredentials/$(request.resource.data.qrHash)).data.eventId == resource.data.eventId
-       && get(/databases/$(database)/documents/qrCredentials/$(request.resource.data.qrHash)).data.enabled == true
-       && get(/databases/$(database)/documents/checkinSessions/$(resource.data.eventId)).data.open == true
-       && get(eventPath(resource.data.eventId)).data.status == 'published')
-    );
-   allow delete: if false;
-   match /history/{entry} {allow read: if member() && get(/databases/$(database)/documents/registrations/$(id)).data.uid == request.auth.uid; allow write: if false;}
-  }
-  match /users/{uid}/notifications/{id} {
-   allow read: if member() && request.auth.uid == uid;
-   allow update: if member() && request.auth.uid == uid && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['readAt']) && request.resource.data.readAt == request.time;
-   allow create: if member() && request.auth.uid == uid
-    && id.matches('push_[a-f0-9]{64}')
-    && request.resource.data.keys().hasOnly(['title','body','eventId','registrationId','type','createdAt','readAt'])
-    && request.resource.data.title is string && request.resource.data.title.size() <= 200
-    && request.resource.data.body is string && request.resource.data.body.size() <= 4000
-    && request.resource.data.eventId is string && request.resource.data.eventId.size() <= 200
-    && (!('registrationId' in request.resource.data) || (request.resource.data.registrationId is string && request.resource.data.registrationId.matches('^[a-zA-Z0-9_-]{1,200}$')))
-    && request.resource.data.type == 'push_received'
-    && request.resource.data.createdAt == request.time && request.resource.data.readAt == null;
-   allow delete: if false;
-  }
-  match /users/{uid}/devices/{id} {
-   allow read,delete: if member() && request.auth.uid==uid;
-   allow create,update: if member() && request.auth.uid==uid
-    && request.resource.data.keys().hasOnly(['fid','platform','updatedAt'])
-    && request.resource.data.fid is string && request.resource.data.fid.size() < 4096
-    && request.resource.data.platform=='android' && request.resource.data.updatedAt==request.time;
-  }
-  // Exact hash lookups only; raw QR tokens never leave the camera command.
-  match /qrCredentials/{hash} {
-   allow get: if member() && hash.matches('^[a-f0-9]{64}$');
-   allow list,write: if false;
-  }
-  match /checkinSessions/{eventId} {
-   allow get: if member() && exists(regPath(eventId)) && get(regPath(eventId)).data.status == 'active';
-   allow list,write: if false;
-  }
-  match /{document=**} {allow read,write: if false;}
- }
 }
