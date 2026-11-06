@@ -1,5 +1,5 @@
 import 'package:eventhub/app/auth_redirect.dart';
-import 'package:eventhub_core/eventhub_core.dart';
+import 'package:eventhub/models/auth_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -68,44 +68,5 @@ void main() {
     );
     expect(safeDestination('https://example.com'), '/discover');
     expect(safeDestination('//example.com'), '/discover');
-  });
-  test('blocks staff and admin roles on mobile and redirects to role-rejected gate', () {
-    expect(
-      authRedirect(
-        const AuthState.signedIn(
-          uid: 'staff_1',
-          email: 'staff@fpt.edu.vn',
-          role: 'staff',
-          clubId: 'club_it',
-        ),
-        Uri.parse('/discover'),
-        false,
-      ),
-      '/auth/role-rejected',
-    );
-    expect(
-      authRedirect(
-        const AuthState.signedIn(
-          uid: 'admin_1',
-          email: 'admin@fpt.edu.vn',
-          role: 'admin',
-        ),
-        Uri.parse('/auth/role-rejected'),
-        false,
-      ),
-      isNull,
-    );
-    expect(
-      authRedirect(
-        const AuthState.signedIn(
-          uid: 'student_1',
-          email: 'student@fpt.edu.vn',
-          role: 'user',
-        ),
-        Uri.parse('/auth/role-rejected'),
-        false,
-      ),
-      '/discover',
-    );
   });
 }

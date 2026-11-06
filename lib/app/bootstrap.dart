@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../services/firebase/firebase_bootstrap.dart';
-import 'package:eventhub_core/eventhub_core.dart';
-import 'providers.dart';
+import '../theme/theme.dart';
+import '../widgets/widgets.dart';
+import '../viewmodels/session_viewmodel.dart';
 import 'app.dart';
 
 class FirebaseAppBootstrap extends StatefulWidget {

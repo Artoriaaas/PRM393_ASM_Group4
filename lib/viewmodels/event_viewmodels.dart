@@ -1,10 +1,10 @@
-import '../app/cloud_providers.dart';
+import '../viewmodels/cloud_state.dart';
 import 'cloud_tools_viewmodel.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../app/event_providers.dart';
-import 'package:eventhub_core/eventhub_core.dart';
+import '../viewmodels/event_data_providers.dart';
+import '../models/event.dart';
 
 // A periodic clock updates availability and date buckets while the app stays open.
 final eventClockProvider = StreamProvider.autoDispose<DateTime>((ref) async* {
@@ -50,6 +50,27 @@ class EventFilterViewModel extends Notifier<EventFilter> {
       track(ref, 'search', {'query_length': text.trim().length});
 }
 
+// Keep a selected filter available even when refreshed data no longer contains
+// it, so the dropdown can render an empty result without asserting.
+final eventTopicsProvider = Provider.autoDispose<List<String>>((ref) {
+  final rows = ref.watch(eventsProvider).asData?.value ?? <Event>[];
+  final selected = ref.watch(eventFilterProvider).topic;
+  return {
+    for (final row in rows)
+      if (row.topic.isNotEmpty) row.topic,
+    ?selected,
+  }.toList();
+});
+final eventClubsProvider = Provider.autoDispose<List<String>>((ref) {
+  final rows = ref.watch(eventsProvider).asData?.value ?? <Event>[];
+  final selected = ref.watch(eventFilterProvider).club;
+  return {
+    for (final row in rows)
+      if (row.clubName.isNotEmpty) row.clubName,
+    ?selected,
+  }.toList();
+});
+
 List<Event> filterEvents(List<Event> events, EventFilter filter, DateTime now) {
   final day = now.toUtc().add(const Duration(hours: 7));
   return events.where((e) {
@@ -74,9 +95,10 @@ final eventFeedProvider = Provider.autoDispose<AsyncValue<List<Event>>>((ref) {
 });
 
 class ScheduleEntry {
-  const ScheduleEntry(this.registration, this.event);
+  const ScheduleEntry(this.registration, this.event, {this.ended = false});
   final Registration registration;
   final Event? event;
+  final bool ended;
 }
 
 int scheduleBucket(Registration r, Event? e, DateTime now) {
@@ -113,7 +135,7 @@ final scheduleEntriesProvider =
         }
         if (!e.hasValue) return const AsyncLoading();
         if (scheduleBucket(r, e.value, now) == tab) {
-          list.add(ScheduleEntry(r, e.value));
+          list.add(ScheduleEntry(r, e.value, ended: tab == 1));
         }
       }
       return AsyncData(list);

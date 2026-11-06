@@ -1,11 +1,13 @@
-import 'package:eventhub_core/eventhub_core.dart';
-export 'package:eventhub_core/eventhub_core.dart'
-    show eventDate, eventTime, eventWhen;
+import '../utils/event_formatters.dart';
+export '../utils/event_formatters.dart';
 import 'workshop_cover.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../models/event.dart';
+import '../theme/theme.dart';
+import 'widgets.dart';
 
 class EventPanel extends StatelessWidget {
   const EventPanel({super.key, required this.children});

@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:eventhub_core/eventhub_core.dart';
+import '../models/auth_state.dart';
+import 'contracts/auth_service.dart';
 
 /// Baseline authentication service before Firebase setup in Step 4.
 /// Represents a non-authenticated session state; does not produce fake user logins.

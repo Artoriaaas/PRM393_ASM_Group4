@@ -8,6 +8,52 @@ import 'package:http/testing.dart';
 void main() {
   final pdf = Uint8List.fromList('%PDF-1.4\n%%EOF'.codeUnits);
 
+  test(
+    'rejects another cloud even when expected name appears later in URL',
+    () async {
+      final storage = CloudinaryReportStorage(
+        cloudName: 'expected',
+        uploadPreset: 'preset',
+        client: MockClient(
+          (_) async => http.Response(
+            '{"secure_url":"https://res.cloudinary.com/other/raw/upload/expected/file.pdf"}',
+            200,
+          ),
+        ),
+      );
+      await expectLater(
+        storage.upload('uid', 'file', pdf, (_) {}),
+        throwsFormatException,
+      );
+    },
+  );
+
+  test(
+    'reports transfer progress but not completion for rejected uploads',
+    () async {
+      final values = <double>[];
+      final storage = CloudinaryReportStorage(
+        cloudName: 'expected',
+        uploadPreset: 'preset',
+        client: MockClient(
+          (_) async => http.Response('private server details', 400),
+        ),
+      );
+      await expectLater(
+        storage.upload('uid', 'file', pdf, values.add),
+        throwsA(
+          isA<StateError>().having(
+            (e) => e.message,
+            'message',
+            'Cloudinary HTTP 400',
+          ),
+        ),
+      );
+      expect(values, isNotEmpty);
+      expect(values.every((p) => p < 1), isTrue);
+    },
+  );
+
   test('uploads a PDF through a restricted unsigned preset', () async {
     final client = MockClient((request) async {
       expect(request.method, 'POST');

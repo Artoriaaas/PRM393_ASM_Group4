@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'package:eventhub_core/eventhub_core.dart';
+import '../theme/theme.dart';
 
 class WorkshopCover extends StatelessWidget {
   const WorkshopCover({super.key, this.free = false});

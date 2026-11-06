@@ -1,6 +1,6 @@
 # Kiến trúc EventHub — Lab 3
 
-Cập nhật 04/11/2026. Mobile là Flutter Android theo MVVM với Riverpod. CLB và admin dùng web riêng; app mobile không có quyền điều khiển web CLB.
+Cập nhật 06/11/2026. Mobile là Flutter Android theo MVVM với Riverpod. CLB và admin dùng web riêng; app mobile không có quyền điều khiển web CLB.
 
 ## Luồng dữ liệu
 
@@ -24,9 +24,12 @@ flowchart LR
 | `lib/services/contracts/` | Giao diện service để thay bằng fake trong test. |
 | `lib/services/firebase/` | Firebase Auth, Firestore và các SDK cloud. |
 | `lib/services/cloudinary/`, `lib/services/report/` | Upload PDF và tạo PDF từ dữ liệu đang xem. |
-| `lib/app/` | Router, provider inject service và vòng đời ứng dụng. |
+| `lib/app/` | Composition root, router, bootstrap và vòng đời ứng dụng; không được import từ ViewModel. |
+| `lib/services/*providers.dart`, `cloud_service_provider.dart` | Cung cấp service qua contract; không import ViewModel hoặc UI. |
 | `lib/theme/`, `lib/widgets/` | Token giao diện và widget dùng lại. |
 | `lib/utils/` | Hàm thuần, không phụ thuộc UI. |
+
+`session_viewmodel.dart` sở hữu phiên và UID; `event_data_providers.dart` sở hữu các stream AsyncValue; `cloud_state.dart` điều phối cloud theo phiên. Các provider service nằm trong `services/`; test override contract tại đó. Cách tổ chức này loại bỏ vòng import `app → ViewModel → app` mà không đổi route hoặc nghiệp vụ.
 
 View phụ thuộc ViewModel và widget. ViewModel phụ thuộc service contract/model; Firebase và HTTP chỉ xuất hiện ở service hoặc lớp khởi tạo provider. Không đưa SDK vào `build()`.
 
@@ -71,7 +74,7 @@ App dùng Firestore trực tiếp và Cloudinary; không có target prototype ho
 - Mỗi lệnh có `operationId` lưu trong đăng ký. Khi mất phản hồi, app giữ lệnh cục bộ theo UID, hỏi server trước khi gửi lại cùng ID. Không suy ra thành công hay thất bại từ timeout. Mỗi người chỉ có một đăng ký hoạt động cho cùng sự kiện; re-register sau hủy tăng `generation`.
 - Điểm danh: web CLB phải tạo QR ngẫu nhiên đủ dài, lưu SHA-256 vào `qrCredentials/{hash}` và mở `checkinSessions/{eventId}`. Mobile chỉ quét token, ghi hash và thời gian; Security Rules kiểm tra QR, event, session và đăng ký. Mobile không đọc danh sách QR hoặc tự mở session.
 - Event và đăng ký chỉ hiện cho tài khoản có email đã xác nhận. Chủ user đọc đăng ký của mình. Việc tạo/sửa sự kiện, phiên QR, thông báo của người khác cần web/admin đáng tin cậy; không cấp quyền này cho mobile.
-- Firestore trực tiếp thay thế Functions theo quyết định mới, nên chưa có `history`/operation ledger riêng. Recovery dựa trên `lastOperationId` của đăng ký hiện tại; nếu tài khoản khác thay đổi cùng đăng ký trong lúc lệnh cũ chưa rõ, app giữ trạng thái chưa xác định để kiểm tra thủ công. Cần E2E đa thiết bị trước khi chốt sản phẩm.
+- Firestore trực tiếp thay thế Functions theo quyết định mới, nên chưa có `history`/operation ledger riêng. Recovery dựa trên `lastOperationId` của đăng ký hiện tại; nếu thiết bị khác của cùng tài khoản thay đổi đăng ký trong lúc lệnh cũ chưa rõ, app giữ trạng thái chưa xác định để kiểm tra thủ công. Cần E2E đa thiết bị trước khi chốt sản phẩm.
 
 ## PDF và Cloudinary
 
@@ -79,4 +82,4 @@ PDF chứa tên sự kiện, CLB, thời gian, địa điểm và trạng thái;
 
 ## Phần phải kiểm tra trên cloud
 
-Emulator đã xác minh Rules cho đăng ký, hủy, QR hợp lệ và giả mạo. Cần chạy trên Android với project thật và ghi bằng chứng: Auth, Firestore transaction, QR do web CLB tạo, PDF Cloudinary, FCM ba trạng thái, Analytics DebugView, Crashlytics, Remote Config trước/sau. ARTEMIS và AI review PR vẫn cần môi trường/tài khoản riêng. Bảng trạng thái hiện hành ở [lab3-readiness.md](lab3-readiness.md).
+Emulator đã xác minh Rules cho đăng ký, hủy, QR hợp lệ và giả mạo. Cần chạy trên Android với project thật và ghi bằng chứng: Auth, Firestore transaction, QR/phiên fixture do người quản lý chuẩn bị qua Console cho Lab 3 (web CLB thuộc Final), PDF Cloudinary, FCM ba trạng thái, Analytics DebugView, Crashlytics, Remote Config trước/sau. ARTEMIS và AI review PR vẫn cần môi trường/tài khoản riêng. Bảng trạng thái hiện hành ở [lab3-readiness.md](lab3-readiness.md).

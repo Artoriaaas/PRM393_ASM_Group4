@@ -1,4 +1,6 @@
-import 'package:eventhub_core/eventhub_core.dart';
+import 'package:eventhub/theme/app_theme.dart';
+import 'package:eventhub/widgets/app_button.dart';
+import 'package:eventhub/widgets/app_confirmation_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -35,7 +37,6 @@ void main() {
       final label = tester.widget<Text>(find.text('Xác nhận hủy đăng ký'));
       expect(label.maxLines, isNull);
       expect(find.byType(AppButton), findsNWidgets(2));
-
     });
   }
 }

@@ -62,6 +62,9 @@ app.*.map.json
 # Python test environments and cache
 e2e_test/.venv/
 .pytest_cache/
+**/__pycache__/
+# Raw E2E failure messages may contain account details; review before publishing.
+evidence/artemis/local-runs/
 
 # Local Firebase client configuration (download separately from the shared project)
 **/google-services.json

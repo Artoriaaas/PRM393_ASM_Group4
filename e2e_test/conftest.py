@@ -4,6 +4,7 @@ import os
 import re
 import time
 import urllib.request
+import uuid
 from pathlib import Path
 
 import pytest
@@ -29,21 +30,36 @@ def run_case():
             "Each case is independent: return to login through Account > Logout if necessary. "
             "Use only the explicitly named Google test account already added to Android; never use personal accounts, "
             "type passwords, change security settings, edit Firebase console, or invent observations. "
-            + goal + " Do not report completed on Account or any other screen before this goal is achieved. Return ONLY JSON with observed_values.final_screen (screen code), "
+            + goal + " Complete every requested action before reporting completion. Return ONLY JSON with observed_values.final_screen (screen code), "
             "observed_texts (exact text actually visible), and precondition_failed (null or reason). "
             "Expected final screen code: " + expected_screen + ". Put this JSON in report_task_status explanation. If setup is missing, report precondition_failed; do not fake success."
         )
         started = time.monotonic()
-        result = asyncio.run(client.run(instruction, profile="flash", device_serial=os.getenv("ARTEMIS_DEVICE", "emulator-5554"), timeout=600))
+        def save(payload):
+            serialized = json.dumps(payload, ensure_ascii=False, indent=2).replace(account, "<TEST_ACCOUNT>")
+            serialized = re.sub(r'[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}', '<REDACTED_EMAIL>', serialized)
+            run_id = re.sub(r'[^\w-]', '_', os.getenv('ARTEMIS_RUN', '1'))
+            trace_id = re.sub(r'[^\w-]', '_', str(payload.get('trace_id') or uuid.uuid4()))
+            (evidence / f'{case_id}-run-{run_id}-{trace_id}.json').write_text(serialized, encoding='utf-8')
+        try:
+            result = asyncio.run(client.run(instruction, profile="flash", device_serial=os.getenv("ARTEMIS_DEVICE", "emulator-5554"), timeout=600))
+        except Exception as exc:
+            save({'case_id': case_id, 'status': 'client_error', 'acceptance_status': 'not_passed',
+                  'elapsed_seconds': time.monotonic() - started, 'error_type': type(exc).__name__})
+            pytest.fail(f'ARTEMIS request failed ({type(exc).__name__}); check the local host log', pytrace=False)
         duration = time.monotonic() - started
         output = result.output
         # Pinned host omits Flash final reports from TaskResult. Read the
         # report actually recorded in that exact session, never invent output.
         if output is None:
-            with urllib.request.urlopen(
-                f"{base.rstrip('/')}/api/sessions/{result.trace_id}/steps", timeout=15
-            ) as response:
-                steps = json.load(response)
+            request = urllib.request.Request(f"{base.rstrip('/')}/api/sessions/{result.trace_id}/steps")
+            if os.getenv('ARTEMIS_TOKEN'):
+                request.add_header('Authorization', 'Bearer ' + os.environ['ARTEMIS_TOKEN'])
+            try:
+                with urllib.request.urlopen(request, timeout=15) as response:
+                    steps = json.load(response)
+            except Exception:
+                steps = []  # Missing evidence must fail assertions, never imply success.
             for step in reversed(steps if isinstance(steps, list) else []):
                 action = step.get("action_taken") or {}
                 if isinstance(action, str):
@@ -63,12 +79,14 @@ def run_case():
         payload = {"case_id": case_id, "trace_id": result.trace_id, "status": result.status,
                    "elapsed_seconds": duration, "output": output, "error": result.error,
                    "run": os.getenv("ARTEMIS_RUN", "1")}
-        sanitized = json.dumps(payload, ensure_ascii=False, indent=2).replace(account, "<TEST_ACCOUNT>")
-        (evidence / f"{case_id}-run-{payload['run']}-{result.trace_id}.json").write_text(sanitized, encoding="utf-8")
+        # Only pytest's full test outcome (including additional assertions such as
+        # TC18's Logcat check) may establish acceptance. Raw model status cannot.
+        payload['acceptance_status'] = 'pending_pytest_assertions'
+        save(payload)
+        if isinstance(output, dict) and output.get("precondition_failed"):
+            pytest.skip(f"Setup missing (trace {result.trace_id}): {output['precondition_failed']}")
         assert result.succeeded, f"Task status={result.status}; trace={result.trace_id}"
         assert isinstance(output, dict), "Agent must report structured observations, not just SUCCESS"
-        if output.get("precondition_failed"):
-            pytest.skip(f"Setup missing (trace {result.trace_id}): {output['precondition_failed']}")
         assert output.get("observed_values", {}).get("final_screen") == expected_screen
         observed = output.get("observed_texts", [])
         assert isinstance(observed, list)

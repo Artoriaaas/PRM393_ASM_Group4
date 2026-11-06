@@ -1,12 +1,15 @@
-import 'package:eventhub_core/eventhub_core.dart';
+import '../../theme/theme.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../app/event_providers.dart';
-import '../../app/providers.dart';
+import '../../viewmodels/event_data_providers.dart';
+import '../../viewmodels/session_viewmodel.dart';
+import '../../models/auth_state.dart';
+import '../../models/event.dart';
 import '../../viewmodels/booking_viewmodel.dart';
+import '../../widgets/widgets.dart';
 import '../../widgets/event_widgets.dart';
 import 'booking_widgets.dart';
 

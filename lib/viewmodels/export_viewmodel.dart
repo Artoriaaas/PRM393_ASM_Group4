@@ -3,10 +3,11 @@ import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../app/event_providers.dart';
-import '../app/cloud_providers.dart';
-import '../app/report_providers.dart';
-import 'package:eventhub_core/eventhub_core.dart';
+import '../viewmodels/event_data_providers.dart';
+import '../viewmodels/cloud_state.dart';
+import '../services/report_providers.dart';
+import '../models/report_row.dart';
+import '../utils/event_formatters.dart' show eventWhen;
 
 final reportRowsProvider = FutureProvider.autoDispose<List<ReportRow>>((
   ref,
@@ -22,17 +23,13 @@ final reportRowsProvider = FutureProvider.autoDispose<List<ReportRow>>((
         club: e.clubName,
         when: eventWhen(e),
         location: e.location,
-        status: r.isRejected
-            ? 'Bị từ chối'
-            : r.isCancelled
+        status: !r.active
             ? 'Đã hủy đăng ký'
             : e.status == 'cancelled'
             ? 'Sự kiện đã hủy'
             : r.checkInAt != null
             ? 'Đã điểm danh'
-            : r.isPending
-            ? 'Chờ CLB duyệt'
-            : 'Đã duyệt',
+            : 'Đã đăng ký',
       ),
     );
   }

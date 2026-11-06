@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import '../app/cloud_providers.dart';
+import '../viewmodels/cloud_state.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../app/event_providers.dart';
-import 'package:eventhub_core/eventhub_core.dart';
+import '../viewmodels/event_data_providers.dart';
+import '../models/app_notification.dart';
 
 final notificationsProvider = StreamProvider.autoDispose<List<AppNotification>>(
   (ref) {

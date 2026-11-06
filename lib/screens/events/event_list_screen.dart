@@ -1,12 +1,13 @@
 import '../../viewmodels/cloud_tools_viewmodel.dart';
-import 'package:eventhub_core/eventhub_core.dart';
+import '../../theme/theme.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../app/event_providers.dart';
+import '../../viewmodels/event_data_providers.dart';
 import '../../viewmodels/event_viewmodels.dart';
+import '../../widgets/widgets.dart';
 import '../../widgets/event_widgets.dart';
 
 class EventListScreen extends ConsumerStatefulWidget {
@@ -127,11 +128,7 @@ class _EventListState extends ConsumerState<EventListScreen> {
                         selected: filter.today,
                         onSelected: (v) => filterVM.set(today: v),
                       ),
-                      for (final t
-                          in all
-                              .map((e) => e.topic)
-                              .where((t) => t.isNotEmpty)
-                              .toSet())
+                      for (final t in ref.watch(eventTopicsProvider))
                         FilterChip(
                           label: Text(t),
                           selected: filter.topic == t,
@@ -151,8 +148,8 @@ class _EventListState extends ConsumerState<EventListScreen> {
                     key: ValueKey(filter.club),
                     decoration: const InputDecoration(
                       contentPadding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 14,
+                        horizontal: AppSpacing.s16,
+                        vertical: AppSpacing.inputVertical,
                       ),
                     ),
                     items: [
@@ -160,7 +157,7 @@ class _EventListState extends ConsumerState<EventListScreen> {
                         value: null,
                         child: Text('Tất cả CLB'),
                       ),
-                      for (final c in all.map((e) => e.clubName).toSet())
+                      for (final c in ref.watch(eventClubsProvider))
                         DropdownMenuItem(value: c, child: Text(c)),
                     ],
                     onChanged: (v) =>

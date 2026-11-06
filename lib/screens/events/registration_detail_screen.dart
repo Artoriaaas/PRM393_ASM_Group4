@@ -1,12 +1,14 @@
-import 'package:eventhub_core/eventhub_core.dart';
+import '../../theme/theme.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../app/event_providers.dart';
+import '../../viewmodels/event_data_providers.dart';
 import '../../viewmodels/event_viewmodels.dart';
+import '../../models/event.dart';
 import '../../viewmodels/booking_viewmodel.dart';
+import '../../widgets/widgets.dart';
 import '../../widgets/event_widgets.dart';
 import 'booking_widgets.dart';
 
@@ -31,33 +33,6 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
     Future.microtask(() => ref.read(bookingProvider.notifier).restore());
   }
 
-  (String, AppBadgeVariant, IconData) _statusBadge(Registration r, Event e) {
-    if (r.isRejected) {
-      return ('Bị từ chối', AppBadgeVariant.error, Icons.cancel_outlined);
-    }
-    if (r.isCancelled) {
-      return (
-        'Đã hủy đăng ký',
-        AppBadgeVariant.neutral,
-        Icons.remove_circle_outline,
-      );
-    }
-    if (e.status == 'cancelled') {
-      return ('Sự kiện đã hủy', AppBadgeVariant.error, Icons.event_busy);
-    }
-    if (r.checkInAt != null) {
-      return (
-        'Đã điểm danh',
-        AppBadgeVariant.success,
-        Icons.check_circle_outline,
-      );
-    }
-    if (r.isPending) {
-      return ('Chờ CLB duyệt', AppBadgeVariant.warning, Icons.schedule);
-    }
-    return ('Đã duyệt', AppBadgeVariant.success, Icons.verified_outlined);
-  }
-
   @override
   Widget build(BuildContext context) {
     final registration = ref.watch(registrationProvider(widget.id));
@@ -67,7 +42,7 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
           widget.checkInResult
               ? 'Kết quả điểm danh'
               : widget.success
-              ? 'Tiếp nhận đăng ký'
+              ? 'Đăng ký thành công'
               : 'Chi tiết đăng ký',
         ),
       ),
@@ -96,19 +71,12 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
                   message: 'Liên hệ CLB để được hỗ trợ.',
                 );
               }
-              final (badgeLabel, badgeVariant, badgeIcon) = _statusBadge(r, e);
-              final canReRegister =
-                  (r.isCancelled || r.isRejected) &&
-                  ref.watch(eventAvailabilityProvider(e.id)) == null;
-
               return ListView(
                 padding: const EdgeInsets.all(AppSpacing.s16),
                 children: [
                   if (widget.success && r.active)
                     Text(
-                      r.isPending
-                          ? 'Đã gửi yêu cầu đăng ký (Chờ CLB duyệt)'
-                          : 'Đăng ký được xác nhận',
+                      'Đăng ký được xác nhận',
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   if (widget.checkInResult)
@@ -118,13 +86,15 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
                           : 'Chưa có xác nhận điểm danh',
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: AppStatusBadge(
-                      label: badgeLabel,
-                      variant: badgeVariant,
-                      icon: Icon(badgeIcon),
-                    ),
+                  AppStatusBadge(
+                    label: !r.active
+                        ? 'Đã hủy đăng ký'
+                        : e.status == 'cancelled'
+                        ? 'Sự kiện đã hủy'
+                        : r.checkInAt != null
+                        ? 'Đã điểm danh'
+                        : 'Đã đăng ký',
+                    variant: AppBadgeVariant.info,
                   ),
                   const SizedBox(height: AppSpacing.s16),
                   EventSummary(e),
@@ -144,34 +114,7 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
                       if (!widget.checkInResult) Text(r.participant.email),
                     ],
                   ),
-                  if (r.isPending && !widget.checkInResult) ...[
-                    const SizedBox(height: AppSpacing.s12),
-                    const EventPanel(
-                      children: [
-                        Text(
-                          'Đơn đăng ký đang chờ Trưởng CLB xét duyệt. Khi được duyệt, bạn sẽ nhận thông báo trong Hộp thư và mở khóa tính năng Quét QR điểm danh.',
-                        ),
-                      ],
-                    ),
-                  ],
-                  if (r.isRejected && !widget.checkInResult) ...[
-                    const SizedBox(height: AppSpacing.s12),
-                    EventPanel(
-                      children: [
-                        Text(
-                          'Phản hồi từ Câu lạc bộ',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        Text(
-                          r.reason?.isNotEmpty == true
-                              ? 'Lý do từ chối: ${r.reason}'
-                              : 'Đơn đăng ký không được phê duyệt.',
-                        ),
-                      ],
-                    ),
-                  ],
-                  if (r.checkInAt != null) ...[
-                    const SizedBox(height: AppSpacing.s12),
+                  if (r.checkInAt != null)
                     EventPanel(
                       children: [
                         const Text('Thời gian điểm danh đã xác nhận'),
@@ -180,7 +123,6 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
                         ),
                       ],
                     ),
-                  ],
                   const SizedBox(height: AppSpacing.s16),
                   if (!widget.checkInResult)
                     AppButton(
@@ -188,7 +130,7 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
                       variant: AppButtonVariant.secondary,
                       onPressed: () => context.push('/events/${e.id}'),
                     ),
-                  if (r.canCheckIn &&
+                  if (r.active &&
                       e.status == 'published' &&
                       !widget.checkInResult) ...[
                     const SizedBox(height: AppSpacing.s12),
@@ -197,13 +139,6 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
                       onPressed: () => context.push(
                         '/registrations/${r.id}/${r.checkInAt != null ? 'check-in' : 'scan'}',
                       ),
-                    ),
-                  ],
-                  if (canReRegister && !widget.checkInResult) ...[
-                    const SizedBox(height: AppSpacing.s12),
-                    AppButton(
-                      label: 'Đăng ký lại',
-                      onPressed: () => context.push('/events/${e.id}/register'),
                     ),
                   ],
                   if (ref.watch(canCancelRegistrationProvider(r.id)) &&
@@ -218,8 +153,7 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
                       onPressed: () => _cancel(context, r),
                     ),
                   ],
-                  if (r.isCancelled) ...[
-                    const SizedBox(height: AppSpacing.s12),
+                  if (!r.active)
                     const EventPanel(
                       children: [
                         Text(
@@ -227,9 +161,7 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
                         ),
                       ],
                     ),
-                  ],
-                  if (e.status == 'cancelled') ...[
-                    const SizedBox(height: AppSpacing.s12),
+                  if (e.status == 'cancelled')
                     const EventPanel(
                       children: [
                         Text(
@@ -237,7 +169,6 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
                         ),
                       ],
                     ),
-                  ],
                   const SizedBox(height: AppSpacing.s16),
                   const BookingFeedback(),
                   const SizedBox(height: AppSpacing.s16),

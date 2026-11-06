@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../app/providers.dart';
+import '../../viewmodels/session_viewmodel.dart';
 import '../../app/auth_redirect.dart';
-import 'package:eventhub_core/eventhub_core.dart';
+import '../../models/auth_state.dart';
+import '../../theme/theme.dart';
 import '../../viewmodels/auth_viewmodel.dart';
+import '../../widgets/widgets.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key, required this.mode});

@@ -1,7 +1,3 @@
-import os
-import subprocess
-import pytest
-
 CASES = [
  ("TC01", "If already signed in, use Account > Logout. Then sign in with Google account {account}, navigate to Discover and verify its heading Sắp tới. Stop only on Discover.", "A02", "Sắp tới", False),
  ("TC02", "At login tap Google then cancel Android account picker. Stop at login and read cancellation feedback.", "A01a", "Đăng nhập", False),
@@ -16,24 +12,11 @@ CASES = [
  ("TC11", "Sign in with {account}. Open Account > Edit information. Do not change Google email. Stop on edit screen and inspect the email label.", "A10-edit", "Email tài khoản app", False),
  ("TC12", "Sign in with {account}. Ensure active registration for {event}. Open its detail > Scan QR. Handle native camera permission dialog by Allow if shown. Do not scan unknown QR. Stop on scan screen.", "A11", "Quét QR", True),
  ("TC13", "Sign in with {account}. Open the known already checked-in test registration for {event} and View confirmation. If no such fixture exists, report setup missing. Verify time displayed; do not create a fake check-in.", "A12", "điểm danh", True),
- ("TC14", "Sign in with {account}. Open Account > Export participation schedule, inspect current preview and Create PDF and upload. Wait for an actual completed URL; report setup missing if Storage not deployed. Stop at export result.", "L3-02", "Đã tạo và tải PDF", False),
+ ("TC14", "Sign in with {account}. Open Account > Export participation schedule, inspect current preview and Create PDF and upload. Wait for an actual completed URL; report setup missing if Cloudinary upload is not configured. Stop at export result.", "L3-02", "Đã tạo và tải PDF", False),
  ("TC15", "Sign in with {account}. Open Account > Firebase tools > Fetch new config. Read the visible recommendation limit and flag; do not modify the console.", "L3-01", "Giới hạn gợi ý", False),
  ("TC16", "Sign in with {account}. Open Firebase tools > Enable device notifications. Handle the native permission dialog. Stop on Firebase tools and report actual permission feedback.", "L3-01", "thông báo", False),
  ("TC17", "Sign in with {account}. Logout through Account. Try Android Back. Confirm private schedule/details do not appear and login remains.", "A01a", "Đăng nhập", False),
 ]
-@pytest.mark.parametrize("case_id,goal,screen,text,needs_event", CASES, ids=[c[0] for c in CASES])
-def test_flow(run_case, case_id, goal, screen, text, needs_event):
-    run_case(case_id, goal, screen, text, needs_event)
-
-
-def test_analytics_event_emitted(run_case):
-    device = os.getenv("ARTEMIS_DEVICE", "emulator-5554")
-    subprocess.run(["adb", "-s", device, "shell", "setprop", "debug.firebase.analytics.app", "com.eventhub.app"], check=True)
-    subprocess.run(["adb", "-s", device, "logcat", "-c"], check=True)
-    run_case("TC18", "Sign in with {account}. Open Account > Firebase tools and Fetch new config. Wait for feedback.", "L3-01", "Giới hạn gợi ý")
-    log = subprocess.run(["adb", "-s", device, "logcat", "-d", "-s", "FA", "FA-SVC"], check=True, capture_output=True, text=True).stdout
-    assert "remote_config_fetch" in log, "Analytics event not observed in native debug logs; console DebugView screenshot is still required"
-
 
 FIXTURES = [
  ("TC19", "ARTEMIS_FREE_EVENT_TITLE", "A04", "Không cần đăng ký", "Sign in with {account}. Search and open {fixture}. Read time/location and verify no registration or QR button. Report observed_values.has_registration_button=false only if actually absent."),
@@ -44,11 +27,3 @@ FIXTURES = [
  ("TC24", "ARTEMIS_WRONG_QR_READY", "A11", "không đúng sự kiện", "Sign in with {account}. For active registration {event}, open scanner. Scan the explicitly prepared QR for a different event visible to the camera. If camera/QR fixture is not ready, report setup missing."),
  ("TC25", "ARTEMIS_CAMERA_PERMISSION_READY", "A11", "camera", "Sign in with {account}. For active registration {event}, open QR scanner and deny the native camera permission dialog. Verify retry/settings guidance. Do not change account security settings; if permission was already permanently granted, report setup missing."),
 ]
-@pytest.mark.parametrize("case_id,env,screen,text,goal", FIXTURES, ids=[c[0] for c in FIXTURES])
-def test_alternative_and_error(run_case, case_id, env, screen, text, goal):
-    fixture = os.getenv(env)
-    if not fixture:
-        pytest.skip(f"Dedicated fixture required: {env}")
-    _, output = run_case(case_id, goal.replace("{fixture}", fixture), screen, text, needs_event=case_id in {"TC23","TC24","TC25"})
-    if case_id == "TC19":
-        assert output.get("observed_values", {}).get("has_registration_button") is False

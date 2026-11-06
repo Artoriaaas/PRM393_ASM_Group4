@@ -1,10 +1,14 @@
+import '../../widgets/event_asset_icon.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../app/providers.dart';
+import '../../viewmodels/session_viewmodel.dart';
+import '../../models/auth_state.dart';
 import '../../viewmodels/auth_viewmodel.dart';
-import 'package:eventhub_core/eventhub_core.dart';
+import '../../theme/theme.dart';
+import '../../widgets/widgets.dart';
 import '../../widgets/event_widgets.dart';
 
 class AccountTabScreen extends ConsumerWidget {

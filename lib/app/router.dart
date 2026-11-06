@@ -1,10 +1,10 @@
+import '../utils/screen_identity.dart';
 import '../screens/account/profile_edit_screen.dart';
 import '../screens/account/cloud_tools_screen.dart';
 import '../screens/account/export_screen.dart';
-import 'cloud_providers.dart';
+import '../viewmodels/cloud_state.dart';
 import '../screens/events/scanner_screen.dart';
 import '../screens/auth/auth_screen.dart';
-import '../screens/auth/mobile_role_rejection_screen.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,8 +20,8 @@ import '../screens/events/live_schedule_screen.dart';
 import '../screens/notifications/notifications_tab_screen.dart';
 
 import '../screens/shell/main_shell_screen.dart';
-import 'package:eventhub_core/eventhub_core.dart';
-import 'providers.dart';
+import '../widgets/app_loading_state.dart';
+import '../viewmodels/session_viewmodel.dart';
 import 'development.dart';
 import 'auth_redirect.dart';
 
@@ -122,11 +122,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const AuthScreen(mode: 'change-email'),
       ),
-      GoRoute(
-        path: '/auth/role-rejected',
-        parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const MobileRoleRejectionScreen(),
-      ),
       // F1 Flow routes: Search, Detail, Register, Success
       GoRoute(
         path: '/discover/search',
@@ -219,27 +214,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   );
   void trackRoute() {
     final path = router.routeInformationProvider.value.uri.path;
-    final code = path.endsWith('/register')
-        ? 'A05'
-        : path.endsWith('/success')
-        ? 'A06'
-        : path.endsWith('/check-in')
-        ? 'A12'
-        : path.startsWith('/registrations/')
-        ? 'A08'
-        : path.startsWith('/events/')
-        ? 'A04'
-        : path == '/discover'
-        ? 'A02'
-        : path == '/discover/search'
-        ? 'A03'
-        : path == '/schedule'
-        ? 'A07'
-        : path == '/notifications'
-        ? 'A09'
-        : path.startsWith('/account')
-        ? 'A10'
-        : 'A01';
+    final code = screenIdentity(path);
+    if (code == null) return;
     track(ref, 'view_screen', {'screen_code': code});
     if (code == 'A04') track(ref, 'view_event_detail', {'screen_code': code});
     if (code == 'A08') {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eventhub_core/eventhub_core.dart';
 
-import '../../app/providers.dart';
+import '../../viewmodels/session_viewmodel.dart';
 import '../../viewmodels/auth_viewmodel.dart';
 
 class MobileRoleRejectionScreen extends ConsumerWidget {
@@ -13,7 +13,8 @@ class MobileRoleRejectionScreen extends ConsumerWidget {
     final auth = ref.watch(sessionViewModelProvider);
     final signedIn = auth is AuthStateSignedIn ? auth : null;
     final authForm = ref.watch(authViewModelProvider);
-    final roleLabel = switch (signedIn?.role) {
+    final role = signedIn != null ? (signedIn as dynamic).role as String? : null;
+    final roleLabel = switch (role) {
       'admin' => 'Quản trị viên (admin)',
       'staff' => 'Trưởng CLB (staff)',
       final r? => r,
@@ -89,15 +90,15 @@ class MobileRoleRejectionScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              signedIn.displayName?.isNotEmpty == true
-                                  ? signedIn.displayName!
+                              (signedIn as dynamic).displayName?.isNotEmpty == true
+                                  ? (signedIn as dynamic).displayName!
                                   : 'Tài khoản đang đăng nhập',
                               style: AppTypography.textTheme.bodyMedium
                                   ?.copyWith(fontWeight: FontWeight.w600),
                             ),
                             const SizedBox(height: AppSpacing.s4),
                             Text(
-                              signedIn.email,
+                              (signedIn as dynamic).email.toString(),
                               style: AppTypography.textTheme.labelSmall
                                   ?.copyWith(color: AppColors.textSecondary),
                             ),

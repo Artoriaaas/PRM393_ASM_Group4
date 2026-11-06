@@ -1,8 +1,10 @@
-import 'package:eventhub_core/eventhub_core.dart';
+import '../../widgets/event_asset_icon.dart';
+import '../../theme/app_colors.dart';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../widgets/app_navigation_bar.dart';
 
 /// Main Shell hosting the 4 persistent bottom tabs:
 /// Discover, Schedule, Notifications, Account.

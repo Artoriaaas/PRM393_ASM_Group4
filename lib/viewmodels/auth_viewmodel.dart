@@ -1,10 +1,9 @@
-import '../app/cloud_providers.dart';
-import '../app/event_providers.dart';
+import '../viewmodels/cloud_state.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../app/providers.dart';
-import 'package:eventhub_core/eventhub_core.dart';
+import '../viewmodels/session_viewmodel.dart';
+import '../utils/app_failure.dart';
 import '../services/initial_auth_service.dart';
 
 class AuthFormState {

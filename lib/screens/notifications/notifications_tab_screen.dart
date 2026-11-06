@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:eventhub_core/eventhub_core.dart';
+import '../../theme/theme.dart';
 import '../../viewmodels/notifications_viewmodel.dart';
+import '../../widgets/widgets.dart';
 import '../../widgets/event_widgets.dart';
 
 class NotificationsTabScreen extends ConsumerWidget {
