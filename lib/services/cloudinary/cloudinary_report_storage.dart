@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
-import '../contracts/report_services.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 
 /// Unsigned uploads are limited to non-confidential reports. The Cloudinary
 /// preset must restrict formats to PDF and cap upload size in the console.

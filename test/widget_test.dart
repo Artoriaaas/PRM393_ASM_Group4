@@ -3,7 +3,7 @@ import 'package:eventhub/app/event_providers.dart';
 import 'support/fake_event_service.dart';
 
 import 'package:eventhub/app/providers.dart';
-import 'package:eventhub/models/auth_state.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 import 'package:eventhub/viewmodels/session_viewmodel.dart';
 import 'package:eventhub/app/app.dart';
 import 'package:flutter/material.dart';

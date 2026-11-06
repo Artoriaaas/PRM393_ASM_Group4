@@ -1,5 +1,5 @@
 import '../../viewmodels/cloud_tools_viewmodel.dart';
-import '../../theme/theme.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/event_providers.dart';
 import '../../viewmodels/event_viewmodels.dart';
-import '../../widgets/widgets.dart';
 import '../../widgets/event_widgets.dart';
 
 class EventListScreen extends ConsumerStatefulWidget {

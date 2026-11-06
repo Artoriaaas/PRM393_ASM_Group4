@@ -1,4 +1,4 @@
-import '../models/auth_state.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 
 /// Keeps only internal destinations; the destination is never an executable URL.
 String safeDestination(String? value) {
@@ -33,7 +33,8 @@ String? authRedirect(AuthState auth, Uri location, bool development) {
   if (auth.isSignedOut) {
     if (inAuth &&
         path != '/auth/verify-email' &&
-        path != '/auth/change-email') {
+        path != '/auth/change-email' &&
+        path != '/auth/role-rejected') {
       return null;
     }
     return target('/auth/login');
@@ -42,6 +43,9 @@ String? authRedirect(AuthState auth, Uri location, bool development) {
     return path == '/auth/verify-email' || path == '/auth/change-email'
         ? null
         : target('/auth/verify-email');
+  }
+  if (auth is AuthStateSignedIn && auth.role != 'user') {
+    return path == '/auth/role-rejected' ? null : '/auth/role-rejected';
   }
   if (inAuth || path == '/session') return destination;
   return null;

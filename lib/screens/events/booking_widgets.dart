@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../viewmodels/booking_viewmodel.dart';
 import '../../app/event_providers.dart';
-import '../../widgets/widgets.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 import '../../widgets/event_widgets.dart';
 
 class BookingFeedback extends ConsumerWidget {

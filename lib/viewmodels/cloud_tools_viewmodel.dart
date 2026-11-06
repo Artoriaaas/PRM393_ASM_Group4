@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/cloud_providers.dart';
 import '../app/event_providers.dart';
-import '../models/cloud_settings.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 
 class CloudToolsState {
   const CloudToolsState({

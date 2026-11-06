@@ -1,5 +1,5 @@
 import 'received_push_store.dart';
-import '../../utils/push_destination.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 
 import 'dart:async';
 import 'dart:convert';
@@ -11,8 +11,6 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 
-import '../../models/cloud_settings.dart';
-import '../contracts/cloud_services.dart';
 
 class FirebaseCloudServices implements CloudServices {
   FirebaseCloudServices({

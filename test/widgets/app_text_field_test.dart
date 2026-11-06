@@ -1,5 +1,4 @@
-import 'package:eventhub/theme/theme.dart';
-import 'package:eventhub/widgets/widgets.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

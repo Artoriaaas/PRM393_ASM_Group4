@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../services/firebase/firebase_bootstrap.dart';
-import '../theme/theme.dart';
-import '../widgets/widgets.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 import 'providers.dart';
 import 'app.dart';
 

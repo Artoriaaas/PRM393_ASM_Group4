@@ -7,7 +7,7 @@ import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/event_providers.dart';
-import '../models/event.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 
 class BookingState {
   const BookingState({

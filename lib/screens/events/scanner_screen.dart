@@ -7,8 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../app/event_providers.dart';
 import '../../services/device/qr_camera_service.dart';
 import '../../viewmodels/booking_viewmodel.dart';
-import '../../theme/theme.dart';
-import '../../widgets/widgets.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 import '../../widgets/event_widgets.dart';
 import 'booking_widgets.dart';
 
@@ -104,13 +103,18 @@ class _ScannerState extends ConsumerState<ScannerScreen>
               ref.invalidate(registrationProvider(widget.registrationId)),
         ),
         data: (r) {
-          if (r == null || !r.active) {
+          if (r == null || !r.canCheckIn) {
             return AppEmptyState(
-              title: 'Cần đăng ký hợp lệ',
-              message:
-                  'Tài khoản chưa có đăng ký đang hoạt động cho sự kiện này.',
-              actionLabel: 'Về khám phá',
-              onAction: () => context.go('/discover'),
+              title: r?.isPending == true
+                  ? 'Đơn đang chờ CLB duyệt'
+                  : 'Cần đăng ký đã được duyệt',
+              message: r?.isPending == true
+                  ? 'Đơn đăng ký của bạn đang chờ Trưởng CLB phê duyệt trước khi mở quét QR điểm danh.'
+                  : 'Tài khoản chưa có đăng ký đã được duyệt cho sự kiện này.',
+              actionLabel: r != null ? 'Về chi tiết đăng ký' : 'Về khám phá',
+              onAction: () => context.go(
+                r != null ? '/registrations/${r.id}' : '/discover',
+              ),
             );
           }
           return ListView(

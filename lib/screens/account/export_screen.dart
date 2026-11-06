@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../theme/theme.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 import '../../viewmodels/export_viewmodel.dart';
-import '../../widgets/widgets.dart';
 import '../../widgets/event_widgets.dart';
 
 class ExportScreen extends ConsumerWidget {

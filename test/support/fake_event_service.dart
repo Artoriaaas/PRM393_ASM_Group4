@@ -1,5 +1,4 @@
-import 'package:eventhub/models/event.dart';
-import 'package:eventhub/services/contracts/event_service.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 
 class FakeEventService implements EventService {
   FakeEventService({this.events = const [], this.registrations = const []});

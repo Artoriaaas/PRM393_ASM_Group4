@@ -4,15 +4,15 @@ import 'package:eventhub/screens/account/cloud_tools_screen.dart';
 import 'package:eventhub/screens/account/export_screen.dart';
 import 'package:eventhub/app/providers.dart';
 import 'package:eventhub/app/event_providers.dart';
-import 'package:eventhub/models/auth_state.dart';
-import 'package:eventhub/models/event.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 import 'package:eventhub/viewmodels/session_viewmodel.dart';
 import 'package:eventhub/screens/events/event_list_screen.dart';
 import 'package:eventhub/screens/events/event_detail_screen.dart';
 import 'package:eventhub/screens/events/registration_form_screen.dart';
 import 'package:eventhub/screens/events/registration_detail_screen.dart';
 import 'package:eventhub/screens/events/live_schedule_screen.dart';
-import 'package:eventhub/theme/theme.dart';
+import 'package:eventhub/screens/events/scanner_screen.dart';
+import 'package:eventhub/screens/auth/mobile_role_rejection_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -146,4 +146,137 @@ void main() {
     expect(find.text('Khóa K *'), findsNothing);
     expect(find.text('Trường / tổ chức (tùy chọn)'), findsOneWidget);
   });
+
+  testWidgets(
+    'pending registration hides QR scan while rejected registration shows Club Leader reason and re-register CTA',
+    (tester) async {
+      tester.view.physicalSize = const Size(360, 1400);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      const pendingReg = Registration(
+        id: 'u_e1',
+        eventId: 'e1',
+        status: 'pending',
+        generation: 1,
+        participant: Participant(
+          name: 'Nguyễn Minh Anh',
+          email: 'private@example.com',
+          cohort: 'K18',
+        ),
+      );
+      const rejectedReg = Registration(
+        id: 'u_e1_rej',
+        eventId: 'e1',
+        status: 'rejected',
+        generation: 1,
+        reason: 'Chưa điền mã số sinh viên trong hồ sơ CLB.',
+        participant: Participant(
+          name: 'Nguyễn Minh Anh',
+          email: 'private@example.com',
+          cohort: 'K18',
+        ),
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sessionViewModelProvider.overrideWith(_Session.new),
+            eventServiceProvider.overrideWithValue(
+              FakeEventService(
+                events: [e],
+                registrations: [pendingReg, rejectedReg],
+              ),
+            ),
+            pendingBookingStoreProvider.overrideWithValue(MemoryPendingStore()),
+          ],
+          child: MaterialApp(
+            theme: EventHubTheme.lightTheme,
+            home: const RegistrationDetailScreen(id: 'u_e1', success: true),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Chờ CLB duyệt'), findsOneWidget);
+      expect(find.text('Quét QR'), findsNothing);
+      expect(find.text('Hủy đăng ký'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump();
+
+      // ScannerScreen also blocks pending registration before approval
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sessionViewModelProvider.overrideWith(_Session.new),
+            eventServiceProvider.overrideWithValue(
+              FakeEventService(events: [e], registrations: [pendingReg]),
+            ),
+            pendingBookingStoreProvider.overrideWithValue(MemoryPendingStore()),
+          ],
+          child: MaterialApp(
+            theme: EventHubTheme.lightTheme,
+            home: const ScannerScreen(registrationId: 'u_e1'),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Đơn đang chờ CLB duyệt'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump();
+
+      // Rejected registration displays Club Leader reason and re-register CTA
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sessionViewModelProvider.overrideWith(_Session.new),
+            eventServiceProvider.overrideWithValue(
+              FakeEventService(events: [e], registrations: [rejectedReg]),
+            ),
+            pendingBookingStoreProvider.overrideWithValue(MemoryPendingStore()),
+          ],
+          child: MaterialApp(
+            theme: EventHubTheme.lightTheme,
+            home: const RegistrationDetailScreen(id: 'u_e1_rej'),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Bị từ chối'), findsOneWidget);
+      expect(
+        find.textContaining('Chưa điền mã số sinh viên trong hồ sơ CLB.'),
+        findsOneWidget,
+      );
+      expect(find.text('Đăng ký lại'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump();
+
+      // MobileRoleRejectionScreen renders cleanly for staff/admin
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [sessionViewModelProvider.overrideWith(_StaffSession.new)],
+          child: MaterialApp(
+            theme: EventHubTheme.lightTheme,
+            home: const MobileRoleRejectionScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Tài khoản quản trị dùng trên Web'), findsOneWidget);
+      expect(find.textContaining('Trưởng CLB (staff)'), findsOneWidget);
+      expect(find.text('Đăng xuất / Đổi tài khoản'), findsOneWidget);
+    },
+  );
+}
+
+class _StaffSession extends SessionViewModel {
+  @override
+  AuthState build() => const AuthState.signedIn(
+    uid: 'staff_1',
+    email: 'leader@fpt.edu.vn',
+    displayName: 'Leader IT',
+    role: 'staff',
+    clubId: 'club_it',
+  );
 }

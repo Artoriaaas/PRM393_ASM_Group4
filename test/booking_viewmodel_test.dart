@@ -1,7 +1,6 @@
 import 'package:eventhub/app/providers.dart';
 import 'package:eventhub/app/event_providers.dart';
-import 'package:eventhub/models/auth_state.dart';
-import 'package:eventhub/models/event.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 import 'package:eventhub/viewmodels/booking_viewmodel.dart';
 import 'package:eventhub/viewmodels/event_viewmodels.dart';
 import 'package:eventhub/viewmodels/session_viewmodel.dart';

@@ -1,5 +1,5 @@
 import 'package:eventhub/app/providers.dart';
-import 'package:eventhub/models/auth_state.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 import 'package:eventhub/services/initial_auth_service.dart';
 import 'package:eventhub/viewmodels/session_viewmodel.dart';
 import 'package:eventhub/viewmodels/profile_viewmodel.dart';

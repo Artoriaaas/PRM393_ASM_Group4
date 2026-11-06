@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/providers.dart';
-import '../models/auth_state.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 
 class SessionViewModel extends Notifier<AuthState> {
   @override

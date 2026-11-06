@@ -1,14 +1,12 @@
-import '../../theme/theme.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../app/event_providers.dart';
-import '../../models/event.dart';
 import '../../viewmodels/event_viewmodels.dart';
 import '../../viewmodels/booking_viewmodel.dart';
-import '../../widgets/widgets.dart';
 import '../../widgets/event_widgets.dart';
 import 'booking_widgets.dart';
 
@@ -88,6 +86,37 @@ class _ScheduleItem extends ConsumerWidget {
   const _ScheduleItem(this.r, {required this.event});
   final Registration r;
   final Event? event;
+
+  (String, AppBadgeVariant, IconData) _badgeFor(Event e, bool ended) {
+    if (r.isRejected) {
+      return ('Bị từ chối', AppBadgeVariant.error, Icons.cancel_outlined);
+    }
+    if (r.isCancelled) {
+      return (
+        'Đã hủy đăng ký',
+        AppBadgeVariant.neutral,
+        Icons.remove_circle_outline,
+      );
+    }
+    if (e.status == 'cancelled') {
+      return ('Sự kiện đã hủy', AppBadgeVariant.error, Icons.event_busy);
+    }
+    if (r.checkInAt != null) {
+      return (
+        'Đã điểm danh',
+        AppBadgeVariant.success,
+        Icons.check_circle_outline,
+      );
+    }
+    if (ended) {
+      return ('Đã kết thúc', AppBadgeVariant.neutral, Icons.history);
+    }
+    if (r.isPending) {
+      return ('Chờ CLB duyệt', AppBadgeVariant.warning, Icons.schedule);
+    }
+    return ('Đã duyệt', AppBadgeVariant.success, Icons.verified_outlined);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final e = event;
@@ -103,23 +132,30 @@ class _ScheduleItem extends ConsumerWidget {
       );
     }
     final ended = scheduleBucket(r, e, DateTime.now()) == 1;
+    final (label, variant, icon) = _badgeFor(e, ended);
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.s16),
       child: EventPanel(
         children: [
-          Text(
-            !r.active
-                ? 'Đã hủy đăng ký'
-                : e.status == 'cancelled'
-                ? 'Sự kiện đã hủy'
-                : ended
-                ? 'Đã kết thúc'
-                : 'Đã đăng ký',
+          Align(
+            alignment: Alignment.centerLeft,
+            child: AppStatusBadge(
+              label: label,
+              variant: variant,
+              icon: Icon(icon),
+            ),
           ),
           Text(e.title, style: Theme.of(context).textTheme.titleMedium),
           Text(eventWhen(e)),
           Text(e.clubName),
           Text(e.location),
+          if (r.isRejected && r.reason != null && r.reason!.isNotEmpty)
+            Text(
+              'Lý do từ chối: ${r.reason}',
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppColors.error),
+            ),
           AppButton(
             label: 'Xem chi tiết đăng ký',
             variant: AppButtonVariant.secondary,

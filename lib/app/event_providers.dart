@@ -1,4 +1,4 @@
-import '../services/contracts/notification_service.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 import '../services/firebase/firestore_notification_service.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,9 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-import '../models/auth_state.dart';
-import '../models/event.dart';
-import '../services/contracts/event_service.dart';
 import '../services/firebase/firestore_event_service.dart';
 import '../services/device/secure_pending_booking_store.dart';
 import 'providers.dart';
@@ -27,7 +24,7 @@ final pendingBookingStoreProvider = Provider<PendingBookingStore>(
 );
 final signedInUidProvider = Provider<String?>((ref) {
   final auth = ref.watch(sessionViewModelProvider);
-  return auth is AuthStateSignedIn ? auth.uid : null;
+  return auth is AuthStateSignedIn && auth.role == 'user' ? auth.uid : null;
 });
 final eventsProvider = StreamProvider.autoDispose<List<Event>>((ref) {
   if (ref.watch(signedInUidProvider) == null) return Stream.value([]);

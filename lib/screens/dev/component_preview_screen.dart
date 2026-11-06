@@ -1,20 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../theme/app_colors.dart';
-import '../../theme/app_radius.dart';
-import '../../theme/app_spacing.dart';
-import '../../theme/app_typography.dart';
-import '../../widgets/app_button.dart';
-import '../../widgets/app_confirmation_dialog.dart';
-import '../../widgets/app_empty_state.dart';
-import '../../widgets/app_error_state.dart';
-import '../../widgets/app_icon_button.dart';
-import '../../widgets/app_loading_state.dart';
-import '../../widgets/app_search_field.dart';
-import '../../widgets/app_status_badge.dart';
-import '../../widgets/app_text_field.dart';
-import '../../widgets/app_top_bar.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 
 enum PreviewViewportWidth {
   full(null, 'Toàn màn hình'),

@@ -4,7 +4,7 @@ import 'cloud_tools_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/event_providers.dart';
-import '../models/event.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 
 // A periodic clock updates availability and date buckets while the app stays open.
 final eventClockProvider = StreamProvider.autoDispose<DateTime>((ref) async* {

@@ -4,6 +4,7 @@ import '../screens/account/export_screen.dart';
 import 'cloud_providers.dart';
 import '../screens/events/scanner_screen.dart';
 import '../screens/auth/auth_screen.dart';
+import '../screens/auth/mobile_role_rejection_screen.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,7 +20,7 @@ import '../screens/events/live_schedule_screen.dart';
 import '../screens/notifications/notifications_tab_screen.dart';
 
 import '../screens/shell/main_shell_screen.dart';
-import '../widgets/app_loading_state.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 import 'providers.dart';
 import 'development.dart';
 import 'auth_redirect.dart';
@@ -120,6 +121,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/auth/change-email',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const AuthScreen(mode: 'change-email'),
+      ),
+      GoRoute(
+        path: '/auth/role-rejected',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const MobileRoleRejectionScreen(),
       ),
       // F1 Flow routes: Search, Detail, Register, Success
       GoRoute(

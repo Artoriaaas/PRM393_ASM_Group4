@@ -1,8 +1,7 @@
 import 'package:eventhub/app/event_providers.dart';
-import 'package:eventhub/models/event.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 import 'package:eventhub/screens/events/event_list_screen.dart';
 import 'package:eventhub/viewmodels/event_viewmodels.dart';
-import 'package:eventhub/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

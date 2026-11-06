@@ -1,4 +1,4 @@
-import '../models/cloud_settings.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 import 'event_providers.dart';
 
 import 'dart:async';
@@ -10,7 +10,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../services/contracts/cloud_services.dart';
 import '../services/firebase/firebase_cloud_services.dart';
 import 'providers.dart';
 

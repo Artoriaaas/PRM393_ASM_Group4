@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-import '../contracts/event_service.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 
 class SecurePendingBookingStore implements PendingBookingStore {
   const SecurePendingBookingStore(this.storage);

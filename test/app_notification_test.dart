@@ -1,4 +1,4 @@
-import 'package:eventhub/models/app_notification.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 void main() {
   AppNotification notification(String event, [String? registration]) => AppNotification(id:'n', title:'t', body:'b', eventId:event, registrationId:registration, type:'push_received');

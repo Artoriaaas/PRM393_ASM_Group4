@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:eventhub/app/providers.dart';
 import 'package:eventhub/services/initial_auth_service.dart';
-import 'package:eventhub/utils/app_failure.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 import 'package:eventhub/viewmodels/auth_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

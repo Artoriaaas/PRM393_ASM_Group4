@@ -2,8 +2,7 @@
 import 'package:flutter/services.dart';
 import 'package:pdf/widgets.dart' as pw;
 
-import '../../models/report_row.dart';
-import '../contracts/report_services.dart';
+import 'package:eventhub_core/eventhub_core.dart';
 
 class PdfReportService implements ReportService {
   @override
