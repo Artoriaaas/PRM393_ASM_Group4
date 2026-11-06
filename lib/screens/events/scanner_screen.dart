@@ -47,6 +47,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
         if (mounted) setState(() => message = value);
       });
       await ref.read(bookingProvider.notifier).restore();
+      if (!mounted) return;
       try {
         final registration = await ref.read(
           registrationProvider(widget.registrationId).future,
@@ -83,6 +84,18 @@ class _ScannerState extends ConsumerState<ScannerScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state != AppLifecycleState.resumed) {
       unawaited(ref.read(qrCameraProvider).stop());
+    } else {
+      final r = ref
+          .read(registrationProvider(widget.registrationId))
+          .asData
+          ?.value;
+      final booking = ref.read(bookingProvider);
+      if (r?.active == true &&
+          r?.checkInAt == null &&
+          !booking.busy &&
+          !booking.unresolved) {
+        unawaited(ref.read(qrCameraProvider).start());
+      }
     }
   }
 
