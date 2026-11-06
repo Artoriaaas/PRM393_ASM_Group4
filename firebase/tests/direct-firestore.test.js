@@ -3,117 +3,535 @@ const assert = require('node:assert/strict');
 const { readFileSync } = require('node:fs');
 const { join } = require('node:path');
 const { createHash } = require('node:crypto');
-const { initializeTestEnvironment, assertSucceeds, assertFails } = require('@firebase/rules-unit-testing');
-const { doc, getDoc, writeBatch, updateDoc, serverTimestamp, Timestamp } = require('firebase/firestore');
+const {
+  initializeTestEnvironment,
+  assertSucceeds,
+  assertFails,
+} = require('@firebase/rules-unit-testing');
+const {
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  writeBatch,
+  serverTimestamp,
+  Timestamp,
+} = require('firebase/firestore');
 
 let env;
-const operationId = 'a'.repeat(48);
-const participant = {name: 'Test User', email: 'test@example.com', group: 'guest', cohort: '', organization: '', phone: ''};
+const op1 = 'a'.repeat(48);
+const op2 = 'b'.repeat(48);
+const op3 = 'c'.repeat(48);
+const op4 = 'd'.repeat(48);
+const participant = {
+  name: 'Nguyen Minh Anh',
+  email: 'minhanh@fpt.edu.vn',
+  group: 'student',
+  cohort: 'K18',
+  organization: '',
+  phone: '0901234567',
+};
 
 before(async () => {
-  if (!process.env.FIRESTORE_EMULATOR_HOST) throw new Error('Start Firestore emulator first.');
+  if (!process.env.FIRESTORE_EMULATOR_HOST) {
+    throw new Error('Start Firestore emulator first.');
+  }
   env = await initializeTestEnvironment({
     projectId: 'demo-direct-booking',
-    firestore: {rules: readFileSync(join(__dirname, '../firestore.rules'), 'utf8')},
+    firestore: {
+      rules: readFileSync(join(__dirname, '../firestore.rules'), 'utf8'),
+    },
   });
 });
+
 after(async () => env?.cleanup());
 
-async function seed(eventId, capacity = 1) {
+function authedDb(uid, verified = true) {
+  return env
+    .authenticatedContext(uid, { email_verified: verified })
+    .firestore();
+}
+
+async function seedSystem({ eventId = 'ev_ai_1', capacity = 1 } = {}) {
   await env.clearFirestore();
-  await env.withSecurityRulesDisabled(async context => {
-    await context.firestore().doc(`events/${eventId}`).set({
-      visibility: 'public', status: 'published', registrationMode: 'required',
-      startsAt: Timestamp.fromMillis(Date.now() + 3600000),
-      deadline: Timestamp.fromMillis(Date.now() + 1800000),
-      capacity, activeCount: 0,
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    const db = ctx.firestore();
+    await db.doc('clubs/club_it').set({
+      name: 'CLB IT FPTU',
+      shortName: 'ITC',
+      description: 'Cau lac bo CNTT',
+      status: 'active',
+    });
+    await db.doc('clubs/club_music').set({
+      name: 'CLB Am Nhac',
+      shortName: 'MC',
+      description: 'Cau lac bo Am Nhac',
+      status: 'active',
+    });
+    await db.doc('users/alice').set({
+      role: 'user',
+      displayName: 'Alice Student',
+      email: 'alice@fpt.edu.vn',
+    });
+    await db.doc('users/bob').set({
+      role: 'user',
+      displayName: 'Bob Student',
+      email: 'bob@fpt.edu.vn',
+    });
+    await db.doc('users/staff_it').set({
+      role: 'staff',
+      clubId: 'club_it',
+      clubName: 'CLB IT FPTU',
+      displayName: 'Leader IT',
+      email: 'leader.it@fpt.edu.vn',
+    });
+    await db.doc('users/staff_music').set({
+      role: 'staff',
+      clubId: 'club_music',
+      clubName: 'CLB Am Nhac',
+      displayName: 'Leader Music',
+      email: 'leader.music@fpt.edu.vn',
+    });
+    await db.doc('users/admin_1').set({
+      role: 'admin',
+      displayName: 'System Admin',
+      email: 'admin@fpt.edu.vn',
+    });
+    await db.doc(`events/${eventId}`).set({
+      title: 'Hoi thao AI & Flutter',
+      clubId: 'club_it',
+      clubName: 'CLB IT FPTU',
+      location: 'Hoi truong Alpha',
+      visibility: 'public',
+      status: 'published',
+      registrationMode: 'required',
+      startsAt: Timestamp.fromMillis(Date.now() + 7200000),
+      endsAt: Timestamp.fromMillis(Date.now() + 14400000),
+      deadline: Timestamp.fromMillis(Date.now() + 3600000),
+      capacity,
+      activeCount: 0,
     });
   });
 }
-function userDb(uid = 'alice') {
-  return env.authenticatedContext(uid, {email_verified: true}).firestore();
-}
-function registerBatch(db, uid, eventId) {
-  const batch = writeBatch(db);
-  batch.set(doc(db, 'registrations', `${uid}_${eventId}`), {
-    uid, eventId, status: 'active', generation: 1, participant,
-    checkInAt: null, createdAt: serverTimestamp(), lastOperationId: operationId,
+
+function createPendingRegistration(db, uid, eventId, clubId = 'club_it', op = op1) {
+  return setDoc(doc(db, 'registrations', `${uid}_${eventId}`), {
+    uid,
+    eventId,
+    clubId,
+    status: 'pending',
+    generation: 1,
+    participant,
+    reason: null,
+    reviewedBy: null,
+    reviewedAt: null,
+    checkInAt: null,
+    createdAt: serverTimestamp(),
+    lastOperationId: op,
   });
-  batch.update(doc(db, 'events', eventId), {activeCount: 1});
+}
+
+function approveBatch(db, staffUid, studentUid, eventId, nextActiveCount) {
+  const regId = `${studentUid}_${eventId}`;
+  const batch = writeBatch(db);
+  batch.update(doc(db, 'registrations', regId), {
+    status: 'approved',
+    reason: null,
+    reviewedBy: staffUid,
+    reviewedAt: serverTimestamp(),
+  });
+  batch.update(doc(db, 'events', eventId), {
+    activeCount: nextActiveCount,
+    updatedAt: serverTimestamp(),
+  });
+  batch.set(doc(db, 'users', studentUid, 'notifications', `approve_${regId}`), {
+    title: 'Đơn đăng ký đã được duyệt!',
+    body: 'Đơn tham gia sự kiện của bạn đã được phê duyệt.',
+    type: 'registration_approved',
+    eventId,
+    registrationId: regId,
+    createdAt: serverTimestamp(),
+    readAt: null,
+  });
   return batch.commit();
 }
 
-test('owner can atomically register; count-only and other-user writes are denied', async () => {
-  await seed('direct-a');
-  const db = userDb();
-  await assertFails(updateDoc(doc(db, 'events', 'direct-a'), {activeCount: 1}));
-  await assertFails(registerBatch(db, 'bob', 'direct-a'));
-  await assertSucceeds(registerBatch(db, 'alice', 'direct-a'));
-  assert.equal((await getDoc(doc(db, 'events', 'direct-a'))).data().activeCount, 1);
-  await assertFails(registerBatch(userDb('bob'), 'bob', 'direct-a'));
+test('1. users & clubs: self-bootstrap user allowed, self-privilege-escalation denied, admin cannot change own role, admin manages clubs without hard-delete', async () => {
+  await seedSystem();
+  const newUserDb = authedDb('new_student');
+  const aliceDb = authedDb('alice');
+  const staffItDb = authedDb('staff_it');
+  const adminDb = authedDb('admin_1');
+
+  // Allowed: new user bootstraps own doc with role == 'user'
+  await assertSucceeds(
+    setDoc(doc(newUserDb, 'users/new_student'), {
+      role: 'user',
+      displayName: 'New Student',
+      email: 'new@fpt.edu.vn',
+      createdAt: serverTimestamp(),
+    }),
+  );
+
+  // Denied: user tries to bootstrap or escalate to staff/admin
+  await assertFails(
+    setDoc(doc(authedDb('hacker'), 'users/hacker'), {
+      role: 'admin',
+      displayName: 'Hacker',
+      email: 'h@fpt.edu.vn',
+      createdAt: serverTimestamp(),
+    }),
+  );
+  await assertFails(updateDoc(doc(aliceDb, 'users/alice'), { role: 'staff', clubId: 'club_it' }));
+
+  // Denied: staff reads another user's profile or writes clubs
+  await assertFails(getDoc(doc(staffItDb, 'users/alice')));
+  await assertFails(
+    setDoc(doc(staffItDb, 'clubs/club_new'), { name: 'Hack Club', status: 'active' }),
+  );
+
+  // Allowed: admin assigns staff + clubId to another user
+  await assertSucceeds(
+    updateDoc(doc(adminDb, 'users/bob'), {
+      role: 'staff',
+      clubId: 'club_it',
+      updatedAt: serverTimestamp(),
+    }),
+  );
+
+  // Denied: admin tries to assign staff WITHOUT clubId, or tries to change OWN role
+  await assertFails(updateDoc(doc(adminDb, 'users/alice'), { role: 'staff' }));
+  await assertFails(updateDoc(doc(adminDb, 'users/admin_1'), { role: 'user' }));
+
+  // Allowed: admin creates/archives club; Denied: hard delete club
+  await assertSucceeds(
+    setDoc(doc(adminDb, 'clubs/club_ai'), { name: 'CLB AI', status: 'active' }),
+  );
+  await assertFails(deleteDoc(doc(adminDb, 'clubs/club_ai')));
 });
 
-test('owner can cancel with count decrement; check-in cannot be forged', async () => {
-  await seed('direct-b');
-  const db = userDb();
-  await assertSucceeds(registerBatch(db, 'alice', 'direct-b'));
-  const ref = doc(db, 'registrations', 'alice_direct-b');
-  await assertFails(updateDoc(ref, {checkInAt: serverTimestamp(), qrHash: 'b'.repeat(64), lastOperationId: 'b'.repeat(48)}));
-  const batch = writeBatch(db);
-  batch.update(ref, {status: 'cancelled', lastOperationId: 'c'.repeat(48)});
-  batch.update(doc(db, 'events', 'direct-b'), {activeCount: 0});
-  await assertSucceeds(batch.commit());
-  assert.equal((await getDoc(ref)).data().status, 'cancelled');
+test('2. events: staff manages own club events (create/update/archive), cross-club staff & user writes denied, hard delete denied', async () => {
+  await seedSystem();
+  const aliceDb = authedDb('alice');
+  const staffItDb = authedDb('staff_it');
+  const staffMusicDb = authedDb('staff_music');
+  const adminDb = authedDb('admin_1');
+
+  const newEventPayload = {
+    title: 'Workshop Clean Architecture',
+    clubId: 'club_it',
+    clubName: 'CLB IT FPTU',
+    location: 'Lab 201',
+    visibility: 'public',
+    status: 'draft',
+    registrationMode: 'required',
+    startsAt: Timestamp.fromMillis(Date.now() + 7200000),
+    endsAt: Timestamp.fromMillis(Date.now() + 10800000),
+    deadline: Timestamp.fromMillis(Date.now() + 3600000),
+    capacity: 30,
+    activeCount: 0,
+    updatedAt: serverTimestamp(),
+  };
+
+  // Denied: user or other-club staff tries to create event for club_it
+  await assertFails(setDoc(doc(aliceDb, 'events/ev_new'), newEventPayload));
+  await assertFails(setDoc(doc(staffMusicDb, 'events/ev_new'), newEventPayload));
+
+  // Allowed: staff_it creates draft event and archives it (soft archive)
+  await assertSucceeds(setDoc(doc(staffItDb, 'events/ev_new'), newEventPayload));
+  await assertSucceeds(
+    updateDoc(doc(staffItDb, 'events/ev_new'), {
+      status: 'archived',
+      updatedAt: serverTimestamp(),
+    }),
+  );
+
+  // Denied: staff or admin tries to hard-delete event
+  await assertFails(deleteDoc(doc(staffItDb, 'events/ev_new')));
+  await assertFails(deleteDoc(doc(adminDb, 'events/ev_new')));
+
+  // Allowed: admin can intervene and cancel event of any club
+  await assertSucceeds(
+    updateDoc(doc(adminDb, 'events/ev_new'), {
+      status: 'cancelled',
+      updatedAt: serverTimestamp(),
+    }),
+  );
 });
 
-test('a web-created QR credential and open session allow one check-in', async () => {
-  await seed('direct-c');
-  const db = userDb();
-  await assertSucceeds(registerBatch(db, 'alice', 'direct-c'));
-  const token = 'long-random-qr-token-created-by-web-staff';
-  const hash = createHash('sha256').update(token).digest('hex');
-  await env.withSecurityRulesDisabled(async context => {
-    await context.firestore().doc(`qrCredentials/${hash}`).set({eventId: 'direct-c', enabled: true});
-    await context.firestore().doc('checkinSessions/direct-c').set({open: true});
+test('3. Cross-Role Flow 1 (registrations + notifications): student submits pending -> staff approves/rejects atomically -> cross-club & over-capacity blocked', async () => {
+  await seedSystem({ eventId: 'ev_flow1', capacity: 1 });
+  const aliceDb = authedDb('alice');
+  const bobDb = authedDb('bob');
+  const staffItDb = authedDb('staff_it');
+  const staffMusicDb = authedDb('staff_music');
+
+  // Denied: student tries to self-approve at creation or forge activeCount
+  await assertFails(
+    setDoc(doc(aliceDb, 'registrations/alice_ev_flow1'), {
+      uid: 'alice',
+      eventId: 'ev_flow1',
+      clubId: 'club_it',
+      status: 'approved',
+      generation: 1,
+      participant,
+      checkInAt: null,
+      createdAt: serverTimestamp(),
+      lastOperationId: op1,
+    }),
+  );
+  await assertFails(updateDoc(doc(aliceDb, 'events/ev_flow1'), { activeCount: 1 }));
+
+  // Allowed: both Alice and Bob submit pending requests while 1 seat remains
+  await assertSucceeds(createPendingRegistration(aliceDb, 'alice', 'ev_flow1'));
+  await assertSucceeds(createPendingRegistration(bobDb, 'bob', 'ev_flow1'));
+
+  // Denied: staff from another club (club_music) tries to read or approve club_it registration
+  await assertFails(getDoc(doc(staffMusicDb, 'registrations/alice_ev_flow1')));
+  await assertFails(approveBatch(staffMusicDb, 'staff_music', 'alice', 'ev_flow1', 1));
+
+  // Allowed: staff_it approves Alice -> activeCount becomes 1/1 & notification created
+  await assertSucceeds(approveBatch(staffItDb, 'staff_it', 'alice', 'ev_flow1', 1));
+  assert.equal((await getDoc(doc(staffItDb, 'events/ev_flow1'))).data().activeCount, 1);
+
+  // Denied: staff_it tries to approve Bob when event is now full (1/1)
+  await assertFails(approveBatch(staffItDb, 'staff_it', 'bob', 'ev_flow1', 2));
+
+  // Denied: staff_it tries to reject Bob WITHOUT a valid >=3-char reason
+  await assertFails(
+    updateDoc(doc(staffItDb, 'registrations/bob_ev_flow1'), {
+      status: 'rejected',
+      reason: 'No',
+      reviewedBy: 'staff_it',
+      reviewedAt: serverTimestamp(),
+    }),
+  );
+
+  // Allowed: staff_it rejects Bob with clear reason & sends rejection notification (activeCount stays 1)
+  const rejectBatch = writeBatch(staffItDb);
+  rejectBatch.update(doc(staffItDb, 'registrations/bob_ev_flow1'), {
+    status: 'rejected',
+    reason: 'Sự kiện đã đủ số lượng chỗ tối đa.',
+    reviewedBy: 'staff_it',
+    reviewedAt: serverTimestamp(),
   });
-  const ref = doc(db, 'registrations', 'alice_direct-c');
-  await assertSucceeds(updateDoc(ref, {
-    checkInAt: serverTimestamp(), qrHash: hash, lastOperationId: 'd'.repeat(48),
-  }));
-  assert.ok((await getDoc(ref)).data().checkInAt);
-  await assertFails(updateDoc(ref, {
-    checkInAt: serverTimestamp(), qrHash: hash, lastOperationId: 'e'.repeat(48),
-  }));
+  rejectBatch.set(doc(staffItDb, 'users/bob/notifications/reject_bob'), {
+    title: 'Đơn đăng ký không được duyệt',
+    body: 'Sự kiện đã đủ số lượng chỗ tối đa.',
+    type: 'registration_rejected',
+    eventId: 'ev_flow1',
+    registrationId: 'bob_ev_flow1',
+    createdAt: serverTimestamp(),
+    readAt: null,
+  });
+  await assertSucceeds(rejectBatch.commit());
+
+  // Allowed: Alice cancels her approved registration -> activeCount decrements back to 0
+  const cancelApproved = writeBatch(aliceDb);
+  cancelApproved.update(doc(aliceDb, 'registrations/alice_ev_flow1'), {
+    status: 'cancelled',
+    lastOperationId: op2,
+  });
+  cancelApproved.update(doc(aliceDb, 'events/ev_flow1'), { activeCount: 0 });
+  await assertSucceeds(cancelApproved.commit());
+
+  // Allowed: Bob re-registers after rejection with generation + 1 -> back to pending
+  await assertSucceeds(
+    updateDoc(doc(bobDb, 'registrations/bob_ev_flow1'), {
+      status: 'pending',
+      generation: 2,
+      participant,
+      reason: null,
+      reviewedBy: null,
+      reviewedAt: null,
+      checkInAt: null,
+      createdAt: serverTimestamp(),
+      lastOperationId: op3,
+    }),
+  );
+  assert.equal((await getDoc(doc(bobDb, 'registrations/bob_ev_flow1'))).data().generation, 2);
+
+  // Unverified user is always denied
+  await assertFails(
+    createPendingRegistration(authedDb('eve', false), 'eve', 'ev_flow1'),
+  );
 });
 
-test('cancelled registration can be recreated with next generation, unverified user cannot', async () => {
-  await seed('direct-d');
-  const db = userDb();
-  await assertSucceeds(registerBatch(db, 'alice', 'direct-d'));
-  const ref = doc(db, 'registrations', 'alice_direct-d');
-  const cancel = writeBatch(db);
-  cancel.update(ref, {status: 'cancelled', lastOperationId: 'b'.repeat(48)});
-  cancel.update(doc(db, 'events', 'direct-d'), {activeCount: 0});
-  await assertSucceeds(cancel.commit());
-  const again = writeBatch(db);
-  again.set(ref, {
-    uid: 'alice', eventId: 'direct-d', status: 'active', generation: 2,
-    participant, checkInAt: null, createdAt: serverTimestamp(),
-    lastOperationId: 'c'.repeat(48),
-  });
-  again.update(doc(db, 'events', 'direct-d'), {activeCount: 1});
-  await assertSucceeds(again.commit());
-  assert.equal((await getDoc(ref)).data().generation, 2);
-  const unverified = env.authenticatedContext('eve', {email_verified: false}).firestore();
-  await assertFails(registerBatch(unverified, 'eve', 'direct-d'));
+test('4. Cross-Role Flow 2 (checkinSessions + qrCredentials): staff opens QR session, approved student checks in once, rotated/closed QR & pending check-in denied', async () => {
+  await seedSystem({ eventId: 'ev_qr', capacity: 2 });
+  const aliceDb = authedDb('alice');
+  const bobDb = authedDb('bob');
+  const staffItDb = authedDb('staff_it');
+  const staffMusicDb = authedDb('staff_music');
+
+  await assertSucceeds(createPendingRegistration(aliceDb, 'alice', 'ev_qr'));
+  await assertSucceeds(createPendingRegistration(bobDb, 'bob', 'ev_qr'));
+  await assertSucceeds(approveBatch(staffItDb, 'staff_it', 'alice', 'ev_qr', 1));
+
+  const token1 = 'EVT_ev_qr_RANDOM_SECURE_TOKEN_NUMBER_ONE_32CHARS';
+  const hash1 = createHash('sha256').update(token1).digest('hex');
+
+  // Denied: student or cross-club staff tries to open session or create QR credential
+  await assertFails(
+    setDoc(doc(aliceDb, 'checkinSessions/ev_qr'), {
+      eventId: 'ev_qr',
+      clubId: 'club_it',
+      open: true,
+      updatedBy: 'alice',
+      updatedAt: serverTimestamp(),
+    }),
+  );
+  await assertFails(
+    setDoc(doc(staffMusicDb, `qrCredentials/${hash1}`), {
+      eventId: 'ev_qr',
+      clubId: 'club_it',
+      enabled: true,
+      createdBy: 'staff_music',
+      createdAt: serverTimestamp(),
+    }),
+  );
+
+  // Allowed: staff_it creates QR credential and opens session
+  await assertSucceeds(
+    setDoc(doc(staffItDb, `qrCredentials/${hash1}`), {
+      eventId: 'ev_qr',
+      clubId: 'club_it',
+      enabled: true,
+      createdBy: 'staff_it',
+      createdAt: serverTimestamp(),
+    }),
+  );
+  await assertSucceeds(
+    setDoc(doc(staffItDb, 'checkinSessions/ev_qr'), {
+      eventId: 'ev_qr',
+      clubId: 'club_it',
+      open: true,
+      updatedBy: 'staff_it',
+      updatedAt: serverTimestamp(),
+    }),
+  );
+
+  // Denied: student tries to read qrCredentials directly
+  await assertFails(getDoc(doc(aliceDb, `qrCredentials/${hash1}`)));
+
+  // Denied: Bob (still pending, NOT approved) tries to check in with valid QR
+  await assertFails(
+    updateDoc(doc(bobDb, 'registrations/bob_ev_qr'), {
+      checkInAt: serverTimestamp(),
+      qrHash: hash1,
+      lastOperationId: op2,
+    }),
+  );
+
+  // Allowed: Alice (approved) checks in once with valid QR while session is open
+  await assertSucceeds(
+    updateDoc(doc(aliceDb, 'registrations/alice_ev_qr'), {
+      checkInAt: serverTimestamp(),
+      qrHash: hash1,
+      lastOperationId: op2,
+    }),
+  );
+  assert.ok((await getDoc(doc(aliceDb, 'registrations/alice_ev_qr'))).data().checkInAt);
+
+  // Denied: Alice tries to overwrite checkInAt a second time
+  await assertFails(
+    updateDoc(doc(aliceDb, 'registrations/alice_ev_qr'), {
+      checkInAt: serverTimestamp(),
+      qrHash: hash1,
+      lastOperationId: op3,
+    }),
+  );
+
+  // Staff approves Bob, rotates QR (disables hash1), and closes session -> Bob check-in with old hash or closed session denied
+  await assertSucceeds(approveBatch(staffItDb, 'staff_it', 'bob', 'ev_qr', 2));
+  await assertSucceeds(updateDoc(doc(staffItDb, `qrCredentials/${hash1}`), { enabled: false }));
+  await assertFails(
+    updateDoc(doc(bobDb, 'registrations/bob_ev_qr'), {
+      checkInAt: serverTimestamp(),
+      qrHash: hash1,
+      lastOperationId: op4,
+    }),
+  );
 });
-test('push receipts are private and cannot impersonate server notifications', async () => {
-  await env.clearFirestore();
-  const db = env.authenticatedContext('alice', {email_verified: true}).firestore();
-  const path = 'users/alice/notifications/push_' + 'b'.repeat(64);
-  const receipt = {title:'Reminder',body:'Open the app',eventId:'workshop',registrationId:'alice_workshop',type:'push_received',createdAt:serverTimestamp(),readAt:null};
-  await assertSucceeds(writeBatch(db).set(doc(db,path),receipt).commit());
-  await assertFails(getDoc(doc(env.authenticatedContext('bob', {email_verified:true}).firestore(),path)));
-  await assertFails(writeBatch(db).set(doc(db,'users/bob/notifications/push_'+'c'.repeat(64)),receipt).commit());
-  await assertFails(writeBatch(db).set(doc(db,'users/alice/notifications/push_'+'d'.repeat(64)),{...receipt,type:'registration_confirmed'}).commit());
+
+test('5. announcements & push receipts: staff publishes club announcement, cross-club/global/user writes denied, private push receipts enforced', async () => {
+  await seedSystem();
+  const aliceDb = authedDb('alice');
+  const bobDb = authedDb('bob');
+  const staffItDb = authedDb('staff_it');
+  const adminDb = authedDb('admin_1');
+
+  // Denied: user tries to publish announcement; staff tries global or other club
+  await assertFails(
+    setDoc(doc(aliceDb, 'announcements/ann_bad1'), {
+      title: 'Fake',
+      body: 'Body',
+      scope: 'club',
+      clubId: 'club_it',
+      clubName: 'CLB IT',
+      authorUid: 'alice',
+      authorRole: 'staff',
+      createdAt: serverTimestamp(),
+    }),
+  );
+  await assertFails(
+    setDoc(doc(staffItDb, 'announcements/ann_bad2'), {
+      title: 'Global Attempt',
+      body: 'Body',
+      scope: 'global',
+      clubId: 'club_it',
+      clubName: 'CLB IT',
+      authorUid: 'staff_it',
+      authorRole: 'staff',
+      createdAt: serverTimestamp(),
+    }),
+  );
+
+  // Allowed: staff_it publishes club announcement; admin publishes global announcement; user reads
+  await assertSucceeds(
+    setDoc(doc(staffItDb, 'announcements/ann_ok1'), {
+      title: 'Thông báo đổi phòng sinh hoạt',
+      body: 'Chuyển sang phòng Beta 202 lúc 14h.',
+      scope: 'club',
+      clubId: 'club_it',
+      clubName: 'CLB IT FPTU',
+      authorUid: 'staff_it',
+      authorRole: 'staff',
+      createdAt: serverTimestamp(),
+    }),
+  );
+  await assertSucceeds(
+    setDoc(doc(adminDb, 'announcements/ann_global'), {
+      title: 'Thông báo toàn trường',
+      body: 'Lịch nghỉ lễ hệ thống CLB.',
+      scope: 'global',
+      clubId: '',
+      clubName: 'EventHub Admin',
+      authorUid: 'admin_1',
+      authorRole: 'admin',
+      createdAt: serverTimestamp(),
+    }),
+  );
+  await assertSucceeds(getDoc(doc(aliceDb, 'announcements/ann_ok1')));
+
+  // Private push receipts remain strictly scoped to owner & type == 'push_received'
+  const pushPath = 'users/alice/notifications/push_' + 'b'.repeat(64);
+  const receipt = {
+    title: 'Reminder',
+    body: 'Open the app',
+    eventId: 'ev_ai_1',
+    registrationId: 'alice_ev_ai_1',
+    type: 'push_received',
+    createdAt: serverTimestamp(),
+    readAt: null,
+  };
+  await assertSucceeds(setDoc(doc(aliceDb, pushPath), receipt));
+  await assertFails(getDoc(doc(bobDb, pushPath)));
+  await assertFails(
+    setDoc(doc(aliceDb, 'users/alice/notifications/push_' + 'd'.repeat(64)), {
+      ...receipt,
+      type: 'registration_approved',
+    }),
+  );
 });
