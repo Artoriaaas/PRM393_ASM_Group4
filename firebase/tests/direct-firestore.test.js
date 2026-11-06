@@ -10,6 +10,8 @@ const {
 } = require('@firebase/rules-unit-testing');
 const {
   doc,
+  collection,
+  getDocs,
   getDoc,
   setDoc,
   updateDoc,
@@ -412,8 +414,9 @@ test('4. Cross-Role Flow 2 (checkinSessions + qrCredentials): staff opens QR ses
     }),
   );
 
-  // Denied: student tries to read qrCredentials directly
-  await assertFails(getDoc(doc(aliceDb, `qrCredentials/${hash1}`)));
+  // Exact high-entropy hash lookup is allowed; listing credentials remains denied.
+  await assertSucceeds(getDoc(doc(aliceDb, `qrCredentials/${hash1}`)));
+  await assertFails(getDocs(collection(aliceDb, "qrCredentials")));
 
   // Denied: Bob (still pending, NOT approved) tries to check in with valid QR
   await assertFails(
@@ -536,14 +539,13 @@ test('5. announcements & push receipts: staff publishes club announcement, cross
   );
 });
 
-test('archived event stays readable to its registrant but not other users or public lists', async () => {
-  await seed('archived-event');
-  const alice = userDb();
-  await assertSucceeds(registerBatch(alice, 'alice', 'archived-event'));
+test('archived event stays readable only to its registrant or club staff', async () => {
+  await seedSystem({eventId: 'archived-event'});
   await env.withSecurityRulesDisabled(async c => {
-    await c.firestore().doc('events/archived-event').update({visibility: 'archived'});
+    await c.firestore().doc('registrations/alice_archived-event').set({uid:'alice', eventId:'archived-event', status:'cancelled'});
+    await c.firestore().doc('events/archived-event').update({visibility:'archived'});
   });
-  await assertSucceeds(getDoc(doc(alice, 'events/archived-event')));
-  await assertFails(getDoc(doc(userDb('bob'), 'events/archived-event')));
-  await assertFails(getDocs(collection(alice, 'events')));
+  await assertSucceeds(getDoc(doc(authedDb('alice'), 'events/archived-event')));
+  await assertFails(getDoc(doc(authedDb('bob'), 'events/archived-event')));
+  await assertFails(getDocs(collection(authedDb('alice'), 'events')));
 });
