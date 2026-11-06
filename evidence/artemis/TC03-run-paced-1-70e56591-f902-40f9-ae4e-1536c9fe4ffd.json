@@ -1,0 +1,10 @@
+{
+  "case_id": "TC03",
+  "trace_id": "70e56591-f902-40f9-ae4e-1536c9fe4ffd",
+  "status": "cancelled",
+  "elapsed_seconds": 265.85999999998603,
+  "output": null,
+  "error": null,
+  "run": "paced-1",
+  "acceptance_status": "pending_pytest_assertions"
+}
