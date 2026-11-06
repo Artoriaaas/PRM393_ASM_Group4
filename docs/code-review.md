@@ -1,4 +1,8 @@
-# Code review — trạng thái chuẩn bị
+# Code review — PR instrumentation
+
+Cập nhật 07/11/2026: đã mở PR #3, Codex review 5 findings thuộc bug/privacy/concurrency/reliability, ghi accepted và 3 commit sửa gắn ID. Đầu ra chi tiết tại [review-pr-findings.md](review-pr-findings.md). PR đang draft, chưa có review bot ngoài hoặc chấp thuận giảng viên về công cụ; không gọi local test là native cloud verification.
+
+# Nhật ký review local trước PR
 
 Ngày 31/10/2026. Reviewer local: Codex assistant trong phiên triển khai. Đây là review diff và kiểm tra tự động trong workspace, **chưa phải AI review trên PR**, chưa đáp ứng đầy đủ bước 11 của đề. Chưa có PR/link hoặc đầu ra CodeRabbit/Copilot/Sonar/Kodus. Không ghi các fix dưới đây thành “3 fix commits từ PR” khi chưa có bằng chứng đó.
 

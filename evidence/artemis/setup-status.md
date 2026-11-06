@@ -23,3 +23,7 @@ Session fc739a62-16b6-4d88-a089-706a575e548f produced actual tap actions, but re
 ## Retry 07/11/2026
 
 TC03 submitted through pytest on emulator-5554, session 4f928a29-c418-4e37-924a-bbf53ce9847d. Runtime recorded only one step and at least four HTTP 429 quota responses; task explicitly stopped. Not accepted, not an app failure conclusion. Do not run 3 full repetitions until model quota permits actual navigation.
+
+## Paced Groq retry 07/11/2026
+
+Direct Groq probe HTTP200, 8000 input tokens/minute. Added configurable 62-second model interval to local runtime (disclosed patch). TC03 session 70e56591-f902-40f9-ae4e-1536c9fe4ffd still stalled at two click steps and recorded a 429. Stopped rather than count it as passed; full regression and Pro remain incomplete.

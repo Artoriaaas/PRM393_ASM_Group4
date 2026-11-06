@@ -68,7 +68,36 @@ class _Storage implements ReportStorageService {
   Future<void> copyLink(String link) async {}
 }
 
+class _DelayedCloud extends _Cloud {
+  final completion = Completer<CloudSettings>();
+  @override
+  Future<CloudSettings> fetchSettings() => completion.future;
+}
+
 void main() {
+  test(
+    'previous user config completion never emits analytics for a new session',
+    () async {
+      final cloud = _DelayedCloud();
+      final c = ProviderContainer(
+        overrides: [
+          sessionViewModelProvider.overrideWith(_Session.new),
+          cloudServicesProvider.overrideWithValue(cloud),
+        ],
+      );
+      addTearDown(c.dispose);
+      final subscription = c.listen(cloudToolsProvider, (_, _) {});
+      addTearDown(subscription.close);
+      final pending = c.read(cloudToolsProvider.notifier).refresh();
+      (c.read(sessionViewModelProvider.notifier) as _Session).change('another');
+      c.read(cloudToolsProvider);
+      cloud.completion.complete(const CloudSettings(recommendationLimit: 1));
+      await pending;
+      expect(cloud.events, isEmpty);
+      expect(c.read(cloudToolsProvider).message, isNull);
+    },
+  );
+
   TestWidgetsFlutterBinding.ensureInitialized();
   const row = ReportRow(
     title: 'Thiết kế trải nghiệm người dùng',

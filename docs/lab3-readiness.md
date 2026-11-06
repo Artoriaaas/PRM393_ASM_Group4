@@ -69,3 +69,7 @@ Không tính Cloud Functions, Cloudflare Worker, web/admin hoặc operation ledg
 Đã kiểm kê page 03 và 06: 78 frame thuộc bộ Final UI mới, 74 frame cũ/QA, 55 frame prototype. Có đủ nhóm A01–A12 nhưng thiếu/khác chi tiết state/control tại A03/A08/A10/A11/A12. Xem [figma-app-audit.md](figma-app-audit.md); chưa xác nhận pixel 1:1 hoặc E2E mọi state.
 
 Sau audit đã bổ sung code cho các thiếu hụt A03/A08/A10/A11/A12; Rules phân quyền đọc phiên/tra QR đã kiểm 6 ca và deploy. Figma giữ nguyên theo yêu cầu người dùng, đối chiếu trong docs/figma-app-audit.md. Còn cần Android E2E/ảnh toàn bộ state.
+
+## PR review và lần xác nhận mới 07/11/2026
+
+PR #3 có Codex AI review 5 findings/3 fix commits theo ID; xem docs/review-pr-findings.md và evidence/code-review/. Analyzer sạch, 65 Flutter tests đạt. Không giả danh bot bên ngoài. Instrumentation Console chưa thu được do công cụ UI lỗi kernel assets. ARTEMIS/Groq paced retry vẫn 429 và chỉ 2 bước; chưa đạt. Xem evidence/instrumentation/status.md và evidence/artemis/setup-status.md.

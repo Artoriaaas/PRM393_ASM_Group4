@@ -1,0 +1,21 @@
+{
+  "source": "ADB FA/FA-SVC logcat",
+  "device": "emulator-5554",
+  "matching_log_lines": {
+    "login": 0,
+    "logout": 0,
+    "search": 0,
+    "view_event_detail": 0,
+    "view_registration_detail": 0,
+    "view_checkin_result": 0,
+    "booking_submit": 0,
+    "booking_result": 0,
+    "booking_recover": 0,
+    "export_generate": 0,
+    "export_upload": 0,
+    "notification_open": 0,
+    "remote_config_fetch": 0,
+    "view_screen": 0
+  },
+  "server_receipt_verified": false
+}

@@ -61,7 +61,7 @@ index 3c21cf8..0219d0e 100644
 -- **Failure (`status="failed"`)**: If the task is genuinely impossible due to paywalls, unrecoverable crashes, or hitting an absolute dead end after sensible fallbacks, call `report_task_status(status="failed", ...)` with the exact blocking reason.
 +Mandatory: perform ALL requested actions even if the final screen is already visible at startup. For login tests, actually log out and sign in; merely observing Discover is insufficient. report_task_status.explanation MUST contain a JSON string matching the user-requested schema, not prose. Use exact required screen codes from the instruction. If any required step was skipped, report failed, never completed.
 diff --git a/artemis/agents/flash/runner.py b/artemis/agents/flash/runner.py
-index 3ea3f68..2eba3dd 100644
+index 3ea3f68..0dcb8be 100644
 --- a/artemis/agents/flash/runner.py
 +++ b/artemis/agents/flash/runner.py
 @@ -17,8 +17,8 @@
@@ -147,9 +147,18 @@ index 3ea3f68..2eba3dd 100644
              # next observation tail, never a tool-message image. The image
              # carrier follows the model's provider (tool_result_messages).
              raw_blocks = exec_result.raw_result if name not in action_names else None
-@@ -884,7 +886,23 @@ class FlashRunner:
+@@ -883,8 +885,32 @@ class FlashRunner:
+ 
      async def _invoke_model(self, llm, current_tools: list, messages: list[BaseMessage]):
          """Binds the active tools and invokes the model through the LLM gateway."""
++        # Groq Free limits input tokens per minute; pace real model calls rather
++        # than retrying the same observation repeatedly after HTTP 429.
++        import os, time
++        interval = float(os.getenv("ARTEMIS_MIN_MODEL_INTERVAL_SECONDS", "0"))
++        last = getattr(self, "_last_model_request_at", 0.0)
++        if interval > 0:
++            await asyncio.sleep(max(0.0, interval - (time.monotonic() - last)))
++        self._last_model_request_at = time.monotonic()
          # Bind active tools
 -        bound_llm = llm.bind_tools(current_tools)
 +        from langchain_core.utils.function_calling import convert_to_openai_tool
@@ -172,7 +181,7 @@ index 3ea3f68..2eba3dd 100644
  
          # Invoke Model. Streaming, live-token UI deltas, classified
          # retries, and pause/resume are all owned by the LLM gateway
-@@ -1112,7 +1130,7 @@ class FlashRunner:
+@@ -1112,7 +1138,7 @@ class FlashRunner:
              # size, never the session-wide meter (which any agent overwrites).
              # The prompt as sent (``messages`` minus the just-appended reply)
              # rides along so the ledger can calibrate its chars-per-token
