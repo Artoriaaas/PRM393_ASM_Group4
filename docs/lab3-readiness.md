@@ -63,3 +63,7 @@ Cập nhật 07/11/2026. Trạng thái có bằng chứng; **chưa phải xác n
 | 16: xác minh cá nhân chạy test, đổi config, giải thích VM/review | Chưa đánh giá | Nhóm tự luyện sau khi có kết quả thật |
 
 Không tính Cloud Functions, Cloudflare Worker, web/admin hoặc operation ledger độc lập là yêu cầu bắt buộc Lab 3. Các phần web của teammate được giữ riêng; không dùng làm bằng chứng mobile đạt.
+
+## Xác minh trực tiếp Figma
+
+Đã kiểm kê page 03 và 06: 78 frame thuộc bộ Final UI mới, 74 frame cũ/QA, 55 frame prototype. Có đủ nhóm A01–A12 nhưng thiếu/khác chi tiết state/control tại A03/A08/A10/A11/A12. Xem [figma-app-audit.md](figma-app-audit.md); chưa xác nhận pixel 1:1 hoặc E2E mọi state.

@@ -1,0 +1,1045 @@
+{
+  "fileKey": "WC21Na9ZDS8jjM2LzPKeXa",
+  "sessionId": "f2e0005a-c671-41ec-a4bb-5f7d62e457bc",
+  "currentFinalUi": [
+    {
+      "id": "164:241",
+      "name": "A02",
+      "parent": "Final UI / A02–A04"
+    },
+    {
+      "id": "164:336",
+      "name": "A04",
+      "parent": "Final UI / A02–A04"
+    },
+    {
+      "id": "214:1681",
+      "name": "A04 / Tham gia tự do",
+      "parent": "Final UI / A02–A04"
+    },
+    {
+      "id": "177:231",
+      "name": "A01a / Đăng nhập",
+      "parent": "Final UI / A01 · Xác thực"
+    },
+    {
+      "id": "177:293",
+      "name": "A01a / Thông tin không hợp lệ",
+      "parent": "Final UI / A01 · Xác thực"
+    },
+    {
+      "id": "177:352",
+      "name": "A01a / Đang xác thực",
+      "parent": "Final UI / A01 · Xác thực"
+    },
+    {
+      "id": "177:409",
+      "name": "A01b / Tạo tài khoản",
+      "parent": "Final UI / A01 · Xác thực"
+    },
+    {
+      "id": "177:476",
+      "name": "A01b / Đổi email",
+      "parent": "Final UI / A01 · Xác thực"
+    },
+    {
+      "id": "177:541",
+      "name": "A01b / Lỗi gửi — giữ dữ liệu",
+      "parent": "Final UI / A01 · Xác thực"
+    },
+    {
+      "id": "177:610",
+      "name": "A01c / Kiểm tra email",
+      "parent": "Final UI / A01 · Xác thực"
+    },
+    {
+      "id": "177:645",
+      "name": "A01c / Chưa xác nhận",
+      "parent": "Final UI / A01 · Xác thực"
+    },
+    {
+      "id": "177:684",
+      "name": "A01c / Đang kiểm tra",
+      "parent": "Final UI / A01 · Xác thực"
+    },
+    {
+      "id": "177:721",
+      "name": "A01d / Quên mật khẩu",
+      "parent": "Final UI / A01 · Xác thực"
+    },
+    {
+      "id": "177:754",
+      "name": "A01d / Email không hợp lệ",
+      "parent": "Final UI / A01 · Xác thực"
+    },
+    {
+      "id": "177:789",
+      "name": "A01d / Đang gửi liên kết",
+      "parent": "Final UI / A01 · Xác thực"
+    },
+    {
+      "id": "177:824",
+      "name": "A01d / Kiểm tra hộp thư",
+      "parent": "Final UI / A01 · Xác thực"
+    },
+    {
+      "id": "177:850",
+      "name": "A01d / Lỗi mạng",
+      "parent": "Final UI / A01 · Xác thực"
+    },
+    {
+      "id": "194:1642",
+      "name": "A01b / Email không hợp lệ",
+      "parent": "Final UI / A01 · Xác thực"
+    },
+    {
+      "id": "275:2894",
+      "name": "A01a / Đăng nhập mở đầu",
+      "parent": "Final UI / A01 · Xác thực"
+    },
+    {
+      "id": "179:599",
+      "name": "A03 / Kết quả từ khóa",
+      "parent": "Final UI / A03 · A05–A07"
+    },
+    {
+      "id": "179:670",
+      "name": "A03 / Kết quả bộ lọc",
+      "parent": "Final UI / A03 · A05–A07"
+    },
+    {
+      "id": "179:741",
+      "name": "A03 / Không có kết quả",
+      "parent": "Final UI / A03 · A05–A07"
+    },
+    {
+      "id": "179:800",
+      "name": "A03 / Đang tải",
+      "parent": "Final UI / A03 · A05–A07"
+    },
+    {
+      "id": "179:852",
+      "name": "A03 / Lỗi tải",
+      "parent": "Final UI / A03 · A05–A07"
+    },
+    {
+      "id": "179:908",
+      "name": "A02–A03 / Bộ lọc — bottom sheet",
+      "parent": "Final UI / A03 · A05–A07"
+    },
+    {
+      "id": "179:965",
+      "name": "A05 / Sinh viên",
+      "parent": "Final UI / A03 · A05–A07"
+    },
+    {
+      "id": "179:1046",
+      "name": "A05 / Khách ngoài trường",
+      "parent": "Final UI / A03 · A05–A07"
+    },
+    {
+      "id": "179:1125",
+      "name": "A05 / Lỗi Khóa K",
+      "parent": "Final UI / A03 · A05–A07"
+    },
+    {
+      "id": "179:1206",
+      "name": "A05 / Đang gửi",
+      "parent": "Final UI / A03 · A05–A07"
+    },
+    {
+      "id": "179:1287",
+      "name": "A05 / Kết quả chưa xác định",
+      "parent": "Final UI / A03 · A05–A07"
+    },
+    {
+      "id": "179:1370",
+      "name": "A05 / Đang kiểm tra đăng ký",
+      "parent": "Final UI / A03 · A05–A07"
+    },
+    {
+      "id": "179:1455",
+      "name": "A05 / Đã xác minh — có thể gửi lại",
+      "parent": "Final UI / A03 · A05–A07"
+    },
+    {
+      "id": "179:1538",
+      "name": "A06 / Đăng ký được xác nhận",
+      "parent": "Final UI / A03 · A05–A07"
+    },
+    {
+      "id": "179:1581",
+      "name": "A07 / Sắp tới",
+      "parent": "Final UI / A03 · A05–A07"
+    },
+    {
+      "id": "179:1637",
+      "name": "A07 / Lịch trống",
+      "parent": "Final UI / A03 · A05–A07"
+    },
+    {
+      "id": "179:1686",
+      "name": "A07 / Sau tự hủy",
+      "parent": "Final UI / A03 · A05–A07"
+    },
+    {
+      "id": "179:1739",
+      "name": "A07 / Lịch sử đã hủy",
+      "parent": "Final UI / A03 · A05–A07"
+    },
+    {
+      "id": "179:1795",
+      "name": "A07 / Đã kết thúc",
+      "parent": "Final UI / A03 · A05–A07"
+    },
+    {
+      "id": "179:1851",
+      "name": "A07 / Đang tải",
+      "parent": "Final UI / A03 · A05–A07"
+    },
+    {
+      "id": "179:1896",
+      "name": "A07 / Lỗi tải",
+      "parent": "Final UI / A03 · A05–A07"
+    },
+    {
+      "id": "194:1699",
+      "name": "A07 / Lịch sử — sự kiện đã hủy",
+      "parent": "Final UI / A03 · A05–A07"
+    },
+    {
+      "id": "255:2802",
+      "name": "A06 / Khách ngoài trường",
+      "parent": "Final UI / A03 · A05–A07"
+    },
+    {
+      "id": "255:3204",
+      "name": "A07 / Khách ngoài trường — Sắp tới",
+      "parent": "Final UI / A03 · A05–A07"
+    },
+    {
+      "id": "181:1345",
+      "name": "A08 / Đã đăng ký",
+      "parent": "Final UI / A08–A10"
+    },
+    {
+      "id": "181:1388",
+      "name": "A08 / Xác nhận hủy",
+      "parent": "Final UI / A08–A10"
+    },
+    {
+      "id": "181:1443",
+      "name": "A08 / Đang hủy",
+      "parent": "Final UI / A08–A10"
+    },
+    {
+      "id": "181:1488",
+      "name": "A08 / Hủy chưa xác định",
+      "parent": "Final UI / A08–A10"
+    },
+    {
+      "id": "181:1529",
+      "name": "A08 / Đang kiểm tra hủy",
+      "parent": "Final UI / A08–A10"
+    },
+    {
+      "id": "181:1572",
+      "name": "A08 / Phiên điểm danh mở",
+      "parent": "Final UI / A08–A10"
+    },
+    {
+      "id": "181:1611",
+      "name": "A08 / Đã điểm danh",
+      "parent": "Final UI / A08–A10"
+    },
+    {
+      "id": "181:1650",
+      "name": "A08 / Đã hủy đăng ký",
+      "parent": "Final UI / A08–A10"
+    },
+    {
+      "id": "181:1689",
+      "name": "A08 / Sự kiện đã hủy",
+      "parent": "Final UI / A08–A10"
+    },
+    {
+      "id": "181:1728",
+      "name": "A08 / Không thể tự hủy",
+      "parent": "Final UI / A08–A10"
+    },
+    {
+      "id": "181:1767",
+      "name": "A09 / Danh sách",
+      "parent": "Final UI / A08–A10"
+    },
+    {
+      "id": "181:1816",
+      "name": "A09 / Cập nhật lịch và địa điểm",
+      "parent": "Final UI / A08–A10"
+    },
+    {
+      "id": "181:1862",
+      "name": "A09 / Sự kiện đã hủy",
+      "parent": "Final UI / A08–A10"
+    },
+    {
+      "id": "181:1902",
+      "name": "A09 / Trống",
+      "parent": "Final UI / A08–A10"
+    },
+    {
+      "id": "181:1942",
+      "name": "A09 / Lỗi tải",
+      "parent": "Final UI / A08–A10"
+    },
+    {
+      "id": "181:1982",
+      "name": "A10 / Hồ sơ",
+      "parent": "Final UI / A08–A10"
+    },
+    {
+      "id": "181:2030",
+      "name": "A10 / Chỉnh sửa",
+      "parent": "Final UI / A08–A10"
+    },
+    {
+      "id": "181:2073",
+      "name": "A10 / Đang lưu",
+      "parent": "Final UI / A08–A10"
+    },
+    {
+      "id": "181:2118",
+      "name": "A10 / Email mới chờ xác nhận",
+      "parent": "Final UI / A08–A10"
+    },
+    {
+      "id": "181:2161",
+      "name": "A10 / Lỗi lưu",
+      "parent": "Final UI / A08–A10"
+    },
+    {
+      "id": "181:2208",
+      "name": "A10 / Thay đổi chưa lưu",
+      "parent": "Final UI / A08–A10"
+    },
+    {
+      "id": "194:1722",
+      "name": "A10 / Có thay đổi hợp lệ",
+      "parent": "Final UI / A08–A10"
+    },
+    {
+      "id": "255:2832",
+      "name": "A08 / Khách ngoài trường",
+      "parent": "Final UI / A08–A10"
+    },
+    {
+      "id": "182:1804",
+      "name": "A11 / Camera sẵn sàng",
+      "parent": "Final UI / A11–A12"
+    },
+    {
+      "id": "182:1822",
+      "name": "A11 / Chưa cấp quyền camera",
+      "parent": "Final UI / A11–A12"
+    },
+    {
+      "id": "182:1843",
+      "name": "A11 / Đang kiểm tra mã",
+      "parent": "Final UI / A11–A12"
+    },
+    {
+      "id": "182:1866",
+      "name": "A11 / QR sai sự kiện",
+      "parent": "Final UI / A11–A12"
+    },
+    {
+      "id": "182:1887",
+      "name": "A11 / Phiên đã đóng",
+      "parent": "Final UI / A11–A12"
+    },
+    {
+      "id": "182:1908",
+      "name": "A11 / Không có đăng ký hoạt động",
+      "parent": "Final UI / A11–A12"
+    },
+    {
+      "id": "182:1930",
+      "name": "A11 / Kết quả chưa xác định",
+      "parent": "Final UI / A11–A12"
+    },
+    {
+      "id": "182:1951",
+      "name": "A11 / Đang kiểm tra trạng thái",
+      "parent": "Final UI / A11–A12"
+    },
+    {
+      "id": "182:1974",
+      "name": "A11 / Sự kiện đã hủy",
+      "parent": "Final UI / A11–A12"
+    },
+    {
+      "id": "182:1995",
+      "name": "A12 / Điểm danh thành công",
+      "parent": "Final UI / A11–A12"
+    },
+    {
+      "id": "182:2036",
+      "name": "A12 / Bạn đã điểm danh",
+      "parent": "Final UI / A11–A12"
+    },
+    {
+      "id": "182:2074",
+      "name": "A12 / Xem lại — sự kiện đã hủy",
+      "parent": "Final UI / A11–A12"
+    }
+  ],
+  "legacyOrQA": [
+    {
+      "id": "156:8",
+      "name": "A01a / Mặc định",
+      "parent": "A01–A06 / Row 1"
+    },
+    {
+      "id": "156:41",
+      "name": "A01a / Lỗi đăng nhập",
+      "parent": "A01–A06 / Row 1"
+    },
+    {
+      "id": "156:76",
+      "name": "A01b / Mặc định",
+      "parent": "A01–A06 / Row 1"
+    },
+    {
+      "id": "156:111",
+      "name": "A01b / Lỗi nhập liệu",
+      "parent": "A01–A06 / Row 1"
+    },
+    {
+      "id": "156:149",
+      "name": "A01b / Lỗi mạng",
+      "parent": "A01–A06 / Row 1"
+    },
+    {
+      "id": "156:186",
+      "name": "A01b / Đổi email giữ dữ liệu",
+      "parent": "A01–A06 / Row 2"
+    },
+    {
+      "id": "156:223",
+      "name": "A01c / Đã gửi xác nhận",
+      "parent": "A01–A06 / Row 2"
+    },
+    {
+      "id": "156:248",
+      "name": "A01c / Chưa xác nhận",
+      "parent": "A01–A06 / Row 2"
+    },
+    {
+      "id": "156:275",
+      "name": "A01c / Lỗi gửi lại",
+      "parent": "A01–A06 / Row 2"
+    },
+    {
+      "id": "156:302",
+      "name": "A01d / Nhập email",
+      "parent": "A01–A06 / Row 2"
+    },
+    {
+      "id": "156:323",
+      "name": "A01d / Đã gửi yêu cầu",
+      "parent": "A01–A06 / Row 3"
+    },
+    {
+      "id": "156:345",
+      "name": "A01d / Email không hợp lệ",
+      "parent": "A01–A06 / Row 3"
+    },
+    {
+      "id": "156:367",
+      "name": "A01d / Lỗi mạng",
+      "parent": "A01–A06 / Row 3"
+    },
+    {
+      "id": "156:390",
+      "name": "A02 / Mặc định",
+      "parent": "A01–A06 / Row 3"
+    },
+    {
+      "id": "156:442",
+      "name": "A03 / Có kết quả",
+      "parent": "A01–A06 / Row 3"
+    },
+    {
+      "id": "156:480",
+      "name": "A03 / Không có kết quả",
+      "parent": "A01–A06 / Row 4"
+    },
+    {
+      "id": "156:522",
+      "name": "A04 / Còn chỗ",
+      "parent": "A01–A06 / Row 4"
+    },
+    {
+      "id": "156:556",
+      "name": "A04 / Tham gia tự do",
+      "parent": "A01–A06 / Row 4"
+    },
+    {
+      "id": "156:586",
+      "name": "A04 / Hết chỗ",
+      "parent": "A01–A06 / Row 4"
+    },
+    {
+      "id": "156:622",
+      "name": "A04 / Hết hạn",
+      "parent": "A01–A06 / Row 4"
+    },
+    {
+      "id": "156:658",
+      "name": "A04 / Sự kiện đã hủy",
+      "parent": "A01–A06 / Row 5"
+    },
+    {
+      "id": "156:692",
+      "name": "A04 / Đã đăng ký",
+      "parent": "A01–A06 / Row 5"
+    },
+    {
+      "id": "156:726",
+      "name": "A05 / Sinh viên FPTU",
+      "parent": "A01–A06 / Row 5"
+    },
+    {
+      "id": "156:765",
+      "name": "A05 / Khách ngoài trường",
+      "parent": "A01–A06 / Row 5"
+    },
+    {
+      "id": "156:804",
+      "name": "A05 / Lỗi nhập liệu",
+      "parent": "A01–A06 / Row 5"
+    },
+    {
+      "id": "156:846",
+      "name": "A05 / Đang gửi",
+      "parent": "A01–A06 / Row 6"
+    },
+    {
+      "id": "156:895",
+      "name": "A05 / Chưa rõ kết quả",
+      "parent": "A01–A06 / Row 6"
+    },
+    {
+      "id": "156:944",
+      "name": "A05 / Đang kiểm tra đăng ký",
+      "parent": "A01–A06 / Row 6"
+    },
+    {
+      "id": "156:991",
+      "name": "A06 / Đã xác nhận",
+      "parent": "A01–A06 / Row 6"
+    },
+    {
+      "id": "157:69",
+      "name": "A07 / Sắp tới",
+      "parent": "A07–A12 / Row 1"
+    },
+    {
+      "id": "157:110",
+      "name": "A07 / Sau tự hủy",
+      "parent": "A07–A12 / Row 1"
+    },
+    {
+      "id": "157:148",
+      "name": "A07 / Trống",
+      "parent": "A07–A12 / Row 1"
+    },
+    {
+      "id": "157:188",
+      "name": "A07 / Đã kết thúc",
+      "parent": "A07–A12 / Row 1"
+    },
+    {
+      "id": "157:229",
+      "name": "A07 / Sự kiện đã hủy",
+      "parent": "A07–A12 / Row 1"
+    },
+    {
+      "id": "157:278",
+      "name": "A07 / Đã hủy đăng ký bởi bạn",
+      "parent": "A07–A12 / Row 2"
+    },
+    {
+      "id": "157:325",
+      "name": "A08 / Đã đăng ký",
+      "parent": "A07–A12 / Row 2"
+    },
+    {
+      "id": "157:353",
+      "name": "A08 / Dialog xác nhận hủy",
+      "parent": "A07–A12 / Row 2"
+    },
+    {
+      "id": "157:403",
+      "name": "A08 / Đang hủy",
+      "parent": "A07–A12 / Row 2"
+    },
+    {
+      "id": "157:435",
+      "name": "A08 / Chưa rõ kết quả hủy",
+      "parent": "A07–A12 / Row 2"
+    },
+    {
+      "id": "157:470",
+      "name": "A08 / Đang kiểm tra trạng thái",
+      "parent": "A07–A12 / Row 3"
+    },
+    {
+      "id": "157:502",
+      "name": "A08 / Đã hủy đăng ký",
+      "parent": "A07–A12 / Row 3"
+    },
+    {
+      "id": "157:528",
+      "name": "A08 / Đã điểm danh",
+      "parent": "A07–A12 / Row 3"
+    },
+    {
+      "id": "157:554",
+      "name": "A08 / Không thể hủy khi đã bắt đầu",
+      "parent": "A07–A12 / Row 3"
+    },
+    {
+      "id": "157:580",
+      "name": "A08 / CLB hủy trước điểm danh",
+      "parent": "A07–A12 / Row 3"
+    },
+    {
+      "id": "157:606",
+      "name": "A08 / Lịch mới sau thông báo",
+      "parent": "A07–A12 / Row 4"
+    },
+    {
+      "id": "157:634",
+      "name": "A08 / Phiên điểm danh mở",
+      "parent": "A07–A12 / Row 4"
+    },
+    {
+      "id": "157:664",
+      "name": "A08 / CLB hủy sau điểm danh",
+      "parent": "A07–A12 / Row 4"
+    },
+    {
+      "id": "157:693",
+      "name": "A09 / Có thông báo",
+      "parent": "A07–A12 / Row 4"
+    },
+    {
+      "id": "157:730",
+      "name": "A09 / Sự kiện đã hủy",
+      "parent": "A07–A12 / Row 4"
+    },
+    {
+      "id": "157:772",
+      "name": "A09 / Trống",
+      "parent": "A07–A12 / Row 5"
+    },
+    {
+      "id": "157:806",
+      "name": "A09 / Lỗi tải",
+      "parent": "A07–A12 / Row 5"
+    },
+    {
+      "id": "157:839",
+      "name": "A09 / Đổi ngày và giờ",
+      "parent": "A07–A12 / Row 5"
+    },
+    {
+      "id": "157:873",
+      "name": "A10 / Đã đăng nhập",
+      "parent": "A07–A12 / Row 5"
+    },
+    {
+      "id": "157:904",
+      "name": "A10 / Chỉnh sửa thông tin",
+      "parent": "A07–A12 / Row 5"
+    },
+    {
+      "id": "157:930",
+      "name": "A10 / Lỗi nhập liệu",
+      "parent": "A07–A12 / Row 6"
+    },
+    {
+      "id": "157:958",
+      "name": "A10 / Lỗi lưu do mạng",
+      "parent": "A07–A12 / Row 6"
+    },
+    {
+      "id": "157:993",
+      "name": "A10 / Chờ xác nhận email mới",
+      "parent": "A07–A12 / Row 6"
+    },
+    {
+      "id": "157:1016",
+      "name": "A11 / Đang quét",
+      "parent": "A07–A12 / Row 6"
+    },
+    {
+      "id": "157:1034",
+      "name": "A11 / Chưa có quyền camera",
+      "parent": "A07–A12 / Row 6"
+    },
+    {
+      "id": "157:1061",
+      "name": "A11 / QR sai sự kiện",
+      "parent": "A07–A12 / Row 7"
+    },
+    {
+      "id": "157:1087",
+      "name": "A11 / Mã QR không hợp lệ",
+      "parent": "A07–A12 / Row 7"
+    },
+    {
+      "id": "157:1113",
+      "name": "A11 / Đang kiểm tra và ghi nhận",
+      "parent": "A07–A12 / Row 7"
+    },
+    {
+      "id": "157:1138",
+      "name": "A11 / Chưa đăng ký",
+      "parent": "A07–A12 / Row 7"
+    },
+    {
+      "id": "157:1161",
+      "name": "A11 / Đăng ký đã hủy",
+      "parent": "A07–A12 / Row 7"
+    },
+    {
+      "id": "157:1183",
+      "name": "A11 / Phiên điểm danh đóng",
+      "parent": "A07–A12 / Row 8"
+    },
+    {
+      "id": "157:1207",
+      "name": "A11 / Sự kiện đã hủy",
+      "parent": "A07–A12 / Row 8"
+    },
+    {
+      "id": "157:1229",
+      "name": "A11 / Chưa rõ kết quả mạng",
+      "parent": "A07–A12 / Row 8"
+    },
+    {
+      "id": "157:1255",
+      "name": "A11 / Đang kiểm tra trạng thái",
+      "parent": "A07–A12 / Row 8"
+    },
+    {
+      "id": "157:1280",
+      "name": "A12 / Thành công",
+      "parent": "A07–A12 / Row 8"
+    },
+    {
+      "id": "157:1313",
+      "name": "A12 / Bạn đã điểm danh",
+      "parent": "A07–A12 / Row 9"
+    },
+    {
+      "id": "157:1345",
+      "name": "A12 / Xem lại khi phiên đóng",
+      "parent": "A07–A12 / Row 9"
+    },
+    {
+      "id": "157:1377",
+      "name": "A12 / Sự kiện đã hủy",
+      "parent": "A07–A12 / Row 9"
+    },
+    {
+      "id": "157:1416",
+      "name": "A04 / Còn chỗ / QA 412",
+      "parent": "QA / 412 dp"
+    },
+    {
+      "id": "157:1446",
+      "name": "A08 / Đã đăng ký / QA 412",
+      "parent": "QA / 412 dp"
+    }
+  ],
+  "prototype": [
+    {
+      "id": "199:1683",
+      "name": "F1 / A02",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:1726",
+      "name": "F1 / A03 / Kết quả từ khóa",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:1760",
+      "name": "F1 / A03 / Kết quả bộ lọc",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:1795",
+      "name": "F1 / A03 / Không có kết quả",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:1816",
+      "name": "F1 / A02–A03 / Bộ lọc — bottom sheet",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:1870",
+      "name": "F1 / A04",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:1921",
+      "name": "F1 / A01a / Đăng nhập",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:1941",
+      "name": "F1 / A01a / Đang xác thực",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:1961",
+      "name": "F1 / A01b / Tạo tài khoản",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:1981",
+      "name": "F1 / A01c / Kiểm tra email",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2000",
+      "name": "F1 / A01d / Quên mật khẩu",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2013",
+      "name": "F1 / A01d / Kiểm tra hộp thư",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2029",
+      "name": "F1 / A05 / Sinh viên",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2049",
+      "name": "F1 / A05 / Khách ngoài trường",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2069",
+      "name": "F1 / A05 / Lỗi Khóa K",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2089",
+      "name": "F1 / A05 / Đang gửi",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2109",
+      "name": "F1 / A05 / Kết quả chưa xác định",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2130",
+      "name": "F1 / A05 / Đang kiểm tra đăng ký",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2151",
+      "name": "F1 / A05 / Đã xác minh — có thể gửi lại",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2172",
+      "name": "F1 / A06 / Đăng ký được xác nhận",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2192",
+      "name": "F1 / A07 / Sắp tới",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2211",
+      "name": "F1 / A08 / Đã đăng ký",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "202:995",
+      "name": "F1 / A05 — Gửi lại sau xác minh",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "203:1051",
+      "name": "F1 / A01b — Đổi email, giữ họ tên",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "203:1108",
+      "name": "F1 / A01c — Sau gửi lại email",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "219:1081",
+      "name": "F1 / A04 / Tham gia tự do",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "255:3138",
+      "name": "F1 / A06 / Khách ngoài trường",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "255:3168",
+      "name": "F1 / A08 / Khách ngoài trường",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "255:3246",
+      "name": "F1 / A07 / Khách ngoài trường",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "275:3208",
+      "name": "F1 / A01a / Đăng nhập mở đầu",
+      "parent": "F1 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2233",
+      "name": "F2 / A07 / Sắp tới",
+      "parent": "F2 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2252",
+      "name": "F2 / A08 / Đã đăng ký",
+      "parent": "F2 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2273",
+      "name": "F2 / A08 / Xác nhận hủy",
+      "parent": "F2 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2296",
+      "name": "F2 / A08 / Đang hủy",
+      "parent": "F2 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2317",
+      "name": "F2 / A08 / Hủy chưa xác định",
+      "parent": "F2 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2338",
+      "name": "F2 / A08 / Đang kiểm tra hủy",
+      "parent": "F2 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2359",
+      "name": "F2 / A07 / Sau tự hủy",
+      "parent": "F2 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2379",
+      "name": "F2 / A07 / Lịch trống",
+      "parent": "F2 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2398",
+      "name": "F2 / A02",
+      "parent": "F2 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2441",
+      "name": "F2 / A07 / Lịch sử đã hủy",
+      "parent": "F2 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2460",
+      "name": "F2 / A07 / Đã kết thúc",
+      "parent": "F2 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2479",
+      "name": "F2 / A08 / Đã hủy đăng ký",
+      "parent": "F2 — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2500",
+      "name": "F4A / A08 / Phiên điểm danh mở",
+      "parent": "F4A — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2520",
+      "name": "F4A / A11 / Camera sẵn sàng",
+      "parent": "F4A — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2529",
+      "name": "F4A / A11 / Chưa cấp quyền camera",
+      "parent": "F4A — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2541",
+      "name": "F4A / A11 / Đang kiểm tra mã",
+      "parent": "F4A — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2553",
+      "name": "F4A / A11 / QR sai sự kiện",
+      "parent": "F4A — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2565",
+      "name": "F4A / A11 / Kết quả chưa xác định",
+      "parent": "F4A — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2577",
+      "name": "F4A / A11 / Đang kiểm tra trạng thái",
+      "parent": "F4A — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2589",
+      "name": "F4A / A12 / Điểm danh thành công",
+      "parent": "F4A — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2608",
+      "name": "F4A / A12 / Bạn đã điểm danh",
+      "parent": "F4A — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2627",
+      "name": "F4A / A07 / Sắp tới",
+      "parent": "F4A — Prototype mô phỏng"
+    },
+    {
+      "id": "199:2646",
+      "name": "F4A / A08 / Đã điểm danh",
+      "parent": "F4A — Prototype mô phỏng"
+    },
+    {
+      "id": "202:1015",
+      "name": "F4A / A11 — Quét lại đúng sự kiện",
+      "parent": "F4A — Prototype mô phỏng"
+    },
+    {
+      "id": "202:1024",
+      "name": "F4A / A11 — Kiểm tra QR sai",
+      "parent": "F4A — Prototype mô phỏng"
+    }
+  ]
+}
