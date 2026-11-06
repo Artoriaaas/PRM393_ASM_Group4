@@ -179,7 +179,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
           final regId = state.pathParameters['registrationId'] ?? 'unknown';
-          return ScannerScreen(registrationId: regId);
+          return ScannerScreen(
+            registrationId: regId,
+            eventId: state.uri.queryParameters['eventId'],
+          );
         },
       ),
       GoRoute(

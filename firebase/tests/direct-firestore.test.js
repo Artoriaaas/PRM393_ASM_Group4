@@ -4,7 +4,7 @@ const { readFileSync } = require('node:fs');
 const { join } = require('node:path');
 const { createHash } = require('node:crypto');
 const { initializeTestEnvironment, assertSucceeds, assertFails } = require('@firebase/rules-unit-testing');
-const { doc, getDoc, writeBatch, updateDoc, serverTimestamp, Timestamp } = require('firebase/firestore');
+const { collection, getDocs, doc, getDoc, writeBatch, updateDoc, serverTimestamp, Timestamp } = require('firebase/firestore');
 
 let env;
 const operationId = 'a'.repeat(48);
@@ -116,4 +116,22 @@ test('push receipts are private and cannot impersonate server notifications', as
   await assertFails(getDoc(doc(env.authenticatedContext('bob', {email_verified:true}).firestore(),path)));
   await assertFails(writeBatch(db).set(doc(db,'users/bob/notifications/push_'+'c'.repeat(64)),receipt).commit());
   await assertFails(writeBatch(db).set(doc(db,'users/alice/notifications/push_'+'d'.repeat(64)),{...receipt,type:'registration_confirmed'}).commit());
+});
+
+test('QR exact lookup and active-owner session reads never allow list or writes', async () => {
+  await seed('session-read');
+  const db = userDb();
+  const hash = 'f'.repeat(64);
+  await env.withSecurityRulesDisabled(async c => {
+    await c.firestore().doc(`qrCredentials/${hash}`).set({eventId: 'session-read', enabled: true});
+    await c.firestore().doc('checkinSessions/session-read').set({open: false});
+  });
+  await assertFails(getDoc(doc(db, 'checkinSessions/session-read')));
+  await assertSucceeds(registerBatch(db, 'alice', 'session-read'));
+  assert.equal((await assertSucceeds(getDoc(doc(db, 'checkinSessions/session-read')))).data().open, false);
+  await assertFails(getDoc(doc(userDb('bob'), 'checkinSessions/session-read')));
+  await assertSucceeds(getDoc(doc(db, 'qrCredentials', hash)));
+  await assertFails(getDocs(collection(db, 'qrCredentials')));
+  await assertFails(getDocs(collection(db, 'checkinSessions')));
+  await assertFails(updateDoc(doc(db, 'checkinSessions/session-read'), {open: true}));
 });

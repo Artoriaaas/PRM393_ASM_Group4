@@ -113,6 +113,15 @@ service cloud.firestore {
     && request.resource.data.fid is string && request.resource.data.fid.size() < 4096
     && request.resource.data.platform=='android' && request.resource.data.updatedAt==request.time;
   }
+  // Exact hash lookups only; raw QR tokens never leave the camera command.
+  match /qrCredentials/{hash} {
+   allow get: if member() && hash.matches('^[a-f0-9]{64}$');
+   allow list,write: if false;
+  }
+  match /checkinSessions/{eventId} {
+   allow get: if member() && exists(regPath(eventId)) && get(regPath(eventId)).data.status == 'active';
+   allow list,write: if false;
+  }
   match /{document=**} {allow read,write: if false;}
  }
 }

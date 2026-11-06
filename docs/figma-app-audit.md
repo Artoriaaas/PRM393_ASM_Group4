@@ -26,3 +26,13 @@ File WC21Na9ZDS8jjM2LzPKeXa. Phiên đọc f2e0005a-c671-41ec-a4bb-5f7d62e457bc.
 ## Kết luận
 
 Không được ghi “đã đưa toàn bộ Figma vào app 1:1”. Đủ nhóm chức năng, chưa đủ chi tiết các state/control trên. Các khác biệt được người dùng chấp nhận trước (cover, Google login, bỏ Xem tất cả, demo Firebase) cần cập nhật lại Figma. Các phần thiếu chưa tự sửa trong lượt audit; không tạo route riêng cho mọi state mà phải xuất hiện theo dữ liệu/lỗi thực tế.
+
+## Triển khai sau audit — giữ nguyên Figma theo yêu cầu chủ dự án
+
+Bổ sung bottom sheet lọc A03; A08 đọc trạng thái phiên, khóa QR khi chưa mở/đang lỗi và giải thích không thể hủy; A10 gửi lại xác nhận email mới qua Firebase reauthentication; A11 exact-hash lookup phân biệt sai sự kiện/mã không hợp lệ/phiên đóng, event-cancelled và lỗi từ chối không rõ; đăng ký bị hủy có Xem sự kiện; A12 có hướng dẫn CLB và phân biệt kết quả đã tồn tại.
+
+Rules cho phép thành viên đã xác nhận email get một hash QR (không list, không write) và get phiên khi có đăng ký active của chính mình. Không đọc token gốc, không mở phiên từ mobile; Rules vẫn là quyết định cuối khi ghi check-in. Rules test 6/6 và đã deploy eventhub-group4. State được dẫn từ dữ liệu thực, không thêm phím giả lập.
+
+Nếu đăng ký không tồn tại và URL scanner không chứa eventId thì app chỉ có thể về Khám phá; từ chi tiết đăng ký app truyền eventId để có Xem sự kiện khi đăng ký bị mất/hủy giữa chừng. Không tự suy ra event từ ID không đáng tin cậy.
+
+Chưa có ảnh Android/E2E mọi state để khẳng định pixel 1:1. Không chỉnh Figma; khác biệt giữ để làm báo cáo/slides theo yêu cầu người dùng. Điều này không thay đổi yêu cầu PDF gốc về cập nhật thiết kế.

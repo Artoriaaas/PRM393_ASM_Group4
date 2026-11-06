@@ -67,3 +67,5 @@ Không tính Cloud Functions, Cloudflare Worker, web/admin hoặc operation ledg
 ## Xác minh trực tiếp Figma
 
 Đã kiểm kê page 03 và 06: 78 frame thuộc bộ Final UI mới, 74 frame cũ/QA, 55 frame prototype. Có đủ nhóm A01–A12 nhưng thiếu/khác chi tiết state/control tại A03/A08/A10/A11/A12. Xem [figma-app-audit.md](figma-app-audit.md); chưa xác nhận pixel 1:1 hoặc E2E mọi state.
+
+Sau audit đã bổ sung code cho các thiếu hụt A03/A08/A10/A11/A12; Rules phân quyền đọc phiên/tra QR đã kiểm 6 ca và deploy. Figma giữ nguyên theo yêu cầu người dùng, đối chiếu trong docs/figma-app-audit.md. Còn cần Android E2E/ảnh toàn bộ state.

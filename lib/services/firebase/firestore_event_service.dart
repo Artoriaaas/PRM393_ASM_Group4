@@ -7,7 +7,7 @@ import 'dart:convert';
 import '../../models/event.dart';
 import '../contracts/event_service.dart';
 
-class FirestoreEventService implements EventService {
+class FirestoreEventService implements EventService, CheckinSessionService {
   FirestoreEventService(this.db, this.auth);
   final FirebaseFirestore db;
   final FirebaseAuth auth;
@@ -35,6 +35,12 @@ class FirestoreEventService implements EventService {
       activeCount: (d['activeCount'] as num?)?.toInt() ?? 0,
     );
   }
+
+  @override
+  Stream<bool> watchCheckinSession(String eventId) => db
+      .doc('checkinSessions/$eventId')
+      .snapshots()
+      .map((s) => s.data()?['open'] == true);
 
   Registration _registration(DocumentSnapshot<Map<String, dynamic>> doc) {
     final d = doc.data()!;
@@ -220,9 +226,16 @@ class FirestoreEventService implements EventService {
           );
         }
         if (action == 'checkin') {
+          if (event['status'] != 'published') {
+            return const BookingResult(
+              status: 'rejected',
+              code: 'event-cancelled',
+            );
+          }
           if (registration['checkInAt'] != null) {
             return BookingResult(
               status: 'checked-in',
+              code: 'already-checked-in',
               registrationId: registrationId,
             );
           }
@@ -231,6 +244,24 @@ class FirestoreEventService implements EventService {
             return const BookingResult(status: 'rejected', code: 'invalid-qr');
           }
           final hash = sha256.convert(utf8.encode(token)).toString();
+          final credential = await transaction.get(
+            db.doc('qrCredentials/$hash'),
+          );
+          if (!credential.exists || credential.data()?['enabled'] != true) {
+            return const BookingResult(status: 'rejected', code: 'invalid-qr');
+          }
+          if (credential.data()?['eventId'] != eventId) {
+            return const BookingResult(status: 'rejected', code: 'wrong-event');
+          }
+          final session = await transaction.get(
+            db.doc('checkinSessions/$eventId'),
+          );
+          if (session.data()?['open'] != true) {
+            return const BookingResult(
+              status: 'rejected',
+              code: 'session-closed',
+            );
+          }
           transaction.update(registrationRef, {
             'checkInAt': FieldValue.serverTimestamp(),
             'qrHash': hash,
@@ -248,7 +279,7 @@ class FirestoreEventService implements EventService {
           error.code == 'invalid-argument') {
         return BookingResult(
           status: 'rejected',
-          code: action == 'checkin' ? 'invalid-qr' : error.code,
+          code: action == 'checkin' ? 'checkin-rejected' : error.code,
         );
       }
       rethrow;

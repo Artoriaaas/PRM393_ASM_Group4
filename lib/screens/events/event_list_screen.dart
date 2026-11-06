@@ -119,62 +119,15 @@ class _EventListState extends ConsumerState<EventListScreen> {
                 ),
                 if (widget.search) ...[
                   const SizedBox(height: AppSpacing.s12),
-                  Wrap(
-                    spacing: AppSpacing.s8,
-                    runSpacing: AppSpacing.s8,
-                    children: [
-                      FilterChip(
-                        label: const Text('Hôm nay'),
-                        selected: filter.today,
-                        onSelected: (v) => filterVM.set(today: v),
-                      ),
-                      for (final t in ref.watch(eventTopicsProvider))
-                        FilterChip(
-                          label: Text(t),
-                          selected: filter.topic == t,
-                          onSelected: (v) =>
-                              filterVM.set(topic: t, clearTopic: !v),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.s16),
-                  Text(
-                    'Câu lạc bộ',
-                    style: Theme.of(context).textTheme.labelLarge,
-                  ),
-                  const SizedBox(height: AppSpacing.s8),
-                  DropdownButtonFormField<String>(
-                    initialValue: filter.club,
-                    key: ValueKey(filter.club),
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: AppSpacing.s16,
-                        vertical: AppSpacing.inputVertical,
-                      ),
+                  AppButton(
+                    label: 'Lọc sự kiện',
+                    variant: AppButtonVariant.secondary,
+                    onPressed: () => showModalBottomSheet<void>(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (_) => const _EventFilterSheet(),
                     ),
-                    items: [
-                      const DropdownMenuItem(
-                        value: null,
-                        child: Text('Tất cả CLB'),
-                      ),
-                      for (final c in ref.watch(eventClubsProvider))
-                        DropdownMenuItem(value: c, child: Text(c)),
-                    ],
-                    onChanged: (v) =>
-                        filterVM.set(club: v, clearClub: v == null),
-                    isExpanded: true,
                   ),
-                  if (filter.query.trim().isNotEmpty ||
-                      filter.today ||
-                      filter.topic != null ||
-                      filter.club != null)
-                    TextButton(
-                      onPressed: () {
-                        query.clear();
-                        filterVM.reset();
-                      },
-                      child: const Text('Xóa từ khóa và bộ lọc'),
-                    ),
                 ],
                 const SizedBox(height: AppSpacing.s16),
                 if (!widget.search)
@@ -213,6 +166,91 @@ class _EventListState extends ConsumerState<EventListScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _EventFilterSheet extends ConsumerWidget {
+  const _EventFilterSheet();
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final filter = ref.watch(eventFilterProvider);
+    final vm = ref.read(eventFilterProvider.notifier);
+    final topics = ref.watch(eventTopicsProvider);
+    final clubs = ref.watch(eventClubsProvider);
+    final count = ref.watch(eventFeedProvider).asData?.value.length;
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: AppSpacing.s16,
+          right: AppSpacing.s16,
+          top: AppSpacing.s16,
+          bottom: MediaQuery.viewInsetsOf(context).bottom + AppSpacing.s16,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Lọc sự kiện',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: 'Đóng bộ lọc',
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+              Wrap(
+                spacing: AppSpacing.s8,
+                children: [
+                  FilterChip(
+                    label: const Text('Hôm nay'),
+                    selected: filter.today,
+                    onSelected: (value) => vm.set(today: value),
+                  ),
+                  for (final topic in topics)
+                    FilterChip(
+                      label: Text(topic),
+                      selected: filter.topic == topic,
+                      onSelected: (value) =>
+                          vm.set(topic: topic, clearTopic: !value),
+                    ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.s16),
+              DropdownButtonFormField<String>(
+                key: ValueKey(filter.club),
+                initialValue: filter.club,
+                isExpanded: true,
+                decoration: const InputDecoration(labelText: 'Câu lạc bộ'),
+                items: [
+                  const DropdownMenuItem(
+                    value: null,
+                    child: Text('Tất cả CLB'),
+                  ),
+                  for (final club in clubs)
+                    DropdownMenuItem(value: club, child: Text(club)),
+                ],
+                onChanged: (value) =>
+                    vm.set(club: value, clearClub: value == null),
+              ),
+              const SizedBox(height: AppSpacing.s16),
+              AppButton(
+                label: count == null ? 'Xem kết quả' : 'Xem $count sự kiện',
+                onPressed: () => Navigator.pop(context),
+              ),
+              TextButton(onPressed: vm.reset, child: const Text('Xóa lọc')),
+            ],
+          ),
+        ),
       ),
     );
   }

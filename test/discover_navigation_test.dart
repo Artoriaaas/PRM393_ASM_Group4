@@ -59,7 +59,13 @@ void main() {
         find.text(q.isEmpty ? 'Tất cả sự kiện' : 'Kết quả tìm kiếm'),
         findsOneWidget,
       );
+      expect(find.text('Câu lạc bộ'), findsNothing);
+      await tester.tap(find.text('Lọc sự kiện'));
+      await tester.pumpAndSettle();
       expect(find.text('Câu lạc bộ'), findsOneWidget);
+      expect(find.text('Xóa lọc'), findsOneWidget);
+      await tester.tap(find.byTooltip('Đóng bộ lọc'));
+      await tester.pumpAndSettle();
       expect(find.text('Dành cho bạn'), findsNothing);
       expect(tester.takeException(), isNull);
     });
