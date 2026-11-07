@@ -1,3 +1,4 @@
+import '../services/event_service_providers.dart';
 import '../viewmodels/cloud_state.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../viewmodels/session_viewmodel.dart';
 import '../utils/app_failure.dart';
 import '../services/initial_auth_service.dart';
+import 'booking_viewmodel.dart';
 
 class AuthFormState {
   const AuthFormState({
@@ -87,9 +89,18 @@ class AuthViewModel extends Notifier<AuthFormState> {
           await service.changeEmail(email, password);
           message = 'Kiểm tra hộp thư địa chỉ mới và mở liên kết xác nhận. Email tài khoản chỉ đổi khi hệ thống xác nhận.';
         case 'logout':
+          if (ref.read(bookingProvider).busy) {
+            state = AuthFormState(
+              message: 'Đang xử lý đăng ký. Vui lòng chờ kết quả trước khi đăng xuất.',
+            );
+            return false;
+          }
           await track(ref, 'logout', {'method': 'manual'});
           final uid = ref.read(signedInUidProvider);
           if (uid != null) {
+            // Do not retain personal pending commands after an explicit logout.
+            // A later login reads current server state, never replays this draft.
+            await ref.read(pendingBookingStoreProvider).clear(uid);
             try {
               await ref
                   .read(cloudServicesProvider)
