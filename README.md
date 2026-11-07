@@ -6,7 +6,7 @@ App Flutter Android cho người tham gia sự kiện. CLB và admin dùng web r
 
 1. Đọc [tiến độ so với yêu cầu Lab 3](docs/lab3-readiness.md).
 2. Cài Flutter/Android SDK, mở emulator hoặc nối điện thoại Android.
-3. Chạy các lệnh dưới đây. Dự án chỉ cấu hình Android.
+3. Chạy các lệnh dưới đây. Dự án chỉ cấu hình Android. Để xuất/upload PDF, thêm hai dart-define theo [Cloudinary setup](docs/cloudinary-setup.md); không cần API secret.
 
 ```sh
 flutter pub get
@@ -52,11 +52,13 @@ Mỗi teammate làm nhánh riêng, review trước khi merge. Thay đổi UI c�
 
 [Figma Lab 2](https://www.figma.com/design/WC21Na9ZDS8jjM2LzPKeXa/PRM393). Lab 2 đã chốt; phần bổ sung Lab 3 chưa đồng bộ Figma đầy đủ. Đề gốc yêu cầu ARTEMIS dù tên PDF còn nhắc Patrol.
 
+Kiểm kê chi tiết trang 5–10: [requirements audit](docs/lab3-requirements-audit.md). Ánh xạ token/component: [Flutter handoff](docs/flutter-handoff.md).
+
 ## Phiên bản và AI disclosure
 
 Môi trường kiểm tra source: Flutter **3.47.4**, Dart **3.13.3**, Python **3.12.14**; pytest **8.4.2**. Các dependency Flutter trực tiếp được pin tại `pubspec.yaml`; dependency gián tiếp khóa tại `pubspec.lock`. ARTEMIS/SDK pin **351ca8422f7b5b54e80a9c1ce03a222e02415b6b**; thay đổi tương thích Groq được công bố trong `e2e_test/groq-compact.patch`, chưa chứng minh regression đạt.
 
-AI sử dụng theo lịch sử nhóm: Stitch hỗ trợ thiết kế ban đầu, Antigravity hỗ trợ code, Codex hỗ trợ triển khai/review local/refactor/tài liệu, ARTEMIS với Groq hỗ trợ thử E2E. Xem `docs/code-review.md`; chưa có bằng chứng AI review trên PR hoàn chỉnh. **Video demo: chưa quay/chưa có link nộp.**
+AI sử dụng theo lịch sử nhóm: Stitch hỗ trợ thiết kế ban đầu, Antigravity hỗ trợ code, Codex hỗ trợ triển khai/review local và diff PR #3/refactor/tài liệu, ARTEMIS với Groq hỗ trợ thử E2E. Xem `docs/code-review.md`; đã có output review PR #3; commit cũ gộp nhiều findings nên chưa khớp chặt yêu cầu mỗi finding một commit riêng. **Video demo: chưa quay/chưa có link nộp.**
 
 Bàn giao 07/11: analyze sạch, 64 test Flutter đạt, 25 ca ARTEMIS được thu thập (chưa tính đạt). Quyền riêng tư Cloudinary, xác nhận cloud/ARTEMIS và tài liệu nộp vẫn mở; trạng thái chi tiết chỉ ghi tại `docs/lab3-readiness.md`.
 

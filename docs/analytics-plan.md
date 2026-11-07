@@ -21,6 +21,8 @@ Lập trước khi thêm tracking (31/10/2026). Analytics không được làm t
 
 Có thể bổ sung event sau nhưng phải cập nhật bảng trước khi instrument. Không coi việc gọi SDK thành bằng chứng event đã nhận trên console.
 
-Enable DebugView trên máy thử: `adb shell setprop debug.firebase.analytics.app com.eventhub.app`; mở Analytics → DebugView và chạy từng trigger. Chụp từng event + params vào `evidence/analytics/`. Tắt bằng `adb shell setprop debug.firebase.analytics.app .none.`. Bảng kết quả console hiện chưa có.
+Enable DebugView trên máy thử: `adb shell setprop debug.firebase.analytics.app com.eventhub.app`; mở Analytics → DebugView và chạy từng trigger. Chụp từng event + params vào `evidence/instrumentation/analytics/`. Tắt bằng `adb shell setprop debug.firebase.analytics.app .none.`. Đã có ảnh cho 8 tên event, 7 event có tham số riêng; xem [trạng thái bằng chứng](../evidence/instrumentation/status.md). Không coi đủ 7 là đủ mọi event trong plan.
 
 Screen identity được quản lý tại `lib/utils/screen_identity.dart`: A01a–d riêng biệt; A11 quét QR; LAB3_EXPORT và LAB3_FIREBASE riêng khu demo. Route khởi tạo/development/không tồn tại không phát view_screen. Không đưa ID hoặc query vào screen_code.
+
+Sửa source sau audit: notification_open phát source=push khi onMessageOpenedApp/getInitialMessage được xử lý với UID hợp lệ, source=in_app khi chạm một tin trong inbox. Receipt foreground không tự phát open. Cần chụp DebugView source=push sau cài bản mới. Lỗi lưu inbox có thông báo rõ và báo non-fatal notification_history_save_failed (không chứa nội dung tin/UID/token trong exception).

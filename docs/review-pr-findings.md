@@ -1,6 +1,6 @@
 # Codex AI review — instrumentation/lifecycle PR
 
-Reviewer: Codex assistant (GPT-6.1), 07/11/2026. Scope: scanner lifecycle, cloud ViewModel async ownership, push permission/registration. This is AI-generated review output; not CodeRabbit/Copilot output. Source reviewed at fb2d2ee, file locations below refer to that revision. PR link and fix hashes will be added after creation. No findings intentionally introduced.
+Reviewer: Codex assistant (GPT-6.1), 07/11/2026. Scope: scanner lifecycle, cloud ViewModel async ownership, push permission/registration. This is AI-generated review output; not CodeRabbit/Copilot output. Source reviewed at fb2d2ee, file locations below refer to that revision. PR link and fix hashes are recorded below. No findings intentionally introduced.
 
 | ID | Category / location | Finding / decision |
 |---|---|---|
@@ -33,3 +33,5 @@ Source reviewed fb2d2ee: `lib/viewmodels/cloud_tools_viewmodel.dart:34` — `Fut
 Source reviewed fb2d2ee: `lib/viewmodels/cloud_tools_viewmodel.dart:81` — `Future<void> nonFatal`.
 
 Source reviewed fb2d2ee: `lib/services/firebase/firebase_cloud_services.dart:135` — `final registration =`.
+
+Taxonomy theo đề: PR01/02/04/05 → Bug; PR03 → Security (cross-account attribution). Các nhãn concurrency/reliability/privacy trước đây mô tả tác động, không thay danh mục của đề. Hai fix commits gộp findings, nên chưa hoàn thành chặt yêu cầu mỗi finding một commit riêng; không dùng số3 commits để che giới hạn đó. Source FCM/camera đã refactor sau audit; các vị trí trước sửa vẫn tham chiếu fb2d2ee.

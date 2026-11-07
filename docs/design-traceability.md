@@ -187,3 +187,7 @@ Tách nhãn CLB, sửa khoảng cách và empty state, chỉ hiện reset khi c�
 Chủ dự án báo đã test toàn bộ chức năng; chưa có tập ảnh/video đầy đủ của lượt test đó trong repo nên ghi nhận là user-reported. Danh mục bằng chứng mục 3 ở `evidence/task3/README.md`. Không tự đánh dấu ảnh tồn tại hoặc cloud pass.
 
 Figma giữ nguyên theo quyết định của chủ dự án; đây chưa phải miễn trừ từ giảng viên. PDF mục 3 yêu cầu cập nhật Figma. Giải pháp báo cáo/slides đối chiếu chỉ thay thế được khi giảng viên chấp thuận. Không tự sửa Figma hoặc ghi đã được chấp thuận.
+
+### D15 — Chuẩn hóa component và accessibility sau audit Lab3
+
+07/11/2026: màn production dùng AppTopBar, AppButton text variant, AppConfirmationDialog/AppInfoDialog và AppChoiceChip dùng lại. Placeholder input đổi về #5F6B7A theo token Lab2 (contrast trên trắng khoảng5.43:1), input border về #CBD2DC; bodySmall nâng14sp, subtitle appbar dùng bodyMedium. Không đổi route/tab hay nghiệp vụ; glyph Back được thống nhất theo AppTopBar. Camera UI chỉ render, lifecycle và error state chuyển sang ScannerViewModel. Bằng chứng trước sửa trong evidence/instrumentation; chưa có ảnh mọi màn sau sửa, chưa đồng bộ Figma. Không coi ghi log là thay thế cập nhật Figma theo đề.

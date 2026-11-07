@@ -11,6 +11,7 @@ flowchart LR
   I --> F[Firebase Auth / Firestore / FCM / Analytics / Crashlytics / Remote Config]
   I --> C[Cloudinary Free: PDF minh họa]
   I --> D[Camera và PDF local]
+  UI --> P[QrCameraPreview: platform surface chỉ render]
   W[Web CLB/admin: triển khai ở Final] --> F
 ```
 
@@ -31,7 +32,7 @@ flowchart LR
 
 `session_viewmodel.dart` sở hữu phiên và UID; `event_data_providers.dart` sở hữu các stream AsyncValue; `cloud_state.dart` điều phối cloud theo phiên. Các provider service nằm trong `services/`; test override contract tại đó. Cách tổ chức này loại bỏ vòng import `app → ViewModel → app` mà không đổi route hoặc nghiệp vụ.
 
-View phụ thuộc ViewModel và widget. ViewModel phụ thuộc service contract/model; Firebase và HTTP chỉ xuất hiện ở service hoặc lớp khởi tạo provider. Không đưa SDK vào `build()`.
+View phụ thuộc ViewModel và widget. ScannerScreen chỉ chuyển tiếp lifecycle/user events tới ScannerViewModel. QrCameraPreview chỉ render MobileScanner bằng handle; không gọi start/stop/quyền/SDK network. QrCameraService không trả Widget, được inject qua QrCamera contract trong services/qr_camera_provider.dart. ViewModel phụ thuộc service contract/model; Firebase và HTTP chỉ xuất hiện ở service hoặc lớp khởi tạo provider. Không đưa SDK vào `build()`.
 
 | ViewModel | Service được inject | Luồng chính |
 |---|---|---|
@@ -41,6 +42,7 @@ View phụ thuộc ViewModel và widget. ViewModel phụ thuộc service contrac
 | `NotificationsViewModel` | Notification service | Hộp thư trong app và trạng thái đã đọc. |
 | `ProfileViewModel` | Profile/Auth service | Xem và sửa hồ sơ. |
 | `ExportViewModel` | Report service, report storage service | Tạo PDF, upload và hiển thị liên kết. |
+| `ScannerViewModel` | QrCamera contract, BookingViewModel và registration provider | Camera lifecycle, error state, khóa scan trùng; không scan khi pending hoặc đã điểm danh. |
 | `CloudToolsViewModel` | Cloud services | FCM, Remote Config, Crashlytics thử nghiệm. |
 
 Ví dụ trình tự F1 (chỉ hiện thành công khi Firestore xác nhận):
@@ -82,8 +84,14 @@ PDF chứa tên sự kiện, CLB, thời gian, địa điểm và trạng thái;
 
 ## Phần phải kiểm tra trên cloud
 
-Emulator đã xác minh Rules cho đăng ký, hủy, QR hợp lệ và giả mạo. Cần chạy trên Android với project thật và ghi bằng chứng: Auth, Firestore transaction, QR/phiên fixture do người quản lý chuẩn bị qua Console cho Lab 3 (web CLB thuộc Final), PDF Cloudinary, FCM ba trạng thái, Analytics DebugView, Crashlytics, Remote Config trước/sau. ARTEMIS và AI review PR vẫn cần môi trường/tài khoản riêng. Bảng trạng thái hiện hành ở [lab3-readiness.md](lab3-readiness.md).
+Emulator đã xác minh Rules cho đăng ký, hủy, QR hợp lệ và giả mạo. Cần chạy trên Android với project thật và ghi bằng chứng: Auth, Firestore transaction, QR/phiên fixture do người quản lý chuẩn bị qua Console cho Lab 3 (web CLB thuộc Final), PDF Cloudinary, FCM ba trạng thái, Analytics DebugView, Crashlytics, Remote Config trước/sau. Ảnh FCM ba trạng thái, Crashlytics lỗi thực/UID/key và Remote Config trước/sau đã lưu trong evidence/instrumentation; xem status.md tại đó để phân biệt phần có ảnh và phần còn thiếu. ARTEMIS hoãn theo yêu cầu người dùng; AI review hiện có PR #3, còn điểm lịch sử commit cần ghi trung thực. Bảng trạng thái hiện hành ở [lab3-readiness.md](lab3-readiness.md).
 
 ## Packages và tương thích sau merge
 
 `packages/core/` chứa lớp dùng chung do teammate thêm; `web/` là package web riêng. Mobile vẫn dùng các model lib/models và một số widget/theme local; không tuyên bố toàn bộ đã migrate sang core. Root analyze kiểm mobile, từng package kiểm riêng. Rules giữ luồng Lab3 đăng ký trực tiếp cho event không có clubId và luồng web xét duyệt cho event có clubId; mobile không được tự bỏ clubId ở event. Không thêm workflow duyệt vào các event Lab3 đã chốt.
+
+## Dữ liệu local và đăng xuất
+
+Firebase bootstrap đã cấu hình persistenceEnabled=false trước khi truy vấn ở main isolate. Không bổ sung clearPersistence khi SDK đang hoạt động. Pending command nằm trong secure storage theo UID: logout bị chặn khi booking busy, sau đó clear pending của UID hiện tại trước signOut. Lần đăng nhập sau đọc lại server; không tự replay lệnh đã xóa. Nếu clear thất bại, hiển thị lỗi và không giả báo logout thành công. Các VM/profile/report/notification dựa UID bỏ state cũ khi phiên đổi. Kiểm thử hai tài khoản và offline/native vẫn cần ảnh xác nhận.
+
+Design-system mapping hiện hành: [flutter-handoff.md](flutter-handoff.md). Mobile_role_rejection còn dùng package core của teammate; không tự migrate/xóa web hoặc shared package trong sửa Lab3 này.
