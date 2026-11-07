@@ -40,9 +40,31 @@ class FirebaseCloudServices implements CloudServices {
       if (opened) _queuedMessage = message;
       return;
     }
-    unawaited(saveReceivedPush(db, _uid!, message).catchError((_) {}));
     final target = pushDestination(message.data, _uid, opened: opened);
-    if (!_disposed && target != null) _targets.add(target);
+    if (target == null) return;
+    unawaited(
+      saveReceivedPush(db, _uid!, message)
+          .catchError((Object _, StackTrace stack) async {
+            if (!_disposed && target.uid == _uid) {
+              _targets.add(
+                PushTarget(
+                  path: '/notifications',
+                  uid: _uid,
+                  opened: false,
+                  message: 'Đã nhận thông báo nhưng chưa lưu được lịch sử. Kiểm tra kết nối trước khi nhận tin tiếp.',
+                ),
+              );
+            }
+            await report('notification_history_save_failed', stack);
+          })
+          .catchError((_) {}),
+    );
+    if (opened) {
+      unawaited(
+        event('notification_open', {'source': 'push'}).catchError((_) {}),
+      );
+    }
+    if (!_disposed) _targets.add(target);
   }
 
   @override
@@ -137,7 +159,9 @@ class FirebaseCloudServices implements CloudServices {
     // The pinned SDK still supports direct FCM-token delivery used by Console.
     // Waiting only for a registration callback can time out on existing devices.
     // ignore: deprecated_member_use
-    final token = await messaging.getToken().timeout(const Duration(seconds: 30));
+    final token = await messaging.getToken().timeout(
+      const Duration(seconds: 30),
+    );
     if (token == null || token.isEmpty) {
       throw StateError('push_token_unavailable');
     }

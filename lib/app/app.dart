@@ -35,7 +35,7 @@ class EventHubApp extends ConsumerWidget {
       } else {
         _messengerKey.currentState?.showSnackBar(
           SnackBar(
-            content: const Text('Bạn có thông báo EventHub mới.'),
+            content: Text(target.message ?? 'Bạn có thông báo EventHub mới.'),
             action: SnackBarAction(
               label: 'Xem',
               onPressed: () => router.go('/notifications'),
