@@ -26,7 +26,12 @@ class EventHubApp extends ConsumerWidget {
         return;
       }
       if (target.opened) {
-        router.push(target.path);
+        if (target.path == '/notifications') {
+          // Switch shell branches instead of pushing a second shell over Discover.
+          router.go(target.path);
+        } else {
+          router.push(target.path);
+        }
       } else {
         _messengerKey.currentState?.showSnackBar(
           SnackBar(
