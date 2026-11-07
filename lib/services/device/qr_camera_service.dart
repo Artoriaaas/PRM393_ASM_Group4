@@ -1,23 +1,25 @@
 import 'dart:async';
 
-import 'package:flutter/widgets.dart';
+import '../contracts/qr_camera.dart';
+
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:flutter/services.dart';
 
 // Platform adapter: only this file knows the camera SDK and OS permissions.
-class QrCameraService {
+class QrCameraService implements QrCamera {
   final controller = MobileScannerController(
     autoStart: false,
     formats: [BarcodeFormat.qrCode],
   );
-  final _tokens = StreamController<String>.broadcast();
   final _errors = StreamController<String>.broadcast();
-  bool _disposed = false, _armed = true;
-  Stream<String> get tokens => _tokens.stream;
+  bool _disposed = false;
+  @override
+  Object get previewHandle => controller;
+  @override
   Stream<String> get errors => _errors.stream;
+  @override
   Future<void> start() async {
     if (_disposed) return;
-    _armed = true;
     try {
       await controller.start();
     } catch (_) {
@@ -29,6 +31,7 @@ class QrCameraService {
     }
   }
 
+  @override
   Future<void> stop() async {
     if (!_disposed) {
       try {
@@ -39,6 +42,7 @@ class QrCameraService {
     }
   }
 
+  @override
   Future<void> openSettings() async {
     try {
       await const MethodChannel('eventhub/device')
@@ -52,27 +56,10 @@ class QrCameraService {
     }
   }
 
-  Widget preview() => MobileScanner(
-    controller: controller,
-    onDetect: (capture) {
-      if (!_armed || _disposed) return;
-      final token = capture.barcodes
-          .map((b) => b.rawValue)
-          .whereType<String>()
-          .firstOrNull;
-      if (token == null) return;
-      _armed = false;
-      _tokens.add(token);
-      unawaited(stop());
-    },
-    errorBuilder: (_, error) => const Center(
-      child: Text('Chưa mở được camera. Kiểm tra quyền camera trong Cài đặt.'),
-    ),
-  );
+  @override
   Future<void> dispose() async {
     _disposed = true;
     await controller.dispose();
-    await _tokens.close();
     await _errors.close();
   }
 }

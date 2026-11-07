@@ -5,18 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../viewmodels/event_data_providers.dart';
-import '../../services/device/qr_camera_service.dart';
+import '../../viewmodels/scanner_viewmodel.dart';
+import '../../widgets/qr_camera_preview.dart';
 import '../../viewmodels/booking_viewmodel.dart';
 import '../../theme/theme.dart';
 import '../../widgets/widgets.dart';
 import '../../widgets/event_widgets.dart';
 import 'booking_widgets.dart';
-
-final qrCameraProvider = Provider.autoDispose<QrCameraService>((ref) {
-  final service = QrCameraService();
-  ref.onDispose(() => unawaited(service.dispose()));
-  return service;
-});
 
 class ScannerScreen extends ConsumerStatefulWidget {
   const ScannerScreen({super.key, required this.registrationId, this.eventId});
@@ -28,46 +23,13 @@ class ScannerScreen extends ConsumerStatefulWidget {
 
 class _ScannerState extends ConsumerState<ScannerScreen>
     with WidgetsBindingObserver {
-  StreamSubscription<String>? _codes, _errors;
-  String? message;
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    Future.microtask(() async {
-      final service = ref.read(qrCameraProvider);
-      _codes = service.tokens.listen((token) {
-        final r = ref
-            .read(registrationProvider(widget.registrationId))
-            .asData
-            ?.value;
-        if (r != null) ref.read(bookingProvider.notifier).checkIn(r, token);
-      });
-      _errors = service.errors.listen((value) {
-        if (mounted) setState(() => message = value);
-      });
-      await ref.read(bookingProvider.notifier).restore();
-      if (!mounted) return;
-      try {
-        final registration = await ref.read(
-          registrationProvider(widget.registrationId).future,
-        );
-        if (mounted &&
-            registration?.active == true &&
-            !ref.read(bookingProvider).unresolved) {
-          if (registration!.checkInAt != null) {
-            context.go('/registrations/${widget.registrationId}/check-in');
-          } else {
-            await service.start();
-          }
-        }
-      } catch (_) {
-        if (mounted) {
-          setState(
-            () =>
-                message = 'Chưa tải được đăng ký. Thử tải lại trước khi quét.',
-          );
-        }
+    Future.microtask(() {
+      if (mounted) {
+        ref.read(scannerProvider(widget.registrationId).notifier).initialize();
       }
     });
   }
@@ -75,33 +37,24 @@ class _ScannerState extends ConsumerState<ScannerScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _codes?.cancel();
-    _errors?.cancel();
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state != AppLifecycleState.resumed) {
-      unawaited(ref.read(qrCameraProvider).stop());
-    } else {
-      final r = ref
-          .read(registrationProvider(widget.registrationId))
-          .asData
-          ?.value;
-      final booking = ref.read(bookingProvider);
-      if (r?.active == true &&
-          r?.checkInAt == null &&
-          !booking.busy &&
-          !booking.unresolved) {
-        unawaited(ref.read(qrCameraProvider).start());
-      }
-    }
+    final vm = ref.read(scannerProvider(widget.registrationId).notifier);
+    unawaited(state == AppLifecycleState.resumed ? vm.resume() : vm.pause());
   }
 
   @override
   Widget build(BuildContext context) {
-    final camera = ref.watch(qrCameraProvider);
+    final camera = ref.watch(scannerProvider(widget.registrationId));
+    final cameraVM = ref.read(scannerProvider(widget.registrationId).notifier);
+    ref.listen(scannerProvider(widget.registrationId), (_, next) {
+      if (next.phase == ScannerPhase.completed) {
+        context.go('/registrations/${widget.registrationId}/check-in');
+      }
+    });
     final registration = ref.watch(registrationProvider(widget.registrationId));
     final s = ref.watch(bookingProvider);
     ref.listen(bookingProvider, (_, next) {
@@ -110,7 +63,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
       }
     });
     return Scaffold(
-      appBar: AppBar(title: const Text('Quét QR')),
+      appBar: AppTopBar(title: 'Quét QR', showBackButton: true),
       body: registration.when(
         loading: () => const AppLoadingState(),
         error: (_, _) => EventFailure(
@@ -126,8 +79,13 @@ class _ScannerState extends ConsumerState<ScannerScreen>
               actionLabel: r == null && widget.eventId == null
                   ? 'Về khám phá'
                   : 'Xem sự kiện',
-              onAction: () =>
-                  context.go(r == null ? '/discover' : '/events/${r.eventId}'),
+              onAction: () => context.go(
+                r == null
+                    ? (widget.eventId == null
+                          ? '/discover'
+                          : '/events/${widget.eventId}')
+                    : '/events/${r.eventId}',
+              ),
             );
           }
           return ListView(
@@ -141,29 +99,31 @@ class _ScannerState extends ConsumerState<ScannerScreen>
                 aspectRatio: 1,
                 child: ClipRRect(
                   borderRadius: AppRadius.borderR16,
-                  child: camera.preview(),
+                  child: QrCameraPreview(
+                    handle: camera.previewHandle,
+                    onDetected: cameraVM.detected,
+                  ),
                 ),
               ),
-              if (message != null) EventPanel(children: [Text(message!)]),
+              if (camera.message != null)
+                EventPanel(children: [Text(camera.message!)]),
               const SizedBox(height: AppSpacing.s16),
               const BookingFeedback(),
               AppButton(
                 label: 'Quét lại',
                 isDisabled: s.busy || s.unresolved,
-                onPressed: () {
-                  setState(() => message = null);
-                  ref.read(bookingProvider.notifier).clearResult();
-                  camera.start();
-                },
+                onPressed: cameraVM.retry,
               ),
-              TextButton(
-                onPressed: () => camera.openSettings(),
-                child: const Text('Mở Cài đặt camera'),
+              AppButton(
+                variant: AppButtonVariant.text,
+                onPressed: cameraVM.openSettings,
+                label: 'Mở Cài đặt camera',
               ),
-              TextButton(
+              AppButton(
+                variant: AppButtonVariant.text,
                 onPressed: () =>
                     context.go('/registrations/${widget.registrationId}'),
-                child: const Text('Quay về chi tiết đăng ký'),
+                label: 'Quay về chi tiết đăng ký',
               ),
             ],
           );
