@@ -56,15 +56,13 @@ class _EventListState extends ConsumerState<EventListScreen> {
     final filter = ref.watch(eventFilterProvider);
     final filterVM = ref.read(eventFilterProvider.notifier);
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          !widget.search
-              ? 'Khám phá'
-              : filter.query.trim().isEmpty
-              ? 'Tất cả sự kiện'
-              : 'Kết quả tìm kiếm',
-        ),
-        centerTitle: false,
+      appBar: AppTopBar(
+        title: (!widget.search
+            ? 'Khám phá'
+            : filter.query.trim().isEmpty
+            ? 'Tất cả sự kiện'
+            : 'Kết quả tìm kiếm'),
+        showBackButton: widget.search,
       ),
       body: events.when(
         loading: () => const AppLoadingState(),
@@ -247,7 +245,11 @@ class _EventFilterSheet extends ConsumerWidget {
                 label: count == null ? 'Xem kết quả' : 'Xem $count sự kiện',
                 onPressed: () => Navigator.pop(context),
               ),
-              TextButton(onPressed: vm.reset, child: const Text('Xóa lọc')),
+              AppButton(
+                variant: AppButtonVariant.text,
+                onPressed: vm.reset,
+                label: 'Xóa lọc',
+              ),
             ],
           ),
         ),

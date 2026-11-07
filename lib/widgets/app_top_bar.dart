@@ -4,6 +4,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_touch_targets.dart';
 import '../theme/app_typography.dart';
+import '../theme/app_radius.dart';
 
 /// Standard Top App Bar conforming to Figma 24:945
 /// - Left-aligned title
@@ -46,7 +47,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
               Navigator.maybePop(context);
             }
           },
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: AppRadius.borderR24,
           child: ConstrainedBox(
             constraints: AppTouchTargets.minConstraints,
             child: const Icon(
@@ -60,6 +61,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
     }
 
     return AppBar(
+      automaticallyImplyLeading: false,
       backgroundColor: AppColors.surface,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
@@ -83,7 +85,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
               subtitle!,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: AppTypography.textTheme.bodySmall?.copyWith(
+              style: AppTypography.textTheme.bodyMedium?.copyWith(
                 color: AppColors.textSecondary,
               ),
             ),

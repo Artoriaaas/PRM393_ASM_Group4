@@ -38,7 +38,7 @@ class GenericEventCover extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     constraints: const BoxConstraints(minHeight: 164),
-    padding: const EdgeInsets.all(18),
+    padding: const EdgeInsets.all(AppSpacing.s16),
     decoration: const BoxDecoration(
       borderRadius: AppRadius.borderR16,
       gradient: LinearGradient(
@@ -175,13 +175,17 @@ class EventCard extends StatelessWidget {
   final Event event;
   final VoidCallback onTap;
   @override
-  Widget build(BuildContext context) => Card(
-    clipBehavior: Clip.antiAlias,
-    child: InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.s16),
-        child: EventSummary(event, cover: true),
+  Widget build(BuildContext context) => Semantics(
+    button: true,
+    label: 'Xem sự kiện ${event.title}',
+    child: Card(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.s16),
+          child: EventSummary(event, cover: true),
+        ),
       ),
     ),
   );

@@ -17,7 +17,7 @@ class EventDetailScreen extends ConsumerWidget {
     final value = ref.watch(eventProvider(eventId));
     final registrations = ref.watch(registrationsProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Chi tiết sự kiện'), centerTitle: false),
+      appBar: AppTopBar(title: 'Chi tiết sự kiện', showBackButton: true),
       body: value.when(
         loading: () => const AppLoadingState(),
         error: (_, _) =>

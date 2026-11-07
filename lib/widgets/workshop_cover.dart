@@ -21,7 +21,7 @@ class WorkshopCover extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Color(0xFFA93612), Color(0xFFF47A3B)],
+                colors: [AppColors.coverStart, AppColors.coverEnd],
               ),
             ),
             child: Stack(
@@ -50,8 +50,8 @@ class WorkshopCover extends StatelessWidget {
                   top: 18,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
+                      horizontal: AppSpacing.coverBadgeHorizontal,
+                      vertical: AppSpacing.coverBadgeVertical,
                     ),
                     decoration: const BoxDecoration(
                       color: AppColors.surface,
@@ -60,9 +60,9 @@ class WorkshopCover extends StatelessWidget {
                     child: Text(
                       free ? 'ÂM NHẠC' : 'UX WORKSHOP',
                       style: const TextStyle(
-                        fontSize: 12,
+                        fontSize: AppTypography.captionFontSize,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFFA93612),
+                        color: AppColors.coverStart,
                       ),
                     ),
                   ),
@@ -73,8 +73,8 @@ class WorkshopCover extends StatelessWidget {
                   child: Text(
                     free ? 'ACOUSTIC\nCAMPUS' : 'THIẾT KẾ\nTRẢI NGHIỆM',
                     style: const TextStyle(
-                      fontFamily: 'Be Vietnam Pro',
-                      fontSize: 22,
+                      fontFamily: AppTypography.fontFamily,
+                      fontSize: AppTypography.coverTitleFontSize,
                       height: 28 / 22,
                       fontWeight: FontWeight.bold,
                       color: AppColors.surface,
@@ -89,7 +89,7 @@ class WorkshopCover extends StatelessWidget {
                         ? 'Live music  •  Campus'
                         : 'Research  •  Prototype  •  Test',
                     style: const TextStyle(
-                      fontSize: 12,
+                      fontSize: AppTypography.captionFontSize,
                       color: Color(0xFFFFE9DE),
                     ),
                   ),

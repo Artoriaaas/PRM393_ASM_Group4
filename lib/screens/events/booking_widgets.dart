@@ -34,11 +34,12 @@ class BookingFeedback extends ConsumerWidget {
               isLoading: s.busy,
               onPressed: () => ref.read(bookingProvider.notifier).recover(),
             ),
-          TextButton(
+          AppButton(
+            variant: AppButtonVariant.text,
             onPressed: s.busy
                 ? null
                 : () => ref.read(bookingProvider.notifier).retryPending(),
-            child: const Text('Thử lại cùng thao tác'),
+            label: 'Thử lại cùng thao tác',
           ),
         ],
       ],

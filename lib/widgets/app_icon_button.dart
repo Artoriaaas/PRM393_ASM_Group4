@@ -1,3 +1,5 @@
+import '../theme/app_radius.dart';
+
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
@@ -34,7 +36,7 @@ class AppIconButton extends StatelessWidget {
         message: tooltip,
         child: InkWell(
           onTap: canPress ? onPressed : null,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: AppRadius.borderR24,
           child: ConstrainedBox(
             constraints: AppTouchTargets.minConstraints,
             child: Center(

@@ -27,8 +27,8 @@ class EventHubTheme {
       onError: AppColors.onError,
       errorContainer: AppColors.errorContainer,
       onErrorContainer: AppColors.onErrorContainer,
-      outline: AppColors.border,
-      outlineVariant: AppColors.borderSubtle,
+      outline: AppColors.borderSubtle,
+      outlineVariant: AppColors.border,
     );
 
     return ThemeData(
@@ -70,7 +70,7 @@ class EventHubTheme {
         ),
         constraints: const BoxConstraints(minHeight: AppTouchTargets.min),
         hintStyle: AppTypography.textTheme.bodyMedium?.copyWith(
-          color: AppColors.textDisabled,
+          color: AppColors.textSecondary,
         ),
         labelStyle: AppTypography.textTheme.bodyMedium?.copyWith(
           color: AppColors.textSecondary,
@@ -80,11 +80,11 @@ class EventHubTheme {
         ),
         border: const OutlineInputBorder(
           borderRadius: AppRadius.borderR8,
-          borderSide: BorderSide(color: AppColors.border),
+          borderSide: BorderSide(color: AppColors.borderSubtle),
         ),
         enabledBorder: const OutlineInputBorder(
           borderRadius: AppRadius.borderR8,
-          borderSide: BorderSide(color: AppColors.border),
+          borderSide: BorderSide(color: AppColors.borderSubtle),
         ),
         focusedBorder: const OutlineInputBorder(
           borderRadius: AppRadius.borderR8,

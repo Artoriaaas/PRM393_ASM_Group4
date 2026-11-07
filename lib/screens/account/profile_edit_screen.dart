@@ -41,28 +41,19 @@ class _ProfileEditState extends ConsumerState<ProfileEditScreen> {
   @override
   Widget build(BuildContext context) {
     final s = ref.watch(profileProvider);
-    final canEmail = ref.watch(authServiceProvider).canChangeEmail;
+    final canEmail = ref.watch(profileCanChangeEmailProvider);
     final dirty =
         !saved && (name.text != initialName || email.text != initialEmail);
     return PopScope(
       canPop: !s.busy && !dirty,
       onPopInvokedWithResult: (popped, _) async {
         if (popped || s.busy) return;
-        final yes = await showDialog<bool>(
+        final yes = await AppConfirmationDialog.show(
           context: context,
-          builder: (dialog) => AlertDialog(
-            title: const Text('Bỏ thay đổi chưa lưu?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialog, false),
-                child: const Text('Tiếp tục sửa'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(dialog, true),
-                child: const Text('Bỏ thay đổi'),
-              ),
-            ],
-          ),
+          title: 'Bỏ thay đổi chưa lưu?',
+          message: 'Các thay đổi chưa lưu sẽ bị bỏ.',
+          confirmLabel: 'Bỏ thay đổi',
+          cancelLabel: 'Tiếp tục sửa',
         );
         if (yes == true && mounted) {
           setState(() => saved = true);
@@ -72,7 +63,7 @@ class _ProfileEditState extends ConsumerState<ProfileEditScreen> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Chỉnh sửa thông tin')),
+        appBar: AppTopBar(title: 'Chỉnh sửa thông tin', showBackButton: true),
         body: ListView(
           padding: const EdgeInsets.all(AppSpacing.s16),
           children: [

@@ -2,6 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../viewmodels/session_viewmodel.dart';
 
+final profileCanChangeEmailProvider = Provider<bool>((ref) {
+  ref.watch(sessionViewModelProvider);
+  return ref.watch(authServiceProvider).canChangeEmail;
+});
+
 class ProfileState {
   const ProfileState({
     this.busy = false,

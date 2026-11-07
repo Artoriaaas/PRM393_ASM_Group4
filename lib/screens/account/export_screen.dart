@@ -13,7 +13,7 @@ class ExportScreen extends ConsumerWidget {
     final rows = ref.watch(reportRowsProvider);
     final s = ref.watch(exportProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Xuất lịch tham gia')),
+      appBar: AppTopBar(title: 'Xuất lịch tham gia', showBackButton: true),
       body: rows.when(
         loading: () => const AppLoadingState(),
         error: (_, _) =>

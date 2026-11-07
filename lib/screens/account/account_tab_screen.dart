@@ -18,7 +18,7 @@ class AccountTabScreen extends ConsumerWidget {
     final auth = ref.watch(sessionViewModelProvider);
     final s = ref.watch(authViewModelProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Tài khoản')),
+      appBar: AppTopBar(title: 'Tài khoản', showBackButton: false),
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.s16),
         children: [

@@ -37,14 +37,13 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
   Widget build(BuildContext context) {
     final registration = ref.watch(registrationProvider(widget.id));
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.checkInResult
-              ? 'Kết quả điểm danh'
-              : widget.success
-              ? 'Đăng ký thành công'
-              : 'Chi tiết đăng ký',
-        ),
+      appBar: AppTopBar(
+        showBackButton: true,
+        title: (widget.checkInResult
+            ? 'Kết quả điểm danh'
+            : widget.success
+            ? 'Đăng ký thành công'
+            : 'Chi tiết đăng ký'),
       ),
       body: registration.when(
         loading: () => const AppLoadingState(),
@@ -226,24 +225,12 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
   }
 
   Future<void> _cancel(BuildContext context, Registration r) async {
-    final ok = await showDialog<bool>(
+    final ok = await AppConfirmationDialog.show(
       context: context,
-      builder: (dialog) => AlertDialog(
-        title: const Text('Hủy đăng ký?'),
-        content: const Text(
-          'Sau khi máy chủ xác nhận, đăng ký không còn trong Sắp tới và không dùng để điểm danh.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialog, false),
-            child: const Text('Giữ đăng ký'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(dialog, true),
-            child: const Text('Xác nhận hủy'),
-          ),
-        ],
-      ),
+      title: 'Hủy đăng ký?',
+      message: 'Sau khi máy chủ xác nhận, đăng ký không còn trong Sắp tới và không dùng để điểm danh.',
+      confirmLabel: 'Xác nhận hủy',
+      cancelLabel: 'Giữ đăng ký',
     );
     if (ok == true && mounted) {
       await ref.read(bookingProvider.notifier).cancel(r);

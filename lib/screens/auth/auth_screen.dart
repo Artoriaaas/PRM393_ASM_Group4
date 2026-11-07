@@ -213,21 +213,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           'Điều khoản và chính sách dữ liệu',
           () => showDialog<void>(
             context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Thông tin dữ liệu tài khoản'),
-              content: const SingleChildScrollView(
-                child: Text(
+            builder: (context) => const AppInfoDialog(
+              title: 'Thông tin dữ liệu tài khoản',
+              message:
                   'EventHub sử dụng họ tên và email để quản lý tài khoản. '
                   'Nhóm sinh viên và khóa K tại form đăng ký sự kiện là thông tin tự khai, không xác minh danh tính. '
                   'Không đưa email, mật khẩu vào Analytics. Chính sách chính thức cần được nhóm bổ sung trước khi phát hành.',
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Đóng'),
-                ),
-              ],
             ),
           ),
           variant: AppButtonVariant.text,
@@ -253,24 +244,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     ];
     return Scaffold(
       backgroundColor: AppColors.surface,
-      appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        automaticallyImplyLeading: false,
-        title: Text(login ? 'EventHub' : 'Tài khoản'),
-        centerTitle: false,
-        leading: login || verify
-            ? null
-            : IconButton(
-                tooltip: 'Quay lại',
-                icon: SvgPicture.asset(
-                  'assets/icons/auth_back.svg',
-                  width: 24,
-                  height: 24,
-                ),
-                onPressed: state.busy
-                    ? null
-                    : () => _go(change ? '/auth/verify-email' : '/auth/login'),
-              ),
+      appBar: AppTopBar(
+        title: login ? 'EventHub' : 'Tài khoản',
+        showBackButton: !login && !verify,
+        onBack: () {
+          if (!state.busy) _go(change ? '/auth/verify-email' : '/auth/login');
+        },
       ),
       body: SafeArea(
         child: ListView(

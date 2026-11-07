@@ -15,7 +15,7 @@ class CloudToolsScreen extends ConsumerWidget {
     final s = ref.watch(cloudToolsProvider);
     final vm = ref.read(cloudToolsProvider.notifier);
     return Scaffold(
-      appBar: AppBar(title: const Text('Tiện ích Firebase')),
+      appBar: AppTopBar(title: 'Tiện ích Firebase', showBackButton: true),
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.s16),
         children: [
@@ -65,24 +65,12 @@ class CloudToolsScreen extends ConsumerWidget {
               label: 'Test crash (debug)',
               variant: AppButtonVariant.secondary,
               onPressed: () async {
-                final yes = await showDialog<bool>(
+                final yes = await AppConfirmationDialog.show(
                   context: context,
-                  builder: (dialog) => AlertDialog(
-                    title: const Text('Tạo test crash?'),
-                    content: const Text(
-                      'App sẽ đóng để kiểm tra Crashlytics. Mở lại app sau đó và kiểm tra dashboard.',
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(dialog, false),
-                        child: const Text('Quay lại'),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.pop(dialog, true),
-                        child: const Text('Tạo test crash'),
-                      ),
-                    ],
-                  ),
+                  title: 'Tạo test crash?',
+                  message: 'App sẽ đóng để kiểm tra Crashlytics. Mở lại app sau đó và kiểm tra dashboard.',
+                  confirmLabel: 'Tạo test crash',
+                  cancelLabel: 'Quay lại',
                 );
                 if (yes == true) vm.crash();
               },

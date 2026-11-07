@@ -80,7 +80,7 @@ class _RegistrationFormState extends ConsumerState<RegistrationFormScreen> {
     return PopScope(
       canPop: !s.busy,
       child: Scaffold(
-        appBar: AppBar(title: const Text('Thông tin đăng ký')),
+        appBar: AppTopBar(title: 'Thông tin đăng ký', showBackButton: true),
         body: value.when(
           loading: () => const AppLoadingState(),
           error: (_, _) => EventFailure(
@@ -117,14 +117,14 @@ class _RegistrationFormState extends ConsumerState<RegistrationFormScreen> {
                     Wrap(
                       spacing: AppSpacing.s8,
                       children: [
-                        ChoiceChip(
+                        AppChoiceChip(
                           label: const Text('Sinh viên FPTU'),
                           selected: group == 'student',
                           onSelected: s.busy || s.unresolved
                               ? null
                               : (_) => setState(() => group = 'student'),
                         ),
-                        ChoiceChip(
+                        AppChoiceChip(
                           label: const Text('Khách ngoài trường'),
                           selected: group == 'guest',
                           onSelected: s.busy || s.unresolved

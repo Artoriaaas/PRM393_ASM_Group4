@@ -30,7 +30,7 @@ class _LiveScheduleState extends ConsumerState<LiveScheduleScreen> {
     final value = ref.watch(scheduleEntriesProvider);
     final tab = ref.watch(scheduleTabProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Lịch tham gia')),
+      appBar: AppTopBar(title: 'Lịch tham gia', showBackButton: false),
       body: Column(
         children: [
           Padding(
@@ -40,7 +40,7 @@ class _LiveScheduleState extends ConsumerState<LiveScheduleScreen> {
               runSpacing: AppSpacing.s8,
               children: [
                 for (final item in ['Sắp tới', 'Đã kết thúc', 'Đã hủy'].indexed)
-                  ChoiceChip(
+                  AppChoiceChip(
                     label: Text(item.$2),
                     selected: tab == item.$1,
                     onSelected: (_) =>
