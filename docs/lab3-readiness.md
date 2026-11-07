@@ -1,3 +1,5 @@
+> **Cập nhật mới nhất 07/11/2026 sau kiểm thử Console:** xem [bằng chứng instrumentation](../evidence/instrumentation/status.md). Đã có ảnh FCM đủ 3 trạng thái + inbox/tap, Remote Config hai tham số, Crashlytics test crash/non-fatal thực với UID/key, 8 tên Analytics event trên DebugView (7 event có ảnh tham số). Các dòng kiểm kê cũ bên dưới là lịch sử, không thay kết quả mới này. Còn đối chiếu các event còn lại trong plan, deep link FCM cụ thể/quyền lần đầu, ARTEMIS, file riêng tư và các đầu ra khác. PR #3 và ba fix commits đã có bằng chứng tại docs/code-review.md; không còn trạng thái chỉ review local.
+
 # Tiến độ Lab 3 — EventHub Group 4
 
 Cập nhật 07/11/2026. Trạng thái có bằng chứng; **chưa phải xác nhận hoàn thành**. Bản app duy nhất: `lib/main.dart`.

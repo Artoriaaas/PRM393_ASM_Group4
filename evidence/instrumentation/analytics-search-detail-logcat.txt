@@ -1,0 +1,16 @@
+11-07 06:10:09.512  1604  6409 V FA-SVC  : Logging event: origin=app,name=view_screen,params=Bundle[{screen_code=A10, ga_event_origin(_o)=app, ga_screen_class(_sc)=MainActivity, ga_screen_id(_si)=71874389198434747}]
+11-07 06:10:10.182  1604  6409 V FA-SVC  : Successful upload. Got network response. code, size: 204, 0
+11-07 06:10:12.030  1604  6409 V FA-SVC  : Logging event: origin=app,name=view_screen,params=Bundle[{screen_code=LAB3_FIREBASE, ga_event_origin(_o)=app, ga_screen_class(_sc)=MainActivity, ga_screen_id(_si)=71874389198434747}]
+11-07 06:10:12.645  1604  6409 V FA-SVC  : Successful upload. Got network response. code, size: 204, 0
+11-07 06:10:26.544  1604  6409 V FA-SVC  : Logging event: origin=app,name=view_screen,params=Bundle[{screen_code=A02, ga_event_origin(_o)=app, ga_screen_class(_sc)=MainActivity, ga_screen_id(_si)=71874389198434747}]
+11-07 06:10:27.169  1604  6409 V FA-SVC  : Successful upload. Got network response. code, size: 204, 0
+11-07 06:11:04.048  1604  6518 V FA-SVC  : Successful upload. Got network response. code, size: 204, 0
+11-07 06:11:37.465  1604  6518 V FA-SVC  : Logging event: origin=app,name=search,params=Bundle[{ga_event_origin(_o)=app, ga_screen_class(_sc)=MainActivity, ga_screen_id(_si)=71874389198434747, query_length=8}]
+11-07 06:11:37.553  1604  6518 V FA-SVC  : Logging event: origin=app,name=view_screen,params=Bundle[{screen_code=A03, ga_event_origin(_o)=app, ga_screen_class(_sc)=MainActivity, ga_screen_id(_si)=71874389198434747}]
+11-07 06:11:38.657  1604  6518 V FA-SVC  : Successful upload. Got network response. code, size: 204, 0
+11-07 06:12:09.958  1604  6601 V FA-SVC  : Logging event: origin=app,name=search,params=Bundle[{ga_event_origin(_o)=app, ga_screen_class(_sc)=MainActivity, ga_screen_id(_si)=71874389198434747, query_length=8}]
+11-07 06:12:10.057  1604  6601 V FA-SVC  : Logging event: origin=app,name=view_screen,params=Bundle[{screen_code=A03, ga_event_origin(_o)=app, ga_screen_class(_sc)=MainActivity, ga_screen_id(_si)=71874389198434747}]
+11-07 06:12:11.148  1604  6601 V FA-SVC  : Successful upload. Got network response. code, size: 204, 0
+11-07 06:12:11.229  1604  6601 V FA-SVC  : Logging event: origin=app,name=view_event_detail,params=Bundle[{screen_code=A04, ga_event_origin(_o)=app, ga_screen_class(_sc)=MainActivity, ga_screen_id(_si)=71874389198434747}]
+11-07 06:12:11.343  1604  6601 V FA-SVC  : Logging event: origin=app,name=view_screen,params=Bundle[{screen_code=A04, ga_event_origin(_o)=app, ga_screen_class(_sc)=MainActivity, ga_screen_id(_si)=71874389198434747}]
+11-07 06:12:12.252  1604  6601 V FA-SVC  : Successful upload. Got network response. code, size: 204, 0
