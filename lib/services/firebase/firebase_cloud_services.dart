@@ -64,7 +64,9 @@ class FirebaseCloudServices implements CloudServices {
       FirebaseMessaging.onMessageOpenedApp.listen((m) => _message(m, true)),
     );
     _subscriptions.add(
-      messaging.onRegistered.listen((token) async {
+      // Console test messages require an FCM token, not an installation FID.
+      // ignore: deprecated_member_use
+      messaging.onTokenRefresh.listen((token) async {
         final uid = _uid;
         if (uid != null) {
           try {
@@ -132,16 +134,14 @@ class FirebaseCloudServices implements CloudServices {
     if (permission.authorizationStatus == AuthorizationStatus.denied) {
       return 'Quyền thông báo bị từ chối. Thông báo trong app vẫn hoạt động.';
     }
-    final registration = messaging.onRegistered.first.timeout(
-      const Duration(seconds: 20),
-    );
-    // Observe a timeout even if register() fails before we await this future.
-    // The original future remains awaited below and still reports its failure.
-    unawaited(
-      registration.then<void>((_) {}, onError: (Object _, StackTrace _) {}),
-    );
-    await messaging.register();
-    final token = await registration;
+    // The pinned SDK still supports direct FCM-token delivery used by Console.
+    // Waiting only for a registration callback can time out on existing devices.
+    // ignore: deprecated_member_use
+    final token = await messaging.getToken().timeout(const Duration(seconds: 30));
+    if (token == null || token.isEmpty) {
+      throw StateError('push_token_unavailable');
+    }
+    if (uid != _uid) throw StateError('push_session_changed');
     await _saveToken(uid, token);
     return 'Đã cấp quyền và đăng ký thiết bị nhận thông báo.';
   }
@@ -153,7 +153,9 @@ class FirebaseCloudServices implements CloudServices {
     _uid = null;
     _userEpoch++;
     try {
-      await messaging.unregister();
+      // Keep direct-token lifecycle paired with getToken/onTokenRefresh.
+      // ignore: deprecated_member_use
+      await messaging.deleteToken();
     } finally {
       if (token != null) {
         await db.doc('users/$uid/devices/${_deviceId(token)}').delete();
