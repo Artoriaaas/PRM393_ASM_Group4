@@ -1,7 +1,21 @@
-# Báo cáo cuối — chưa xuất PDF nộp
+# Báo Cáo Tổng Kết Đồ Án Lab 3 — EventHub
 
-Đề yêu cầu 8–12 trang. Chỉ xuất `Lab03_<StudentID>.pdf` sau khi có bằng chứng cloud/test/review thật và mã sinh viên/nhóm được thầy chấp nhận.
+Báo cáo chi tiết của đồ án đã được biên soạn đầy đủ tại:
+👉 **[Lab03_Group4_Report.md](Lab03_Group4_Report.md)**
 
-Dàn ý: (1) đề tài + persona/flow/tiêu chí Lab 2; (2) traceability và từng thay đổi trước/sau/lý do; (3) MVVM, sơ đồ lớp/sequence, theme/widgets; (4) Firebase Auth/Firestore; (5) Storage/FCM; (6) Analytics/DebugView; (7) Crashlytics/Remote Config; (8) ARTEMIS kế hoạch và kết quả3 lần/Pro; (9) AI review và fix commits; (10) khó khăn/bài học, AI disclosure và link repo/video.
+---
 
-Nguồn thật: docs/lab3-readiness.md và evidence/. Không điền ảnh fixture vào phần bằng chứng cloud, không ghi pass rate từ test chưa chạy. Hiện chưa có bản báo cáo PDF hoàn chỉnh.
+## Cách Xuất Ra File PDF Nộp Bài (`Lab03_Group4.pdf`)
+
+Đề bài yêu cầu nộp file báo cáo định dạng **PDF từ 8 đến 12 trang**. Bạn có thể xuất file PDF theo 2 cách đơn giản sau:
+
+### Cách 1: Dùng tiện ích mở rộng Markdown PDF trong VS Code (Khuyên dùng)
+1. Cài đặt extension **Markdown PDF** (`yzane.markdown-pdf`) trong VS Code / IDE.
+2. Mở file `report/Lab03_Group4_Report.md`.
+3. Nhấp chuột phải vào vùng soạn thảo, chọn **`Markdown PDF: Export (pdf)`**.
+4. Đổi tên file xuất ra thành `report/Lab03_Group4.pdf`.
+
+### Cách 2: In trực tiếp từ Trình duyệt Chrome / Edge
+1. Mở file `report/Lab03_Group4_Report.md` qua trình xem Markdown (hoặc Preview trên GitHub).
+2. Nhấn **`Ctrl + P`** $\rightarrow$ chọn **`Save as PDF`**.
+3. Lưu file với tên `report/Lab03_Group4.pdf`.
