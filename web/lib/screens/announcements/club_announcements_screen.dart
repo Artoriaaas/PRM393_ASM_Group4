@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eventhub_core/eventhub_core.dart';
 import '../../viewmodels/announcements_viewmodel.dart';
+import '../../viewmodels/web_auth_viewmodel.dart';
 
 class ClubAnnouncementsScreen extends ConsumerStatefulWidget {
   const ClubAnnouncementsScreen({super.key});
@@ -61,6 +62,8 @@ class _ClubAnnouncementsScreenState
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(announcementsViewModelProvider);
+    final user = ref.watch(currentStaffProfileProvider);
+    final isAdmin = user?.isAdmin ?? false;
 
     return Scaffold(
       backgroundColor: AppColors.surfaceSubtle,
@@ -73,7 +76,7 @@ class _ClubAnnouncementsScreenState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Phát hành Thông báo CLB',
+                  isAdmin ? 'Phát hành Thông báo Hệ thống' : 'Phát hành Thông báo CLB',
                   style: AppTypography.textTheme.headlineMedium?.copyWith(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.bold,
@@ -81,7 +84,9 @@ class _ClubAnnouncementsScreenState
                 ),
                 const SizedBox(height: AppSpacing.s4),
                 Text(
-                  'Gửi tin nhắn thông báo hiển thị thời gian thực trong Inbox ứng dụng Mobile của sinh viên',
+                  isAdmin
+                      ? 'Gửi tin nhắn thông báo toàn trường hoặc theo sự kiện tới Inbox ứng dụng Mobile của sinh viên'
+                      : 'Gửi tin nhắn thông báo hiển thị thời gian thực trong Inbox ứng dụng Mobile của sinh viên',
                   style: AppTypography.textTheme.bodyMedium?.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -215,6 +220,24 @@ class _ClubAnnouncementsScreenState
               spacing: AppSpacing.s12,
               runSpacing: AppSpacing.s8,
               children: [
+                if (ref.watch(currentStaffProfileProvider)?.isAdmin ?? false)
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      minHeight: AppTouchTargets.min,
+                    ),
+                    child: ChoiceChip(
+                      label: const Text('Toàn trường (Global)'),
+                      selected: _scope == 'global',
+                      onSelected: (sel) {
+                        if (sel) {
+                          setState(() {
+                            _scope = 'global';
+                            _selectedEventId = null;
+                          });
+                        }
+                      },
+                    ),
+                  ),
                 ConstrainedBox(
                   constraints: const BoxConstraints(
                     minHeight: AppTouchTargets.min,

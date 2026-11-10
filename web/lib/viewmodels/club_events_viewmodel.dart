@@ -53,8 +53,11 @@ class ClubEventsState {
 class ClubEventsViewModel extends Notifier<ClubEventsState> {
   @override
   ClubEventsState build() {
+    final user = ref.watch(currentStaffProfileProvider);
+    final isAdmin = user?.isAdmin ?? false;
     final clubId = ref.watch(currentClubIdProvider);
-    if (clubId.isEmpty) {
+
+    if (!isAdmin && clubId.isEmpty) {
       return const ClubEventsState(
         loadState: LoadState.error(
           failure: AppFailure(
@@ -65,8 +68,16 @@ class ClubEventsViewModel extends Notifier<ClubEventsState> {
       );
     }
 
-    final service = ref.watch(clubServiceProvider);
-    final sub = service.streamClubEvents(clubId).listen(
+    final Stream<List<Event>> stream;
+    if (isAdmin) {
+      final adminService = ref.watch(adminServiceProvider);
+      stream = adminService.streamAllEvents();
+    } else {
+      final service = ref.watch(clubServiceProvider);
+      stream = service.streamClubEvents(clubId);
+    }
+
+    final sub = stream.listen(
       (events) {
         if (!ref.mounted) return;
         _applyEvents(events);

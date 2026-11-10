@@ -769,6 +769,456 @@ class FirestoreClubService implements IClubService {
   }
 }
 
+// Top-level helper để tái sử dụng giữa FirestoreClubService và FirestoreAdminService
+Event mapEventDoc(
+  DocumentSnapshot<Map<String, dynamic>> doc, {
+  String fallbackClubId = '',
+}) {
+  final d = doc.data() ?? const <String, dynamic>{};
+  return Event(
+    id: doc.id,
+    title: d['title'] as String? ?? '',
+    clubName: d['clubName'] as String? ?? '',
+    location: d['location'] as String? ?? '',
+    startsAt: (d['startsAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+    endsAt: (d['endsAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+    deadline: (d['deadline'] as Timestamp?)?.toDate(),
+    description: d['description'] as String? ?? '',
+    coverKey: d['coverKey'] as String? ?? '',
+    topic: d['topic'] as String? ?? '',
+    audience: d['audience'] as String? ?? '',
+    preparation: d['preparation'] as String? ?? '',
+    activities: (d['activities'] as List<dynamic>?)
+            ?.map((e) => e.toString())
+            .toList() ??
+        const [],
+    mode: d['registrationMode'] as String? ?? 'required',
+    status: d['status'] as String? ?? 'draft',
+    capacity: (d['capacity'] as num?)?.toInt() ?? 0,
+    activeCount: (d['activeCount'] as num?)?.toInt() ?? 0,
+    clubId: d['clubId'] as String? ?? fallbackClubId,
+    visibility: d['visibility'] as String? ?? 'public',
+    updatedAt: (d['updatedAt'] as Timestamp?)?.toDate(),
+  );
+}
+
+class FirestoreAdminService implements IAdminService {
+  FirestoreAdminService({
+    required FirebaseFirestore firestore,
+    required FirebaseAuth auth,
+  })  : _firestore = firestore,
+        _auth = auth;
+
+  final FirebaseFirestore _firestore;
+  final FirebaseAuth _auth;
+
+  // ── Quản lý người dùng ──────────────────────────────────────────────────────
+
+  @override
+  Stream<List<WebUserProfile>> streamAllUsers() {
+    return _firestore.collection('users').snapshots().map(
+          (snap) => snap.docs
+              .map((doc) => WebUserProfile.fromJson(doc.id, doc.data()))
+              .toList(),
+        );
+  }
+
+  @override
+  Future<Result<void>> updateUserRole({
+    required String targetUid,
+    required String newRole,
+    String? clubId,
+    String? clubName,
+  }) async {
+    final currentUid = _auth.currentUser?.uid;
+    if (currentUid != null && currentUid == targetUid) {
+      return Result.failure(
+        const AppFailure(
+          code: 'self_role_change',
+          message: 'Không thể thay đổi vai trò của chính mình.',
+        ),
+      );
+    }
+    try {
+      final Map<String, dynamic> data = {
+        'role': newRole,
+        'updatedAt': FieldValue.serverTimestamp(),
+      };
+      if (newRole == 'staff') {
+        data['clubId'] = clubId;
+        data['clubName'] = clubName;
+      } else {
+        data['clubId'] = null;
+        data['clubName'] = null;
+      }
+      await _firestore.collection('users').doc(targetUid).update(data);
+      return const Success(null);
+    } on FirebaseException catch (e) {
+      return Result.failure(
+        AppFailure(
+          code: e.code,
+          message: 'Không thể cập nhật vai trò người dùng (${e.code}).',
+          isRetryable: true,
+        ),
+      );
+    } catch (e) {
+      return Result.failure(
+        AppFailure(
+          code: 'update_role_error',
+          message: 'Lỗi khi cập nhật vai trò: $e',
+          isRetryable: true,
+        ),
+      );
+    }
+  }
+
+  // ── Quản lý CLB ─────────────────────────────────────────────────────────────
+
+  @override
+  Stream<List<Club>> streamAllClubs() {
+    return _firestore
+        .collection('clubs')
+        .orderBy('name')
+        .snapshots()
+        .map(
+          (snap) => snap.docs
+              .map((doc) => Club.fromJson(doc.id, doc.data()))
+              .toList(),
+        );
+  }
+
+  @override
+  Future<Result<String>> createClub({
+    required String name,
+    String shortName = '',
+    String description = '',
+  }) async {
+    try {
+      final ref = _firestore.collection('clubs').doc();
+      await ref.set({
+        'name': name.trim(),
+        'shortName': shortName.trim(),
+        'description': description.trim(),
+        'status': 'active',
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      return Result.success(ref.id);
+    } on FirebaseException catch (e) {
+      return Result.failure(
+        AppFailure(
+          code: e.code,
+          message: 'Không thể tạo CLB (${e.code}).',
+          isRetryable: true,
+        ),
+      );
+    } catch (e) {
+      return Result.failure(
+        AppFailure(
+          code: 'create_club_error',
+          message: 'Lỗi khi tạo CLB: $e',
+          isRetryable: true,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Result<void>> updateClub(Club club) async {
+    try {
+      await _firestore.collection('clubs').doc(club.id).update({
+        'name': club.name,
+        'shortName': club.shortName,
+        'description': club.description,
+        'status': club.status,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      return const Success(null);
+    } on FirebaseException catch (e) {
+      return Result.failure(
+        AppFailure(
+          code: e.code,
+          message: 'Không thể cập nhật CLB (${e.code}).',
+          isRetryable: true,
+        ),
+      );
+    } catch (e) {
+      return Result.failure(
+        AppFailure(
+          code: 'update_club_error',
+          message: 'Lỗi khi cập nhật CLB: $e',
+          isRetryable: true,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Result<void>> archiveClub(String clubId) async {
+    try {
+      await _firestore.collection('clubs').doc(clubId).update({
+        'status': 'archived',
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      return const Success(null);
+    } on FirebaseException catch (e) {
+      return Result.failure(
+        AppFailure(
+          code: e.code,
+          message: 'Không thể lưu trữ CLB (${e.code}).',
+          isRetryable: true,
+        ),
+      );
+    } catch (e) {
+      return Result.failure(
+        AppFailure(
+          code: 'archive_club_error',
+          message: 'Lỗi khi lưu trữ CLB: $e',
+          isRetryable: true,
+        ),
+      );
+    }
+  }
+
+  // ── Giám sát sự kiện toàn trường ────────────────────────────────────────────
+
+  @override
+  Stream<List<Event>> streamAllEvents() {
+    return _firestore.collection('events').snapshots().map(
+          (snap) => snap.docs.map((doc) => mapEventDoc(doc)).toList(),
+        );
+  }
+
+  @override
+  Future<Result<void>> adminCancelEvent(String eventId) async {
+    try {
+      await _firestore.collection('events').doc(eventId).update({
+        'status': 'cancelled',
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      return const Success(null);
+    } on FirebaseException catch (e) {
+      return Result.failure(
+        AppFailure(
+          code: e.code,
+          message: 'Không thể hủy sự kiện (${e.code}).',
+          isRetryable: true,
+        ),
+      );
+    } catch (e) {
+      return Result.failure(
+        AppFailure(
+          code: 'admin_cancel_event_error',
+          message: 'Lỗi khi hủy sự kiện: $e',
+          isRetryable: true,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Result<void>> adminArchiveEvent(String eventId) async {
+    try {
+      await _firestore.collection('events').doc(eventId).update({
+        'status': 'archived',
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      return const Success(null);
+    } on FirebaseException catch (e) {
+      return Result.failure(
+        AppFailure(
+          code: e.code,
+          message: 'Không thể lưu trữ sự kiện (${e.code}).',
+          isRetryable: true,
+        ),
+      );
+    } catch (e) {
+      return Result.failure(
+        AppFailure(
+          code: 'admin_archive_event_error',
+          message: 'Lỗi khi lưu trữ sự kiện: $e',
+          isRetryable: true,
+        ),
+      );
+    }
+  }
+
+  // ── Giám sát đơn đăng ký toàn trường ───────────────────────────────────────
+
+  @override
+  Stream<List<Registration>> streamAllPendingRegistrations() {
+    return _firestore
+        .collection('registrations')
+        .where('status', isEqualTo: 'pending')
+        .snapshots()
+        .map(
+          (snap) => snap.docs
+              .map((doc) => _mapRegistrationDoc(doc))
+              .toList(),
+        );
+  }
+
+  Registration _mapRegistrationDoc(
+    DocumentSnapshot<Map<String, dynamic>> doc,
+  ) {
+    final d = doc.data() ?? const <String, dynamic>{};
+    final pData = d['participant'] as Map<String, dynamic>? ?? const {};
+    return Registration(
+      id: doc.id,
+      eventId: d['eventId'] as String? ?? '',
+      status: d['status'] as String? ?? 'pending',
+      generation: (d['generation'] as num?)?.toInt() ?? 1,
+      participant: Participant(
+        name: pData['name'] as String? ?? '',
+        email: pData['email'] as String? ?? '',
+        group: pData['group'] as String? ?? 'student',
+        cohort: pData['cohort'] as String? ?? '',
+        organization: pData['organization'] as String? ?? '',
+        phone: pData['phone'] as String? ?? '',
+      ),
+      uid: d['uid'] as String? ?? '',
+      clubId: d['clubId'] as String? ?? '',
+      checkInAt: (d['checkInAt'] as Timestamp?)?.toDate(),
+      createdAt: (d['createdAt'] as Timestamp?)?.toDate(),
+      reason: d['reason'] as String?,
+      reviewedBy: d['reviewedBy'] as String?,
+      reviewedAt: (d['reviewedAt'] as Timestamp?)?.toDate(),
+      qrHash: d['qrHash'] as String?,
+      lastOperationId: d['lastOperationId'] as String? ?? '',
+    );
+  }
+
+  // ── Dashboard toàn trường ───────────────────────────────────────────────────
+
+  @override
+  Future<int> countSystemPublishedEvents() async {
+    final snap = await _firestore
+        .collection('events')
+        .where('status', isEqualTo: 'published')
+        .count()
+        .get();
+    return snap.count ?? 0;
+  }
+
+  @override
+  Future<int> countSystemPendingRegistrations() async {
+    final snap = await _firestore
+        .collection('registrations')
+        .where('status', isEqualTo: 'pending')
+        .count()
+        .get();
+    return snap.count ?? 0;
+  }
+
+  @override
+  Future<int> countSystemApprovedRegistrations() async {
+    final snap = await _firestore
+        .collection('registrations')
+        .where('status', isEqualTo: 'approved')
+        .count()
+        .get();
+    return snap.count ?? 0;
+  }
+
+  @override
+  Future<int> countUsersByRole(String role) async {
+    final snap = await _firestore
+        .collection('users')
+        .where('role', isEqualTo: role)
+        .count()
+        .get();
+    return snap.count ?? 0;
+  }
+
+  @override
+  Future<int> countActiveClubs() async {
+    final snap = await _firestore
+        .collection('clubs')
+        .where('status', isEqualTo: 'active')
+        .count()
+        .get();
+    return snap.count ?? 0;
+  }
+
+  @override
+  Future<List<Map<String, Object>>> getClubEventStats() async {
+    // Query tất cả events
+    final eventsSnap = await _firestore.collection('events').get();
+
+    // Group by clubId
+    final Map<String, Map<String, Object>> statsMap = {};
+    for (final doc in eventsSnap.docs) {
+      final d = doc.data();
+      final clubId = d['clubId'] as String? ?? '';
+      final clubName = d['clubName'] as String? ?? clubId;
+      final status = d['status'] as String? ?? '';
+
+      statsMap.putIfAbsent(clubId, () => {
+        'clubId': clubId,
+        'clubName': clubName,
+        'published': 0,
+        'approved': 0,
+        'checkedIn': 0,
+      });
+
+      if (status == 'published') {
+        statsMap[clubId]!['published'] =
+            ((statsMap[clubId]!['published'] as int?) ?? 0) + 1;
+      }
+    }
+
+    // Query approved + checkedIn registrations per club
+    final approvedSnap = await _firestore
+        .collection('registrations')
+        .where('status', isEqualTo: 'approved')
+        .get();
+    for (final doc in approvedSnap.docs) {
+      final d = doc.data();
+      final clubId = d['clubId'] as String? ?? '';
+      if (statsMap.containsKey(clubId)) {
+        statsMap[clubId]!['approved'] =
+            ((statsMap[clubId]!['approved'] as int?) ?? 0) + 1;
+      }
+    }
+
+    final checkedInSnap = await _firestore
+        .collection('registrations')
+        .where('status', isEqualTo: 'approved')
+        .where('checkInAt', isNull: false)
+        .get();
+    for (final doc in checkedInSnap.docs) {
+      final d = doc.data();
+      final clubId = d['clubId'] as String? ?? '';
+      if (statsMap.containsKey(clubId)) {
+        statsMap[clubId]!['checkedIn'] =
+            ((statsMap[clubId]!['checkedIn'] as int?) ?? 0) + 1;
+      }
+    }
+
+    return statsMap.values.toList();
+  }
+
+  // ── Thông báo toàn trường ───────────────────────────────────────────────────
+
+  @override
+  Stream<List<Announcement>> streamAllAnnouncements() {
+    return _firestore
+        .collection('announcements')
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map(
+          (snap) => snap.docs.map((doc) {
+            final raw = doc.data();
+            final ts = raw['createdAt'];
+            return Announcement.fromJson(doc.id, {
+              ...raw,
+              if (ts is Timestamp) 'createdAt': ts.toDate(),
+            });
+          }).toList(),
+        );
+  }
+}
+
 class FirebaseWebAnalyticsService implements IWebAnalyticsService {
   FirebaseWebAnalyticsService({FirebaseAnalytics? analytics})
       : _analytics = analytics ?? FirebaseAnalytics.instance;

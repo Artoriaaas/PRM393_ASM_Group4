@@ -77,3 +77,20 @@ final pendingRegistrationsBadgeCountProvider =
   final asyncVal = ref.watch(clubPendingRegistrationsStreamProvider(clubId));
   return asyncVal.asData?.value.length ?? 0;
 });
+
+final adminServiceProvider = Provider<IAdminService>((ref) {
+  if (!ref.watch(webFirebaseReadyProvider)) {
+    return const UnconfiguredAdminService();
+  }
+  return FirestoreAdminService(
+    firestore: FirebaseFirestore.instance,
+    auth: FirebaseAuth.instance,
+  );
+});
+
+final allClubsStreamProvider = StreamProvider<List<Club>>((ref) {
+  if (!ref.watch(webFirebaseReadyProvider)) return Stream.value(const []);
+  final service = ref.watch(adminServiceProvider);
+  return service.streamAllClubs();
+});
+

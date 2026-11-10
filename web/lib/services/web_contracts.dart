@@ -124,3 +124,43 @@ abstract class IWebRemoteConfigService {
   int getInt(String key, {int defaultValue = 0});
   String getString(String key, {String defaultValue = ''});
 }
+
+abstract class IAdminService {
+  // Quản lý người dùng
+  Stream<List<WebUserProfile>> streamAllUsers();
+  Future<Result<void>> updateUserRole({
+    required String targetUid,
+    required String newRole, // 'user' | 'staff' | 'admin'
+    String? clubId,
+    String? clubName,
+  });
+
+  // Quản lý CLB
+  Stream<List<Club>> streamAllClubs();
+  Future<Result<String>> createClub({
+    required String name,
+    String shortName,
+    String description,
+  });
+  Future<Result<void>> updateClub(Club club);
+  Future<Result<void>> archiveClub(String clubId);
+
+  // Giám sát sự kiện toàn trường
+  Stream<List<Event>> streamAllEvents();
+  Future<Result<void>> adminCancelEvent(String eventId);
+  Future<Result<void>> adminArchiveEvent(String eventId);
+
+  // Giám sát đơn đăng ký toàn trường
+  Stream<List<Registration>> streamAllPendingRegistrations();
+
+  // Dashboard toàn trường
+  Future<int> countSystemPublishedEvents();
+  Future<int> countSystemPendingRegistrations();
+  Future<int> countSystemApprovedRegistrations();
+  Future<int> countUsersByRole(String role); // 'user' | 'staff' | 'admin'
+  Future<int> countActiveClubs();
+  Future<List<Map<String, Object>>> getClubEventStats(); // [{clubName, published, approved, checkedIn}]
+
+  // Thông báo toàn trường
+  Stream<List<Announcement>> streamAllAnnouncements();
+}

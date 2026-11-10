@@ -61,3 +61,80 @@ class NoopWebRemoteConfigService implements IWebRemoteConfigService {
   @override
   String getString(String key, {String defaultValue = ''}) => defaultValue;
 }
+
+class UnconfiguredAdminService implements IAdminService {
+  const UnconfiguredAdminService();
+
+  static const _unconfiguredFailure = AppFailure(
+    code: 'firebase_unconfigured',
+    message: 'Firebase Web chưa được cấu hình.',
+  );
+
+  @override
+  Stream<List<WebUserProfile>> streamAllUsers() => Stream.value(const []);
+
+  @override
+  Future<Result<void>> updateUserRole({
+    required String targetUid,
+    required String newRole,
+    String? clubId,
+    String? clubName,
+  }) async =>
+      Result.failure(_unconfiguredFailure);
+
+  @override
+  Stream<List<Club>> streamAllClubs() => Stream.value(const []);
+
+  @override
+  Future<Result<String>> createClub({
+    required String name,
+    String shortName = '',
+    String description = '',
+  }) async =>
+      Result.failure(_unconfiguredFailure);
+
+  @override
+  Future<Result<void>> updateClub(Club club) async =>
+      Result.failure(_unconfiguredFailure);
+
+  @override
+  Future<Result<void>> archiveClub(String clubId) async =>
+      Result.failure(_unconfiguredFailure);
+
+  @override
+  Stream<List<Event>> streamAllEvents() => Stream.value(const []);
+
+  @override
+  Future<Result<void>> adminCancelEvent(String eventId) async =>
+      Result.failure(_unconfiguredFailure);
+
+  @override
+  Future<Result<void>> adminArchiveEvent(String eventId) async =>
+      Result.failure(_unconfiguredFailure);
+
+  @override
+  Stream<List<Registration>> streamAllPendingRegistrations() =>
+      Stream.value(const []);
+
+  @override
+  Future<int> countSystemPublishedEvents() async => 0;
+
+  @override
+  Future<int> countSystemPendingRegistrations() async => 0;
+
+  @override
+  Future<int> countSystemApprovedRegistrations() async => 0;
+
+  @override
+  Future<int> countUsersByRole(String role) async => 0;
+
+  @override
+  Future<int> countActiveClubs() async => 0;
+
+  @override
+  Future<List<Map<String, Object>>> getClubEventStats() async => const [];
+
+  @override
+  Stream<List<Announcement>> streamAllAnnouncements() => Stream.value(const []);
+}
+
