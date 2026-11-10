@@ -16,7 +16,16 @@ class AppShell extends ConsumerWidget {
   final Widget child;
   final String currentLocation;
 
-  int _calculateSelectedIndex(String location) {
+  int _calculateSelectedIndex(String location, bool isAdmin) {
+    if (isAdmin) {
+      if (location.startsWith('/admin-dashboard') || location == '/dashboard') return 0;
+      if (location.startsWith('/users')) return 1;
+      if (location.startsWith('/clubs')) return 2;
+      if (location.startsWith('/events')) return 3;
+      if (location.startsWith('/reviews')) return 4;
+      if (location.startsWith('/announcements')) return 5;
+      return 0;
+    }
     if (location.startsWith('/dashboard')) return 0;
     if (location.startsWith('/events')) return 1;
     if (location.startsWith('/reviews')) return 2;
@@ -24,7 +33,31 @@ class AppShell extends ConsumerWidget {
     return 0;
   }
 
-  void _onDestinationSelected(BuildContext context, int index) {
+  void _onDestinationSelected(BuildContext context, int index, bool isAdmin) {
+    if (isAdmin) {
+      switch (index) {
+        case 0:
+          context.go('/admin-dashboard');
+          break;
+        case 1:
+          context.go('/users');
+          break;
+        case 2:
+          context.go('/clubs');
+          break;
+        case 3:
+          context.go('/events');
+          break;
+        case 4:
+          context.go('/reviews');
+          break;
+        case 5:
+          context.go('/announcements');
+          break;
+      }
+      return;
+    }
+
     switch (index) {
       case 0:
         context.go('/dashboard');
@@ -44,13 +77,15 @@ class AppShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentStaffProfileProvider);
+    final isAdmin = user?.isAdmin ?? false;
     final clubId = ref.watch(currentClubIdProvider);
     final pendingCount = ref.watch(pendingRegistrationsBadgeCountProvider(clubId));
     final activeClubAsync = ref.watch(activeClubProvider(clubId));
 
-    final selectedIndex = _calculateSelectedIndex(currentLocation);
-    final clubDisplayName =
-        activeClubAsync.asData?.value?.name ?? user?.clubName ?? 'Câu lạc bộ';
+    final selectedIndex = _calculateSelectedIndex(currentLocation, isAdmin);
+    final clubDisplayName = isAdmin
+        ? 'Quản trị Toàn trường'
+        : (activeClubAsync.asData?.value?.name ?? user?.clubName ?? 'Câu lạc bộ');
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -66,6 +101,7 @@ class AppShell extends ConsumerWidget {
                   clubDisplayName,
                   selectedIndex,
                   pendingCount,
+                  isAdmin,
                 ),
                 Expanded(
                   child: Center(
@@ -86,7 +122,7 @@ class AppShell extends ConsumerWidget {
                 NavigationRail(
                   selectedIndex: selectedIndex,
                   onDestinationSelected: (idx) =>
-                      _onDestinationSelected(context, idx),
+                      _onDestinationSelected(context, idx, isAdmin),
                   labelType: NavigationRailLabelType.all,
                   backgroundColor: AppColors.surface,
                   selectedIconTheme:
@@ -139,33 +175,71 @@ class AppShell extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  destinations: [
-                    const NavigationRailDestination(
-                      icon: Icon(Icons.dashboard_outlined),
-                      selectedIcon: Icon(Icons.dashboard),
-                      label: Text('Tổng quan'),
-                    ),
-                    const NavigationRailDestination(
-                      icon: Icon(Icons.event_outlined),
-                      selectedIcon: Icon(Icons.event),
-                      label: Text('Sự kiện'),
-                    ),
-                    NavigationRailDestination(
-                      icon: pendingCount > 0
-                          ? Badge.count(
-                              count: pendingCount,
-                              child: const Icon(Icons.how_to_reg_outlined),
-                            )
-                          : const Icon(Icons.how_to_reg_outlined),
-                      selectedIcon: const Icon(Icons.how_to_reg),
-                      label: const Text('Duyệt đơn'),
-                    ),
-                    const NavigationRailDestination(
-                      icon: Icon(Icons.campaign_outlined),
-                      selectedIcon: Icon(Icons.campaign),
-                      label: Text('Thông báo'),
-                    ),
-                  ],
+                  destinations: isAdmin
+                      ? [
+                          const NavigationRailDestination(
+                            icon: Icon(Icons.dashboard_outlined),
+                            selectedIcon: Icon(Icons.dashboard),
+                            label: Text('Tổng quan'),
+                          ),
+                          const NavigationRailDestination(
+                            icon: Icon(Icons.people_outlined),
+                            selectedIcon: Icon(Icons.people),
+                            label: Text('Người dùng'),
+                          ),
+                          const NavigationRailDestination(
+                            icon: Icon(Icons.groups_outlined),
+                            selectedIcon: Icon(Icons.groups),
+                            label: Text('CLB'),
+                          ),
+                          const NavigationRailDestination(
+                            icon: Icon(Icons.event_outlined),
+                            selectedIcon: Icon(Icons.event),
+                            label: Text('Sự kiện'),
+                          ),
+                          NavigationRailDestination(
+                            icon: pendingCount > 0
+                                ? Badge.count(
+                                    count: pendingCount,
+                                    child: const Icon(Icons.how_to_reg_outlined),
+                                  )
+                                : const Icon(Icons.how_to_reg_outlined),
+                            selectedIcon: const Icon(Icons.how_to_reg),
+                            label: const Text('Duyệt đơn'),
+                          ),
+                          const NavigationRailDestination(
+                            icon: Icon(Icons.campaign_outlined),
+                            selectedIcon: Icon(Icons.campaign),
+                            label: Text('Thông báo'),
+                          ),
+                        ]
+                      : [
+                          const NavigationRailDestination(
+                            icon: Icon(Icons.dashboard_outlined),
+                            selectedIcon: Icon(Icons.dashboard),
+                            label: Text('Tổng quan'),
+                          ),
+                          const NavigationRailDestination(
+                            icon: Icon(Icons.event_outlined),
+                            selectedIcon: Icon(Icons.event),
+                            label: Text('Sự kiện'),
+                          ),
+                          NavigationRailDestination(
+                            icon: pendingCount > 0
+                                ? Badge.count(
+                                    count: pendingCount,
+                                    child: const Icon(Icons.how_to_reg_outlined),
+                                  )
+                                : const Icon(Icons.how_to_reg_outlined),
+                            selectedIcon: const Icon(Icons.how_to_reg),
+                            label: const Text('Duyệt đơn'),
+                          ),
+                          const NavigationRailDestination(
+                            icon: Icon(Icons.campaign_outlined),
+                            selectedIcon: Icon(Icons.campaign),
+                            label: Text('Thông báo'),
+                          ),
+                        ],
                 ),
                 const VerticalDivider(width: 1, color: AppColors.border),
                 Expanded(child: child),
@@ -180,7 +254,7 @@ class AppShell extends ConsumerWidget {
               elevation: 0,
               iconTheme: const IconThemeData(color: AppColors.textPrimary),
               title: Text(
-                _getTitleForIndex(selectedIndex),
+                _getTitleForIndex(selectedIndex, isAdmin),
                 style: AppTypography.textTheme.titleMedium?.copyWith(
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.bold,
@@ -215,7 +289,7 @@ class AppShell extends ConsumerWidget {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Text(
-                          'EventHub Admin',
+                          isAdmin ? 'EventHub Quản trị' : 'EventHub Trưởng CLB',
                           style: AppTypography.textTheme.titleLarge?.copyWith(
                             color: AppColors.onPrimary,
                             fontWeight: FontWeight.bold,
@@ -231,45 +305,105 @@ class AppShell extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  ListTile(
-                    leading: const Icon(Icons.dashboard_outlined),
-                    title: const Text('Bảng điều khiển'),
-                    selected: selectedIndex == 0,
-                    onTap: () {
-                      Navigator.pop(context);
-                      _onDestinationSelected(context, 0);
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.event_outlined),
-                    title: const Text('Quản lý sự kiện'),
-                    selected: selectedIndex == 1,
-                    onTap: () {
-                      Navigator.pop(context);
-                      _onDestinationSelected(context, 1);
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.how_to_reg_outlined),
-                    title: const Text('Duyệt đăng ký'),
-                    trailing: pendingCount > 0
-                        ? _buildPendingCountBadge(pendingCount)
-                        : null,
-                    selected: selectedIndex == 2,
-                    onTap: () {
-                      Navigator.pop(context);
-                      _onDestinationSelected(context, 2);
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.campaign_outlined),
-                    title: const Text('Thông báo CLB'),
-                    selected: selectedIndex == 3,
-                    onTap: () {
-                      Navigator.pop(context);
-                      _onDestinationSelected(context, 3);
-                    },
-                  ),
+                  if (isAdmin) ...[
+                    ListTile(
+                      leading: const Icon(Icons.dashboard_outlined),
+                      title: const Text('Bảng điều khiển'),
+                      selected: selectedIndex == 0,
+                      onTap: () {
+                        Navigator.pop(context);
+                        _onDestinationSelected(context, 0, isAdmin);
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.people_outlined),
+                      title: const Text('Quản lý người dùng'),
+                      selected: selectedIndex == 1,
+                      onTap: () {
+                        Navigator.pop(context);
+                        _onDestinationSelected(context, 1, isAdmin);
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.groups_outlined),
+                      title: const Text('Danh mục CLB'),
+                      selected: selectedIndex == 2,
+                      onTap: () {
+                        Navigator.pop(context);
+                        _onDestinationSelected(context, 2, isAdmin);
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.event_outlined),
+                      title: const Text('Giám sát sự kiện'),
+                      selected: selectedIndex == 3,
+                      onTap: () {
+                        Navigator.pop(context);
+                        _onDestinationSelected(context, 3, isAdmin);
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.how_to_reg_outlined),
+                      title: const Text('Duyệt đăng ký'),
+                      trailing: pendingCount > 0
+                          ? _buildPendingCountBadge(pendingCount)
+                          : null,
+                      selected: selectedIndex == 4,
+                      onTap: () {
+                        Navigator.pop(context);
+                        _onDestinationSelected(context, 4, isAdmin);
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.campaign_outlined),
+                      title: const Text('Thông báo hệ thống'),
+                      selected: selectedIndex == 5,
+                      onTap: () {
+                        Navigator.pop(context);
+                        _onDestinationSelected(context, 5, isAdmin);
+                      },
+                    ),
+                  ] else ...[
+                    ListTile(
+                      leading: const Icon(Icons.dashboard_outlined),
+                      title: const Text('Bảng điều khiển'),
+                      selected: selectedIndex == 0,
+                      onTap: () {
+                        Navigator.pop(context);
+                        _onDestinationSelected(context, 0, isAdmin);
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.event_outlined),
+                      title: const Text('Quản lý sự kiện'),
+                      selected: selectedIndex == 1,
+                      onTap: () {
+                        Navigator.pop(context);
+                        _onDestinationSelected(context, 1, isAdmin);
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.how_to_reg_outlined),
+                      title: const Text('Duyệt đăng ký'),
+                      trailing: pendingCount > 0
+                          ? _buildPendingCountBadge(pendingCount)
+                          : null,
+                      selected: selectedIndex == 2,
+                      onTap: () {
+                        Navigator.pop(context);
+                        _onDestinationSelected(context, 2, isAdmin);
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.campaign_outlined),
+                      title: const Text('Thông báo CLB'),
+                      selected: selectedIndex == 3,
+                      onTap: () {
+                        Navigator.pop(context);
+                        _onDestinationSelected(context, 3, isAdmin);
+                      },
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -280,13 +414,26 @@ class AppShell extends ConsumerWidget {
     );
   }
 
-  String _getTitleForIndex(int index) => switch (index) {
-        0 => 'Bảng điều khiển',
-        1 => 'Quản lý sự kiện',
-        2 => 'Duyệt đăng ký',
-        3 => 'Thông báo CLB',
-        _ => 'EventHub',
+  String _getTitleForIndex(int index, bool isAdmin) {
+    if (isAdmin) {
+      return switch (index) {
+        0 => 'Bảng điều khiển Hệ thống',
+        1 => 'Quản lý Người dùng & Phân quyền',
+        2 => 'Danh mục Câu lạc bộ',
+        3 => 'Giám sát Sự kiện Toàn trường',
+        4 => 'Duyệt Đăng ký Toàn trường',
+        5 => 'Thông báo Hệ thống',
+        _ => 'EventHub Admin',
       };
+    }
+    return switch (index) {
+      0 => 'Bảng điều khiển',
+      1 => 'Quản lý sự kiện',
+      2 => 'Duyệt đăng ký',
+      3 => 'Thông báo CLB',
+      _ => 'EventHub',
+    };
+  }
 
   Widget _buildDesktopSidebar(
     BuildContext context,
@@ -295,6 +442,7 @@ class AppShell extends ConsumerWidget {
     String clubName,
     int selectedIndex,
     int pendingCount,
+    bool isAdmin,
   ) {
     return Container(
       width: 260,
@@ -335,7 +483,7 @@ class AppShell extends ConsumerWidget {
                         ),
                       ),
                       Text(
-                        'Cổng Trưởng CLB',
+                        isAdmin ? 'Cổng Quản trị viên' : 'Cổng Trưởng CLB',
                         style: AppTypography.textTheme.labelSmall?.copyWith(
                           color: AppColors.textSecondary,
                         ),
@@ -360,13 +508,17 @@ class AppShell extends ConsumerWidget {
                 Container(
                   width: 36,
                   height: 36,
-                  decoration: const BoxDecoration(
-                    color: AppColors.primaryContainer,
+                  decoration: BoxDecoration(
+                    color: isAdmin
+                        ? AppColors.warningContainer
+                        : AppColors.primaryContainer,
                     borderRadius: AppRadius.borderR8,
                   ),
-                  child: const Icon(
-                    Icons.groups_outlined,
-                    color: AppColors.onPrimaryContainer,
+                  child: Icon(
+                    isAdmin ? Icons.admin_panel_settings : Icons.groups_outlined,
+                    color: isAdmin
+                        ? AppColors.onWarningContainer
+                        : AppColors.onPrimaryContainer,
                     size: 20,
                   ),
                 ),
@@ -386,10 +538,10 @@ class AppShell extends ConsumerWidget {
                       ),
                       const SizedBox(height: AppSpacing.s4),
                       AppStatusBadge(
-                        label: user?.role == 'admin'
-                            ? 'Quản trị viên'
-                            : 'Trưởng CLB',
-                        variant: AppBadgeVariant.info,
+                        label: isAdmin ? 'Quản trị viên' : 'Trưởng CLB',
+                        variant: isAdmin
+                            ? AppBadgeVariant.warning
+                            : AppBadgeVariant.info,
                         icon: const Icon(Icons.verified_user_outlined),
                       ),
                     ],
@@ -401,46 +553,103 @@ class AppShell extends ConsumerWidget {
           Expanded(
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s12),
-              children: [
-                _buildNavItem(
-                  icon: Icons.dashboard_outlined,
-                  selectedIcon: Icons.dashboard,
-                  label: 'Bảng điều khiển',
-                  semanticsLabel: 'Mở màn hình Bảng điều khiển CLB',
-                  isSelected: selectedIndex == 0,
-                  onTap: () => _onDestinationSelected(context, 0),
-                ),
-                const SizedBox(height: AppSpacing.s4),
-                _buildNavItem(
-                  icon: Icons.event_outlined,
-                  selectedIcon: Icons.event,
-                  label: 'Quản lý sự kiện',
-                  semanticsLabel: 'Mở màn hình Quản lý sự kiện CLB',
-                  isSelected: selectedIndex == 1,
-                  onTap: () => _onDestinationSelected(context, 1),
-                ),
-                const SizedBox(height: AppSpacing.s4),
-                _buildNavItem(
-                  icon: Icons.how_to_reg_outlined,
-                  selectedIcon: Icons.how_to_reg,
-                  label: 'Duyệt đăng ký',
-                  semanticsLabel: pendingCount > 0
-                      ? 'Mở màn hình Duyệt đăng ký, có $pendingCount đơn chờ duyệt'
-                      : 'Mở màn hình Duyệt đăng ký',
-                  badgeCount: pendingCount,
-                  isSelected: selectedIndex == 2,
-                  onTap: () => _onDestinationSelected(context, 2),
-                ),
-                const SizedBox(height: AppSpacing.s4),
-                _buildNavItem(
-                  icon: Icons.campaign_outlined,
-                  selectedIcon: Icons.campaign,
-                  label: 'Thông báo CLB',
-                  semanticsLabel: 'Mở màn hình Thông báo CLB',
-                  isSelected: selectedIndex == 3,
-                  onTap: () => _onDestinationSelected(context, 3),
-                ),
-              ],
+              children: isAdmin
+                  ? [
+                      _buildNavItem(
+                        icon: Icons.dashboard_outlined,
+                        selectedIcon: Icons.dashboard,
+                        label: 'Bảng điều khiển',
+                        semanticsLabel: 'Mở Bảng điều khiển Hệ thống',
+                        isSelected: selectedIndex == 0,
+                        onTap: () => _onDestinationSelected(context, 0, isAdmin),
+                      ),
+                      const SizedBox(height: AppSpacing.s4),
+                      _buildNavItem(
+                        icon: Icons.people_outlined,
+                        selectedIcon: Icons.people,
+                        label: 'Người dùng',
+                        semanticsLabel: 'Mở màn hình Quản lý người dùng',
+                        isSelected: selectedIndex == 1,
+                        onTap: () => _onDestinationSelected(context, 1, isAdmin),
+                      ),
+                      const SizedBox(height: AppSpacing.s4),
+                      _buildNavItem(
+                        icon: Icons.groups_outlined,
+                        selectedIcon: Icons.groups,
+                        label: 'Câu lạc bộ',
+                        semanticsLabel: 'Mở màn hình Danh mục Câu lạc bộ',
+                        isSelected: selectedIndex == 2,
+                        onTap: () => _onDestinationSelected(context, 2, isAdmin),
+                      ),
+                      const SizedBox(height: AppSpacing.s4),
+                      _buildNavItem(
+                        icon: Icons.event_outlined,
+                        selectedIcon: Icons.event,
+                        label: 'Giám sát sự kiện',
+                        semanticsLabel: 'Mở màn hình Giám sát sự kiện',
+                        isSelected: selectedIndex == 3,
+                        onTap: () => _onDestinationSelected(context, 3, isAdmin),
+                      ),
+                      const SizedBox(height: AppSpacing.s4),
+                      _buildNavItem(
+                        icon: Icons.how_to_reg_outlined,
+                        selectedIcon: Icons.how_to_reg,
+                        label: 'Duyệt đăng ký',
+                        semanticsLabel: 'Mở màn hình Duyệt đăng ký',
+                        badgeCount: pendingCount,
+                        isSelected: selectedIndex == 4,
+                        onTap: () => _onDestinationSelected(context, 4, isAdmin),
+                      ),
+                      const SizedBox(height: AppSpacing.s4),
+                      _buildNavItem(
+                        icon: Icons.campaign_outlined,
+                        selectedIcon: Icons.campaign,
+                        label: 'Thông báo hệ thống',
+                        semanticsLabel: 'Mở màn hình Thông báo hệ thống',
+                        isSelected: selectedIndex == 5,
+                        onTap: () => _onDestinationSelected(context, 5, isAdmin),
+                      ),
+                    ]
+                  : [
+                      _buildNavItem(
+                        icon: Icons.dashboard_outlined,
+                        selectedIcon: Icons.dashboard,
+                        label: 'Bảng điều khiển',
+                        semanticsLabel: 'Mở màn hình Bảng điều khiển CLB',
+                        isSelected: selectedIndex == 0,
+                        onTap: () => _onDestinationSelected(context, 0, isAdmin),
+                      ),
+                      const SizedBox(height: AppSpacing.s4),
+                      _buildNavItem(
+                        icon: Icons.event_outlined,
+                        selectedIcon: Icons.event,
+                        label: 'Quản lý sự kiện',
+                        semanticsLabel: 'Mở màn hình Quản lý sự kiện CLB',
+                        isSelected: selectedIndex == 1,
+                        onTap: () => _onDestinationSelected(context, 1, isAdmin),
+                      ),
+                      const SizedBox(height: AppSpacing.s4),
+                      _buildNavItem(
+                        icon: Icons.how_to_reg_outlined,
+                        selectedIcon: Icons.how_to_reg,
+                        label: 'Duyệt đăng ký',
+                        semanticsLabel: pendingCount > 0
+                            ? 'Mở màn hình Duyệt đăng ký, có $pendingCount đơn chờ duyệt'
+                            : 'Mở màn hình Duyệt đăng ký',
+                        badgeCount: pendingCount,
+                        isSelected: selectedIndex == 2,
+                        onTap: () => _onDestinationSelected(context, 2, isAdmin),
+                      ),
+                      const SizedBox(height: AppSpacing.s4),
+                      _buildNavItem(
+                        icon: Icons.campaign_outlined,
+                        selectedIcon: Icons.campaign,
+                        label: 'Thông báo CLB',
+                        semanticsLabel: 'Mở màn hình Thông báo CLB',
+                        isSelected: selectedIndex == 3,
+                        onTap: () => _onDestinationSelected(context, 3, isAdmin),
+                      ),
+                    ],
             ),
           ),
           const Divider(height: 1, color: AppColors.border),
@@ -450,13 +659,15 @@ class AppShell extends ConsumerWidget {
               children: [
                 CircleAvatar(
                   radius: 18,
-                  backgroundColor: AppColors.primaryContainer,
+                  backgroundColor: isAdmin
+                      ? AppColors.warningContainer
+                      : AppColors.primaryContainer,
                   child: Text(
                     (user?.displayName.isNotEmpty == true)
                         ? user!.displayName[0].toUpperCase()
                         : 'U',
                     style: AppTypography.textTheme.labelMedium?.copyWith(
-                      color: AppColors.primary,
+                      color: isAdmin ? AppColors.onWarningContainer : AppColors.primary,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

@@ -662,3 +662,262 @@ class FakeWebAnalyticsService implements IWebAnalyticsService {
     loggedEvents.add((name, parameters));
   }
 }
+
+class FakeAdminService implements IAdminService {
+  FakeAdminService({
+    List<WebUserProfile>? initialUsers,
+    List<Club>? initialClubs,
+    List<Event>? initialEvents,
+    List<Registration>? initialRegistrations,
+    List<Announcement>? initialAnnouncements,
+  }) {
+    if (initialUsers != null) _users.addAll(initialUsers);
+    if (initialClubs != null) _clubs.addAll(initialClubs);
+    if (initialEvents != null) _events.addAll(initialEvents);
+    if (initialRegistrations != null) _regs.addAll(initialRegistrations);
+    if (initialAnnouncements != null) _announcements.addAll(initialAnnouncements);
+
+    _usersController = StreamController<List<WebUserProfile>>.broadcast();
+    _clubsController = StreamController<List<Club>>.broadcast();
+    _eventsController = StreamController<List<Event>>.broadcast();
+    _regsController = StreamController<List<Registration>>.broadcast();
+    _announcementsController = StreamController<List<Announcement>>.broadcast();
+  }
+
+  final List<WebUserProfile> _users = [];
+  final List<Club> _clubs = [];
+  final List<Event> _events = [];
+  final List<Registration> _regs = [];
+  final List<Announcement> _announcements = [];
+
+  late final StreamController<List<WebUserProfile>> _usersController;
+  late final StreamController<List<Club>> _clubsController;
+  late final StreamController<List<Event>> _eventsController;
+  late final StreamController<List<Registration>> _regsController;
+  late final StreamController<List<Announcement>> _announcementsController;
+
+  @override
+  Stream<List<WebUserProfile>> streamAllUsers() {
+    return _createStream(_usersController, () => List.unmodifiable(_users));
+  }
+
+  @override
+  Future<Result<void>> updateUserRole({
+    required String targetUid,
+    required String newRole,
+    String? clubId,
+    String? clubName,
+  }) async {
+    final idx = _users.indexWhere((u) => u.uid == targetUid);
+    if (idx != -1) {
+      final old = _users[idx];
+      _users[idx] = WebUserProfile(
+        uid: old.uid,
+        email: old.email,
+        displayName: old.displayName,
+        role: newRole,
+        clubId: newRole == 'staff' ? clubId : null,
+        clubName: newRole == 'staff' ? clubName : null,
+      );
+      _usersController.add(List.unmodifiable(_users));
+    }
+    return const Success(null);
+  }
+
+  @override
+  Stream<List<Club>> streamAllClubs() {
+    return _createStream(_clubsController, () => List.unmodifiable(_clubs));
+  }
+
+  @override
+  Future<Result<String>> createClub({
+    required String name,
+    String shortName = '',
+    String description = '',
+  }) async {
+    final id = 'club_${_clubs.length + 1}';
+    final club = Club(
+      id: id,
+      name: name,
+      shortName: shortName,
+      description: description,
+      status: 'active',
+    );
+    _clubs.add(club);
+    _clubsController.add(List.unmodifiable(_clubs));
+    return Result.success(id);
+  }
+
+  @override
+  Future<Result<void>> updateClub(Club club) async {
+    final idx = _clubs.indexWhere((c) => c.id == club.id);
+    if (idx != -1) {
+      _clubs[idx] = club;
+      _clubsController.add(List.unmodifiable(_clubs));
+    }
+    return const Success(null);
+  }
+
+  @override
+  Future<Result<void>> archiveClub(String clubId) async {
+    final idx = _clubs.indexWhere((c) => c.id == clubId);
+    if (idx != -1) {
+      final old = _clubs[idx];
+      _clubs[idx] = Club(
+        id: old.id,
+        name: old.name,
+        shortName: old.shortName,
+        description: old.description,
+        status: 'archived',
+      );
+      _clubsController.add(List.unmodifiable(_clubs));
+    }
+    return const Success(null);
+  }
+
+  @override
+  Stream<List<Event>> streamAllEvents() {
+    return _createStream(_eventsController, () => List.unmodifiable(_events));
+  }
+
+  @override
+  Future<Result<void>> adminCancelEvent(String eventId) async {
+    final idx = _events.indexWhere((e) => e.id == eventId);
+    if (idx != -1) {
+      final old = _events[idx];
+      _events[idx] = Event(
+        id: old.id,
+        title: old.title,
+        clubName: old.clubName,
+        location: old.location,
+        startsAt: old.startsAt,
+        endsAt: old.endsAt,
+        deadline: old.deadline,
+        description: old.description,
+        coverKey: old.coverKey,
+        topic: old.topic,
+        audience: old.audience,
+        preparation: old.preparation,
+        activities: old.activities,
+        mode: old.mode,
+        status: 'cancelled',
+        capacity: old.capacity,
+        activeCount: old.activeCount,
+        clubId: old.clubId,
+        visibility: old.visibility,
+        updatedAt: DateTime.now(),
+      );
+      _eventsController.add(List.unmodifiable(_events));
+    }
+    return const Success(null);
+  }
+
+  @override
+  Future<Result<void>> adminArchiveEvent(String eventId) async {
+    final idx = _events.indexWhere((e) => e.id == eventId);
+    if (idx != -1) {
+      final old = _events[idx];
+      _events[idx] = Event(
+        id: old.id,
+        title: old.title,
+        clubName: old.clubName,
+        location: old.location,
+        startsAt: old.startsAt,
+        endsAt: old.endsAt,
+        deadline: old.deadline,
+        description: old.description,
+        coverKey: old.coverKey,
+        topic: old.topic,
+        audience: old.audience,
+        preparation: old.preparation,
+        activities: old.activities,
+        mode: old.mode,
+        status: 'archived',
+        capacity: old.capacity,
+        activeCount: old.activeCount,
+        clubId: old.clubId,
+        visibility: old.visibility,
+        updatedAt: DateTime.now(),
+      );
+      _eventsController.add(List.unmodifiable(_events));
+    }
+    return const Success(null);
+  }
+
+  @override
+  Stream<List<Registration>> streamAllPendingRegistrations() {
+    return _createStream(
+      _regsController,
+      () => List.unmodifiable(_regs.where((r) => r.status == 'pending')),
+    );
+  }
+
+  @override
+  Future<int> countSystemPublishedEvents() async {
+    return _events.where((e) => e.status == 'published').length;
+  }
+
+  @override
+  Future<int> countSystemPendingRegistrations() async {
+    return _regs.where((r) => r.status == 'pending').length;
+  }
+
+  @override
+  Future<int> countSystemApprovedRegistrations() async {
+    return _regs.where((r) => r.status == 'approved').length;
+  }
+
+  @override
+  Future<int> countUsersByRole(String role) async {
+    return _users.where((u) => u.role == role).length;
+  }
+
+  @override
+  Future<int> countActiveClubs() async {
+    return _clubs.where((c) => c.status == 'active').length;
+  }
+
+  @override
+  Future<List<Map<String, Object>>> getClubEventStats() async {
+    final Map<String, Map<String, Object>> map = {};
+    for (final e in _events) {
+      final clubName = e.clubName;
+      if (!map.containsKey(clubName)) {
+        map[clubName] = {
+          'clubName': clubName,
+          'published': 0,
+          'approved': 0,
+          'checkedIn': 0,
+        };
+      }
+      if (e.status == 'published') {
+        map[clubName]!['published'] = (map[clubName]!['published'] as int) + 1;
+      }
+    }
+    return map.values.toList();
+  }
+
+  @override
+  Stream<List<Announcement>> streamAllAnnouncements() {
+    return _createStream(
+      _announcementsController,
+      () => List.unmodifiable(_announcements),
+    );
+  }
+
+  Stream<T> _createStream<T>(
+    StreamController<T> controller,
+    T Function() initialValue,
+  ) {
+    late StreamController<T> sc;
+    StreamSubscription<T>? sub;
+    sc = StreamController<T>(
+      onListen: () {
+        sc.add(initialValue());
+        sub = controller.stream.listen(sc.add, onError: sc.addError);
+      },
+      onCancel: () => sub?.cancel(),
+    );
+    return sc.stream;
+  }
+}

@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 import '../screens/auth/sign_in_screen.dart';
 import '../screens/shell/app_shell.dart';
 import '../screens/dashboard/club_dashboard_screen.dart';
+import '../screens/admin/admin_dashboard_screen.dart';
+import '../screens/users/admin_users_screen.dart';
+import '../screens/clubs/admin_clubs_screen.dart';
 import '../screens/events/club_events_screen.dart';
 import '../screens/events/live_qr_panel_screen.dart';
 import '../screens/reviews/review_queue_screen.dart';
@@ -30,7 +33,9 @@ final webRouterProvider = Provider<GoRouter>((ref) {
       final isLoggingIn = state.uri.path == '/login';
 
       if (authState is WebAuthSuccess) {
-        if (isLoggingIn) return '/dashboard';
+        if (isLoggingIn) {
+          return authState.user.isAdmin ? '/admin-dashboard' : '/dashboard';
+        }
         return null;
       }
 
@@ -54,6 +59,18 @@ final webRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/dashboard',
             builder: (context, state) => const ClubDashboardScreen(),
+          ),
+          GoRoute(
+            path: '/admin-dashboard',
+            builder: (context, state) => const AdminDashboardScreen(),
+          ),
+          GoRoute(
+            path: '/users',
+            builder: (context, state) => const AdminUsersScreen(),
+          ),
+          GoRoute(
+            path: '/clubs',
+            builder: (context, state) => const AdminClubsScreen(),
           ),
           GoRoute(
             path: '/events',

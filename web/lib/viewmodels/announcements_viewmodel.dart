@@ -49,8 +49,11 @@ class AnnouncementsState {
 class AnnouncementsViewModel extends Notifier<AnnouncementsState> {
   @override
   AnnouncementsState build() {
+    final user = ref.watch(currentStaffProfileProvider);
+    final isAdmin = user?.isAdmin ?? false;
     final clubId = ref.watch(currentClubIdProvider);
-    if (clubId.isEmpty) {
+
+    if (!isAdmin && clubId.isEmpty) {
       return const AnnouncementsState(
         loadState: LoadState.error(
           failure: AppFailure(
@@ -61,9 +64,20 @@ class AnnouncementsViewModel extends Notifier<AnnouncementsState> {
       );
     }
 
-    final clubService = ref.watch(clubServiceProvider);
+    final Stream<List<Event>> eventsStream;
+    final Stream<List<Announcement>> annStream;
 
-    final eventsSub = clubService.streamClubEvents(clubId).listen(
+    if (isAdmin) {
+      final adminService = ref.watch(adminServiceProvider);
+      eventsStream = adminService.streamAllEvents();
+      annStream = adminService.streamAllAnnouncements();
+    } else {
+      final clubService = ref.watch(clubServiceProvider);
+      eventsStream = clubService.streamClubEvents(clubId);
+      annStream = clubService.streamClubAnnouncements(clubId);
+    }
+
+    final eventsSub = eventsStream.listen(
       (events) {
         if (!ref.mounted) return;
         state = state.copyWith(events: events);
@@ -72,7 +86,7 @@ class AnnouncementsViewModel extends Notifier<AnnouncementsState> {
     );
     ref.onDispose(eventsSub.cancel);
 
-    final annSub = clubService.streamClubAnnouncements(clubId).listen(
+    final annSub = annStream.listen(
       (announcements) {
         if (!ref.mounted) return;
         state = state.copyWith(
@@ -118,11 +132,12 @@ class AnnouncementsViewModel extends Notifier<AnnouncementsState> {
 
     final user = ref.read(currentStaffProfileProvider);
     final staffUid = user?.uid ?? '';
-    final clubId = user?.clubId ?? '';
-    final clubName =
-        ref.read(activeClubProvider(clubId)).asData?.value?.name ??
-        user?.clubName ??
-        'Câu lạc bộ';
+    final clubId = scope == 'global' ? '' : (user?.clubId ?? '');
+    final clubName = scope == 'global'
+        ? 'Ban Quản trị FPTU'
+        : (ref.read(activeClubProvider(clubId)).asData?.value?.name ??
+            user?.clubName ??
+            'Câu lạc bộ');
 
     final announcement = Announcement(
       id: '',

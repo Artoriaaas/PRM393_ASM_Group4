@@ -74,8 +74,11 @@ class ReviewQueueState {
 class ReviewQueueViewModel extends Notifier<ReviewQueueState> {
   @override
   ReviewQueueState build() {
+    final user = ref.watch(currentStaffProfileProvider);
+    final isAdmin = user?.isAdmin ?? false;
     final clubId = ref.watch(currentClubIdProvider);
-    if (clubId.isEmpty) {
+
+    if (!isAdmin && clubId.isEmpty) {
       return const ReviewQueueState(
         loadState: LoadState.error(
           failure: AppFailure(
@@ -86,9 +89,20 @@ class ReviewQueueViewModel extends Notifier<ReviewQueueState> {
       );
     }
 
-    final clubService = ref.watch(clubServiceProvider);
+    final Stream<List<Event>> eventsStream;
+    final Stream<List<Registration>> regsStream;
 
-    final eventsSub = clubService.streamClubEvents(clubId).listen(
+    if (isAdmin) {
+      final adminService = ref.watch(adminServiceProvider);
+      eventsStream = adminService.streamAllEvents();
+      regsStream = adminService.streamAllPendingRegistrations();
+    } else {
+      final clubService = ref.watch(clubServiceProvider);
+      eventsStream = clubService.streamClubEvents(clubId);
+      regsStream = clubService.streamAllClubRegistrations(clubId);
+    }
+
+    final eventsSub = eventsStream.listen(
       (events) {
         if (!ref.mounted) return;
         state = state.copyWith(
@@ -100,7 +114,7 @@ class ReviewQueueViewModel extends Notifier<ReviewQueueState> {
     );
     ref.onDispose(eventsSub.cancel);
 
-    final regsSub = clubService.streamAllClubRegistrations(clubId).listen(
+    final regsSub = regsStream.listen(
       (regs) {
         if (!ref.mounted) return;
         _applyRegistrations(regs);
