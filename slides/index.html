@@ -19,43 +19,45 @@
 
   <style>
     :root {
-      --bg-dark: #070B16;
-      --bg-card: rgba(13, 22, 44, 0.88);
-      --border-card: rgba(56, 189, 248, 0.20);
-      --primary: #FF5722;
-      --primary-glow: rgba(255, 87, 34, 0.4);
-      --secondary: #0284C7;
-      --accent: #38BDF8;
-      --success: #10B981;
+      --bg-light: #FFF8F3;
+      --bg-card: rgba(255, 255, 255, 0.82);
+      --border-card: rgba(255, 140, 60, 0.28);
+      --primary: #FF6B35;
+      --primary-glow: rgba(255, 107, 53, 0.35);
+      --secondary: #F7A844;
+      --accent: #FF8C69;
+      --success: #E8A44A;
       --warning: #F59E0B;
       --danger: #EF4444;
-      --purple: #8B5CF6;
-      --text-main: #F8FAFC;
-      --text-muted: #94A3B8;
+      --pink: #F472B6;
+      --rose: #FB7185;
+      --text-main: #3D1F0A;
+      --text-muted: #8B6650;
       --font-main: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-code: 'JetBrains Mono', monospace;
     }
 
-    /* Force dark background on Reveal viewport & all wrappers */
+    /* Light warm background */
     html, body, .reveal-viewport, .reveal {
-      background-color: #070B16 !important;
-      background: 
-        radial-gradient(circle at 10% 15%, rgba(2, 132, 199, 0.25) 0%, transparent 45%),
-        radial-gradient(circle at 90% 15%, rgba(255, 87, 34, 0.22) 0%, transparent 40%),
-        radial-gradient(circle at 50% 90%, rgba(139, 92, 246, 0.20) 0%, transparent 50%),
-        radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.16) 0%, transparent 40%),
-        linear-gradient(155deg, #060913 0%, #0B132B 55%, #080D1A 100%) !important;
+      background-color: #FFF8F3 !important;
+      background:
+        radial-gradient(circle at 8% 12%,  rgba(255, 180, 100, 0.30) 0%, transparent 42%),
+        radial-gradient(circle at 92% 10%,  rgba(244, 114, 182, 0.22) 0%, transparent 38%),
+        radial-gradient(circle at 50% 92%,  rgba(255, 107, 53, 0.18) 0%, transparent 48%),
+        radial-gradient(circle at 88% 85%,  rgba(251, 191, 36, 0.20) 0%, transparent 40%),
+        radial-gradient(circle at 15% 80%,  rgba(249, 115, 22, 0.14) 0%, transparent 36%),
+        linear-gradient(155deg, #FFF8F3 0%, #FFF1E6 55%, #FEF3F0 100%) !important;
       font-family: var(--font-main);
       color: var(--text-main) !important;
       overflow: hidden;
     }
 
-    /* Tech dot matrix pattern */
+    /* Soft dot pattern */
     .reveal::before {
       content: '';
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
-      background-image: radial-gradient(rgba(56, 189, 248, 0.10) 1.5px, transparent 1.5px);
+      background-image: radial-gradient(rgba(255, 140, 60, 0.12) 1.5px, transparent 1.5px);
       background-size: 36px 36px;
       pointer-events: none;
       z-index: 1;
@@ -85,17 +87,17 @@
       font-weight: 600;
       letter-spacing: 1.5px;
       text-transform: uppercase;
-      color: #94A3B8;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      color: #A0714F;
+      border-bottom: 1px solid rgba(255, 140, 60, 0.30);
       padding-bottom: 8px;
       z-index: 10;
     }
     .header-bar .tag {
-      background: rgba(2, 132, 199, 0.25);
-      color: #38BDF8;
+      background: rgba(255, 107, 53, 0.15);
+      color: #E84D1C;
       padding: 4px 10px;
       border-radius: 6px;
-      border: 1px solid rgba(56, 189, 248, 0.45);
+      border: 1px solid rgba(255, 107, 53, 0.45);
       font-weight: 700;
       font-size: 12px;
       letter-spacing: 0.5px;
@@ -110,7 +112,7 @@
       font-size: 13.5px;
       font-weight: 800;
       letter-spacing: 2.5px;
-      color: #38BDF8;
+      color: #E84D1C;
       text-transform: uppercase;
       margin-bottom: 6px;
       display: flex;
@@ -121,13 +123,13 @@
       font-size: 32px !important;
       font-weight: 800 !important;
       letter-spacing: -0.5px;
-      color: #FFFFFF !important;
+      color: #2D1206 !important;
       margin: 0 !important;
       line-height: 1.25 !important;
       text-transform: none !important;
     }
     .slide-title span {
-      background: linear-gradient(135deg, #FF6E40 0%, #FFA726 100%);
+      background: linear-gradient(135deg, #FF6B35 0%, #F7A844 50%, #F472B6 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -138,24 +140,24 @@
       border: 1px solid var(--border-card);
       border-radius: 14px;
       padding: 18px 20px;
-      box-shadow: 0 10px 32px rgba(0, 0, 0, 0.55);
+      box-shadow: 0 6px 24px rgba(255, 107, 53, 0.10), 0 2px 8px rgba(0,0,0,0.06);
       backdrop-filter: blur(16px);
       transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
     .card:hover {
-      border-color: rgba(56, 189, 248, 0.45);
-      box-shadow: 0 12px 36px rgba(2, 132, 199, 0.25);
+      border-color: rgba(255, 140, 60, 0.55);
+      box-shadow: 0 10px 32px rgba(255, 107, 53, 0.20);
       transform: translateY(-2px);
     }
     .card.highlight {
-      border: 1px solid rgba(255, 87, 34, 0.45);
-      background: linear-gradient(145deg, rgba(255, 87, 34, 0.14) 0%, rgba(13, 22, 44, 0.95) 100%);
-      box-shadow: 0 10px 32px rgba(255, 87, 34, 0.2);
+      border: 1px solid rgba(244, 114, 182, 0.55);
+      background: linear-gradient(145deg, rgba(255, 236, 220, 0.90) 0%, rgba(255, 248, 243, 0.98) 100%);
+      box-shadow: 0 10px 32px rgba(244, 114, 182, 0.18);
     }
     .card-title {
       font-size: 18px;
       font-weight: 700;
-      color: #FFFFFF;
+      color: #2D1206;
       margin-bottom: 10px;
       display: flex;
       align-items: center;
@@ -166,7 +168,7 @@
     p {
       font-size: 15px;
       line-height: 1.55;
-      color: #CBD5E1;
+      color: #6B3A20;
       margin: 0 0 10px 0;
     }
 
@@ -206,9 +208,9 @@
       position: relative;
       border-radius: 12px;
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      background: #030610;
-      box-shadow: 0 14px 36px rgba(0,0,0,0.6);
+      border: 1px solid rgba(255, 140, 60, 0.30);
+      background: #FFF1E6;
+      box-shadow: 0 10px 30px rgba(255, 107, 53, 0.15);
     }
     .img-frame img {
       display: block;
@@ -216,26 +218,26 @@
       height: auto;
       max-height: 275px;
       object-fit: contain;
-      background: #000;
+      background: #FFF8F3;
       margin: 0 !important;
     }
     .img-badge {
       position: absolute;
       top: 10px;
       left: 10px;
-      background: rgba(7, 11, 22, 0.90);
-      color: #38BDF8;
+      background: rgba(255, 248, 243, 0.92);
+      color: #E84D1C;
       font-size: 11.5px;
       font-weight: 700;
       padding: 4px 10px;
       border-radius: 6px;
-      border: 1px solid rgba(56, 189, 248, 0.45);
+      border: 1px solid rgba(255, 107, 53, 0.45);
       backdrop-filter: blur(6px);
       letter-spacing: 0.5px;
     }
     .img-caption {
       font-size: 13px;
-      color: #94A3B8;
+      color: #A0714F;
       text-align: center;
       margin-top: 8px;
       line-height: 1.45;
@@ -250,22 +252,22 @@
       font-weight: 700;
       letter-spacing: 0.3px;
     }
-    .badge-blue { background: rgba(2, 132, 199, 0.25); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.45); }
-    .badge-orange { background: rgba(255, 87, 34, 0.25); color: #FF7043; border: 1px solid rgba(255, 87, 34, 0.45); }
-    .badge-green { background: rgba(16, 185, 129, 0.25); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.45); }
-    .badge-purple { background: rgba(139, 92, 246, 0.25); color: #A78BFA; border: 1px solid rgba(139, 92, 246, 0.45); }
+    .badge-blue { background: rgba(255, 107, 53, 0.15); color: #E84D1C; border: 1px solid rgba(255, 107, 53, 0.40); }
+    .badge-orange { background: rgba(247, 168, 68, 0.20); color: #C97B00; border: 1px solid rgba(247, 168, 68, 0.50); }
+    .badge-green { background: rgba(244, 114, 182, 0.15); color: #C2185B; border: 1px solid rgba(244, 114, 182, 0.40); }
+    .badge-purple { background: rgba(251, 113, 133, 0.15); color: #BE185D; border: 1px solid rgba(251, 113, 133, 0.40); }
 
     /* Code Blocks */
     pre.code-box {
-      background: #030610 !important;
-      border: 1px solid rgba(255, 255, 255, 0.14) !important;
+      background: #FFF1E6 !important;
+      border: 1px solid rgba(255, 140, 60, 0.30) !important;
       border-radius: 10px !important;
       padding: 12px 14px !important;
       font-family: var(--font-code) !important;
       font-size: 13px !important;
       line-height: 1.45 !important;
-      color: #E2E8F0 !important;
-      box-shadow: inset 0 2px 10px rgba(0,0,0,0.65);
+      color: #3D1F0A !important;
+      box-shadow: inset 0 2px 8px rgba(255, 107, 53, 0.08);
       margin: 8px 0 !important;
       overflow-x: auto;
     }
@@ -287,7 +289,7 @@
       align-items: flex-start;
       gap: 10px;
       line-height: 1.5;
-      color: #CBD5E1;
+      color: #5A2D0C;
     }
     ul.check-list li i {
       margin-top: 3px;
@@ -303,20 +305,20 @@
       margin-top: 8px;
     }
     table.data-table th {
-      background: rgba(2, 132, 199, 0.22);
-      color: #38BDF8;
+      background: rgba(255, 107, 53, 0.15);
+      color: #E84D1C;
       padding: 9px 12px;
       text-align: left;
       font-weight: 700;
-      border-bottom: 1px solid rgba(56, 189, 248, 0.4);
+      border-bottom: 1px solid rgba(255, 107, 53, 0.35);
     }
     table.data-table td {
       padding: 8px 12px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      color: #E2E8F0;
+      border-bottom: 1px solid rgba(255, 140, 60, 0.15);
+      color: #4A2010;
     }
     table.data-table tr:hover td {
-      background: rgba(255, 255, 255, 0.04);
+      background: rgba(255, 140, 60, 0.07);
     }
 
     /* Big Numbers */
@@ -326,18 +328,18 @@
       background: var(--bg-card);
       border-radius: 12px;
       border: 1px solid var(--border-card);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 6px 20px rgba(255, 107, 53, 0.12);
     }
     .stat-num {
       font-size: 38px;
       font-weight: 800;
-      color: #FFFFFF;
+      color: #E84D1C;
       line-height: 1;
       margin-bottom: 6px;
     }
     .stat-label {
       font-size: 12.5px;
-      color: #94A3B8;
+      color: #A0714F;
       text-transform: uppercase;
       letter-spacing: 0.8px;
       font-weight: 600;
@@ -346,16 +348,16 @@
     /* Reveal Progress Bar & Controls Customization */
     .reveal .progress {
       height: 5px;
-      color: #FF5722;
-      background: rgba(255, 255, 255, 0.12);
+      color: #FF6B35;
+      background: rgba(255, 140, 60, 0.20);
     }
     .reveal .slide-number {
       font-family: var(--font-code);
       font-size: 13.5px;
-      background: rgba(7, 11, 22, 0.9);
-      border: 1px solid var(--border-card);
+      background: rgba(255, 248, 243, 0.92);
+      border: 1px solid rgba(255, 140, 60, 0.35);
       border-radius: 6px;
-      color: #38BDF8;
+      color: #E84D1C;
       right: 25px;
       bottom: 25px;
       padding: 6px 12px;
@@ -364,9 +366,9 @@
 
     /* Glow pulse animation for highlights */
     @keyframes pulse-glow {
-      0% { box-shadow: 0 0 15px rgba(255, 87, 34, 0.2); }
-      50% { box-shadow: 0 0 28px rgba(255, 87, 34, 0.55); }
-      100% { box-shadow: 0 0 15px rgba(255, 87, 34, 0.2); }
+      0% { box-shadow: 0 0 15px rgba(255, 107, 53, 0.25); }
+      50% { box-shadow: 0 0 28px rgba(244, 114, 182, 0.45); }
+      100% { box-shadow: 0 0 15px rgba(255, 107, 53, 0.25); }
     }
     .glow {
       animation: pulse-glow 3s infinite;
@@ -446,9 +448,9 @@
       white-space: nowrap;
       font-size: 12.5px;
       padding: 1px 5px;
-      background: rgba(0, 0, 0, 0.35);
+      background: rgba(255, 140, 60, 0.12);
       border-radius: 4px;
-      color: #38BDF8;
+      color: #C94A1A;
     }
   </style>
 </head>
@@ -471,35 +473,35 @@
             <i class="fa-solid fa-fire"></i> GOOGLE CLOUD & FIREBASE BACKEND SUITE
           </div>
           
-          <h1 style="font-size: 50px; font-weight: 900; letter-spacing: -1.5px; margin: 0 0 16px 0; color: #FFFFFF; line-height: 1.2;">
+          <h1 style="font-size: 50px; font-weight: 900; letter-spacing: -1.5px; margin: 0 0 16px 0; color: #2D1206; line-height: 1.2;">
             EventHub — Kiến Trúc & Tích Hợp<br>
             <span style="background: linear-gradient(135deg, #FF6E40 0%, #38BDF8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
               Hệ Thống Dịch Vụ Đám Mây Firebase
             </span>
           </h1>
           
-          <p style="font-size: 18px; color: #CBD5E1; max-width: 860px; margin: 0 auto 35px auto; line-height: 1.6;">
+          <p style="font-size: 18px; color: #6B3A20; max-width: 860px; margin: 0 auto 35px auto; line-height: 1.6;">
             Báo cáo toàn diện 6 dịch vụ Firebase (Auth, Storage, FCM, Analytics, Crashlytics, Remote Config), 
             kiểm thử tự động ARTEMIS và tối ưu mã nguồn với AI Code Review.
           </p>
 
           <div style="display: flex; justify-content: center; gap: 22px; margin-bottom: 30px;">
-            <div class="card" style="padding: 16px 28px; text-align: center; border-color: rgba(56, 189, 248, 0.35);">
-              <div style="font-size: 12.5px; color: #94A3B8; text-transform: uppercase; font-weight: 600; letter-spacing: 0.8px;">Nhóm thực hiện</div>
-              <div style="font-size: 19px; font-weight: 800; color: #38BDF8; margin-top: 4px;"><i class="fa-solid fa-users"></i> Nhóm 4 (Group 4)</div>
+            <div class="card" style="padding: 16px 28px; text-align: center; border-color: rgba(255, 140, 60, 0.35);">
+              <div style="font-size: 12.5px; color: #A0714F; text-transform: uppercase; font-weight: 600; letter-spacing: 0.8px;">Nhóm thực hiện</div>
+              <div style="font-size: 19px; font-weight: 800; color: #E84D1C; margin-top: 4px;"><i class="fa-solid fa-users"></i> Nhóm 4 (Group 4)</div>
             </div>
             <div class="card" style="padding: 16px 28px; text-align: center; border-color: rgba(255, 87, 34, 0.35);">
-              <div style="font-size: 12.5px; color: #94A3B8; text-transform: uppercase; font-weight: 600; letter-spacing: 0.8px;">Project ID</div>
+              <div style="font-size: 12.5px; color: #A0714F; text-transform: uppercase; font-weight: 600; letter-spacing: 0.8px;">Project ID</div>
               <div style="font-size: 19px; font-weight: 800; color: #FF7043; margin-top: 4px;"><i class="fa-solid fa-cloud"></i> eventhub-group4</div>
             </div>
             <div class="card" style="padding: 16px 28px; text-align: center; border-color: rgba(16, 185, 129, 0.35);">
-              <div style="font-size: 12.5px; color: #94A3B8; text-transform: uppercase; font-weight: 600; letter-spacing: 0.8px;">Test Coverage</div>
+              <div style="font-size: 12.5px; color: #A0714F; text-transform: uppercase; font-weight: 600; letter-spacing: 0.8px;">Test Coverage</div>
               <div style="font-size: 19px; font-weight: 800; color: #34D399; margin-top: 4px;"><i class="fa-solid fa-shield-check"></i> 65 Unit + 25 ARTEMIS</div>
             </div>
           </div>
 
-          <div style="font-size: 14px; color: #94A3B8;">
-            Thành viên chính: <strong style="color: #FFFFFF;">Nguyễn Trọng Kiệt (KietNTSE)</strong> & Nhóm 4 &bull; Giảng viên hướng dẫn: <strong style="color: #FFFFFF;">Bộ môn SE FPT University</strong>
+          <div style="font-size: 14px; color: #A0714F;">
+            Thành viên chính: <strong style=" Trọng Kiệt (KietNTSE)</strong> & Nhóm 4 &bull; Giảng viên hướng dẫn: <strong style=" SE FPT University</strong>
           </div>
         </div>
       </section>
@@ -521,12 +523,12 @@
 
         <div class="grid-3" style="margin-top: 15px;">
           <div class="card">
-            <div class="card-title"><i class="fa-solid fa-cubes text-accent" style="color: #38BDF8;"></i> Phần 1: Nền Tảng Dự Án</div>
+            <div class="card-title"><i class="fa-solid fa-cubes text-accent" style="color: #E84D1C;"></i> Phần 1: Nền Tảng Dự Án</div>
             <ul class="check-list">
-              <li><i class="fa-solid fa-angle-right" style="color: #38BDF8;"></i> Tổng quan giải pháp EventHub</li>
-              <li><i class="fa-solid fa-angle-right" style="color: #38BDF8;"></i> Môi trường & Khởi tạo Firebase SDK</li>
-              <li><i class="fa-solid fa-angle-right" style="color: #38BDF8;"></i> Kiến trúc Clean Architecture MVVM</li>
-              <li><i class="fa-solid fa-angle-right" style="color: #38BDF8;"></i> Giao diện người dùng thực tế</li>
+              <li><i class="fa-solid fa-angle-right" style="color: #E84D1C;"></i> Tổng quan giải pháp EventHub</li>
+              <li><i class="fa-solid fa-angle-right" style="color: #E84D1C;"></i> Môi trường & Khởi tạo Firebase SDK</li>
+              <li><i class="fa-solid fa-angle-right" style="color: #E84D1C;"></i> Kiến trúc Clean Architecture MVVM</li>
+              <li><i class="fa-solid fa-angle-right" style="color: #E84D1C;"></i> Giao diện người dùng thực tế</li>
             </ul>
           </div>
 
@@ -572,26 +574,26 @@
         <div class="grid-2-1" style="align-items: stretch;">
           <div class="card">
             <div class="card-title"><i class="fa-solid fa-bullseye" style="color: #FF5722;"></i> Mục Tiêu & Chức Năng Cốt Lõi</div>
-            <p style="font-size: 13px; color: #CBD5E1; line-height: 1.5; margin-bottom: 12px;">
+            <p style="font-size: 13px; color: #6B3A20; line-height: 1.5; margin-bottom: 12px;">
               <strong>EventHub</strong> là nền tảng di động quản trị, tìm kiếm và đặt vé sự kiện công nghệ / âm nhạc trực tiếp, 
               được thiết kế theo tiêu chuẩn công nghiệp với trải nghiệm mượt mà và bảo mật nghiêm ngặt.
             </p>
             <div class="grid-2" style="gap: 10px; margin-bottom: 12px;">
               <div style="background: rgba(2,132,199,0.1); border-left: 3px solid #0284C7; padding: 8px 10px; border-radius: 4px;">
-                <div style="font-weight: 700; color: #38BDF8; font-size: 12px;"><i class="fa-solid fa-compass"></i> Discover & Search</div>
-                <div style="font-size: 11px; color: #94A3B8;">Tìm kiếm theo từ khóa, lọc theo danh mục, địa điểm, thời gian.</div>
+                <div style="font-weight: 700; color: #E84D1C; font-size: 12px;"><i class="fa-solid fa-compass"></i> Discover & Search</div>
+                <div style="font-size: 11px; color: #A0714F;">Tìm kiếm theo từ khóa, lọc theo danh mục, địa điểm, thời gian.</div>
               </div>
               <div style="background: rgba(255,87,34,0.1); border-left: 3px solid #FF5722; padding: 8px 10px; border-radius: 4px;">
                 <div style="font-weight: 700; color: #FF7043; font-size: 12px;"><i class="fa-solid fa-bookmark"></i> Instant Booking</div>
-                <div style="font-size: 11px; color: #94A3B8;">Đăng ký vé tức thì, sinh mã đặt chỗ và vé điện tử.</div>
+                <div style="font-size: 11px; color: #A0714F;">Đăng ký vé tức thì, sinh mã đặt chỗ và vé điện tử.</div>
               </div>
               <div style="background: rgba(16,185,129,0.1); border-left: 3px solid #10B981; padding: 8px 10px; border-radius: 4px;">
                 <div style="font-weight: 700; color: #34D399; font-size: 12px;"><i class="fa-solid fa-bell"></i> Push Notification</div>
-                <div style="font-size: 11px; color: #94A3B8;">Nhận thông báo nhắc lịch và trạng thái vé qua Firebase Cloud Messaging.</div>
+                <div style="font-size: 11px; color: #A0714F;">Nhận thông báo nhắc lịch và trạng thái vé qua Firebase Cloud Messaging.</div>
               </div>
               <div style="background: rgba(139,92,246,0.1); border-left: 3px solid #8B5CF6; padding: 8px 10px; border-radius: 4px;">
                 <div style="font-weight: 700; color: #A78BFA; font-size: 12px;"><i class="fa-solid fa-sliders"></i> Dynamic Remote Config</div>
-                <div style="font-size: 11px; color: #94A3B8;">Điều khiển giao diện và logic gợi ý từ Cloud không cần build lại app.</div>
+                <div style="font-size: 11px; color: #A0714F;">Điều khiển giao diện và logic gợi ý từ Cloud không cần build lại app.</div>
               </div>
             </div>
             <div style="font-size: 11px; color: #64748B; border-top: 1px solid var(--border-card); padding-top: 8px;">
@@ -604,8 +606,8 @@
               <img src="../evidence/eventhub_live.png" alt="EventHub Live App">
               <span class="img-badge">LIVE APP SCREEN</span>
             </div>
-            <div style="font-size: 12px; font-weight: 700; color: #FFFFFF;">EventHub v1.0.0+1</div>
-            <div style="font-size: 11px; color: #94A3B8;">Màn hình Discover & Live Recommendations</div>
+            <div style="font-size: 12px; font-weight: 700; .0.0+1</div>
+            <div style="font-size: 11px; color: #A0714F;">Màn hình Discover & Live Recommendations</div>
           </div>
         </div>
       </section>
@@ -629,10 +631,10 @@
           <div class="card">
             <div class="card-title"><i class="fa-brands fa-flutter" style="color: #0284C7;"></i> Flutter & Dart</div>
             <ul class="check-list">
-              <li><i class="fa-solid fa-check" style="color: #38BDF8;"></i> Flutter 3.29.x Channel stable</li>
-              <li><i class="fa-solid fa-check" style="color: #38BDF8;"></i> Dart 3.7.x with Null Safety</li>
-              <li><i class="fa-solid fa-check" style="color: #38BDF8;"></i> Material 3 Typography</li>
-              <li><i class="fa-solid fa-check" style="color: #38BDF8;"></i> Android API 24+ (target 34)</li>
+              <li><i class="fa-solid fa-check" style="color: #E84D1C;"></i> Flutter 3.29.x Channel stable</li>
+              <li><i class="fa-solid fa-check" style="color: #E84D1C;"></i> Dart 3.7.x with Null Safety</li>
+              <li><i class="fa-solid fa-check" style="color: #E84D1C;"></i> Material 3 Typography</li>
+              <li><i class="fa-solid fa-check" style="color: #E84D1C;"></i> Android API 24+ (target 34)</li>
             </ul>
           </div>
 
@@ -687,7 +689,7 @@
 
         <div class="grid-2">
           <div class="card">
-            <div class="card-title"><i class="fa-solid fa-code" style="color: #38BDF8;"></i> Code Thực Thi Trong main()</div>
+            <div class="card-title"><i class="fa-solid fa-code" style="color: #E84D1C;"></i> Code Thực Thi Trong main()</div>
             <pre class="code-box"><code>void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -756,18 +758,18 @@
 
         <div class="grid-3">
           <div class="card" style="border-top: 3px solid #0284C7;">
-            <div class="card-title" style="color: #38BDF8;"><i class="fa-solid fa-mobile-screen"></i> Presentation Layer</div>
+            <div class="card-title" style="color: #E84D1C;"><i class="fa-solid fa-mobile-screen"></i> Presentation Layer</div>
             <ul class="check-list">
               <li>
-                <i class="fa-solid fa-circle-check" style="color: #38BDF8;"></i>
+                <i class="fa-solid fa-circle-check" style="color: #E84D1C;"></i>
                 <div><strong>Views / Screens:</strong> Stateless &amp; ConsumerWidget không chứa business logic.</div>
               </li>
               <li>
-                <i class="fa-solid fa-circle-check" style="color: #38BDF8;"></i>
+                <i class="fa-solid fa-circle-check" style="color: #E84D1C;"></i>
                 <div><strong>Controllers / Notifiers:</strong> Quản lý state màn hình qua <code>AsyncNotifier</code>.</div>
               </li>
               <li>
-                <i class="fa-solid fa-circle-check" style="color: #38BDF8;"></i>
+                <i class="fa-solid fa-circle-check" style="color: #E84D1C;"></i>
                 <div><strong>Zero Direct Firebase:</strong> UI không bao giờ gọi trực tiếp SDK Firebase, luôn qua Services.</div>
               </li>
             </ul>
@@ -811,10 +813,10 @@
         </div>
 
         <div class="card" style="margin-top: 14px; background: rgba(2,132,199,0.08); border-color: rgba(56,189,248,0.25); padding: 10px 18px;">
-          <div style="font-size: 13px; font-weight: 600; color: #CBD5E1; display: flex; align-items: center; justify-content: space-around;">
-            <span><i class="fa-solid fa-arrow-right" style="color: #38BDF8;"></i> UI (Widgets)</span>
+          <div style="font-size: 13px; font-weight: 600; color: #6B3A20; display: flex; align-items: center; justify-content: space-around;">
+            <span><i class="fa-solid fa-arrow-right" style="color: #E84D1C;"></i> UI (Widgets)</span>
             <i class="fa-solid fa-chevron-right" style="color: #64748B; font-size: 11px;"></i>
-            <span><i class="fa-solid fa-arrow-right" style="color: #38BDF8;"></i> Riverpod Providers</span>
+            <span><i class="fa-solid fa-arrow-right" style="color: #E84D1C;"></i> Riverpod Providers</span>
             <i class="fa-solid fa-chevron-right" style="color: #64748B; font-size: 11px;"></i>
             <span><i class="fa-solid fa-arrow-right" style="color: #FF7043;"></i> Domain Services</span>
             <i class="fa-solid fa-chevron-right" style="color: #64748B; font-size: 11px;"></i>
@@ -906,15 +908,15 @@
           </div>
 
           <div class="card highlight">
-            <div class="card-title"><i class="fa-solid fa-user-shield" style="color: #38BDF8;"></i> Zero PII (Personally Identifiable Information)</div>
-            <p style="font-size: 13px; color: #CBD5E1; line-height: 1.5;">
+            <div class="card-title"><i class="fa-solid fa-user-shield" style="color: #E84D1C;"></i> Zero PII (Personally Identifiable Information)</div>
+            <p style="font-size: 13px; color: #6B3A20; line-height: 1.5;">
               Tuân thủ tuyệt đối quy định bảo vệ dữ liệu người dùng của Guideline:
             </p>
-            <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 6px; font-size: 12px; border-left: 3px solid #10B981; margin-top: 8px;">
+            <div style="background: rgba(255, 240, 225, 0.80); padding: 12px; border-radius: 6px; font-size: 12px; border-left: 3px solid #10B981; margin-top: 8px;">
               <div style="color: #34D399; font-weight: 700; margin-bottom: 4px;"><i class="fa-solid fa-check"></i> An toàn:</div>
               Chỉ truyền <code>uid</code> (User Identifier dạng Hash) trong analytics tracking và crash logging.
             </div>
-            <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 6px; font-size: 12px; border-left: 3px solid #EF4444; margin-top: 8px;">
+            <div style="background: rgba(255, 240, 225, 0.80); padding: 12px; border-radius: 6px; font-size: 12px; border-left: 3px solid #EF4444; margin-top: 8px;">
               <div style="color: #F87171; font-weight: 700; margin-bottom: 4px;"><i class="fa-solid fa-xmark"></i> Nghiêm cấm:</div>
               Không bao giờ đính kèm raw email, password, số điện thoại hoặc họ tên thật vào log Crashlytics hay sự kiện Analytics.
             </div>
@@ -939,7 +941,7 @@
 
         <div class="grid-2">
           <div class="card">
-            <div class="card-title"><i class="fa-solid fa-file-code" style="color: #38BDF8;"></i> Code AuthService Thực Tế</div>
+            <div class="card-title"><i class="fa-solid fa-file-code" style="color: #E84D1C;"></i> Code AuthService Thực Tế</div>
             <pre class="code-box"><code>class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -969,15 +971,15 @@
             <div class="card-title"><i class="fa-solid fa-diagram-project" style="color: #10B981;"></i> Quản Lý Luồng Đăng Nhập</div>
             <ul class="check-list">
               <li>
-                <i class="fa-solid fa-arrow-right" style="color: #38BDF8;"></i>
+                <i class="fa-solid fa-arrow-right" style="color: #E84D1C;"></i>
                 <div><strong>authStateProvider:</strong> StreamProvider lắng nghe Firebase Auth thay đổi để rebuild App Router tức thì.</div>
               </li>
               <li>
-                <i class="fa-solid fa-arrow-right" style="color: #38BDF8;"></i>
+                <i class="fa-solid fa-arrow-right" style="color: #E84D1C;"></i>
                 <div><strong>Token Interceptor:</strong> Gắn <code>Authorization: Bearer &lt;idToken&gt;</code> vào header các request REST API.</div>
               </li>
               <li>
-                <i class="fa-solid fa-arrow-right" style="color: #38BDF8;"></i>
+                <i class="fa-solid fa-arrow-right" style="color: #E84D1C;"></i>
                 <div><strong>Sign Out Sanitization:</strong> Xóa sạch cache, session tokens và unregister FCM token khi đăng xuất.</div>
               </li>
             </ul>
@@ -1059,7 +1061,7 @@
 
           <div class="card highlight">
             <div class="card-title"><i class="fa-solid fa-user-lock" style="color: #10B981;"></i> Quy Chuẩn Security Rules Phân Quyền UID</div>
-            <p style="font-size: 13px; color: #CBD5E1; margin-bottom: 8px;">
+            <p style="font-size: 13px; color: #6B3A20; margin-bottom: 8px;">
               Bảo vệ dữ liệu người dùng tuyệt đối trong tệp <code>storage.rules</code>:
             </p>
             <pre class="code-box"><code>rules_version = '2';
@@ -1134,7 +1136,7 @@ service firebase.storage {
         <div class="grid-3">
           <div class="card" style="border-top: 3px solid #10B981;">
             <div class="card-title" style="color: #34D399;"><i class="fa-solid fa-mobile"></i> 1. Foreground State</div>
-            <p style="font-size: 12px; color: #CBD5E1; line-height: 1.4;">
+            <p style="font-size: 12px; color: #6B3A20; line-height: 1.4;">
               App đang mở và tương tác trên màn hình.
             </p>
             <ul class="check-list" style="margin-top: 8px;">
@@ -1146,7 +1148,7 @@ service firebase.storage {
 
           <div class="card" style="border-top: 3px solid #F59E0B;">
             <div class="card-title" style="color: #FBBF24;"><i class="fa-solid fa-window-minimize"></i> 2. Background State</div>
-            <p style="font-size: 12px; color: #CBD5E1; line-height: 1.4;">
+            <p style="font-size: 12px; color: #6B3A20; line-height: 1.4;">
               App bị thu nhỏ (người dùng bấm Home / qua app khác).
             </p>
             <ul class="check-list" style="margin-top: 8px;">
@@ -1158,7 +1160,7 @@ service firebase.storage {
 
           <div class="card" style="border-top: 3px solid #EF4444;">
             <div class="card-title" style="color: #F87171;"><i class="fa-solid fa-power-off"></i> 3. Terminated State</div>
-            <p style="font-size: 12px; color: #CBD5E1; line-height: 1.4;">
+            <p style="font-size: 12px; color: #6B3A20; line-height: 1.4;">
               App đã bị đóng hoàn toàn (Force Stop / Vuốt tắt).
             </p>
             <ul class="check-list" style="margin-top: 8px;">
@@ -1170,7 +1172,7 @@ service firebase.storage {
         </div>
 
         <div class="card" style="margin-top: 14px; background: rgba(255,87,34,0.08); border-color: rgba(255,87,34,0.25);">
-          <div style="font-size: 12px; color: #CBD5E1; display: flex; align-items: center; gap: 12px;">
+          <div style="font-size: 12px; color: #6B3A20; display: flex; align-items: center; gap: 12px;">
             <span class="badge badge-orange"><i class="fa-solid fa-shield"></i> Android 13+ Compliance</span>
             <span>Yêu cầu quyền <code>POST_NOTIFICATIONS</code> lúc runtime &bull; Khai báo Notification Channel bắt buộc theo quy định Google.</span>
           </div>
@@ -1194,7 +1196,7 @@ service firebase.storage {
 
         <div class="grid-2">
           <div class="card">
-            <div class="card-title"><i class="fa-solid fa-bell" style="color: #38BDF8;"></i> Background Message Top-level Handler</div>
+            <div class="card-title"><i class="fa-solid fa-bell" style="color: #E84D1C;"></i> Background Message Top-level Handler</div>
             <pre class="code-box"><code>// Top-level function độc lập bắt buộc cho FCM background
 @pragma('vm:entry-point')
 Future&lt;void&gt; _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -1327,20 +1329,20 @@ Future&lt;void&gt; _firebaseMessagingBackgroundHandler(RemoteMessage message) as
         <div class="grid-2">
           <div class="card">
             <div class="card-title"><i class="fa-solid fa-bullseye" style="color: #FF5722;"></i> Mục Tiêu Tracking Sự Kiện</div>
-            <p style="font-size: 13px; color: #CBD5E1; line-height: 1.5;">
+            <p style="font-size: 13px; color: #6B3A20; line-height: 1.5;">
               Hệ thống Analytics trong EventHub được thiết kế để theo dõi toàn bộ phễu chuyển đổi (User Conversion Funnel):
             </p>
             <ul class="check-list" style="margin-top: 10px;">
-              <li><i class="fa-solid fa-magnifying-glass" style="color: #38BDF8;"></i> <strong>Khám phá:</strong> Tìm kiếm, lọc sự kiện, độ dài query.</li>
-              <li><i class="fa-solid fa-eye" style="color: #38BDF8;"></i> <strong>Xem chi tiết:</strong> Đo lường sự quan tâm đối với từng sự kiện (A04).</li>
-              <li><i class="fa-solid fa-cart-plus" style="color: #38BDF8;"></i> <strong>Đặt vé:</strong> Đo lường tỷ lệ submit form đăng ký.</li>
-              <li><i class="fa-solid fa-circle-check" style="color: #38BDF8;"></i> <strong>Thành công:</strong> Xác nhận đặt vé thành công và xuất vé.</li>
+              <li><i class="fa-solid fa-magnifying-glass" style="color: #E84D1C;"></i> <strong>Khám phá:</strong> Tìm kiếm, lọc sự kiện, độ dài query.</li>
+              <li><i class="fa-solid fa-eye" style="color: #E84D1C;"></i> <strong>Xem chi tiết:</strong> Đo lường sự quan tâm đối với từng sự kiện (A04).</li>
+              <li><i class="fa-solid fa-cart-plus" style="color: #E84D1C;"></i> <strong>Đặt vé:</strong> Đo lường tỷ lệ submit form đăng ký.</li>
+              <li><i class="fa-solid fa-circle-check" style="color: #E84D1C;"></i> <strong>Thành công:</strong> Xác nhận đặt vé thành công và xuất vé.</li>
             </ul>
           </div>
 
           <div class="card highlight">
             <div class="card-title"><i class="fa-solid fa-shield-virus" style="color: #10B981;"></i> Nguyên Tắc Vàng: Zero PII</div>
-            <div style="font-size: 13px; color: #CBD5E1; line-height: 1.5;">
+            <div style="font-size: 13px; color: #6B3A20; line-height: 1.5;">
               <p>Mỗi tham số truyền lên Firebase Analytics đều được filter qua bộ tiền xử lý:</p>
               <table class="data-table">
                 <tr><th>Thông tin</th><th>Chính sách</th><th>Ví dụ thực tế</th></tr>
@@ -1523,13 +1525,13 @@ Future&lt;void&gt; _firebaseMessagingBackgroundHandler(RemoteMessage message) as
             <div class="card-title"><i class="fa-solid fa-triangle-exclamation" style="color: #EF4444;"></i> Phân Loại Lỗi Hệ Thống</div>
             <div style="margin-bottom: 12px;">
               <span class="badge badge-orange">1. Fatal Crashes (Nghiêm Trọng)</span>
-              <p style="font-size: 12px; color: #CBD5E1; margin-top: 4px;">
+              <p style="font-size: 12px; color: #6B3A20; margin-top: 4px;">
                 Lỗi crash native hoặc unhandled exception làm tắt đột ngột ứng dụng. Được hứng bởi <code>FlutterError.onError</code> và <code>PlatformDispatcher</code>.
               </p>
             </div>
             <div>
               <span class="badge badge-blue">2. Non-Fatal Errors (Ngoại Lệ Đã Xử Lý)</span>
-              <p style="font-size: 12px; color: #CBD5E1; margin-top: 4px;">
+              <p style="font-size: 12px; color: #6B3A20; margin-top: 4px;">
                 Ngoại lệ API, lỗi kết nối mạng hoặc lỗi upload tệp được bắt trong khối <code>try-catch</code>, ghi lại log lên dashboard để sửa chữa nhưng không làm sập app.
               </p>
             </div>
@@ -1537,7 +1539,7 @@ Future&lt;void&gt; _firebaseMessagingBackgroundHandler(RemoteMessage message) as
 
           <div class="card highlight">
             <div class="card-title"><i class="fa-solid fa-tags" style="color: #10B981;"></i> Custom Keys & Contextual Metadata</div>
-            <p style="font-size: 13px; color: #CBD5E1; line-height: 1.5;">
+            <p style="font-size: 13px; color: #6B3A20; line-height: 1.5;">
               Để lập trình viên có thể tái hiện lỗi ngay lập tức, mỗi crash/error được đính kèm:
             </p>
             <ul class="check-list" style="margin-top: 8px;">
@@ -1567,7 +1569,7 @@ Future&lt;void&gt; _firebaseMessagingBackgroundHandler(RemoteMessage message) as
 
         <div class="grid-2">
           <div class="card">
-            <div class="card-title"><i class="fa-solid fa-file-code" style="color: #38BDF8;"></i> CrashlyticsService Toàn Cục</div>
+            <div class="card-title"><i class="fa-solid fa-file-code" style="color: #E84D1C;"></i> CrashlyticsService Toàn Cục</div>
             <pre class="code-box"><code>class CrashlyticsService {
   final FirebaseCrashlytics _crashlytics = FirebaseCrashlytics.instance;
 
@@ -1604,7 +1606,7 @@ void triggerControlledTestCrash() {
   // Kích hoạt crash giả lập theo chuẩn Google
   FirebaseCrashlytics.instance.crash();
 }</code></pre>
-            <div style="font-size: 11px; color: #94A3B8; margin-top: 6px;">
+            <div style="font-size: 11px; color: #A0714F; margin-top: 6px;">
               <i class="fa-solid fa-info-circle"></i> Được cô lập trong menu ẩn Firebase Tools, không bao giờ ảnh hưởng đến End-User trên production.
             </div>
           </div>
@@ -1705,7 +1707,7 @@ void triggerControlledTestCrash() {
         <div class="grid-2">
           <div class="card">
             <div class="card-title"><i class="fa-solid fa-wand-magic-sparkles" style="color: #FF5722;"></i> Sức Mạnh Của Feature Flags</div>
-            <p style="font-size: 13px; color: #CBD5E1; line-height: 1.5;">
+            <p style="font-size: 13px; color: #6B3A20; line-height: 1.5;">
               Firebase Remote Config cho phép thay đổi giao diện, cấu hình nghiệp vụ và bật/tắt tính năng theo thời gian thực 
               <strong>mà không cần người dùng phải cập nhật phiên bản mới từ Google Play</strong>.
             </p>
@@ -1717,17 +1719,17 @@ void triggerControlledTestCrash() {
           </div>
 
           <div class="card highlight">
-            <div class="card-title"><i class="fa-solid fa-sliders" style="color: #38BDF8;"></i> 2 Tham Số Cốt Lõi Trong EventHub</div>
-            <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; margin-bottom: 10px;">
-              <div style="font-weight: 700; color: #38BDF8; font-size: 13px;">1. recommendation_limit (Integer)</div>
-              <div style="font-size: 12px; color: #94A3B8; margin-top: 2px;">
+            <div class="card-title"><i class="fa-solid fa-sliders" style="color: #E84D1C;"></i> 2 Tham Số Cốt Lõi Trong EventHub</div>
+            <div style="background: rgba(255, 240, 225, 0.80); padding: 12px; border-radius: 8px; margin-bottom: 10px;">
+              <div style="font-weight: 700; color: #E84D1C; font-size: 13px;">1. recommendation_limit (Integer)</div>
+              <div style="font-size: 12px; color: #A0714F; margin-top: 2px;">
                 Số lượng sự kiện đề xuất hiển thị trên màn hình chính.<br>
                 <em>Default: 10 &bull; Có thể đổi thành 1, 3, 20 từ Firebase Console.</em>
               </div>
             </div>
-            <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px;">
+            <div style="background: rgba(255, 240, 225, 0.80); padding: 12px; border-radius: 8px;">
               <div style="font-weight: 700; color: #34D399; font-size: 13px;">2. show_recommendations (Boolean)</div>
-              <div style="font-size: 12px; color: #94A3B8; margin-top: 2px;">
+              <div style="font-size: 12px; color: #A0714F; margin-top: 2px;">
                 Cờ công tắc bật hoặc ẩn toàn bộ mục "Gợi ý cho bạn".<br>
                 <em>Default: true &bull; Khi false: Widget tự động ẩn và dồn layout mượt mà.</em>
               </div>
@@ -1753,7 +1755,7 @@ void triggerControlledTestCrash() {
 
         <div class="grid-2">
           <div class="card">
-            <div class="card-title"><i class="fa-solid fa-file-code" style="color: #38BDF8;"></i> Code Tích Hợp Đầy Đủ</div>
+            <div class="card-title"><i class="fa-solid fa-file-code" style="color: #E84D1C;"></i> Code Tích Hợp Đầy Đủ</div>
             <pre class="code-box"><code>class RemoteConfigService {
   final FirebaseRemoteConfig _rc = FirebaseRemoteConfig.instance;
 
@@ -1794,7 +1796,7 @@ Widget build(BuildContext context, WidgetRef ref) {
     events: events.take(limit).toList(),
   );
 }</code></pre>
-            <div style="font-size: 11px; color: #94A3B8; margin-top: 6px;">
+            <div style="font-size: 11px; color: #A0714F; margin-top: 6px;">
               <i class="fa-solid fa-check"></i> Phản ứng tức thì khi người dùng mở lại app hoặc sau lệnh fetch.
             </div>
           </div>
@@ -1894,11 +1896,11 @@ Widget build(BuildContext context, WidgetRef ref) {
 
         <div class="grid-3">
           <div class="card">
-            <div class="card-title"><i class="fa-solid fa-scale-balanced" style="color: #38BDF8;"></i> Tiêu Chuẩn Guideline</div>
+            <div class="card-title"><i class="fa-solid fa-scale-balanced" style="color: #E84D1C;"></i> Tiêu Chuẩn Guideline</div>
             <ul class="check-list">
-              <li><i class="fa-solid fa-check" style="color: #38BDF8;"></i> Yêu cầu tối thiểu &ge;10 Test Cases tự động.</li>
-              <li><i class="fa-solid fa-check" style="color: #38BDF8;"></i> <strong>EventHub triển khai: 25 Test Cases</strong> bao phủ toàn bộ 6 dịch vụ Firebase.</li>
-              <li><i class="fa-solid fa-check" style="color: #38BDF8;"></i> Mỗi test case được chạy lặp lại <strong>3 lần liên tiếp</strong> để đảm bảo tính ổn định (Idempotence).</li>
+              <li><i class="fa-solid fa-check" style="color: #E84D1C;"></i> Yêu cầu tối thiểu &ge;10 Test Cases tự động.</li>
+              <li><i class="fa-solid fa-check" style="color: #E84D1C;"></i> <strong>EventHub triển khai: 25 Test Cases</strong> bao phủ toàn bộ 6 dịch vụ Firebase.</li>
+              <li><i class="fa-solid fa-check" style="color: #E84D1C;"></i> Mỗi test case được chạy lặp lại <strong>3 lần liên tiếp</strong> để đảm bảo tính ổn định (Idempotence).</li>
             </ul>
           </div>
 
@@ -1916,7 +1918,7 @@ Widget build(BuildContext context, WidgetRef ref) {
 
           <div class="card">
             <div class="card-title"><i class="fa-solid fa-file-code" style="color: #10B981;"></i> Định Dạng Nhật Ký Test</div>
-            <p style="font-size: 12px; color: #CBD5E1; line-height: 1.4;">
+            <p style="font-size: 12px; color: #6B3A20; line-height: 1.4;">
               Mỗi lần chạy sinh ra tệp log JSON chuẩn hóa gồm:
             </p>
             <ul class="check-list" style="margin-top: 6px;">
@@ -1950,7 +1952,7 @@ Widget build(BuildContext context, WidgetRef ref) {
             <div class="stat-label">Flutter Unit Tests Pass</div>
           </div>
           <div class="stat-box" style="border-top: 3px solid #0284C7;">
-            <div class="stat-num" style="color: #38BDF8;">5 / 5</div>
+            <div class="stat-num" style="color: #E84D1C;">5 / 5</div>
             <div class="stat-label">Firestore Emulator Tests</div>
           </div>
           <div class="stat-box" style="border-top: 3px solid #FF5722;">
@@ -1964,8 +1966,8 @@ Widget build(BuildContext context, WidgetRef ref) {
         </div>
 
         <div class="card">
-          <div class="card-title"><i class="fa-solid fa-shield-halved" style="color: #38BDF8;"></i> Đánh Giá Tính Tin Cậy Của Bộ Test</div>
-          <div class="grid-2" style="font-size: 12px; color: #CBD5E1;">
+          <div class="card-title"><i class="fa-solid fa-shield-halved" style="color: #E84D1C;"></i> Đánh Giá Tính Tin Cậy Của Bộ Test</div>
+          <div class="grid-2" style="font-size: 12px; color: #6B3A20;">
             <div>
               <p><i class="fa-solid fa-circle-check" style="color: #10B981;"></i> <strong>Zero Flakiness:</strong> Không có bài kiểm thử nào cho kết quả ngẫu nhiên do đã mock và cô lập network phụ thuộc.</p>
               <p><i class="fa-solid fa-circle-check" style="color: #10B981;"></i> <strong>Fast Feedback Loop:</strong> Toàn bộ 65 Flutter tests chạy hoàn thành dưới 15 giây trên máy phát triển.</p>
@@ -2010,7 +2012,7 @@ Widget build(BuildContext context, WidgetRef ref) {
                 <td><span class="badge badge-orange">Concurrency</span></td>
                 <td>Race condition khi gọi Remote Config fetch đồng thời</td>
                 <td>Thêm mutex lock &amp; singleton cache guard</td>
-                <td rowspan="2"><code style="color: #38BDF8;">fe02d20</code></td>
+                <td rowspan="2"><code style="color: #E84D1C;">fe02d20</code></td>
               </tr>
               <tr>
                 <td><strong>PR02</strong></td>
@@ -2023,7 +2025,7 @@ Widget build(BuildContext context, WidgetRef ref) {
                 <td><span class="badge badge-blue">Architecture</span></td>
                 <td>Widgets trực tiếp gọi FirebaseAnalytics instance</td>
                 <td>Tách qua AnalyticsService interface trung gian</td>
-                <td rowspan="2"><code style="color: #38BDF8;">9f92864</code></td>
+                <td rowspan="2"><code style="color: #E84D1C;">9f92864</code></td>
               </tr>
               <tr>
                 <td><strong>PR04</strong></td>
@@ -2036,13 +2038,13 @@ Widget build(BuildContext context, WidgetRef ref) {
                 <td><span class="badge badge-green">Reliability</span></td>
                 <td>Thiếu timeout khi upload export PDF dung lượng lớn</td>
                 <td>Bổ sung timeout 15s + fallback retry logic</td>
-                <td><code style="color: #38BDF8;">53eae7e</code></td>
+                <td><code style="color: #E84D1C;">53eae7e</code></td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <div style="font-size: 11px; color: #94A3B8; text-align: center;">
+        <div style="font-size: 11px; color: #A0714F; text-align: center;">
           <i class="fa-solid fa-circle-info"></i> Toàn bộ 5 findings được ghi nhận tại Pull Request #3 và đã được merge hoàn chỉnh vào nhánh chính.
         </div>
       </section>
@@ -2138,20 +2140,20 @@ Widget build(BuildContext context, WidgetRef ref) {
           </div>
 
           <div class="card highlight">
-            <div class="card-title"><i class="fa-solid fa-link" style="color: #38BDF8;"></i> Liên Kết Truy Cập Tài Nguyên</div>
+            <div class="card-title"><i class="fa-solid fa-link" style="color: #E84D1C;"></i> Liên Kết Truy Cập Tài Nguyên</div>
             <ul class="check-list" style="margin-top: 10px;">
               <li>
-                <i class="fa-brands fa-github" style="color: #38BDF8;"></i>
+                <i class="fa-brands fa-github" style="color: #E84D1C;"></i>
                 <div>
                   <strong>Repository Fork (Cá nhân):</strong><br>
-                  <a href="https://github.com/KietNTSE/PRM393_Lab03_Group4_pre" target="_blank" style="color: #38BDF8; font-size: 11px;">github.com/KietNTSE/PRM393_Lab03_Group4_pre</a>
+                  <a href="https://github.com/KietNTSE/PRM393_Lab03_Group4_pre" target="_blank" style="color: #E84D1C; font-size: 11px;">github.com/KietNTSE/PRM393_Lab03_Group4_pre</a>
                 </div>
               </li>
               <li>
-                <i class="fa-brands fa-github" style="color: #38BDF8;"></i>
+                <i class="fa-brands fa-github" style="color: #E84D1C;"></i>
                 <div>
                   <strong>Repository Upstream (Nhóm 4):</strong><br>
-                  <a href="https://github.com/ThinhCri/PRM393_Lab03_Group4" target="_blank" style="color: #38BDF8; font-size: 11px;">github.com/ThinhCri/PRM393_Lab03_Group4</a>
+                  <a href="https://github.com/ThinhCri/PRM393_Lab03_Group4" target="_blank" style="color: #E84D1C; font-size: 11px;">github.com/ThinhCri/PRM393_Lab03_Group4</a>
                 </div>
               </li>
               <li>
@@ -2177,30 +2179,30 @@ Widget build(BuildContext context, WidgetRef ref) {
         </div>
 
         <div style="margin-top: 55px; text-align: center;">
-          <div style="display: inline-flex; align-items: center; gap: 10px; background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.5); padding: 8px 22px; border-radius: 24px; font-size: 14px; color: #34D399; font-weight: 800; margin-bottom: 22px; letter-spacing: 0.5px;">
+          <div style="display: inline-flex; align-items: center; gap: 10px; background: rgba(244, 114, 182, 0.18); border: 1px solid rgba(244, 114, 182, 0.50); padding: 8px 22px; border-radius: 24px; font-size: 14px; color: #34D399; font-weight: 800; margin-bottom: 22px; letter-spacing: 0.5px;">
             <i class="fa-solid fa-check-double"></i> MISSION ACCOMPLISHED
           </div>
 
-          <h1 style="font-size: 52px; font-weight: 900; letter-spacing: -1.5px; margin: 0 0 18px 0; color: #FFFFFF; line-height: 1.2;">
+          <h1 style="font-size: 52px; font-weight: 900; letter-spacing: -1.5px; margin: 0 0 18px 0; color: #2D1206; line-height: 1.2;">
             Cảm Ơn Thầy Cô & Các Bạn<br>
             <span style="background: linear-gradient(135deg, #FF6E40 0%, #38BDF8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
               Đã Lắng Nghe Phần Trình Bày!
             </span>
           </h1>
 
-          <p style="font-size: 18px; color: #CBD5E1; max-width: 780px; margin: 0 auto 35px auto; line-height: 1.6;">
+          <p style="font-size: 18px; color: #6B3A20; max-width: 780px; margin: 0 auto 35px auto; line-height: 1.6;">
             Nhóm 4 sẵn sàng trả lời các câu hỏi phản biện từ Hội đồng và thực hiện Live Demo ứng dụng EventHub.
           </p>
 
           <div style="display: inline-flex; gap: 24px;">
-            <div class="card" style="padding: 18px 36px; text-align: center; border-color: rgba(56, 189, 248, 0.4);">
-              <div style="font-size: 20px; font-weight: 800; color: #38BDF8;"><i class="fa-solid fa-comments"></i> Q & A SESSION</div>
-              <div style="font-size: 13.5px; color: #94A3B8; margin-top: 6px;">Hỏi đáp &amp; Phản biện</div>
+            <div class="card" style="padding: 18px 36px; text-align: center; border-color: rgba(255, 140, 60, 0.40);">
+              <div style="font-size: 20px; font-weight: 800; color: #E84D1C;"><i class="fa-solid fa-comments"></i> Q & A SESSION</div>
+              <div style="font-size: 13.5px; color: #A0714F; margin-top: 6px;">Hỏi đáp &amp; Phản biện</div>
             </div>
 
             <div class="card" style="padding: 18px 36px; text-align: center; border-color: rgba(255, 87, 34, 0.4);">
               <div style="font-size: 20px; font-weight: 800; color: #FF7043;"><i class="fa-solid fa-play"></i> LIVE DEMO</div>
-              <div style="font-size: 13.5px; color: #94A3B8; margin-top: 6px;">Demo trực tiếp trên Android Emulator</div>
+              <div style="font-size: 13.5px; color: #A0714F; margin-top: 6px;">Demo trực tiếp trên Android Emulator</div>
             </div>
           </div>
         </div>
