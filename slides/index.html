@@ -378,11 +378,16 @@
      * Content-safe layout for the main deck.
      * Each content slide gets a fixed presentation canvas so the absolute
      * header cannot collapse the section height or overlap the title.
+     * Only apply flex layout to the currently active slide (.present) so Reveal.js
+     * can properly hide inactive slides.
      */
     .reveal .slides > section:nth-child(n+2):nth-child(-n+33) {
       box-sizing: border-box;
       height: 720px;
       padding: 72px 0 48px;
+    }
+
+    .reveal .slides > section.present:nth-child(n+2):nth-child(-n+33) {
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -501,7 +506,7 @@
           </div>
 
           <div style="font-size: 14px; color: #A0714F;">
-            Thành viên chính: <strong style=" Trọng Kiệt (KietNTSE)</strong> & Nhóm 4 &bull; Giảng viên hướng dẫn: <strong style=" SE FPT University</strong>
+            Thành viên chính: <strong style="color: #2D1206;">Nguyễn Trọng Kiệt (KietNTSE)</strong> & Nhóm 4 &bull; Giảng viên hướng dẫn: <strong style="color: #2D1206;">Bộ môn SE FPT University</strong>
           </div>
         </div>
       </section>
@@ -606,7 +611,7 @@
               <img src="../evidence/eventhub_live.png" alt="EventHub Live App">
               <span class="img-badge">LIVE APP SCREEN</span>
             </div>
-            <div style="font-size: 12px; font-weight: 700; .0.0+1</div>
+            <div style="font-size: 12px; font-weight: 700; color: #2D1206;">EventHub v1.0.0+1</div>
             <div style="font-size: 11px; color: #A0714F;">Màn hình Discover & Live Recommendations</div>
           </div>
         </div>
