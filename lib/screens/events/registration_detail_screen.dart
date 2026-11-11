@@ -79,7 +79,9 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
                 children: [
                   if (widget.success && r.active)
                     Text(
-                      'Đăng ký được xác nhận',
+                      r.status == 'pending'
+                          ? 'Đã gửi đơn đăng ký'
+                          : 'Đăng ký được xác nhận',
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   if (widget.checkInResult)
@@ -124,14 +126,24 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
                       ),
                   ],
                   AppStatusBadge(
-                    label: !r.active
+                    label: r.status == 'pending'
+                        ? 'Chờ CLB duyệt'
+                        : r.status == 'rejected'
+                        ? 'Bị từ chối'
+                        : !r.active
                         ? 'Đã hủy đăng ký'
                         : e.status == 'cancelled'
                         ? 'Sự kiện đã hủy'
                         : r.checkInAt != null
                         ? 'Đã điểm danh'
-                        : 'Đã đăng ký',
-                    variant: AppBadgeVariant.info,
+                        : 'Đã duyệt',
+                    variant: r.status == 'pending'
+                        ? AppBadgeVariant.warning
+                        : r.status == 'rejected'
+                        ? AppBadgeVariant.error
+                        : !r.active
+                        ? AppBadgeVariant.neutral
+                        : AppBadgeVariant.success,
                   ),
                   const SizedBox(height: AppSpacing.s16),
                   EventSummary(e),
@@ -167,7 +179,7 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
                       variant: AppButtonVariant.secondary,
                       onPressed: () => context.push('/events/${e.id}'),
                     ),
-                  if (r.active &&
+                  if (r.canCheckIn &&
                       e.status == 'published' &&
                       !widget.checkInResult) ...[
                     const SizedBox(height: AppSpacing.s12),
@@ -192,7 +204,24 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
                       onPressed: () => _cancel(context, r),
                     ),
                   ],
-                  if (!r.active)
+                  if (r.status == 'pending')
+                    const EventPanel(
+                      children: [
+                        Text(
+                          'Đơn đăng ký của bạn đang chờ Ban tổ chức CLB xét duyệt. Hãy kiểm tra lại sau hoặc theo dõi thông báo.',
+                        ),
+                      ],
+                    ),
+                  if (r.status == 'rejected')
+                    EventPanel(
+                      children: [
+                        Text(
+                          'Đơn đăng ký đã bị từ chối.${r.reason != null && r.reason!.isNotEmpty ? " Lý do: ${r.reason}" : ""}',
+                        ),
+                      ],
+                    ),
+                  if (r.status == 'cancelled' ||
+                      (!r.active && r.status != 'pending' && r.status != 'rejected'))
                     const EventPanel(
                       children: [
                         Text(

@@ -18,6 +18,8 @@ class Event {
     this.status = 'published',
     this.capacity = 0,
     this.activeCount = 0,
+    this.clubId = '',
+    this.visibility = 'public',
   });
   final String coverKey;
   final String coverUrl;
@@ -30,7 +32,9 @@ class Event {
       audience,
       preparation,
       mode,
-      status;
+      status,
+      clubId,
+      visibility;
   final DateTime startsAt, endsAt;
   final DateTime? deadline;
   final List<String> activities;
@@ -112,14 +116,32 @@ class Registration {
     required this.status,
     required this.generation,
     required this.participant,
+    this.uid = '',
+    this.clubId = '',
     this.checkInAt,
     this.createdAt,
+    this.reason,
+    this.reviewedBy,
+    this.reviewedAt,
+    this.qrHash,
+    this.lastOperationId = '',
   });
   final String id, eventId, status;
   final int generation;
   final Participant participant;
+  final String uid, clubId;
   final DateTime? checkInAt, createdAt;
-  bool get active => status == 'active';
+  final String? reason, reviewedBy;
+  final DateTime? reviewedAt;
+  final String? qrHash;
+  final String lastOperationId;
+  bool get active =>
+      status == 'pending' || status == 'approved' || status == 'active';
+  bool get isPending => status == 'pending';
+  bool get isApproved => status == 'approved';
+  bool get canCheckIn => status == 'approved' || status == 'active';
+  bool get isRejected => status == 'rejected';
+  bool get isCancelled => status == 'cancelled';
 }
 
 class BookingResult {
@@ -152,12 +174,16 @@ String bookingMessage(String? code) => switch (code) {
   'cannot-cancel' =>
     'Không thể hủy khi đã điểm danh, sự kiện đã bắt đầu hoặc đã hủy.',
   'invalid-participant' => 'Kiểm tra lại các trường thông tin tham gia.',
-  'checkin-rejected' => 'Chưa thể ghi nhận điểm danh. Kiểm tra trạng thái đăng ký và phiên rồi thử lại.',
+  'checkin-rejected' =>
+    'Chưa thể ghi nhận điểm danh. Đơn đăng ký cần được duyệt trước khi điểm danh.',
   'invalid-qr' => 'Mã QR không hợp lệ.',
   'wrong-event' => 'Mã QR không đúng sự kiện.',
   'session-closed' => 'Phiên điểm danh đang đóng.',
   'event-not-found' => 'Không tìm thấy sự kiện.',
   'operation-conflict' =>
     'Nội dung thao tác đã thay đổi. Hãy kiểm tra kết quả cũ trước.',
+  'unauthenticated' => 'Tài khoản chưa được xác thực email.',
+  'permission-denied' =>
+    'Không có quyền thực hiện thao tác hoặc thông tin không hợp lệ.',
   _ => 'Chưa thể hoàn tất thao tác. Hãy tải lại dữ liệu và thử lại.',
 };
