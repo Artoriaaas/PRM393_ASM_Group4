@@ -35,7 +35,7 @@ Theo đề Lab 3, **Tài khoản → Dịch vụ Firebase** mở khu demo thông
 | Test toàn bộ một lượt trên Android | [One-pass test](docs/one-pass-test.md) |
 | Instrumentation và AI review | [Analytics](docs/analytics-plan.md), [code review](docs/code-review.md) |
 | Chạy ARTEMIS | [E2E setup](e2e_test/README.md) |
-| Chuẩn bị bài nộp | [Report](report/README.md), [Slides](slides/README.md) ([Xem online](https://artoriaaas.github.io/PRM393_Lab03_Group4/slides/)) |
+| Chuẩn bị bài nộp | [Report](report/README.md), [Slides](slides/README.md) ([Xem online](https://artoriaaas.github.io/PRM393_ASM_Group4/slides/)) |
 
 ## Sản phẩm bàn giao Lab 3 (Deliverables)
 
