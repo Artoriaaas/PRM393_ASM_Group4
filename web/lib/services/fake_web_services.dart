@@ -909,6 +909,75 @@ class FakeAdminService implements IAdminService {
   }
 
   @override
+  Future<Result<void>> adminApproveEvent(String eventId) async {
+    final idx = _events.indexWhere((e) => e.id == eventId);
+    if (idx != -1) {
+      final old = _events[idx];
+      _events[idx] = Event(
+        id: old.id,
+        title: old.title,
+        clubName: old.clubName,
+        location: old.location,
+        startsAt: old.startsAt,
+        endsAt: old.endsAt,
+        deadline: old.deadline,
+        description: old.description,
+        coverKey: old.coverKey,
+        topic: old.topic,
+        audience: old.audience,
+        preparation: old.preparation,
+        activities: old.activities,
+        mode: old.mode,
+        status: 'published',
+        capacity: old.capacity,
+        activeCount: old.activeCount,
+        clubId: old.clubId,
+        visibility: old.visibility,
+        updatedAt: DateTime.now(),
+      );
+      _eventsController.add(List.unmodifiable(_events));
+    }
+    return const Success(null);
+  }
+
+  @override
+  Future<Result<void>> adminRejectEvent(String eventId, {required String reason}) async {
+    final idx = _events.indexWhere((e) => e.id == eventId);
+    if (idx != -1) {
+      final old = _events[idx];
+      _events[idx] = Event(
+        id: old.id,
+        title: old.title,
+        clubName: old.clubName,
+        location: old.location,
+        startsAt: old.startsAt,
+        endsAt: old.endsAt,
+        deadline: old.deadline,
+        description: old.description,
+        coverKey: old.coverKey,
+        topic: old.topic,
+        audience: old.audience,
+        preparation: old.preparation,
+        activities: old.activities,
+        mode: old.mode,
+        status: 'rejected',
+        capacity: old.capacity,
+        activeCount: old.activeCount,
+        clubId: old.clubId,
+        visibility: old.visibility,
+        updatedAt: DateTime.now(),
+      );
+      _eventsController.add(List.unmodifiable(_events));
+    }
+    return const Success(null);
+  }
+
+  @override
+  Future<int> countSystemPendingEvents() async {
+    return _events.where((e) => e.status == 'pending_approval').length;
+  }
+
+  @override
   Future<Result<void>> adminCancelEvent(String eventId) async {
     final idx = _events.indexWhere((e) => e.id == eventId);
     if (idx != -1) {

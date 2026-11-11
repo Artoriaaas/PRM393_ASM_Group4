@@ -105,12 +105,23 @@ class UnconfiguredAdminService implements IAdminService {
   Stream<List<Event>> streamAllEvents() => Stream.value(const []);
 
   @override
+  Future<Result<void>> adminApproveEvent(String eventId) async =>
+      Result.failure(_unconfiguredFailure);
+
+  @override
+  Future<Result<void>> adminRejectEvent(String eventId, {required String reason}) async =>
+      Result.failure(_unconfiguredFailure);
+
+  @override
   Future<Result<void>> adminCancelEvent(String eventId) async =>
       Result.failure(_unconfiguredFailure);
 
   @override
   Future<Result<void>> adminArchiveEvent(String eventId) async =>
       Result.failure(_unconfiguredFailure);
+
+  @override
+  Future<int> countSystemPendingEvents() async => 0;
 
   @override
   Stream<List<Registration>> streamAllPendingRegistrations() =>

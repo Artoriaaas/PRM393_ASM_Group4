@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:eventhub_core/eventhub_core.dart';
 import '../../viewmodels/review_queue_viewmodel.dart';
+import '../../viewmodels/web_auth_viewmodel.dart';
 import 'reject_reason_dialog.dart';
 
 class ReviewQueueScreen extends ConsumerStatefulWidget {
@@ -61,7 +63,68 @@ class _ReviewQueueScreenState extends ConsumerState<ReviewQueueScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(reviewQueueViewModelProvider);
+    final user = ref.watch(currentStaffProfileProvider);
+    final isAdmin = user?.isAdmin ?? false;
 
+    if (isAdmin) {
+      return Scaffold(
+        backgroundColor: AppColors.surfaceSubtle,
+        body: Center(
+          child: Container(
+            padding: const EdgeInsets.all(AppSpacing.s32),
+            margin: const EdgeInsets.all(AppSpacing.s24),
+            constraints: const BoxConstraints(maxWidth: 580),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: AppRadius.borderR16,
+              border: Border.all(color: AppColors.border),
+              boxShadow: AppShadows.elevation1,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(AppSpacing.s16),
+                  decoration: const BoxDecoration(
+                    color: AppColors.brandSubtle,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.how_to_reg_outlined,
+                    size: 40,
+                    color: AppColors.primary,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.s20),
+                Text(
+                  'Phân quyền Duyệt Đăng ký',
+                  style: AppTypography.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AppSpacing.s12),
+                Text(
+                  'Theo phân quyền hệ thống, đơn đăng ký tham gia sự kiện do chính Trưởng Câu lạc bộ tổ chức sự kiện đó trực tiếp xét duyệt. Quản trị viên không tham gia phê duyệt người tham gia, mà quản lý phê duyệt các đề xuất tổ chức sự kiện từ CLB.',
+                  style: AppTypography.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                    height: 1.5,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AppSpacing.s24),
+                AppButton(
+                  label: 'Đến Giám sát & Phê duyệt Sự kiện',
+                  icon: const Icon(Icons.event_outlined),
+                  onPressed: () => context.go('/events'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
     return Scaffold(
       backgroundColor: AppColors.surfaceSubtle,
       body: SingleChildScrollView(

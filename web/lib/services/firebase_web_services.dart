@@ -990,6 +990,80 @@ class FirestoreAdminService implements IAdminService {
   }
 
   @override
+  Future<Result<void>> adminApproveEvent(String eventId) async {
+    try {
+      await _firestore.collection('events').doc(eventId).update({
+        'status': 'published',
+        'reviewedAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      return const Success(null);
+    } on FirebaseException catch (e) {
+      return Result.failure(
+        AppFailure(
+          code: e.code,
+          message: 'Không thể phê duyệt sự kiện (${e.code}).',
+          isRetryable: true,
+        ),
+      );
+    } catch (e) {
+      return Result.failure(
+        AppFailure(
+          code: 'admin_approve_event_error',
+          message: 'Lỗi khi phê duyệt sự kiện: $e',
+          isRetryable: true,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Result<void>> adminRejectEvent(
+    String eventId, {
+    required String reason,
+  }) async {
+    try {
+      await _firestore.collection('events').doc(eventId).update({
+        'status': 'rejected',
+        'rejectionReason': reason,
+        'reviewedAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      return const Success(null);
+    } on FirebaseException catch (e) {
+      return Result.failure(
+        AppFailure(
+          code: e.code,
+          message: 'Không thể từ chối sự kiện (${e.code}).',
+          isRetryable: true,
+        ),
+      );
+    } catch (e) {
+      return Result.failure(
+        AppFailure(
+          code: 'admin_reject_event_error',
+          message: 'Lỗi khi từ chối sự kiện: $e',
+          isRetryable: true,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<int> countSystemPendingEvents() async {
+    try {
+      final snap = await _firestore
+          .collection('events')
+          .where('status', isEqualTo: 'pending_approval')
+          .count()
+          .get();
+      return snap.count ?? 0;
+    } catch (_) {
+      return 0;
+    }
+  }
+
+  @override
   Future<Result<void>> adminCancelEvent(String eventId) async {
     try {
       await _firestore.collection('events').doc(eventId).update({
@@ -1178,20 +1252,10 @@ class FirestoreAdminService implements IAdminService {
       if (statsMap.containsKey(clubId)) {
         statsMap[clubId]!['approved'] =
             ((statsMap[clubId]!['approved'] as int?) ?? 0) + 1;
-      }
-    }
-
-    final checkedInSnap = await _firestore
-        .collection('registrations')
-        .where('status', isEqualTo: 'approved')
-        .where('checkInAt', isNull: false)
-        .get();
-    for (final doc in checkedInSnap.docs) {
-      final d = doc.data();
-      final clubId = d['clubId'] as String? ?? '';
-      if (statsMap.containsKey(clubId)) {
-        statsMap[clubId]!['checkedIn'] =
-            ((statsMap[clubId]!['checkedIn'] as int?) ?? 0) + 1;
+        if (d['checkInAt'] != null) {
+          statsMap[clubId]!['checkedIn'] =
+              ((statsMap[clubId]!['checkedIn'] as int?) ?? 0) + 1;
+        }
       }
     }
 

@@ -145,11 +145,13 @@ abstract class IAdminService {
   Future<Result<void>> updateClub(Club club);
   Future<Result<void>> archiveClub(String clubId);
 
-  // Giám sát sự kiện toàn trường
+  // Giám sát & Phê duyệt sự kiện toàn trường
   Stream<List<Event>> streamAllEvents();
+  Future<Result<void>> adminApproveEvent(String eventId);
+  Future<Result<void>> adminRejectEvent(String eventId, {required String reason});
   Future<Result<void>> adminCancelEvent(String eventId);
   Future<Result<void>> adminArchiveEvent(String eventId);
-
+  Future<int> countSystemPendingEvents();
   // Giám sát đơn đăng ký toàn trường
   Stream<List<Registration>> streamAllPendingRegistrations();
 

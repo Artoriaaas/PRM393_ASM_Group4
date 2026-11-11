@@ -223,6 +223,7 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(currentStaffProfileProvider);
+    final isAdmin = user?.isAdmin ?? false;
     final clubId = ref.watch(currentClubIdProvider);
     final clubName =
         ref.watch(activeClubProvider(clubId)).asData?.value?.name ??
@@ -602,14 +603,30 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                           ? null
                           : () => _submit(existingStatus),
                     ),
-                  AppButton(
-                    label: existingStatus == 'published'
-                        ? 'Cập nhật sự kiện'
-                        : 'Công bố sự kiện',
-                    variant: AppButtonVariant.primary,
-                    isLoading: _isSaving,
-                    onPressed: _isSaving ? null : () => _submit('published'),
-                  ),
+                  if (isAdmin)
+                    AppButton(
+                      label: existingStatus == 'published'
+                          ? 'Cập nhật sự kiện'
+                          : 'Công bố sự kiện',
+                      variant: AppButtonVariant.primary,
+                      isLoading: _isSaving,
+                      onPressed: _isSaving ? null : () => _submit('published'),
+                    )
+                  else
+                    AppButton(
+                      label: existingStatus == 'published'
+                          ? 'Cập nhật sự kiện'
+                          : (existingStatus == 'pending_approval'
+                              ? 'Cập nhật đề xuất'
+                              : 'Gửi Admin phê duyệt'),
+                      variant: AppButtonVariant.primary,
+                      isLoading: _isSaving,
+                      onPressed: _isSaving
+                          ? null
+                          : () => _submit(existingStatus == 'published'
+                              ? 'published'
+                              : 'pending_approval'),
+                    ),
                 ],
               ),
             ],

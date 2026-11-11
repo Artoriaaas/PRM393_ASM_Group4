@@ -83,24 +83,22 @@ Mỗi tài khoản Trưởng CLB có `users/{uid}.role == 'staff'` và được 
 - Đăng nhập bằng **Google Sign-In**.
 - Kiểm tra tự động `users/{uid}`: chỉ cho vào không gian làm việc nếu `role == 'staff'` và đã được gán `clubId` hợp lệ; từ chối tài khoản `user` hoặc tài khoản chưa được phân công CLB bằng thông báo rõ ràng.
 
-#### B. Quản lý Sự kiện CLB & Điều phối Điểm danh QR (`Management` · `/events`)
-- **Danh sách & Tìm kiếm sự kiện CLB**: Xem, tìm kiếm theo từ khóa và lọc theo trạng thái (`draft`, `published`, `cancelled`, `archived`) toàn bộ sự kiện có `clubId == staff.clubId` (đầy đủ trạng thái `loading`, `empty`, `error`).
-- **Tạo mới & Cập nhật sự kiện**: Khởi tạo sự kiện ở chế độ bản nháp (`draft`) hoặc công bố ngay (`published`); chỉnh sửa tiêu đề, mô tả, chủ đề, địa điểm, thời gian bắt đầu/kết thúc, hạn đăng ký (`deadline`), hình thức tham gia (`required` / `free`), sức chứa (`capacity`), hoạt động và lưu ý chuẩn bị.
-- **Hủy hoặc Lưu trữ sự kiện (`Cancel` / `Archive`)**:
-  - Chuyển sang `cancelled` khi sự kiện buộc phải dừng tổ chức (Mobile tự động khóa đăng ký/điểm danh và hiển thị nhãn *"Sự kiện đã hủy"*).
-  - Chuyển sang `archived` để ẩn sự kiện cũ khỏi danh sách khám phá công khai mà **không xóa cứng bản ghi**, giữ nguyên toàn vẹn lịch sử cho sinh viên đã tham gia.
+#### B. Đề xuất Tổ chức Sự kiện & Điều phối Điểm danh QR (`Management` · `/events`)
+- **Tạo đơn đề xuất tổ chức sự kiện (`Create Event Proposal`)**:
+  - Khi CLB muốn tổ chức sự kiện, Trưởng CLB soạn thông tin sự kiện và gửi đơn đề xuất (`status == 'pending_approval'`) để Quản trị viên (Admin) phê duyệt, hoặc lưu nháp nội bộ (`status == 'draft'`).
+  - **Trưởng CLB không được tự ý công bố (`published`) sự kiện** khi chưa có sự phê duyệt của Admin. Chỉ sau khi Admin duyệt, sự kiện mới được lên lịch chính thức và hiển thị công khai trên ứng dụng Mobile.
+  - Cho phép chỉnh sửa thông tin đề xuất nếu bị Admin yêu cầu chỉnh sửa hoặc từ chối (`rejected`).
+- **Danh sách & Bộ lọc sự kiện CLB**: Theo dõi toàn bộ sự kiện của CLB theo trạng thái (`pending_approval` - Chờ duyệt, `published` - Đang mở, `draft` - Bản nháp, `rejected` - Bị từ chối, `cancelled` - Đã hủy, `archived` - Lưu trữ).
+- **Hủy hoặc Lưu trữ sự kiện (`Cancel` / `Archive`)**: Chuyển trạng thái sự kiện khi có sự cố hoặc kết thúc.
 - **Điều khiển Phiên Điểm danh & Mã QR trực tiếp (Live Check-in Panel)**:
-  - Mở / Đóng phiên điểm danh cho sự kiện của CLB (`checkinSessions/{eventId}.open = true / false`).
-  - Sinh token QR ngẫu nhiên độ dài tối thiểu 32 ký tự, chỉ lưu mã băm SHA-256 lên `qrCredentials/{qrHash}` (`{eventId, clubId, enabled: true}`) và hiển thị mã QR kích thước lớn trên màn hình Web để chiếu tại hội trường.
-  - Hỗ trợ làm mới (rotate) / vô hiệu hóa mã QR cũ và theo dõi **danh sách + số lượng sinh viên đã điểm danh cập nhật realtime** ngay khi sinh viên quét mã trên Mobile.
+  - Chỉ mở khi sự kiện đã được Admin duyệt (`status == 'published'`) và yêu cầu đăng ký (`mode == 'required'`).
+  - Mở/đóng phiên, phát và xoay mã QR động để sinh viên quét điểm danh tại sự kiện.
 
-#### C. Hàng đợi Xét duyệt Đăng ký (`Review Queue` · `/reviews`)
-- **Theo dõi hàng đợi thời gian thực**: Hiển thị trực tiếp các đơn đăng ký có `status == 'pending'` thuộc các sự kiện của CLB mình (`clubId == staff.clubId`), hỗ trợ lọc theo sự kiện, đối tượng (`student` / `guest`) và tìm kiếm người đăng ký.
-- **Phê duyệt đăng ký (`Approve`)**:
-  - Thực thi Firestore Transaction kiểm tra sự kiện vẫn còn chỗ (`activeCount < capacity`), cập nhật `registrations/{id}` từ `pending` → `approved` (lưu `reviewedBy`, `reviewedAt`, ghi chú phản hồi tùy chọn), tăng `events/{eventId}.activeCount + 1`, đồng thời ghi thông báo xác nhận vào `users/{uid}/notifications/{notifId}`.
-- **Từ chối đăng ký kèm lý do (`Reject`)**:
-  - Bắt buộc nhập **lý do từ chối (`reason`)** rõ ràng trước khi xác nhận; chuyển trạng thái đơn từ `pending` → `rejected` (không thay đổi `activeCount`) và gửi thông báo kèm lý do vào hộp thư của người đăng ký trên Mobile.
-
+#### C. Hàng đợi Xét duyệt Đăng ký Tham gia Sự kiện (`Review Queue` · `/reviews`)
+- **Quyền hạn độc quyền của Trưởng CLB**: Đối với các sự kiện thuộc loại yêu cầu đăng ký (`mode == 'required'`), toàn bộ đơn đăng ký của sinh viên (`registrations`) được gửi trực tiếp tới trang Review Queue của Trưởng CLB tổ chức sự kiện đó.
+- **Admin không can thiệp**: Quản trị viên hệ thống **không tham gia** vào việc phê duyệt người tham gia sự kiện của CLB; Trưởng CLB chịu trách nhiệm hoàn toàn về việc xét duyệt này.
+- **Phê duyệt đăng ký (`Approve`)**: Thực thi Transaction kiểm tra sức chứa (`activeCount < capacity`), tăng `activeCount + 1`, chuyển trạng thái đơn sang `approved` và gửi thông báo xác nhận tới Mobile của sinh viên.
+- **Từ chối đăng ký kèm lý do (`Reject`)**: Bắt buộc nhập lý do từ chối rõ ràng, chuyển trạng thái đơn sang `rejected` và gửi thông báo phản hồi tới sinh viên.
 #### D. Bảng điều khiển Thống kê CLB (`Dashboard` · `/dashboard`)
 - **Các chỉ số tổng hợp (`≥ 3` figures từ Firestore aggregation queries)** tính riêng cho `clubId` của Trưởng CLB:
   1. Tổng số sự kiện đang mở (`published`) của CLB.
@@ -128,13 +126,15 @@ Tài khoản Quản trị viên có `users/{uid}.role == 'admin'`, đăng nhập
   - Hệ thống khóa hoàn toàn thao tác tự sửa `role` của chính tài khoản `admin` đang đăng nhập ở cả giao diện lẫn Firestore Security Rules.
 - **Quản lý Danh mục Câu lạc bộ (`clubs/{clubId}`)**:
   - Danh sách, tìm kiếm, tạo mới, chỉnh sửa thông tin CLB (tên CLB, mô tả, lĩnh vực) và lưu trữ (`archived`) CLB ngừng hoạt động — dữ liệu này đồng bộ trực tiếp sang bộ lọc CLB trên Mobile App và danh sách gán quyền `staff`.
-- **Giám sát & Can thiệp Sự kiện Toàn trường (`events/{id}`)**:
-  - Tra cứu tất cả sự kiện của mọi CLB; có quyền chỉnh sửa hoặc chuyển trạng thái `cancelled` / `archived` đối với sự kiện sai phạm hoặc khi CLB cần hỗ trợ khẩn cấp.
+- **Giám sát & Phê duyệt Đề xuất Sự kiện Toàn trường (`events/{id}`)**:
+  - **Quản lý đề xuất tổ chức sự kiện**: Tiếp nhận các đơn đề xuất sự kiện do Trưởng các CLB gửi lên (`status == 'pending_approval'`).
+  - **Phê duyệt sự kiện (`Approve`)**: Admin kiểm tra thông tin (thời gian, địa điểm, nội dung), phê duyệt để chính thức lên lịch và công bố sự kiện (`status: 'pending_approval' → 'published'`).
+  - **Từ chối đề xuất (`Reject`)**: Nhập lý do từ chối phản hồi cho Trưởng CLB (`status: 'rejected'`).
+  - Can thiệp khẩn cấp: Có quyền hủy (`cancelled`) hoặc lưu trữ (`archived`) đối với các sự kiện sai phạm trên toàn hệ thống.
 
-#### C. Giám sát Hàng đợi Duyệt Toàn hệ thống (`Review Queue` · `/reviews`)
-- Theo dõi toàn bộ đơn đăng ký `pending` trên tất cả các CLB (có bộ lọc theo từng CLB và từng sự kiện).
-- Có quyền phê duyệt (`approved`) hoặc từ chối kèm lý do (`rejected`) để xử lý tồn đọng khi một CLB tạm khuyết Trưởng CLB.
-
+#### C. Ranh giới Quyền hạn: Không Tham gia Duyệt Đơn Đăng ký Sinh viên
+- **Nguyên tắc phân định trách nhiệm**: Quản trị viên **KHÔNG tham gia vào việc phê duyệt các đơn đăng ký tham gia sự kiện của sinh viên**. Việc xét duyệt người tham gia thuộc toàn quyền và trách nhiệm của Trưởng Câu lạc bộ tổ chức sự kiện đó.
+- Giao diện Quản trị viên không có quyền thao tác trên hàng đợi đơn đăng ký cá nhân của CLB; trên Web Admin, mục "Duyệt đăng ký" (`/reviews`) hiển thị thông báo hướng dẫn rõ ràng về phân quyền và chuyển hướng Admin về trang Quản lý & Phê duyệt Sự kiện.
 #### D. Bảng điều khiển Toàn hệ thống (`Dashboard` · `/dashboard`)
 - **Các chỉ số tổng hợp cấp hệ thống (`≥ 3` figures từ aggregation queries)**:
   1. Tổng số sự kiện đang hoạt động (`published`) trên toàn trường.
@@ -155,9 +155,8 @@ Tài khoản Quản trị viên có `users/{uid}.role == 'admin'`, đăng nhập
 | **Đăng nhập Web Admin (Google)** | Từ chối (*Role rejection*) | Cho phép (khi có `clubId`) | Cho phép |
 | **Quản lý `users/{uid}.role` & `clubId`** | Chỉ đọc hồ sơ của mình, sửa `displayName` | Chỉ đọc hồ sơ của mình (và thông tin `participant` trong đơn thuộc CLB) | Xem danh sách; đổi `role` & `clubId` cho người khác (**không tự đổi role của mình**) |
 | **Danh mục CLB (`clubs`)** | Đọc các CLB đang hoạt động | Đọc thông tin CLB | Tạo, sửa, tìm kiếm, lưu trữ (`archive`) mọi CLB |
-| **Sự kiện (`events`)** | Đọc sự kiện `published` & `public` | Tạo, sửa, hủy, `archive` sự kiện thuộc `clubId` của mình | Xem, tìm kiếm, sửa, hủy, `archive` sự kiện của mọi CLB |
-| **Đăng ký sự kiện (`registrations`)** | Tạo đơn (`pending`), xem đơn của mình, tự hủy (`cancelled`), đăng ký lại | Xem đơn thuộc sự kiện CLB mình; duyệt (`approved`) hoặc từ chối kèm lý do (`rejected`) | Xem toàn bộ; có quyền duyệt / từ chối kèm lý do khi cần can thiệp |
-| **Phiên & Mã QR (`checkinSessions`, `qrCredentials`)** | Không đọc danh sách QR; chỉ gửi lệnh quét QR điểm danh cho đơn `approved` của mình | Mở/đóng phiên, phát & xoay mã QR, xem kết quả điểm danh realtime cho sự kiện CLB mình | Giám sát trạng thái phiên và số liệu điểm danh; đóng phiên khi cần |
+| **Sự kiện (`events`)** | Đọc sự kiện `published` & `public` | Tạo đơn đề xuất (`pending_approval`), lưu nháp (`draft`), hủy/lưu trữ sự kiện CLB mình; **không tự ý công bố** | Xem tất cả; **phê duyệt đề xuất sự kiện** (`pending_approval` → `published`), từ chối đề xuất (`rejected`), hủy/lưu trữ sự kiện mọi CLB |
+| **Đăng ký sự kiện (`registrations`)** | Tạo đơn (`pending`), xem đơn của mình, tự hủy (`cancelled`), đăng ký lại | **Toàn quyền độc quyền**: Tiếp nhận đơn sự kiện CLB mình; duyệt (`approved`) hoặc từ chối kèm lý do (`rejected`) | **Không tham gia phê duyệt**: Việc duyệt người tham gia do Trưởng CLB chịu trách nhiệm; Admin chỉ xem số liệu thống kê tổng hợp |
 | **Thông báo chung (`announcements`)** | Đọc realtime trong Mobile Inbox | Tạo thông báo trong phạm vi CLB / sự kiện của CLB mình | Tạo thông báo toàn trường (`global`) hoặc bất kỳ CLB nào |
 | **Thông báo cá nhân (`users/{uid}/notifications`)** | Đọc và đánh dấu `readAt` thông báo của mình | Tạo thông báo kết quả duyệt/từ chối cho người đăng ký sự kiện CLB mình | Tạo thông báo hệ thống/xét duyệt cho người dùng khi xử lý đơn |
 | **Dashboard thống kê** | Không áp dụng (xem Lịch cá nhân & xuất PDF) | Xem số liệu aggregation & biểu đồ trong phạm vi CLB mình | Xem số liệu aggregation & biểu đồ toàn hệ thống |

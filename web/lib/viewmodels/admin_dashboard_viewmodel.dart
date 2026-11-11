@@ -10,6 +10,7 @@ class AdminDashboardState {
   const AdminDashboardState({
     required this.loadState,
     this.publishedEventsCount = 0,
+    this.pendingEventsCount = 0,
     this.pendingRegistrationsCount = 0,
     this.approvedRegistrationsCount = 0,
     this.userCount = 0,
@@ -24,6 +25,7 @@ class AdminDashboardState {
 
   final LoadState<void> loadState;
   final int publishedEventsCount;
+  final int pendingEventsCount;
   final int pendingRegistrationsCount;
   final int approvedRegistrationsCount;
   final int userCount;
@@ -38,6 +40,7 @@ class AdminDashboardState {
   AdminDashboardState copyWith({
     LoadState<void>? loadState,
     int? publishedEventsCount,
+    int? pendingEventsCount,
     int? pendingRegistrationsCount,
     int? approvedRegistrationsCount,
     int? userCount,
@@ -52,6 +55,7 @@ class AdminDashboardState {
     return AdminDashboardState(
       loadState: loadState ?? this.loadState,
       publishedEventsCount: publishedEventsCount ?? this.publishedEventsCount,
+      pendingEventsCount: pendingEventsCount ?? this.pendingEventsCount,
       pendingRegistrationsCount:
           pendingRegistrationsCount ?? this.pendingRegistrationsCount,
       approvedRegistrationsCount:
@@ -128,6 +132,7 @@ class AdminDashboardViewModel extends Notifier<AdminDashboardState> {
     try {
       final results = await Future.wait([
         adminService.countSystemPublishedEvents(),
+        adminService.countSystemPendingEvents(),
         adminService.countSystemPendingRegistrations(),
         adminService.countSystemApprovedRegistrations(),
         adminService.countUsersByRole('user'),
@@ -142,14 +147,14 @@ class AdminDashboardViewModel extends Notifier<AdminDashboardState> {
       state = state.copyWith(
         loadState: const LoadState.data(data: null),
         publishedEventsCount: results[0] as int,
-        pendingRegistrationsCount: results[1] as int,
-        approvedRegistrationsCount: results[2] as int,
-        userCount: results[3] as int,
-        staffCount: results[4] as int,
-        adminCount: results[5] as int,
-        activeClubsCount: results[6] as int,
-        clubEventStats: results[7] as List<Map<String, Object>>,
-        errorMessage: null,
+        pendingEventsCount: results[1] as int,
+        pendingRegistrationsCount: results[2] as int,
+        approvedRegistrationsCount: results[3] as int,
+        userCount: results[4] as int,
+        staffCount: results[5] as int,
+        adminCount: results[6] as int,
+        activeClubsCount: results[7] as int,
+        clubEventStats: results[8] as List<Map<String, Object>>,
       );
     } catch (e) {
       if (!ref.mounted) return;

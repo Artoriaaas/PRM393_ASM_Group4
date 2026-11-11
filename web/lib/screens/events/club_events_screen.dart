@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eventhub_core/eventhub_core.dart';
 import '../../viewmodels/club_events_viewmodel.dart';
+import '../../viewmodels/web_auth_viewmodel.dart';
 import 'event_editor_dialog.dart';
 
 class ClubEventsScreen extends ConsumerStatefulWidget {
@@ -62,6 +63,68 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
     );
   }
 
+  void _confirmApprove(BuildContext context, Event event) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AppConfirmationDialog(
+        title: 'Phê duyệt đề xuất sự kiện',
+        message:
+            'Xác nhận phê duyệt sự kiện "${event.title}" của ${event.clubName}? Sự kiện sẽ được lên lịch và công bố trên hệ thống.',
+        confirmLabel: 'Phê duyệt sự kiện',
+        onConfirm: () {
+          Navigator.of(ctx).pop();
+          ref.read(clubEventsViewModelProvider.notifier).approveEvent(event.id);
+        },
+      ),
+    );
+  }
+
+  void _confirmReject(BuildContext context, Event event) {
+    final reasonController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Từ chối đề xuất sự kiện'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Nhập lý do từ chối sự kiện "${event.title}" của ${event.clubName}:'),
+            const SizedBox(height: AppSpacing.s12),
+            TextField(
+              controller: reasonController,
+              decoration: const InputDecoration(
+                hintText: 'Lý do từ chối...',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 3,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Hủy'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: AppColors.surface,
+            ),
+            onPressed: () {
+              final reason = reasonController.text.trim();
+              if (reason.isEmpty) return;
+              Navigator.of(ctx).pop();
+              ref
+                  .read(clubEventsViewModelProvider.notifier)
+                  .rejectEvent(event.id, reason: reason);
+            },
+            child: const Text('Từ chối đề xuất'),
+          ),
+        ],
+      ),
+    );
+  }
   void _clearAllFilters() {
     _searchController.clear();
     ref.read(clubEventsViewModelProvider.notifier).clearFilters();
@@ -70,6 +133,8 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(clubEventsViewModelProvider);
+    final user = ref.watch(currentStaffProfileProvider);
+    final isAdmin = user?.isAdmin ?? false;
 
     return Scaffold(
       backgroundColor: AppColors.surfaceSubtle,
@@ -88,7 +153,9 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Quản lý Sự kiện CLB',
+                      isAdmin
+                          ? 'Giám sát & Phê duyệt Sự kiện CLB'
+                          : 'Quản lý Sự kiện CLB',
                       style: AppTypography.textTheme.headlineMedium?.copyWith(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.bold,
@@ -96,7 +163,9 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
                     ),
                     const SizedBox(height: AppSpacing.s4),
                     Text(
-                      'Tạo, chỉnh sửa, lưu trữ và điều phối điểm danh QR các sự kiện',
+                      isAdmin
+                          ? 'Phê duyệt đề xuất sự kiện từ Trưởng CLB, lên lịch và giám sát hoạt động toàn trường'
+                          : 'Tạo đề xuất sự kiện, lưu nháp và điều phối điểm danh QR các sự kiện',
                       style: AppTypography.textTheme.bodyMedium?.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -201,6 +270,11 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
                     children: [
                       _buildFilterChip('Tất cả', 'all', state.statusFilter),
                       _buildFilterChip(
+                        'Chờ duyệt (pending)',
+                        'pending_approval',
+                        state.statusFilter,
+                      ),
+                      _buildFilterChip(
                         'Đang mở (published)',
                         'published',
                         state.statusFilter,
@@ -208,6 +282,11 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
                       _buildFilterChip(
                         'Bản nháp (draft)',
                         'draft',
+                        state.statusFilter,
+                      ),
+                      _buildFilterChip(
+                        'Bị từ chối (rejected)',
+                        'rejected',
                         state.statusFilter,
                       ),
                       _buildFilterChip(
@@ -259,7 +338,7 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
                     ),
                   );
                 }
-                return _buildEventsTable(context, events);
+                return _buildEventsTable(context, events, isAdmin);
               },
             ),
           ],
@@ -296,7 +375,11 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
     );
   }
 
-  Widget _buildEventsTable(BuildContext context, List<Event> events) {
+  Widget _buildEventsTable(
+    BuildContext context,
+    List<Event> events,
+    bool isAdmin,
+  ) {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -397,6 +480,27 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
                     runSpacing: AppSpacing.s8,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
+                      if (isAdmin && event.status == 'pending_approval') ...[
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.check_circle_outline, size: 16),
+                          label: const Text('Phê duyệt'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.success,
+                            foregroundColor: AppColors.onSuccess,
+                            elevation: 0,
+                          ),
+                          onPressed: () => _confirmApprove(context, event),
+                        ),
+                        OutlinedButton.icon(
+                          icon: const Icon(Icons.cancel_outlined, size: 16),
+                          label: const Text('Từ chối'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.error,
+                            side: const BorderSide(color: AppColors.error),
+                          ),
+                          onPressed: () => _confirmReject(context, event),
+                        ),
+                      ],
                       ConstrainedBox(
                         constraints: const BoxConstraints(
                           minHeight: AppTouchTargets.min,
@@ -525,24 +629,30 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
   }
 
   String _mapStatusLabel(String status) => switch (status) {
-        'published' => 'Đang mở',
+        'pending_approval' => 'Chờ Admin duyệt',
+        'published' => 'Đang mở (Đã duyệt)',
         'draft' => 'Bản nháp',
+        'rejected' => 'Bị từ chối',
         'cancelled' => 'Đã hủy',
         'archived' => 'Lưu trữ',
         _ => status,
       };
 
   AppBadgeVariant _mapStatusVariant(String status) => switch (status) {
+        'pending_approval' => AppBadgeVariant.warning,
         'published' => AppBadgeVariant.success,
         'draft' => AppBadgeVariant.neutral,
+        'rejected' => AppBadgeVariant.error,
         'cancelled' => AppBadgeVariant.error,
         'archived' => AppBadgeVariant.info,
         _ => AppBadgeVariant.neutral,
       };
 
   IconData _mapStatusIcon(String status) => switch (status) {
+        'pending_approval' => Icons.pending_actions,
         'published' => Icons.public,
         'draft' => Icons.edit_note,
+        'rejected' => Icons.cancel,
         'cancelled' => Icons.cancel_outlined,
         'archived' => Icons.archive_outlined,
         _ => Icons.info_outline,

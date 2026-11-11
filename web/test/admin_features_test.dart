@@ -7,6 +7,7 @@ import 'package:eventhub_web/screens/admin/admin_dashboard_screen.dart';
 import 'package:eventhub_web/screens/clubs/admin_clubs_screen.dart';
 import 'package:eventhub_web/screens/users/admin_users_screen.dart';
 import 'package:eventhub_web/screens/shell/app_shell.dart';
+import 'package:eventhub_web/screens/reviews/review_queue_screen.dart';
 import 'package:eventhub_web/services/web_contracts.dart';
 import 'package:eventhub_web/viewmodels/admin_clubs_viewmodel.dart';
 import 'package:eventhub_web/viewmodels/admin_dashboard_viewmodel.dart';
@@ -235,7 +236,7 @@ void main() {
 
       expect(find.text('Bảng điều khiển Toàn hệ thống'), findsOneWidget);
       expect(find.text('Sự kiện đang mở'), findsOneWidget);
-      expect(find.text('Đơn chờ duyệt toàn trường'), findsOneWidget);
+      expect(find.text('Đề xuất sự kiện chờ duyệt'), findsOneWidget);
       expect(find.text('CLB đang hoạt động'), findsOneWidget);
     });
 
@@ -270,9 +271,67 @@ void main() {
       expect(find.text('Cổng Quản trị viên'), findsOneWidget);
       expect(find.text('Người dùng'), findsOneWidget);
       expect(find.text('Câu lạc bộ'), findsOneWidget);
-      expect(find.text('Giám sát sự kiện'), findsOneWidget);
-      expect(find.text('Duyệt đăng ký'), findsOneWidget);
+      expect(find.text('Giám sát & Duyệt sự kiện'), findsOneWidget);
+      expect(find.text('Duyệt đăng ký'), findsNothing);
       expect(find.text('Thông báo hệ thống'), findsOneWidget);
+    });
+
+    test('AdminService approves and rejects event proposals', () async {
+      final testEvent = Event(
+        id: 'ev_proposal_1',
+        title: 'Workshop Flutter Advanced',
+        clubName: 'CLB F-Code',
+        location: 'Lab 101',
+        startsAt: DateTime.now().add(const Duration(days: 5)),
+        endsAt: DateTime.now().add(const Duration(days: 5, hours: 2)),
+        status: 'pending_approval',
+        clubId: 'c_fcode',
+      );
+
+      final fakeAdmin = FakeAdminService(
+        initialUsers: sampleUsers,
+        initialClubs: sampleClubs,
+        initialEvents: [testEvent],
+      );
+
+      expect(await fakeAdmin.countSystemPendingEvents(), 1);
+
+      // Approve
+      await fakeAdmin.adminApproveEvent('ev_proposal_1');
+      final approvedEvents = await fakeAdmin.streamAllEvents().first;
+      expect(approvedEvents.first.status, 'published');
+      expect(await fakeAdmin.countSystemPendingEvents(), 0);
+
+      // Reject
+      await fakeAdmin.adminRejectEvent('ev_proposal_1', reason: 'Trùng lịch thi');
+      final rejectedEvents = await fakeAdmin.streamAllEvents().first;
+      expect(rejectedEvents.first.status, 'rejected');
+    });
+
+    testWidgets('ReviewQueueScreen displays role boundary notice when viewed by Admin',
+        (tester) async {
+      tester.view.physicalSize = const Size(1280, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() => tester.view.resetPhysicalSize());
+
+      final fakeAuth = FakeWebAuthService(initialUser: adminUser);
+      final fakeAdmin = FakeAdminService();
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            webAuthServiceProvider.overrideWithValue(fakeAuth),
+            adminServiceProvider.overrideWithValue(fakeAdmin),
+          ],
+          child: const MaterialApp(
+            home: ReviewQueueScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Phân quyền Duyệt Đăng ký'), findsOneWidget);
+      expect(find.text('Đến Giám sát & Phê duyệt Sự kiện'), findsOneWidget);
     });
   });
 }

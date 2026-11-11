@@ -264,6 +264,67 @@ class ClubEventsViewModel extends Notifier<ClubEventsState> {
     );
     return res;
   }
+
+  Future<Result<void>> approveEvent(String eventId) async {
+    state = state.copyWith(actionMessage: null, errorMessage: null);
+    final user = ref.read(currentStaffProfileProvider);
+    if (!(user?.isAdmin ?? false)) {
+      const f = AppFailure(
+        code: 'unauthorized',
+        message: 'Chỉ Quản trị viên mới có quyền phê duyệt sự kiện.',
+      );
+      state = state.copyWith(errorMessage: f.message);
+      return Result.failure(f);
+    }
+    final adminService = ref.read(adminServiceProvider);
+    final analytics = ref.read(webAnalyticsServiceProvider);
+    final res = await adminService.adminApproveEvent(eventId);
+    if (!ref.mounted) return res;
+    res.when(
+      success: (_) {
+        unawaited(
+          analytics.logEvent('event_approved_by_admin', {'event_id': eventId}),
+        );
+        state = state.copyWith(
+          actionMessage: 'Đã phê duyệt đề xuất sự kiện và lên lịch công bố.',
+        );
+      },
+      failure: (f) => state = state.copyWith(errorMessage: f.message),
+    );
+    return res;
+  }
+
+  Future<Result<void>> rejectEvent(String eventId, {required String reason}) async {
+    state = state.copyWith(actionMessage: null, errorMessage: null);
+    final user = ref.read(currentStaffProfileProvider);
+    if (!(user?.isAdmin ?? false)) {
+      const f = AppFailure(
+        code: 'unauthorized',
+        message: 'Chỉ Quản trị viên mới có quyền từ chối sự kiện.',
+      );
+      state = state.copyWith(errorMessage: f.message);
+      return Result.failure(f);
+    }
+    final adminService = ref.read(adminServiceProvider);
+    final analytics = ref.read(webAnalyticsServiceProvider);
+    final res = await adminService.adminRejectEvent(eventId, reason: reason);
+    if (!ref.mounted) return res;
+    res.when(
+      success: (_) {
+        unawaited(
+          analytics.logEvent('event_rejected_by_admin', {
+            'event_id': eventId,
+            'reason': reason,
+          }),
+        );
+        state = state.copyWith(
+          actionMessage: 'Đã từ chối đề xuất sự kiện của CLB.',
+        );
+      },
+      failure: (f) => state = state.copyWith(errorMessage: f.message),
+    );
+    return res;
+  }
 }
 
 final clubEventsViewModelProvider =

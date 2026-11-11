@@ -22,8 +22,7 @@ class AppShell extends ConsumerWidget {
       if (location.startsWith('/users')) return 1;
       if (location.startsWith('/clubs')) return 2;
       if (location.startsWith('/events')) return 3;
-      if (location.startsWith('/reviews')) return 4;
-      if (location.startsWith('/announcements')) return 5;
+      if (location.startsWith('/announcements')) return 4;
       return 0;
     }
     if (location.startsWith('/dashboard')) return 0;
@@ -49,9 +48,6 @@ class AppShell extends ConsumerWidget {
           context.go('/events');
           break;
         case 4:
-          context.go('/reviews');
-          break;
-        case 5:
           context.go('/announcements');
           break;
       }
@@ -195,17 +191,7 @@ class AppShell extends ConsumerWidget {
                           const NavigationRailDestination(
                             icon: Icon(Icons.event_outlined),
                             selectedIcon: Icon(Icons.event),
-                            label: Text('Sự kiện'),
-                          ),
-                          NavigationRailDestination(
-                            icon: pendingCount > 0
-                                ? Badge.count(
-                                    count: pendingCount,
-                                    child: const Icon(Icons.how_to_reg_outlined),
-                                  )
-                                : const Icon(Icons.how_to_reg_outlined),
-                            selectedIcon: const Icon(Icons.how_to_reg),
-                            label: const Text('Duyệt đơn'),
+                            label: Text('Duyệt sự kiện'),
                           ),
                           const NavigationRailDestination(
                             icon: Icon(Icons.campaign_outlined),
@@ -335,7 +321,7 @@ class AppShell extends ConsumerWidget {
                     ),
                     ListTile(
                       leading: const Icon(Icons.event_outlined),
-                      title: const Text('Giám sát sự kiện'),
+                      title: const Text('Giám sát & Duyệt sự kiện'),
                       selected: selectedIndex == 3,
                       onTap: () {
                         Navigator.pop(context);
@@ -343,24 +329,12 @@ class AppShell extends ConsumerWidget {
                       },
                     ),
                     ListTile(
-                      leading: const Icon(Icons.how_to_reg_outlined),
-                      title: const Text('Duyệt đăng ký'),
-                      trailing: pendingCount > 0
-                          ? _buildPendingCountBadge(pendingCount)
-                          : null,
+                      leading: const Icon(Icons.campaign_outlined),
+                      title: const Text('Thông báo hệ thống'),
                       selected: selectedIndex == 4,
                       onTap: () {
                         Navigator.pop(context);
                         _onDestinationSelected(context, 4, isAdmin);
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.campaign_outlined),
-                      title: const Text('Thông báo hệ thống'),
-                      selected: selectedIndex == 5,
-                      onTap: () {
-                        Navigator.pop(context);
-                        _onDestinationSelected(context, 5, isAdmin);
                       },
                     ),
                   ] else ...[
@@ -585,20 +559,10 @@ class AppShell extends ConsumerWidget {
                       _buildNavItem(
                         icon: Icons.event_outlined,
                         selectedIcon: Icons.event,
-                        label: 'Giám sát sự kiện',
-                        semanticsLabel: 'Mở màn hình Giám sát sự kiện',
+                        label: 'Giám sát & Duyệt sự kiện',
+                        semanticsLabel: 'Mở màn hình Giám sát và Phê duyệt sự kiện CLB',
                         isSelected: selectedIndex == 3,
                         onTap: () => _onDestinationSelected(context, 3, isAdmin),
-                      ),
-                      const SizedBox(height: AppSpacing.s4),
-                      _buildNavItem(
-                        icon: Icons.how_to_reg_outlined,
-                        selectedIcon: Icons.how_to_reg,
-                        label: 'Duyệt đăng ký',
-                        semanticsLabel: 'Mở màn hình Duyệt đăng ký',
-                        badgeCount: pendingCount,
-                        isSelected: selectedIndex == 4,
-                        onTap: () => _onDestinationSelected(context, 4, isAdmin),
                       ),
                       const SizedBox(height: AppSpacing.s4),
                       _buildNavItem(
@@ -606,8 +570,8 @@ class AppShell extends ConsumerWidget {
                         selectedIcon: Icons.campaign,
                         label: 'Thông báo hệ thống',
                         semanticsLabel: 'Mở màn hình Thông báo hệ thống',
-                        isSelected: selectedIndex == 5,
-                        onTap: () => _onDestinationSelected(context, 5, isAdmin),
+                        isSelected: selectedIndex == 4,
+                        onTap: () => _onDestinationSelected(context, 4, isAdmin),
                       ),
                     ]
                   : [

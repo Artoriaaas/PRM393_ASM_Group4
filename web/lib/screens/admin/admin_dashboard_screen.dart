@@ -100,10 +100,10 @@ class AdminDashboardScreen extends ConsumerWidget {
                     bgColor: AppColors.brandSubtle,
                   ),
                   _buildMetricCard(
-                    title: 'Đơn chờ duyệt toàn trường',
-                    value: '${state.pendingRegistrationsCount}',
-                    icon: Icons.how_to_reg,
-                    color: state.pendingRegistrationsCount > 0
+                    title: 'Đề xuất sự kiện chờ duyệt',
+                    value: '${state.pendingEventsCount}',
+                    icon: Icons.pending_actions,
+                    color: state.pendingEventsCount > 0
                         ? AppColors.warning
                         : AppColors.textSecondary,
                     bgColor: AppColors.warningContainer,
@@ -318,10 +318,10 @@ class AdminDashboardScreen extends ConsumerWidget {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.pending_actions, color: AppColors.warning),
+                          const Icon(Icons.event_note, color: AppColors.primary),
                           const SizedBox(width: AppSpacing.s8),
                           Text(
-                            'Đơn đăng ký mới cần duyệt gần nhất',
+                            'Sự kiện & Đề xuất gần đây',
                             style: AppTypography.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -329,18 +329,18 @@ class AdminDashboardScreen extends ConsumerWidget {
                         ],
                       ),
                       TextButton(
-                        onPressed: () => context.go('/reviews'),
-                        child: const Text('Xem toàn bộ hàng đợi →'),
+                        onPressed: () => context.go('/events'),
+                        child: const Text('Xem & Phê duyệt sự kiện →'),
                       ),
                     ],
                   ),
                   const SizedBox(height: AppSpacing.s12),
-                  if (state.recentPendingRegistrations.isEmpty)
+                  if (state.recentEvents.isEmpty)
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: AppSpacing.s16),
                       child: Center(
                         child: Text(
-                          'Không có đơn đăng ký nào đang chờ duyệt trên toàn hệ thống.',
+                          'Chưa có sự kiện hoặc đề xuất nào.',
                           style: TextStyle(color: AppColors.textSecondary),
                         ),
                       ),
@@ -349,25 +349,49 @@ class AdminDashboardScreen extends ConsumerWidget {
                     ListView.separated(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: state.recentPendingRegistrations.length,
+                      itemCount: state.recentEvents.length,
                       separatorBuilder: (_, __) =>
                           const Divider(height: 1, color: AppColors.border),
                       itemBuilder: (context, index) {
-                        final r = state.recentPendingRegistrations[index];
+                        final e = state.recentEvents[index];
+                        final isPending = e.status == 'pending_approval';
                         return ListTile(
                           contentPadding: EdgeInsets.zero,
-                          leading: const CircleAvatar(
-                            backgroundColor: AppColors.warningContainer,
-                            child: Icon(Icons.person, color: AppColors.onWarningContainer),
+                          leading: CircleAvatar(
+                            backgroundColor: isPending
+                                ? AppColors.warningContainer
+                                : AppColors.brandSubtle,
+                            child: Icon(
+                              isPending ? Icons.pending_actions : Icons.event,
+                              color: isPending
+                                  ? AppColors.onWarningContainer
+                                  : AppColors.primary,
+                            ),
                           ),
                           title: Text(
-                            r.participant.name,
+                            e.title,
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          subtitle: Text('${r.participant.email} • Mã SK: ${r.eventId}'),
-                          trailing: const AppStatusBadge(
-                            label: 'Chờ duyệt',
-                            variant: AppBadgeVariant.warning,
+                          subtitle: Text(
+                            '${e.clubName} • ${e.location}',
+                          ),
+                          trailing: AppStatusBadge(
+                            label: isPending
+                                ? 'Chờ Admin duyệt'
+                                : (e.status == 'published'
+                                    ? 'Đang mở'
+                                    : (e.status == 'draft'
+                                        ? 'Bản nháp'
+                                        : (e.status == 'rejected'
+                                            ? 'Bị từ chối'
+                                            : e.status))),
+                            variant: isPending
+                                ? AppBadgeVariant.warning
+                                : (e.status == 'published'
+                                    ? AppBadgeVariant.success
+                                    : (e.status == 'rejected'
+                                        ? AppBadgeVariant.error
+                                        : AppBadgeVariant.neutral)),
                           ),
                         );
                       },
