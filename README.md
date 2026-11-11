@@ -39,7 +39,7 @@ Theo đề Lab 3, **Tài khoản → Dịch vụ Firebase** mở khu demo thông
 
 ## Sản phẩm bàn giao Lab 3 (Deliverables)
 
-- 📊 **Slide Thuyết trình Online (34 Slide Trực Quan & Evidence Thực Tế)**: [https://artoriaaas.github.io/PRM393_ASM_Group4/slides/](https://thinhcri.github.io/PRM393_Lab03_Group4/slides/)  
+- 📊 **Slide Thuyết trình Online (34 Slide Trực Quan & Evidence Thực Tế)**: [https://artoriaaas.github.io/PRM393_ASM_Group4/slides/](https://artoriaaas.github.io/PRM393_Lab03_Group4/slides/)  
   *(Link fork cá nhân: [https://kietntse.github.io/PRM393_Lab03_Group4_pre/slides/](https://kietntse.github.io/PRM393_Lab03_Group4_pre/slides/))*
 - 📑 **Hướng dẫn xem Slide & Xuất PDF chuẩn (34 Slide)**: [slides/README.md](slides/README.md) (xuất ra `slides/Lab03_Group4_slides.pdf`)
 - 📄 **Báo cáo tổng kết đồ án (8–12 trang)**: [report/Lab03_Group4_Report.md](report/Lab03_Group4_Report.md) (hướng dẫn xuất PDF tại [report/README.md](report/README.md))
