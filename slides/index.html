@@ -561,7 +561,7 @@
               <li><i class="fa-solid fa-angle-right" style="color: #E84D1C;"></i> Tổng quan giải pháp EventHub</li>
               <li><i class="fa-solid fa-angle-right" style="color: #E84D1C;"></i> Môi trường &amp; Khởi tạo Firebase SDK</li>
               <li><i class="fa-solid fa-angle-right" style="color: #E84D1C;"></i> Kiến trúc Clean Architecture MVVM</li>
-              <li><i class="fa-solid fa-angle-right" style="color: #E84D1C;"></i> Workflow &amp; Luồng dữ liệu Reactive</li>
+              <li><i class="fa-solid fa-angle-right" style="color: #E84D1C;"></i> Quy Chuẩn Workflow &amp; Đặc Tả WF-01</li>
               <li><i class="fa-solid fa-angle-right" style="color: #E84D1C;"></i> Giao diện người dùng thực tế</li>
             </ul>
           </div>
@@ -776,218 +776,283 @@
       </section>
 
       <!-- ==========================================
-           SLIDE 6: MÔ HÌNH MVVM & WORKFLOW KẾT NỐI
+           SLIDE 6: ĐỊNH NGHĨA KIẾN TRÚC MVVM & PHÂN TẦNG
       =========================================== -->
       <section class="architecture-slide" data-transition="slide">
         <div class="header-bar">
           <span>Phần 1: Nền Tảng Dự Án</span>
-          <span class="tag">KIẾN TRÚC &amp; WORKFLOW</span>
+          <span class="tag">KIẾN TRÚC PHẦN MỀM</span>
           <span>EventHub Group 4</span>
         </div>
 
         <div class="slide-title-group">
-          <div class="slide-sub"><i class="fa-solid fa-sitemap"></i> SOFTWARE ARCHITECTURE &amp; WORKFLOW</div>
-          <h2 class="slide-title">Mô Hình <span>MVVM &amp; Quy Trình Kết Nối</span> Trong EventHub</h2>
+          <div class="slide-sub"><i class="fa-solid fa-sitemap"></i> SOFTWARE ARCHITECTURE DEFINITION</div>
+          <h2 class="slide-title">Mô Hình <span>MVVM + Riverpod</span> Trong Dự Án EventHub</h2>
         </div>
 
-        <!-- 1. Ba Vai Trò Cốt Lõi MVVM (Định nghĩa sài như thế nào) -->
-        <div class="grid-3" style="gap: 12px; margin-bottom: 12px;">
-          <div class="card" style="border-top: 3px solid #FF6B35; padding: 12px 14px;">
-            <div style="font-size: 15px; font-weight: 800; color: #E84D1C; display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-              <i class="fa-solid fa-mobile-screen"></i> 1. VIEW (Giao Diện)
-            </div>
-            <div style="font-size: 11px; color: #A0714F; font-weight: 600; margin-bottom: 6px;">Thư mục: <code>lib/screens/</code>, <code>lib/widgets/</code></div>
-            <div style="font-size: 12.5px; color: #6B3A20; line-height: 1.45;">
-              &bull; <strong>Dùng:</strong> <code>ConsumerWidget</code> thuần UI, không logic.<br>
-              &bull; <strong>Lắng nghe:</strong> <code>ref.watch(provider)</code> tự động vẽ lại.<br>
-              &bull; <strong>Gửi action:</strong> <code>ref.read(notifier).method()</code> khi tương tác.
-            </div>
+        <div class="grid-3">
+          <div class="card" style="border-top: 3px solid #FF6B35;">
+            <div class="card-title" style="color: #E84D1C;"><i class="fa-solid fa-mobile-screen"></i> 1. View (Giao Diện)</div>
+            <div style="font-size: 11.5px; color: #A0714F; margin-top: -6px; margin-bottom: 10px; font-weight: 600;">Thư mục: <code>lib/screens/</code> &amp; <code>lib/widgets/</code></div>
+            <ul class="check-list">
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #E84D1C;"></i>
+                <div><strong>ConsumerWidget:</strong> Thuần UI, chỉ rebuild khi state theo dõi thay đổi qua <code>ref.watch()</code>.</div>
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #E84D1C;"></i>
+                <div><strong>Dispatch Action:</strong> Bắt sự kiện người dùng (tap, input) gửi intent xuống qua <code>ref.read().action()</code>.</div>
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #E84D1C;"></i>
+                <div><strong>Zero Direct Firebase:</strong> Tuyệt đối không gọi SDK Firebase trực tiếp tại Widget, luôn qua ViewModel.</div>
+              </li>
+            </ul>
           </div>
 
-          <div class="card" style="border-top: 3px solid #F59E0B; padding: 12px 14px;">
-            <div style="font-size: 15px; font-weight: 800; color: #D97706; display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-              <i class="fa-solid fa-sliders"></i> 2. VIEWMODEL (Điều Phối)
-            </div>
-            <div style="font-size: 11px; color: #A0714F; font-weight: 600; margin-bottom: 6px;">Thư mục: <code>lib/viewmodels/</code> (Riverpod)</div>
-            <div style="font-size: 12.5px; color: #6B3A20; line-height: 1.45;">
-              &bull; <strong>Dùng:</strong> <code>Notifier</code> / <code>AsyncNotifier&lt;T&gt;</code>.<br>
-              &bull; <strong>Quản lý:</strong> State dạng <code>AsyncValue</code> (Loading, Data, Error).<br>
-              &bull; <strong>Điều phối:</strong> Nhận Intent từ View, gọi Service, cập nhật State.
-            </div>
+          <div class="card" style="border-top: 3px solid #F59E0B;">
+            <div class="card-title" style="color: #D97706;"><i class="fa-solid fa-sliders"></i> 2. ViewModel (Điều Phối)</div>
+            <div style="font-size: 11.5px; color: #A0714F; margin-top: -6px; margin-bottom: 10px; font-weight: 600;">Thư mục: <code>lib/viewmodels/</code> (Riverpod)</div>
+            <ul class="check-list">
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #D97706;"></i>
+                <div><strong>Quản lý UI State:</strong> Nắm giữ state dạng <code>AsyncNotifier</code>, tự động phân tách Loading / Data / Error.</div>
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #D97706;"></i>
+                <div><strong>Cầu Nối Nghiệp Vụ:</strong> Tiếp nhận User Intent, gọi xuống Services xử lý, bắt lỗi &amp; sanitize dữ liệu.</div>
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #D97706;"></i>
+                <div><strong>Reactive Notification:</strong> Tự động phát tín hiệu cập nhật UI đồng bộ mà không cần gọi <code>setState()</code>.</div>
+              </li>
+            </ul>
           </div>
 
-          <div class="card" style="border-top: 3px solid #DB2777; padding: 12px 14px;">
-            <div style="font-size: 15px; font-weight: 800; color: #BE185D; display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-              <i class="fa-solid fa-database"></i> 3. MODEL &amp; SERVICES
-            </div>
-            <div style="font-size: 11px; color: #A0714F; font-weight: 600; margin-bottom: 6px;">Thư mục: <code>lib/models/</code>, <code>lib/services/</code></div>
-            <div style="font-size: 12.5px; color: #6B3A20; line-height: 1.45;">
-              &bull; <strong>Model:</strong> <code>Event</code>, <code>Booking</code> bất biến với <code>fromJson</code>.<br>
-              &bull; <strong>Service:</strong> Bọc Firebase SDK, SQLite qua abstract contract.<br>
-              &bull; <strong>Bảo mật:</strong> Tự động lọc sạch Zero PII trước khi log cloud.
-            </div>
-          </div>
-        </div>
-
-        <!-- 2. Workflow 4 Bước Kết Nối Thực Tế (Quy trình tương tác End-to-End) -->
-        <div style="font-size: 12px; font-weight: 800; color: #E84D1C; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-          <i class="fa-solid fa-diagram-project"></i> QUY TRÌNH WORKFLOW KẾT NỐI DỮ LIỆU THỰC TẾ (VÍ DỤ ĐẶT VÉ SỰ KIỆN):
-        </div>
-
-        <div class="workflow-grid" style="margin-bottom: 10px;">
-          <div class="workflow-card" style="border-top: 2.5px solid #FF6B35; padding: 10px 12px;">
-            <div class="workflow-step-badge" style="background: rgba(255,107,53,0.15); color: #E84D1C; font-size: 10.5px;">
-              <i class="fa-solid fa-1"></i> BƯỚC 1: USER ACTION
-            </div>
-            <div style="font-size: 12px; font-weight: 700; color: #2D1206; margin-bottom: 3px;">View (Widget)</div>
-            <div style="font-size: 11px; color: #6B3A20; line-height: 1.4;">
-              User nhấn nút <em>"Đặt vé"</em>.<br>
-              Widget gửi Action Intent:<br>
-              <code>ref.read(bookingVM.notifier).book(event)</code>
-            </div>
-          </div>
-
-          <div class="workflow-card" style="border-top: 2.5px solid #F59E0B; padding: 10px 12px;">
-            <div class="workflow-step-badge" style="background: rgba(245,158,11,0.15); color: #D97706; font-size: 10.5px;">
-              <i class="fa-solid fa-2"></i> BƯỚC 2: DISPATCH STATE
-            </div>
-            <div style="font-size: 12px; font-weight: 700; color: #2D1206; margin-bottom: 3px;">ViewModel (Riverpod)</div>
-            <div style="font-size: 11px; color: #6B3A20; line-height: 1.4;">
-              Set <code>state = AsyncLoading()</code>.<br>
-              View lập tức hiển thị Loading spinner phản hồi cho user mà không đơ UI.
-            </div>
-          </div>
-
-          <div class="workflow-card" style="border-top: 2.5px solid #DB2777; padding: 10px 12px;">
-            <div class="workflow-step-badge" style="background: rgba(219,39,119,0.15); color: #BE185D; font-size: 10.5px;">
-              <i class="fa-solid fa-3"></i> BƯỚC 3: CALL SERVICE
-            </div>
-            <div style="font-size: 12px; font-weight: 700; color: #2D1206; margin-bottom: 3px;">Service &amp; Firebase SDK</div>
-            <div style="font-size: 11px; color: #6B3A20; line-height: 1.4;">
-              Gọi <code>eventService.book()</code>.<br>
-              Kiểm tra token, ghi vào Firestore &amp; Storage, gửi FCM push thông báo.
-            </div>
-          </div>
-
-          <div class="workflow-card" style="border-top: 2.5px solid #10B981; padding: 10px 12px;">
-            <div class="workflow-step-badge" style="background: rgba(16,185,129,0.15); color: #059669; font-size: 10.5px;">
-              <i class="fa-solid fa-4"></i> BƯỚC 4: RE-RENDER
-            </div>
-            <div style="font-size: 12px; font-weight: 700; color: #2D1206; margin-bottom: 3px;">Reactive Data Binding</div>
-            <div style="font-size: 11px; color: #6B3A20; line-height: 1.4;">
-              Nhận model <code>Booking</code>, set <code>state = AsyncData(ticket)</code>.<br>
-              <code>ref.watch()</code> tự vẽ lại UI hiển thị mã QR thành công.
-            </div>
+          <div class="card" style="border-top: 3px solid #DB2777;">
+            <div class="card-title" style="color: #BE185D;"><i class="fa-solid fa-database"></i> 3. Model &amp; Services</div>
+            <div style="font-size: 11.5px; color: #A0714F; margin-top: -6px; margin-bottom: 10px; font-weight: 600;">Thư mục: <code>lib/models/</code> &amp; <code>lib/services/</code></div>
+            <ul class="check-list">
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #BE185D;"></i>
+                <div><strong>Domain Models:</strong> Thực thể bất biến (<code>Event</code>, <code>Booking</code>, <code>User</code>) hỗ trợ serialization JSON.</div>
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #BE185D;"></i>
+                <div><strong>Service Contracts:</strong> Abstract interface cách ly chi tiết công nghệ (Firebase SDK, SQLite, Cloudinary).</div>
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #BE185D;"></i>
+                <div><strong>Bảo Mật Zero PII:</strong> Tự động lọc sạch email, password, số điện thoại trước khi đẩy lên Cloud log.</div>
+              </li>
+            </ul>
           </div>
         </div>
 
-        <!-- 3. Hai Chiều Kết Nối Cốt Lõi -->
-        <div class="grid-2" style="gap: 12px;">
-          <div class="card" style="padding: 10px 14px; border-left: 3px solid #FF6B35; background: rgba(255,255,255,0.85);">
-            <div style="font-weight: 700; color: #E84D1C; font-size: 12.5px; margin-bottom: 3px;">
-              <i class="fa-solid fa-arrow-down-long"></i> Chiều Action (Từ View xuống Service - One-way Intent)
-            </div>
-            <div style="font-size: 11.5px; color: #6B3A20; line-height: 1.4;">
-              <code>User Tap UI</code> &rarr; <code>ref.read()</code> &rarr; <code>ViewModel Method</code> &rarr; <code>Service API</code>.<br>
-              View hoàn toàn không biết Firebase là gì, dễ dàng viết Unit Test độc lập bằng cách mock ViewModel.
-            </div>
-          </div>
-
-          <div class="card" style="padding: 10px 14px; border-left: 3px solid #DB2777; background: rgba(255,255,255,0.85);">
-            <div style="font-weight: 700; color: #BE185D; font-size: 12.5px; margin-bottom: 3px;">
-              <i class="fa-solid fa-arrows-rotate"></i> Chiều Data Binding (Từ Service lên View - Reactive Stream)
-            </div>
-            <div style="font-size: 11.5px; color: #6B3A20; line-height: 1.4;">
-              <code>Firebase Data</code> &rarr; <code>Model parse</code> &rarr; <code>ViewModel AsyncValue</code> &rarr; <code>ref.watch() Auto Rebuild</code>.<br>
-              Không gọi <code>setState()</code> thủ công, tự giải phóng bộ nhớ khi thoát màn hình với <code>autoDispose</code>.
-            </div>
+        <div class="card" style="margin-top: 14px; background: rgba(255, 140, 60, 0.08); border-color: rgba(255, 140, 60, 0.25); padding: 10px 18px;">
+          <div style="font-size: 13px; font-weight: 600; color: #6B3A20; display: flex; align-items: center; justify-content: space-around;">
+            <span><i class="fa-solid fa-eye" style="color: #FF6B35;"></i> View (Widgets)</span>
+            <i class="fa-solid fa-arrow-right" style="color: #FF6B35; font-size: 12px;"></i>
+            <span><i class="fa-solid fa-bolt" style="color: #F59E0B;"></i> ViewModel (Notifiers)</span>
+            <i class="fa-solid fa-arrow-right" style="color: #F59E0B; font-size: 12px;"></i>
+            <span><i class="fa-solid fa-gears" style="color: #D97706;"></i> Domain Services</span>
+            <i class="fa-solid fa-arrow-right" style="color: #DB2777; font-size: 12px;"></i>
+            <span><i class="fa-solid fa-cloud" style="color: #DB2777;"></i> Firebase Backend</span>
           </div>
         </div>
       </section>
 
       <!-- ==========================================
-           SLIDE 6B: WORKFLOW KẾT NỐI & LUỒNG DỮ LIỆU MVVM
+           SLIDE 6B: KHUNG NHẬN DIỆN LUỒNG NGHIỆP VỤ (WORKFLOW)
       =========================================== -->
       <section data-transition="slide">
         <div class="header-bar">
           <span>Phần 1: Nền Tảng Dự Án</span>
-          <span class="tag">MVVM WORKFLOW</span>
+          <span class="tag">NGHIỆP VỤ &amp; WORKFLOW</span>
           <span>EventHub Group 4</span>
         </div>
 
         <div class="slide-title-group">
-          <div class="slide-sub"><i class="fa-solid fa-diagram-project"></i> END-TO-END DATA FLOW</div>
-          <h2 class="slide-title">Quy Trình Kết Nối &amp; <span>Luồng Dữ Liệu MVVM</span> Trong EventHub</h2>
+          <div class="slide-sub"><i class="fa-solid fa-diagram-project"></i> SOFTWARE PROJECT GUIDELINE V3 · W01 - W07</div>
+          <h2 class="slide-title">Định Nghĩa &amp; Khung Nhận Diện <span>Luồng Nghiệp Vụ (Workflow)</span></h2>
         </div>
 
-        <!-- 4-Step Interactive Flowchart -->
-        <div class="workflow-grid">
-          <div class="workflow-card" style="border-top: 3px solid #FF6B35;">
-            <div class="workflow-step-badge" style="background: rgba(255,107,53,0.15); color: #E84D1C;">
-              <i class="fa-solid fa-1"></i> BƯỚC 1: USER ACTION
-            </div>
-            <div style="font-size: 13.5px; font-weight: 700; color: #2D1206; margin-bottom: 4px;">View (ConsumerWidget)</div>
-            <p style="font-size: 12px; color: #6B3A20; line-height: 1.45; margin: 0;">
-              User nhấn nút <em>"Đặt vé sự kiện"</em> trên <code>EventDetailScreen</code>.<br>
-              Widget gửi intent:<br>
-              <code>ref.read(bookingVM.notifier).book(event)</code>
-            </p>
-          </div>
-
-          <div class="workflow-card" style="border-top: 3px solid #F59E0B;">
-            <div class="workflow-step-badge" style="background: rgba(245,158,11,0.15); color: #D97706;">
-              <i class="fa-solid fa-2"></i> BƯỚC 2: DISPATCH STATE
-            </div>
-            <div style="font-size: 13.5px; font-weight: 700; color: #2D1206; margin-bottom: 4px;">ViewModel (Riverpod)</div>
-            <p style="font-size: 12px; color: #6B3A20; line-height: 1.45; margin: 0;">
-              ViewModel set trạng thái:<br>
-              <code>state = AsyncValue.loading()</code>.<br>
-              View lập tức hiển thị Loading spinner phản hồi ngay lập tức cho người dùng.
-            </p>
-          </div>
-
-          <div class="workflow-card" style="border-top: 3px solid #DB2777;">
-            <div class="workflow-step-badge" style="background: rgba(219,39,119,0.15); color: #BE185D;">
-              <i class="fa-solid fa-3"></i> BƯỚC 3: SERVICE CALL
-            </div>
-            <div style="font-size: 13.5px; font-weight: 700; color: #2D1206; margin-bottom: 4px;">Service &amp; Firebase SDK</div>
-            <p style="font-size: 12px; color: #6B3A20; line-height: 1.45; margin: 0;">
-              Gọi <code>firestoreEventService.book()</code>.<br>
-              Xác thực Token, sanitize dữ liệu (Zero PII), tạo bản ghi trên <strong>Firestore</strong> &amp; gửi FCM push.
-            </p>
-          </div>
-
-          <div class="workflow-card" style="border-top: 3px solid #10B981;">
-            <div class="workflow-step-badge" style="background: rgba(16,185,129,0.15); color: #059669;">
-              <i class="fa-solid fa-4"></i> BƯỚC 4: RE-RENDER
-            </div>
-            <div style="font-size: 13.5px; font-weight: 700; color: #2D1206; margin-bottom: 4px;">Reactive Binding</div>
-            <p style="font-size: 12px; color: #6B3A20; line-height: 1.45; margin: 0;">
-              Parse model <code>Booking</code>, ViewModel gán <code>state = AsyncData(ticket)</code>.<br>
-              <code>ref.watch()</code> tự kích hoạt build lại UI, hiển thị vé &amp; QR tức thì.
-            </p>
+        <!-- Definition Callout (W03) -->
+        <div class="card" style="padding: 10px 16px; margin-bottom: 12px; background: rgba(255, 107, 53, 0.08); border-left: 4px solid #FF6B35;">
+          <div style="font-size: 13px; color: #2D1206; line-height: 1.45;">
+            <strong style="color: #E84D1C;"><i class="fa-solid fa-lightbulb"></i> Định nghĩa chuẩn (W03):</strong>
+            <strong>Workflow</strong> là một chuỗi bước có thứ tự từ <strong>Trigger</strong> &rarr; <strong>Bước &amp; Quyết định (BR)</strong> &rarr; <strong>Thay đổi trạng thái đối tượng</strong> &rarr; <strong>Kết quả có giá trị cho Actor</strong>.
+            <span style="display: block; font-size: 12px; color: #7C2D12; font-weight: 600; margin-top: 2px;">
+              &bull; Bản chất: <em>"Ai làm gì, theo thứ tự nào, để đạt kết quả gì"</em> — không phải <em>"người dùng bấm những nút nào"</em>.
+            </span>
           </div>
         </div>
 
-        <!-- 2 Mechanism Cards: Action Stream vs Data Binding -->
-        <div class="grid-2" style="gap: 14px;">
-          <div class="card" style="padding: 14px 18px; border-left: 3px solid #FF6B35;">
-            <div style="font-weight: 700; color: #E84D1C; font-size: 14px; margin-bottom: 6px;">
-              <i class="fa-solid fa-arrow-down-long"></i> Chiều Action (One-Way User Intent)
+        <!-- 3 Columns: 7 Components, 5 Quick Questions, Common Misconceptions -->
+        <div class="grid-3" style="gap: 12px;">
+          <!-- Col 1: 7 Thành phần cốt lõi (W04) -->
+          <div class="card" style="border-top: 3px solid #FF6B35; padding: 12px 14px;">
+            <div class="card-title" style="color: #E84D1C; font-size: 13.5px; margin-bottom: 8px;">
+              <i class="fa-solid fa-cubes-stacked"></i> 7 Thành Phần Cốt Lõi (W04)
             </div>
-            <div style="font-size: 12px; color: #6B3A20; line-height: 1.5;">
-              <code>User Tap UI</code> &rarr; <code>ref.read()</code> &rarr; <code>ViewModel Method</code> &rarr; <code>Service API</code>.<br>
-              &bull; <strong>Ưu điểm:</strong> View không chứa bất kỳ logic gọi Firebase nào, hoàn toàn decoupled, cực kỳ dễ viết Unit Test độc lập bằng cách mock ViewModel.
+            <ul class="check-list" style="font-size: 11.5px; line-height: 1.4;">
+              <li><i class="fa-solid fa-circle-check" style="color: #E84D1C;"></i><div><strong>1. Mã &amp; Tên:</strong> <code>WF-__</code> (Động từ + Đối tượng)</div></li>
+              <li><i class="fa-solid fa-circle-check" style="color: #E84D1C;"></i><div><strong>2. Actor:</strong> Sinh viên, Cán bộ, Hệ thống</div></li>
+              <li><i class="fa-solid fa-circle-check" style="color: #E84D1C;"></i><div><strong>3. Trigger:</strong> Sự kiện bắt đầu luồng</div></li>
+              <li><i class="fa-solid fa-circle-check" style="color: #E84D1C;"></i><div><strong>4. Precondition:</strong> Điều kiện tiên quyết phải đúng</div></li>
+              <li><i class="fa-solid fa-circle-check" style="color: #E84D1C;"></i><div><strong>5. Bước &amp; BR:</strong> Happy Path + điểm rẽ nhánh BR</div></li>
+              <li><i class="fa-solid fa-circle-check" style="color: #E84D1C;"></i><div><strong>6. Postcondition:</strong> Trạng thái mới, giá trị actor</div></li>
+              <li><i class="fa-solid fa-circle-check" style="color: #E84D1C;"></i><div><strong>7. Exception:</strong> Xử lý vi phạm, từ chối</div></li>
+            </ul>
+          </div>
+
+          <!-- Col 2: 5 Câu hỏi kiểm tra nhanh (W05) -->
+          <div class="card" style="border-top: 3px solid #F59E0B; padding: 12px 14px;">
+            <div class="card-title" style="color: #D97706; font-size: 13.5px; margin-bottom: 8px;">
+              <i class="fa-solid fa-clipboard-question"></i> 5 Câu Hỏi Kiểm Nhanh (W05)
+            </div>
+            <ul class="check-list" style="font-size: 11.5px; line-height: 1.4;">
+              <li><i class="fa-solid fa-circle-check" style="color: #D97706;"></i><div><strong>1. Có Trigger rõ ràng?</strong> Có (User gửi đơn / mở phiên)</div></li>
+              <li><i class="fa-solid fa-circle-check" style="color: #D97706;"></i><div><strong>2. Kết quả có giá trị?</strong> Có (Nhận vé QR / danh sách điểm danh)</div></li>
+              <li><i class="fa-solid fa-circle-check" style="color: #D97706;"></i><div><strong>3. Thay đổi trạng thái?</strong> Có (<code>DRAFT</code>&rarr;<code>PENDING</code>&rarr;<code>APPROVED</code>)</div></li>
+              <li><i class="fa-solid fa-circle-check" style="color: #D97706;"></i><div><strong>4. Rẽ nhánh theo BR?</strong> Có (Hết chỗ BR-01, form BR-02)</div></li>
+              <li><i class="fa-solid fa-circle-check" style="color: #D97706;"></i><div><strong>5. Ngôn ngữ nghiệp vụ?</strong> Có (Không mô tả nút bấm)</div></li>
+            </ul>
+            <div style="margin-top: 6px; padding: 4px 8px; background: rgba(245, 158, 11, 0.12); border-radius: 6px; font-size: 10.5px; color: #92400E; font-weight: 700; text-align: center;">
+              <i class="fa-solid fa-circle-check"></i> Đạt chuẩn 5/5 tiêu chí Guideline V3
             </div>
           </div>
 
-          <div class="card" style="padding: 14px 18px; border-left: 3px solid #DB2777;">
-            <div style="font-weight: 700; color: #BE185D; font-size: 14px; margin-bottom: 6px;">
-              <i class="fa-solid fa-arrows-rotate"></i> Chiều Data Binding (Reactive State Stream)
+          <!-- Col 3: Những thứ hay nhầm lẫn (W06, W07) -->
+          <div class="card" style="border-top: 3px solid #DB2777; padding: 12px 14px;">
+            <div class="card-title" style="color: #BE185D; font-size: 13.5px; margin-bottom: 8px;">
+              <i class="fa-solid fa-triangle-exclamation"></i> Những Thứ Hay Nhầm Lẫn (W06-07)
             </div>
-            <div style="font-size: 12px; color: #6B3A20; line-height: 1.5;">
-              <code>Firebase Stream / Future</code> &rarr; <code>ViewModel AsyncValue</code> &rarr; <code>ref.watch()</code> &rarr; <code>View Auto-render</code>.<br>
-              &bull; <strong>Ưu điểm:</strong> Không cần gọi <code>setState()</code> thủ công, không bị memory leak nhờ cơ chế <code>autoDispose</code> khi đóng màn hình.
+            <ul class="check-list" style="font-size: 11.5px; line-height: 1.4;">
+              <li><i class="fa-solid fa-circle-xmark" style="color: #DC2626;"></i><div><strong>Màn hình UI:</strong> Chỉ là nơi diễn ra 1 bước; không đại diện cho cả quy trình.</div></li>
+              <li><i class="fa-solid fa-circle-xmark" style="color: #DC2626;"></i><div><strong>CRUD đơn lẻ:</strong> Thao tác DB kỹ thuật (Tạo/Sửa), thiếu kết quả nghiệp vụ xuyên suốt.</div></li>
+              <li><i class="fa-solid fa-circle-xmark" style="color: #DC2626;"></i><div><strong>User flow:</strong> Chuỗi chuyển màn hình (UI click chain), thiếu backend rules.</div></li>
+              <li><i class="fa-solid fa-circle-xmark" style="color: #DC2626;"></i><div><strong>Đăng nhập:</strong> Chỉ là Precondition, không phải Workflow độc lập.</div></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Bottom Thread Banner (W02) -->
+        <div class="card" style="margin-top: 10px; background: linear-gradient(90deg, rgba(255,107,53,0.12) 0%, rgba(219,39,119,0.12) 100%); border: 1px solid rgba(255,107,53,0.3); padding: 8px 16px;">
+          <div style="font-size: 11.5px; font-weight: 700; color: #7C2D12; display: flex; align-items: center; justify-content: space-between; text-align: center;">
+            <span style="color: #E84D1C;"><i class="fa-solid fa-route"></i> Sợi Chỉ Đỏ (W02):</span>
+            <span>FR</span> <i class="fa-solid fa-chevron-right" style="font-size: 9px; color: #E84D1C;"></i>
+            <span style="color: #E84D1C; font-weight: 800;">Workflow</span> <i class="fa-solid fa-chevron-right" style="font-size: 9px; color: #E84D1C;"></i>
+            <span>Activity Diagram (BPMN)</span> <i class="fa-solid fa-chevron-right" style="font-size: 9px; color: #E84D1C;"></i>
+            <span>State Machine</span> <i class="fa-solid fa-chevron-right" style="font-size: 9px; color: #E84D1C;"></i>
+            <span>Sequence</span> <i class="fa-solid fa-chevron-right" style="font-size: 9px; color: #E84D1C;"></i>
+            <span>UI Mockup</span> <i class="fa-solid fa-chevron-right" style="font-size: 9px; color: #E84D1C;"></i>
+            <span>Traceability</span> <i class="fa-solid fa-chevron-right" style="font-size: 9px; color: #E84D1C;"></i>
+            <span style="color: #BE185D; font-weight: 800;">Test Cases</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 6C: ĐẶC TẢ CHI TIẾT WORKFLOW LÕI WF-01
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 1: Nền Tảng Dự Án</span>
+          <span class="tag">ĐẶC TẢ WORKFLOW LÕI</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-ticket-simple"></i> CORE BUSINESS WORKFLOW · W10 - W13</div>
+          <h2 class="slide-title">Đặc Tả <span>WF-01 · Đăng Ký &amp; Xét Duyệt Vé Tham Gia Sự Kiện</span></h2>
+        </div>
+
+        <div class="grid-2" style="gap: 14px; align-items: stretch;">
+          <!-- Left Column: Standard Specification Table (W11) -->
+          <div class="card" style="border-top: 3px solid #FF6B35; padding: 12px 14px; display: flex; flex-direction: column;">
+            <div class="card-title" style="color: #E84D1C; font-size: 13.5px; margin-bottom: 6px;">
+              <i class="fa-solid fa-table-list"></i> Bảng Đặc Tả Chuẩn 7 Thành Phần (W11)
+            </div>
+            <table class="data-table" style="font-size: 11.5px; margin-top: 4px;">
+              <tbody>
+                <tr>
+                  <td style="width: 28%; font-weight: 700; color: #E84D1C;">Mã &amp; Tên</td>
+                  <td><strong>WF-01 · Đăng ký &amp; xét duyệt vé sự kiện</strong></td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 700; color: #E84D1C;">Actor</td>
+                  <td>Sinh viên (Mobile App) &bull; Trưởng CLB (Web Admin) &bull; Cloud Firestore / FCM</td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 700; color: #E84D1C;">Trigger</td>
+                  <td>Sinh viên chọn sự kiện và bấm gửi đơn đăng ký tại màn hình A04/A05</td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 700; color: #E84D1C;">Precondition</td>
+                  <td>1. Đã đăng nhập &bull; 2. Event mở (<code>now &lt; deadline</code>) &bull; 3. Còn chỗ (<code>activeCount &lt; capacity</code> - BR-01)</td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 700; color: #E84D1C;">Postcondition</td>
+                  <td>Đơn chuyển <code>APPROVED</code> / <code>REJECTED</code>; nếu Approved: tăng <code>activeCount +1</code>, sinh vé QR có ký số SHA-256, đẩy FCM Push</td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 700; color: #E84D1C;">Truy Vết</td>
+                  <td><strong>FR-01..04</strong> &bull; <strong>BR-01, 02, 03</strong> &bull; <strong>UI-04, 05, 08, Web-02</strong> &bull; <strong>TC01–TC08</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Right Column: Happy Path & State Machine to Test Cases -->
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <!-- Happy Path + Business Rules (W12) -->
+            <div class="card" style="border-top: 3px solid #F59E0B; padding: 10px 14px;">
+              <div class="card-title" style="color: #D97706; font-size: 13px; margin-bottom: 6px;">
+                <i class="fa-solid fa-shoe-prints"></i> Trình Tự Các Bước (Happy Path &amp; BR)
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px; font-size: 11px; color: #4A2010;">
+                <div style="display: flex; gap: 8px; align-items: flex-start;">
+                  <span class="badge" style="background: rgba(255,107,53,0.15); color: #E84D1C; font-weight: 800; padding: 2px 6px;">B1</span>
+                  <div><strong>Sinh viên (Mobile):</strong> Điền đơn A05 &rarr; <span style="color: #BE185D; font-weight: 700;">[BR-02: Kiểm tra form hợp lệ]</span></div>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: flex-start;">
+                  <span class="badge" style="background: rgba(245,158,11,0.15); color: #D97706; font-weight: 800; padding: 2px 6px;">B2</span>
+                  <div><strong>Hệ thống (Firestore):</strong> Đối chiếu <span style="color: #BE185D; font-weight: 700;">[BR-01: activeCount &lt; capacity]</span> &rarr; Tạo đơn <code>PENDING</code>, stream realtime sang Web</div>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: flex-start;">
+                  <span class="badge" style="background: rgba(219,39,119,0.15); color: #BE185D; font-weight: 800; padding: 2px 6px;">B3</span>
+                  <div><strong>Trưởng CLB (Web Admin):</strong> Xem hồ sơ trên Review Queue &rarr; <span style="color: #BE185D; font-weight: 700;">[BR-03: Quyền duyệt]</span> &rarr; Duyệt / Từ chối</div>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: flex-start;">
+                  <span class="badge" style="background: rgba(16,185,129,0.15); color: #059669; font-weight: 800; padding: 2px 6px;">B4</span>
+                  <div><strong>Hệ thống (Transaction):</strong> Cập nhật <code>APPROVED</code>, tăng <code>activeCount +1</code>, sinh mã vé QR &amp; bắn thông báo FCM Push</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- State Machine mapped to Test Cases (W13) -->
+            <div class="card" style="border-top: 3px solid #DB2777; padding: 10px 14px;">
+              <div class="card-title" style="color: #BE185D; font-size: 13px; margin-bottom: 6px;">
+                <i class="fa-solid fa-arrows-split-up-and-left"></i> State Machine &amp; Ánh Xạ Test Cases (W13)
+              </div>
+              <div style="font-size: 11px; color: #4A2010; line-height: 1.45;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; padding: 4px 6px; background: rgba(255,255,255,0.6); border-radius: 6px;">
+                  <span><code>DRAFT</code> &rarr; <code>PENDING</code></span>
+                  <span style="color: #A0714F; font-size: 10.5px;">Gửi đơn thành công</span>
+                  <span class="badge badge-orange" style="font-size: 10px;">TC01, TC02</span>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; padding: 4px 6px; background: rgba(16,185,129,0.08); border-radius: 6px;">
+                  <span><code>PENDING</code> &rarr; <code>APPROVED</code></span>
+                  <span style="color: #059669; font-weight: 600; font-size: 10.5px;">CLB duyệt &bull; BR-01 pass &bull; Cấp vé QR</span>
+                  <span class="badge badge-green" style="font-size: 10px;">TC03, TC04, TC05</span>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 4px 6px; background: rgba(239,68,68,0.08); border-radius: 6px;">
+                  <span><code>PENDING</code> &rarr; <code>REJECTED</code></span>
+                  <span style="color: #DC2626; font-weight: 600; font-size: 10.5px;">Hết slot / CLB từ chối &bull; Gửi FCM lý do</span>
+                  <span class="badge" style="background: rgba(239,68,68,0.15); color: #DC2626; font-size: 10px;">TC06, TC07, TC08</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
