@@ -36,6 +36,7 @@ web/build/
 /coverage/
 .env
 .env.*
+**/*env.json
 !*.example
 **/*service-account*.json
 **/*firebase-adminsdk*.json
