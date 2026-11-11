@@ -371,6 +371,45 @@
     .glow {
       animation: pulse-glow 3s infinite;
     }
+
+    /*
+     * Content-safe layout for the main deck.
+     * Each content slide gets a fixed presentation canvas so the absolute
+     * header cannot collapse the section height or overlap the title.
+     */
+    .reveal .slides > section:nth-child(n+2):nth-child(-n+33) {
+      box-sizing: border-box;
+      height: 720px;
+      padding: 72px 0 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .reveal .slides > section:nth-child(n+2):nth-child(-n+33) .slide-title-group {
+      flex: 0 0 auto;
+      margin-top: 0 !important;
+      margin-bottom: 22px;
+    }
+
+    .reveal .slides > section:nth-child(n+2):nth-child(-n+33) .slide-title {
+      font-size: 36px !important;
+      line-height: 1.2 !important;
+    }
+
+    .reveal .slides > section:nth-child(n+2):nth-child(-n+33) .slide-sub {
+      font-size: 14px;
+    }
+
+    .reveal .slides > section:nth-child(n+2):nth-child(-n+33) .card-title {
+      font-size: 19px;
+    }
+
+    .reveal .slides > section:nth-child(n+2):nth-child(-n+33) p,
+    .reveal .slides > section:nth-child(n+2):nth-child(-n+33) ul.check-list li {
+      font-size: 15.5px;
+    }
   </style>
 </head>
 <body>
