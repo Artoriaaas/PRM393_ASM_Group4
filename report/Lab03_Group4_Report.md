@@ -4,7 +4,7 @@
 > **Môn học**: PRM393 — Mobile Programming  
 > **Nhóm thực hiện**: Group 4  
 > **Dự án Firebase**: `eventhub-group4` (Application ID: `com.eventhub.app`)  
-> **Mã nguồn**: `PRM393_Lab03_Group4`  
+> **Mã nguồn**: `PRM393_ASM_Group4`  
 > **Tài liệu tham chiếu**: Đề bài Lab 3 (Mục 3–11), `docs/design-traceability.md`, `docs/architecture.md`, `docs/analytics-plan.md`, `docs/test-plan.md`, `docs/code-review.md`.
 
 ---

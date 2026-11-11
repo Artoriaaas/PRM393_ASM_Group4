@@ -19,7 +19,7 @@ File slide được đặt trực tiếp tại `slides/index.html`. Để chia s
    - **Source**: Chọn `Deploy from a branch`.
    - **Branch**: Chọn `main`, thư mục `/ (root)`.
 4. Sau 1–2 phút, link slide online của bạn sẽ hoạt động tại:
-   `https://<username>.github.io/PRM393_Lab03_Group4/slides/`
+   `https://<username>.github.io/PRM393_ASM_Group4/slides/`
 
 ---
 
@@ -29,7 +29,7 @@ Reveal.js hỗ trợ chế độ in PDF chuyên dụng giữ nguyên độ nét 
 
 1. Mở file `slides/index.html` bằng trình duyệt **Google Chrome** hoặc **Microsoft Edge** (chạy local hoặc mở link GitHub Pages).
 2. Thêm tham số `?print-pdf` vào cuối URL, ví dụ:
-   - Chạy local: `file:///D:/GitHub/PRM_LAB3/PRM393_Lab03_Group4/slides/index.html?print-pdf`
+   - Chạy local: `file:///D:/GitHub/PRM_ASM/PRM393_ASM_Group4/slides/index.html?print-pdf`
    - Hoặc link online: `https://.../slides/?print-pdf`
 3. Nhấn tổ hợp phím **`Ctrl + P`** (hoặc `Cmd + P` trên Mac).
 4. Thiết lập trong hộp thoại In của trình duyệt:
