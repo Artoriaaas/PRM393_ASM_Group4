@@ -413,16 +413,42 @@
 
     .architecture-slide .grid-3 {
       grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      align-items: stretch;
     }
 
     .architecture-slide .card {
       min-width: 0;
+      padding: 16px 18px;
     }
 
-    .architecture-slide .check-list li {
-      display: block;
-      line-height: 1.45;
-      overflow-wrap: anywhere;
+    .architecture-slide ul.check-list li {
+      font-size: 14px !important;
+      line-height: 1.5;
+      margin-bottom: 11px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .architecture-slide ul.check-list li:last-child {
+      margin-bottom: 0;
+    }
+
+    .architecture-slide ul.check-list li div {
+      flex: 1;
+      min-width: 0;
+      word-break: normal;
+      overflow-wrap: normal;
+    }
+
+    .architecture-slide ul.check-list li code {
+      white-space: nowrap;
+      font-size: 12.5px;
+      padding: 1px 5px;
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 4px;
+      color: #38BDF8;
     }
   </style>
 </head>
@@ -732,40 +758,67 @@
           <div class="card" style="border-top: 3px solid #0284C7;">
             <div class="card-title" style="color: #38BDF8;"><i class="fa-solid fa-mobile-screen"></i> Presentation Layer</div>
             <ul class="check-list">
-              <li><strong>Views / Screens:</strong> Stateless & ConsumerWidget không chứa business logic.</li>
-              <li><strong>Controllers / Notifiers:</strong> Quản lý state màn hình qua <code>AsyncNotifier</code>.</li>
-              <li><strong>Zero Direct Firebase:</strong> UI không bao giờ gọi trực tiếp SDK Firebase, luôn qua Services.</li>
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #38BDF8;"></i>
+                <div><strong>Views / Screens:</strong> Stateless &amp; ConsumerWidget không chứa business logic.</div>
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #38BDF8;"></i>
+                <div><strong>Controllers / Notifiers:</strong> Quản lý state màn hình qua <code>AsyncNotifier</code>.</div>
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #38BDF8;"></i>
+                <div><strong>Zero Direct Firebase:</strong> UI không bao giờ gọi trực tiếp SDK Firebase, luôn qua Services.</div>
+              </li>
             </ul>
           </div>
 
           <div class="card" style="border-top: 3px solid #FF5722;">
             <div class="card-title" style="color: #FF7043;"><i class="fa-solid fa-gears"></i> Domain & Application Layer</div>
             <ul class="check-list">
-              <li><strong>Entities & Models:</strong> Event, Booking, User, Notification với JSON serializable.</li>
-              <li><strong>Services:</strong> <code>AuthService</code>, <code>AnalyticsService</code>, <code>CrashlyticsService</code>, <code>RemoteConfigService</code>.</li>
-              <li><strong>Validation:</strong> Input validation, error sanitization trước khi gọi hạ tầng.</li>
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #FF7043;"></i>
+                <div><strong>Entities &amp; Models:</strong> Event, Booking, User, Notification với JSON serializable.</div>
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #FF7043;"></i>
+                <div><strong>Services:</strong> <code>AuthService</code>, <code>AnalyticsService</code>, <code>CrashlyticsService</code>, <code>RemoteConfigService</code>.</div>
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #FF7043;"></i>
+                <div><strong>Validation:</strong> Input validation, error sanitization trước khi gọi hạ tầng.</div>
+              </li>
             </ul>
           </div>
 
           <div class="card" style="border-top: 3px solid #10B981;">
             <div class="card-title" style="color: #34D399;"><i class="fa-solid fa-database"></i> Data & Infrastructure Layer</div>
             <ul class="check-list">
-              <li><strong>Repositories:</strong> Abstract interface cách ly nguồn dữ liệu (Local SQLite vs Remote API).</li>
-              <li><strong>Firebase Drivers:</strong> Tích hợp các plugin chính thức của Google.</li>
-              <li><strong>Audit & Zero PII Sanitizer:</strong> Lọc sạch thông tin nhạy cảm trước khi log.</li>
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #34D399;"></i>
+                <div><strong>Repositories:</strong> Abstract interface cách ly nguồn dữ liệu (Local SQLite vs Remote API).</div>
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #34D399;"></i>
+                <div><strong>Firebase Drivers:</strong> Tích hợp các plugin chính thức của Google.</div>
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #34D399;"></i>
+                <div><strong>Audit &amp; Zero PII:</strong> Lọc sạch thông tin nhạy cảm trước khi log.</div>
+              </li>
             </ul>
           </div>
         </div>
 
-        <div class="card" style="margin-top: 14px; background: rgba(2,132,199,0.08); border-color: rgba(56,189,248,0.2);">
-          <div style="font-size: 12px; color: #CBD5E1; display: flex; align-items: center; justify-content: space-around;">
+        <div class="card" style="margin-top: 14px; background: rgba(2,132,199,0.08); border-color: rgba(56,189,248,0.25); padding: 10px 18px;">
+          <div style="font-size: 13px; font-weight: 600; color: #CBD5E1; display: flex; align-items: center; justify-content: space-around;">
             <span><i class="fa-solid fa-arrow-right" style="color: #38BDF8;"></i> UI (Widgets)</span>
-            <span>&rarr;</span>
+            <i class="fa-solid fa-chevron-right" style="color: #64748B; font-size: 11px;"></i>
             <span><i class="fa-solid fa-arrow-right" style="color: #38BDF8;"></i> Riverpod Providers</span>
-            <span>&rarr;</span>
-            <span><i class="fa-solid fa-arrow-right" style="color: #38BDF8;"></i> Domain Services</span>
-            <span>&rarr;</span>
-            <span><i class="fa-solid fa-arrow-right" style="color: #38BDF8;"></i> Firebase & Cloud Engines</span>
+            <i class="fa-solid fa-chevron-right" style="color: #64748B; font-size: 11px;"></i>
+            <span><i class="fa-solid fa-arrow-right" style="color: #FF7043;"></i> Domain Services</span>
+            <i class="fa-solid fa-chevron-right" style="color: #64748B; font-size: 11px;"></i>
+            <span><i class="fa-solid fa-arrow-right" style="color: #34D399;"></i> Firebase &amp; Cloud Engines</span>
           </div>
         </div>
       </section>
