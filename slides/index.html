@@ -410,6 +410,20 @@
     .reveal .slides > section:nth-child(n+2):nth-child(-n+33) ul.check-list li {
       font-size: 15.5px;
     }
+
+    .architecture-slide .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .architecture-slide .card {
+      min-width: 0;
+    }
+
+    .architecture-slide .check-list li {
+      display: block;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
   </style>
 </head>
 <body>
@@ -702,7 +716,7 @@
       <!-- ==========================================
            SLIDE 6: KIẾN TRÚC CLEAN ARCHITECTURE & MVVM
       =========================================== -->
-      <section data-transition="slide">
+      <section class="architecture-slide" data-transition="slide">
         <div class="header-bar">
           <span>Phần 1: Nền Tảng Dự Án</span>
           <span class="tag">KIẾN TRÚC PHẦN MỀM</span>
