@@ -37,7 +37,7 @@ Theo đề Lab 3, **Tài khoản → Dịch vụ Firebase** mở khu demo thông
 | Chạy ARTEMIS | [E2E setup](e2e_test/README.md) |
 | Chuẩn bị bài nộp | [Report](report/README.md), [Slides](slides/README.md) ([Xem online](https://artoriaaas.github.io/PRM393_ASM_Group4/slides/)) |
 
-## Sản phẩm bàn giao Lab 3 (Deliverables)
+## Sản phẩm bàn giao ASM (Deliverables)
 
 - 📊 **Slide Thuyết trình Online (34 Slide Trực Quan & Evidence Thực Tế)**: [https://artoriaaas.github.io/PRM393_ASM_Group4/slides/](https://artoriaaas.github.io/PRM393_ASM_Group4/slides/)  
   *(Link fork cá nhân: [https://kietntse.github.io/PRM393_Lab03_Group4_pre/slides/](https://kietntse.github.io/PRM393_Lab03_Group4_pre/slides/))*
