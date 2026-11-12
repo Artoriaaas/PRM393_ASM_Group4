@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -8,12 +9,23 @@ import '../../utils/app_failure.dart';
 import '../contracts/auth_service.dart';
 
 class FirebaseAuthService implements AuthService {
-  FirebaseAuthService(this._auth);
+  FirebaseAuthService(
+    this._auth, [
+    FirebaseFirestore? firestore,
+  ]) : _firestore = firestore ?? FirebaseFirestore.instance {
+    if (_auth.currentUser != null) {
+      unawaited(_syncUserToFirestore(_auth.currentUser));
+    }
+  }
+
   final firebase.FirebaseAuth _auth;
+  final FirebaseFirestore _firestore;
+
   @override
   bool get canChangeEmail =>
       _auth.currentUser?.providerData.any((p) => p.providerId == 'password') ??
       false;
+
   @override
   Future<void> updateName(String name) => _run(() async {
     final user = _auth.currentUser;
@@ -24,7 +36,86 @@ class FirebaseAuthService implements AuthService {
       );
     }
     await user.updateDisplayName(name);
+    try {
+      final docRef = _firestore.collection('users').doc(user.uid);
+      final doc = await docRef.get();
+      final trimmedName =
+          name.trim().length > 120 ? name.trim().substring(0, 120) : name.trim();
+      if (doc.exists) {
+        await docRef.update({
+          'displayName': trimmedName,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      } else {
+        await docRef.set({
+          'role': 'user',
+          'displayName': trimmedName,
+          'email': user.email ?? '',
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+      }
+    } catch (_) {
+      /* Firestore sync error shouldn't block local auth */
+    }
   });
+
+  Future<void> _syncUserToFirestore(
+    firebase.User? user, {
+    String? defaultName,
+  }) async {
+    if (user == null) return;
+    try {
+      final docRef = _firestore.collection('users').doc(user.uid);
+      final doc = await docRef.get();
+      if (!doc.exists || doc.data() == null) {
+        final rawName = (user.displayName != null &&
+                user.displayName!.trim().isNotEmpty)
+            ? user.displayName!.trim()
+            : ((defaultName != null && defaultName.trim().isNotEmpty)
+                ? defaultName.trim()
+                : (user.email?.split('@').first ?? ''));
+        final trimmedName =
+            rawName.length > 120 ? rawName.substring(0, 120) : rawName;
+        final email = (user.email ?? '').trim();
+        final trimmedEmail =
+            email.length > 254 ? email.substring(0, 254) : email;
+
+        await docRef.set({
+          'role': 'user',
+          'displayName': trimmedName,
+          'email': trimmedEmail,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+      } else {
+        final data = doc.data()!;
+        final currentFirestoreName = data['displayName'] as String? ?? '';
+        final currentFirestoreEmail = data['email'] as String? ?? '';
+        final newName = user.displayName?.trim();
+        final newEmail = user.email?.trim();
+
+        final updates = <String, dynamic>{};
+        if (currentFirestoreName.isEmpty &&
+            newName != null &&
+            newName.isNotEmpty) {
+          updates['displayName'] =
+              newName.length > 120 ? newName.substring(0, 120) : newName;
+        }
+        if (currentFirestoreEmail.isEmpty &&
+            newEmail != null &&
+            newEmail.isNotEmpty) {
+          updates['email'] =
+              newEmail.length > 254 ? newEmail.substring(0, 254) : newEmail;
+        }
+        if (updates.isNotEmpty) {
+          updates['updatedAt'] = FieldValue.serverTimestamp();
+          await docRef.update(updates);
+        }
+      }
+    } catch (_) {
+      /* Silently ignore sync failures on startup/network offline */
+    }
+  }
+
   final _google = GoogleSignIn.instance;
   Future<void>? _googleInitialization;
 
@@ -61,7 +152,8 @@ class FirebaseAuthService implements AuthService {
           'Phương thức đăng nhập chưa được bật trên Firebase của nhóm.',
         'requires-recent-login' =>
           'Vui lòng đăng nhập lại trước khi đổi email.',
-        'account-exists-with-different-credential' => 'Hãy đăng nhập bằng phương thức đã dùng trước đó. Tài khoản chưa được tự liên kết.',
+        'account-exists-with-different-credential' =>
+          'Hãy đăng nhập bằng phương thức đã dùng trước đó. Tài khoản chưa được tự liên kết.',
         _ => 'Chưa thể hoàn tất. Kiểm tra thông tin, sửa nếu cần rồi thử lại.',
       };
       throw AppFailure(code: e.code, message: message, isRetryable: true);
@@ -78,7 +170,11 @@ class FirebaseAuthService implements AuthService {
 
   @override
   Future<void> signIn(String email, String password) => _run(() async {
-    await _auth.signInWithEmailAndPassword(email: email, password: password);
+    final cred = await _auth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    await _syncUserToFirestore(cred.user);
   });
   @override
   Future<void> signInWithGoogle() => _run(() async {
@@ -91,9 +187,10 @@ class FirebaseAuthService implements AuthService {
         message: 'Google chưa trả thông tin xác thực. Vui lòng thử lại.',
       );
     }
-    await _auth.signInWithCredential(
+    final cred = await _auth.signInWithCredential(
       firebase.GoogleAuthProvider.credential(idToken: idToken),
     );
+    await _syncUserToFirestore(cred.user);
   });
   @override
   Future<void> register(String name, String email, String password) =>
@@ -104,6 +201,7 @@ class FirebaseAuthService implements AuthService {
         );
         await result.user!.updateDisplayName(name);
         await result.user!.sendEmailVerification();
+        await _syncUserToFirestore(result.user, defaultName: name);
       });
   @override
   Future<void> sendVerification() => _run(() async {
@@ -120,6 +218,9 @@ class FirebaseAuthService implements AuthService {
   Future<void> reloadUser() => _run(() async {
     await _auth.currentUser?.reload();
     await _auth.currentUser?.getIdToken(true);
+    if (_auth.currentUser != null) {
+      await _syncUserToFirestore(_auth.currentUser);
+    }
   });
   @override
   Future<void> resetPassword(String email) =>

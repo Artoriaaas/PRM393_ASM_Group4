@@ -3,6 +3,16 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path $PSScriptRoot -Parent
 $pythonPath = Join-Path $PSScriptRoot '.venv\Scripts\python.exe'
 if (!(Test-Path -LiteralPath $pythonPath)) { throw 'Run uv sync --project e2e_test first.' }
+$envFile = Join-Path $repoRoot '.env'
+if (Test-Path -LiteralPath $envFile) {
+    Get-Content $envFile | Where-Object { $_ -match '^\s*([^#=\s]+)\s*=\s*(.*)\s*$' } | ForEach-Object {
+        $k = $matches[1].Trim()
+        $v = $matches[2].Trim()
+        if (-not [Environment]::GetEnvironmentVariable($k)) {
+            [Environment]::SetEnvironmentVariable($k, $v, 'Process')
+        }
+    }
+}
 foreach ($name in @('ARTEMIS_BASE_URL', 'ARTEMIS_TEST_ACCOUNT_EMAIL', 'ARTEMIS_DEVICE')) {
     if (![Environment]::GetEnvironmentVariable($name)) { throw "Missing $name" }
 }
