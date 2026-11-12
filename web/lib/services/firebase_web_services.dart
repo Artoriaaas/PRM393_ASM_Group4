@@ -726,17 +726,24 @@ class FirestoreClubService implements IClubService {
     return _firestore
         .collection('announcements')
         .where('clubId', isEqualTo: clubId)
-        .orderBy('createdAt', descending: true)
         .snapshots()
         .map(
-          (snap) => snap.docs.map((doc) {
-            final raw = doc.data();
-            final ts = raw['createdAt'];
-            return Announcement.fromJson(doc.id, {
-              ...raw,
-              if (ts is Timestamp) 'createdAt': ts.toDate(),
+          (snap) {
+            final list = snap.docs.map((doc) {
+              final raw = doc.data();
+              final ts = raw['createdAt'];
+              return Announcement.fromJson(doc.id, {
+                ...raw,
+                if (ts is Timestamp) 'createdAt': ts.toDate(),
+              });
+            }).toList();
+            list.sort((a, b) {
+              final bTime = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+              final aTime = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+              return bTime.compareTo(aTime);
             });
-          }).toList(),
+            return list;
+          },
         );
   }
 
@@ -1268,17 +1275,24 @@ class FirestoreAdminService implements IAdminService {
   Stream<List<Announcement>> streamAllAnnouncements() {
     return _firestore
         .collection('announcements')
-        .orderBy('createdAt', descending: true)
         .snapshots()
         .map(
-          (snap) => snap.docs.map((doc) {
-            final raw = doc.data();
-            final ts = raw['createdAt'];
-            return Announcement.fromJson(doc.id, {
-              ...raw,
-              if (ts is Timestamp) 'createdAt': ts.toDate(),
+          (snap) {
+            final list = snap.docs.map((doc) {
+              final raw = doc.data();
+              final ts = raw['createdAt'];
+              return Announcement.fromJson(doc.id, {
+                ...raw,
+                if (ts is Timestamp) 'createdAt': ts.toDate(),
+              });
+            }).toList();
+            list.sort((a, b) {
+              final bTime = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+              final aTime = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+              return bTime.compareTo(aTime);
             });
-          }).toList(),
+            return list;
+          },
         );
   }
 }
