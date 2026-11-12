@@ -21,7 +21,26 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
     super.dispose();
   }
 
-  void _openRoleDialog(BuildContext context, WebUserProfile targetUser, List<Club> clubs) {
+  String _resolveClubName(WebUserProfile u, List<Club> clubs) {
+    if (u.clubName != null && u.clubName!.trim().isNotEmpty) {
+      return u.clubName!.trim();
+    }
+    if (u.clubId != null && u.clubId!.trim().isNotEmpty) {
+      final match = clubs.where((c) => c.id == u.clubId!.trim()).firstOrNull;
+      if (match != null && match.name.isNotEmpty) {
+        return match.name;
+      }
+      return 'CLB ${u.clubId}';
+    }
+    return 'Chưa gán CLB';
+  }
+
+  void _openRoleDialog(
+    BuildContext context,
+    WebUserProfile targetUser,
+    List<Club> clubs,
+    List<WebUserProfile> allUsers,
+  ) {
     final currentUser = ref.read(currentStaffProfileProvider);
     if (currentUser?.uid == targetUser.uid) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -33,10 +52,36 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
       return;
     }
 
+    // Các CLB đã có Trưởng CLB khác phụ trách (loại trừ chính targetUser)
+    final assignedClubIds = allUsers
+        .where((u) =>
+            u.role == 'staff' &&
+            u.uid != targetUser.uid &&
+            u.clubId != null &&
+            u.clubId!.trim().isNotEmpty)
+        .map((u) => u.clubId!.trim())
+        .toSet();
+
+    // Danh sách CLB khả dụng để gán: không hiển thị CLB đã có Trưởng CLB khác
+    final availableClubs = clubs
+        .where((c) => !assignedClubIds.contains(c.id))
+        .toList();
+
     String selectedRole = targetUser.role;
     String? selectedClubId = targetUser.clubId;
     String? selectedClubName = targetUser.clubName;
 
+    if (selectedClubId != null && selectedClubId!.trim().isNotEmpty) {
+      final match = clubs.where((c) => c.id == selectedClubId).firstOrNull;
+      selectedClubName = match?.name ?? selectedClubName;
+    }
+
+    if (selectedRole == 'staff') {
+      if (selectedClubId == null || !availableClubs.any((c) => c.id == selectedClubId)) {
+        selectedClubId = availableClubs.isNotEmpty ? availableClubs.first.id : null;
+        selectedClubName = availableClubs.isNotEmpty ? availableClubs.first.name : null;
+      }
+    }
     showDialog(
       context: context,
       builder: (ctx) => StatefulBuilder(
@@ -72,13 +117,24 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          targetUser.displayName.isNotEmpty
-                              ? targetUser.displayName
-                              : 'Chưa đặt tên',
-                          style: AppTypography.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                targetUser.displayName.isNotEmpty
+                                    ? targetUser.displayName
+                                    : 'Chưa đặt tên',
+                                style: AppTypography.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            if (targetUser.role == 'staff')
+                              const AppStatusBadge(
+                                label: 'Trưởng CLB',
+                                variant: AppBadgeVariant.warning,
+                              ),
+                          ],
                         ),
                         const SizedBox(height: AppSpacing.s4),
                         Text(
@@ -87,6 +143,28 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                             color: AppColors.textSecondary,
                           ),
                         ),
+                        if (targetUser.role == 'staff') ...[
+                          const SizedBox(height: AppSpacing.s8),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.groups_outlined,
+                                size: 16,
+                                color: AppColors.primary,
+                              ),
+                              const SizedBox(width: AppSpacing.s4),
+                              Expanded(
+                                child: Text(
+                                  'Hiện là Trưởng CLB: ${_resolveClubName(targetUser, clubs)}',
+                                  style: AppTypography.textTheme.bodySmall?.copyWith(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -128,9 +206,21 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                           if (val != 'staff') {
                             selectedClubId = null;
                             selectedClubName = null;
-                          } else if (clubs.isNotEmpty && selectedClubId == null) {
-                            selectedClubId = clubs.first.id;
-                            selectedClubName = clubs.first.name;
+                          } else {
+                            if (selectedClubId == null ||
+                                !availableClubs.any((c) => c.id == selectedClubId)) {
+                              selectedClubId = availableClubs.isNotEmpty
+                                  ? availableClubs.first.id
+                                  : null;
+                              selectedClubName = availableClubs.isNotEmpty
+                                  ? availableClubs.first.name
+                                  : null;
+                            } else {
+                              final match = availableClubs
+                                  .where((c) => c.id == selectedClubId)
+                                  .firstOrNull;
+                              selectedClubName = match?.name ?? selectedClubName;
+                            }
                           }
                         });
                       }
@@ -145,16 +235,39 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                       ),
                     ),
                     const SizedBox(height: AppSpacing.s8),
-                    if (clubs.isEmpty)
-                      const Text(
-                        'Chưa có CLB nào hoạt động. Vui lòng tạo CLB trước.',
-                        style: TextStyle(color: AppColors.error),
+                    if (availableClubs.isEmpty)
+                      Container(
+                        padding: const EdgeInsets.all(AppSpacing.s12),
+                        decoration: BoxDecoration(
+                          color: AppColors.warningContainer,
+                          borderRadius: AppRadius.borderR8,
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.warning_amber_rounded,
+                              color: AppColors.warning,
+                              size: 20,
+                            ),
+                            const SizedBox(width: AppSpacing.s8),
+                            Expanded(
+                              child: Text(
+                                clubs.isEmpty
+                                    ? 'Chưa có CLB nào hoạt động. Vui lòng tạo CLB trước.'
+                                    : 'Tất cả các CLB hiện đều đã có Trưởng CLB. Không còn CLB trống để gán.',
+                                style: AppTypography.textTheme.bodySmall?.copyWith(
+                                  color: AppColors.onWarningContainer,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       )
                     else
                       DropdownButtonFormField<String>(
-                        value: clubs.any((c) => c.id == selectedClubId)
+                        value: availableClubs.any((c) => c.id == selectedClubId)
                             ? selectedClubId
-                            : clubs.first.id,
+                            : availableClubs.first.id,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(borderRadius: AppRadius.borderR8),
                           contentPadding: const EdgeInsets.symmetric(
@@ -162,7 +275,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                             vertical: AppSpacing.s8,
                           ),
                         ),
-                        items: clubs
+                        items: availableClubs
                             .map((c) => DropdownMenuItem(
                                   value: c.id,
                                   child: Text(c.name),
@@ -170,7 +283,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                             .toList(),
                         onChanged: (val) {
                           if (val != null) {
-                            final c = clubs.firstWhere((x) => x.id == val);
+                            final c = availableClubs.firstWhere((x) => x.id == val);
                             setDialogState(() {
                               selectedClubId = c.id;
                               selectedClubName = c.name;
@@ -190,11 +303,22 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
               AppButton(
                 label: 'Lưu thay đổi',
                 onPressed: () async {
-                  if (selectedRole == 'staff' && (selectedClubId == null || selectedClubId!.isEmpty)) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Vui lòng chọn Câu lạc bộ cho Trưởng CLB.')),
-                    );
-                    return;
+                  if (selectedRole == 'staff') {
+                    if (availableClubs.isEmpty ||
+                        selectedClubId == null ||
+                        selectedClubId!.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Không có Câu lạc bộ hợp lệ để gán cho Trưởng CLB.'),
+                          backgroundColor: AppColors.error,
+                        ),
+                      );
+                      return;
+                    }
+                    if (selectedClubName == null || selectedClubName!.isEmpty) {
+                      final c = clubs.where((x) => x.id == selectedClubId).firstOrNull;
+                      selectedClubName = c?.name;
+                    }
                   }
                   Navigator.pop(ctx);
                   await ref.read(adminUsersViewModelProvider.notifier).updateUserRole(
@@ -424,14 +548,18 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                                 color: AppColors.textSecondary,
                               ),
                             ),
-                            if (u.role == 'staff' && (u.clubName != null && u.clubName!.isNotEmpty)) ...[
+                            if (u.role == 'staff') ...[
                               const SizedBox(height: AppSpacing.s4),
                               Row(
                                 children: [
-                                  const Icon(Icons.groups_outlined, size: 14, color: AppColors.primary),
+                                  const Icon(
+                                    Icons.groups_outlined,
+                                    size: 14,
+                                    color: AppColors.primary,
+                                  ),
                                   const SizedBox(width: AppSpacing.s4),
                                   Text(
-                                    u.clubName!,
+                                    'Trưởng CLB: ${_resolveClubName(u, state.clubs)}',
                                     style: AppTypography.textTheme.labelSmall?.copyWith(
                                       color: AppColors.primary,
                                       fontWeight: FontWeight.w600,
@@ -458,7 +586,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                                 label: const Text('Phân quyền'),
                                 onPressed: isCurrent
                                     ? null
-                                    : () => _openRoleDialog(context, u, state.clubs),
+                                    : () => _openRoleDialog(context, u, state.clubs, state.allUsers),
                               ),
                             ),
                           ],

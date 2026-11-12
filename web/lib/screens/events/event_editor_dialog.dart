@@ -105,6 +105,8 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
     required DateTime current,
     required ValueChanged<DateTime> onPicked,
   }) async {
+    final user = ref.read(currentStaffProfileProvider);
+    if (user?.isAdmin ?? false) return;
     final now = DateTime.now();
     final firstDate = current.isBefore(now)
         ? DateTime(current.year, 1, 1)
@@ -257,9 +259,13 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                 children: [
                   Expanded(
                     child: Text(
-                      widget.initialEvent != null
-                          ? 'Chỉnh sửa sự kiện'
-                          : 'Tạo sự kiện mới',
+                      isAdmin
+                          ? (widget.initialEvent?.status == 'pending_approval'
+                              ? 'Xét duyệt Đề xuất Sự kiện'
+                              : 'Chi tiết Sự kiện')
+                          : (widget.initialEvent != null
+                              ? 'Chỉnh sửa sự kiện'
+                              : 'Tạo sự kiện mới'),
                       style: AppTypography.textTheme.titleLarge?.copyWith(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.bold,
@@ -278,6 +284,39 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
               ),
               const Divider(color: AppColors.border),
               const SizedBox(height: AppSpacing.s12),
+              if (isAdmin && widget.initialEvent != null) ...[
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.s16,
+                    vertical: AppSpacing.s12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.brandSubtle,
+                    borderRadius: AppRadius.borderR8,
+                    border: Border.all(color: AppColors.border),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.shield_outlined,
+                        color: AppColors.primary,
+                        size: 20,
+                      ),
+                      const SizedBox(width: AppSpacing.s12),
+                      Expanded(
+                        child: Text(
+                          'CLB Đề xuất: ${widget.initialEvent!.clubName.isNotEmpty ? widget.initialEvent!.clubName : "Câu lạc bộ"} • Chế độ xem xét phê duyệt dành cho Quản trị viên',
+                          style: AppTypography.textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.s12),
+              ],
               if (_errorMessage != null) ...[
                 Semantics(
                   liveRegion: true,
@@ -327,6 +366,7 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                               label: 'Tiêu đề sự kiện (*)',
                               hintText: 'Nhập tên sự kiện...',
                               maxLength: 120,
+                              readOnly: isAdmin,
                               validator: (v) {
                                 if (v == null || v.trim().isEmpty) {
                                   return 'Vui lòng nhập tiêu đề.';
@@ -345,6 +385,7 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                                     controller: _topicController,
                                     label: 'Chủ đề',
                                     hintText: 'VD: AI, Mobile, Thiết kế...',
+                                    readOnly: isAdmin,
                                   ),
                                 ),
                                 const SizedBox(width: AppSpacing.s16),
@@ -353,6 +394,7 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                                     controller: _locationController,
                                     label: 'Địa điểm tổ chức (*)',
                                     hintText: 'VD: Hội trường Beta, Alpha...',
+                                    readOnly: isAdmin,
                                     validator: (v) {
                                       if (v == null || v.trim().isEmpty) {
                                         return 'Vui lòng nhập địa điểm.';
@@ -413,27 +455,31 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                                     'Yêu cầu đăng ký (required)',
                                   ),
                                   selected: _registrationMode == 'required',
-                                  onSelected: (sel) {
-                                    if (sel) {
-                                      setState(() {
-                                        _registrationMode = 'required';
-                                        _deadline ??= _startsAt.subtract(
-                                          const Duration(days: 1),
-                                        );
-                                      });
-                                    }
-                                  },
+                                  onSelected: isAdmin
+                                      ? null
+                                      : (sel) {
+                                          if (sel) {
+                                            setState(() {
+                                              _registrationMode = 'required';
+                                              _deadline ??= _startsAt.subtract(
+                                                const Duration(days: 1),
+                                              );
+                                            });
+                                          }
+                                        },
                                 ),
                                 ChoiceChip(
                                   label: const Text('Tham gia tự do (free)'),
                                   selected: _registrationMode == 'free',
-                                  onSelected: (sel) {
-                                    if (sel) {
-                                      setState(
-                                        () => _registrationMode = 'free',
-                                      );
-                                    }
-                                  },
+                                  onSelected: isAdmin
+                                      ? null
+                                      : (sel) {
+                                          if (sel) {
+                                            setState(
+                                              () => _registrationMode = 'free',
+                                            );
+                                          }
+                                        },
                                 ),
                               ],
                             ),
@@ -466,6 +512,7 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                                       label: 'Sức chứa tối đa (*)',
                                       hintText: 'VD: 100',
                                       keyboardType: TextInputType.number,
+                                      readOnly: isAdmin,
                                       validator: (v) {
                                         final n = int.tryParse(v?.trim() ?? '');
                                         if (n == null || n <= 0) {
@@ -484,6 +531,7 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                               label: 'Mô tả chi tiết',
                               hintText: 'Nội dung sự kiện...',
                               maxLines: 3,
+                              readOnly: isAdmin,
                             ),
                             const SizedBox(height: AppSpacing.s16),
                             Row(
@@ -493,6 +541,7 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                                     controller: _audienceController,
                                     label: 'Đối tượng phù hợp',
                                     hintText: 'VD: Sinh viên ngành KTPM...',
+                                    readOnly: isAdmin,
                                   ),
                                 ),
                                 const SizedBox(width: AppSpacing.s16),
@@ -501,6 +550,7 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                                     controller: _preparationController,
                                     label: 'Yêu cầu chuẩn bị',
                                     hintText: 'VD: Mang laptop cá nhân...',
+                                    readOnly: isAdmin,
                                   ),
                                 ),
                               ],
@@ -513,6 +563,7 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                               hintText:
                                   'VD:\nCheck-in nhận quà\nDiễn giả chia sẻ\nQ&A',
                               maxLines: 3,
+                              readOnly: isAdmin,
                             ),
                           ],
                         ),
@@ -578,41 +629,70 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                 spacing: AppSpacing.s12,
                 runSpacing: AppSpacing.s8,
                 children: [
-                  ConstrainedBox(
-                    constraints: AppTouchTargets.minConstraints,
-                    child: TextButton(
-                      onPressed: _isSaving
-                          ? null
-                          : () => Navigator.of(context).pop(),
-                      child: const Text('Hủy'),
+                  if (isAdmin) ...[
+                    ConstrainedBox(
+                      constraints: AppTouchTargets.minConstraints,
+                      child: TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text('Đóng'),
+                      ),
                     ),
-                  ),
-                  if (!isEditingNonDraft)
-                    AppButton(
-                      label: 'Lưu bản nháp',
-                      variant: AppButtonVariant.secondary,
-                      isLoading: _isSaving,
-                      onPressed: _isSaving ? null : () => _submit('draft'),
+                    if (existingStatus == 'pending_approval' &&
+                        widget.initialEvent != null) ...[
+                      OutlinedButton.icon(
+                        icon: const Icon(Icons.cancel_outlined, size: 16),
+                        label: const Text('Từ chối đề xuất'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.error,
+                          side: const BorderSide(color: AppColors.error),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          _showRejectDialog(context, widget.initialEvent!);
+                        },
+                      ),
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.check_circle_outline, size: 16),
+                        label: const Text('Phê duyệt sự kiện'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.success,
+                          foregroundColor: AppColors.onSuccess,
+                          elevation: 0,
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          ref
+                              .read(clubEventsViewModelProvider.notifier)
+                              .approveEvent(widget.initialEvent!.id);
+                        },
+                      ),
+                    ],
+                  ] else ...[
+                    ConstrainedBox(
+                      constraints: AppTouchTargets.minConstraints,
+                      child: TextButton(
+                        onPressed: _isSaving
+                            ? null
+                            : () => Navigator.of(context).pop(),
+                        child: const Text('Hủy'),
+                      ),
                     ),
-                  if (isEditingNonDraft && existingStatus != 'published')
-                    AppButton(
-                      label: 'Lưu cập nhật',
-                      variant: AppButtonVariant.secondary,
-                      isLoading: _isSaving,
-                      onPressed: _isSaving
-                          ? null
-                          : () => _submit(existingStatus),
-                    ),
-                  if (isAdmin)
-                    AppButton(
-                      label: existingStatus == 'published'
-                          ? 'Cập nhật sự kiện'
-                          : 'Công bố sự kiện',
-                      variant: AppButtonVariant.primary,
-                      isLoading: _isSaving,
-                      onPressed: _isSaving ? null : () => _submit('published'),
-                    )
-                  else
+                    if (!isEditingNonDraft)
+                      AppButton(
+                        label: 'Lưu bản nháp',
+                        variant: AppButtonVariant.secondary,
+                        isLoading: _isSaving,
+                        onPressed: _isSaving ? null : () => _submit('draft'),
+                      ),
+                    if (isEditingNonDraft && existingStatus != 'published')
+                      AppButton(
+                        label: 'Lưu cập nhật',
+                        variant: AppButtonVariant.secondary,
+                        isLoading: _isSaving,
+                        onPressed: _isSaving
+                            ? null
+                            : () => _submit(existingStatus),
+                      ),
                     AppButton(
                       label: existingStatus == 'published'
                           ? 'Cập nhật sự kiện'
@@ -627,6 +707,7 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                               ? 'published'
                               : 'pending_approval'),
                     ),
+                  ],
                 ],
               ),
             ],
@@ -700,6 +781,53 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
     );
   }
 
+  void _showRejectDialog(BuildContext context, Event event) {
+    final reasonController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Từ chối đề xuất sự kiện'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Nhập lý do từ chối sự kiện "${event.title}" của ${event.clubName}:'),
+            const SizedBox(height: AppSpacing.s12),
+            TextField(
+              controller: reasonController,
+              decoration: const InputDecoration(
+                hintText: 'Lý do từ chối...',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 3,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Hủy'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: AppColors.surface,
+            ),
+            onPressed: () {
+              final reason = reasonController.text.trim();
+              if (reason.isEmpty) return;
+              Navigator.of(ctx).pop();
+              ref
+                  .read(clubEventsViewModelProvider.notifier)
+                  .rejectEvent(event.id, reason: reason);
+            },
+            child: const Text('Từ chối đề xuất'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
@@ -707,6 +835,7 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
     int? maxLength,
     int maxLines = 1,
     TextInputType? keyboardType,
+    bool readOnly = false,
     String? Function(String?)? validator,
   }) {
     return Column(
@@ -724,6 +853,7 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
           maxLength: maxLength,
           maxLines: maxLines,
           keyboardType: keyboardType,
+          readOnly: readOnly,
           validator: validator,
           decoration: InputDecoration(
             hintText: hintText,

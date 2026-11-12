@@ -172,12 +172,13 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
                     ),
                   ],
                 ),
-                AppButton(
-                  label: 'Tạo sự kiện mới',
-                  semanticsLabel: 'Mở biểu mẫu tạo sự kiện mới cho câu lạc bộ',
-                  icon: const Icon(Icons.add, size: 18),
-                  onPressed: () => _openEventEditor(context),
-                ),
+                if (!isAdmin)
+                  AppButton(
+                    label: 'Tạo sự kiện mới',
+                    semanticsLabel: 'Mở biểu mẫu tạo sự kiện mới cho câu lạc bộ',
+                    icon: const Icon(Icons.add, size: 18),
+                    onPressed: () => _openEventEditor(context),
+                  ),
               ],
             ),
             const SizedBox(height: AppSpacing.s20),
@@ -270,7 +271,14 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
                     children: [
                       _buildFilterChip('Tất cả', 'all', state.statusFilter),
                       _buildFilterChip(
-                        'Chờ duyệt (pending)',
+                        state.allEvents
+                                    .where(
+                                      (e) => e.status == 'pending_approval',
+                                    )
+                                    .isNotEmpty &&
+                                isAdmin
+                            ? 'Chờ duyệt (${state.allEvents.where((e) => e.status == "pending_approval").length})'
+                            : 'Chờ duyệt (pending)',
                         'pending_approval',
                         state.statusFilter,
                       ),
@@ -313,9 +321,12 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
               empty: (msg) => Center(
                 child: AppEmptyState(
                   title: 'Chưa có sự kiện',
-                  message: msg ?? 'Câu lạc bộ chưa khởi tạo sự kiện nào.',
-                  actionLabel: 'Tạo sự kiện đầu tiên',
-                  onAction: () => _openEventEditor(context),
+                  message: msg ??
+                      (isAdmin
+                          ? 'Chưa có đề xuất sự kiện nào từ các câu lạc bộ.'
+                          : 'Câu lạc bộ chưa khởi tạo sự kiện nào.'),
+                  actionLabel: isAdmin ? null : 'Tạo sự kiện đầu tiên',
+                  onAction: isAdmin ? null : () => _openEventEditor(context),
                 ),
               ),
               error: (failure, _) => Center(
@@ -433,7 +444,7 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
                       ),
                       const SizedBox(height: AppSpacing.s4),
                       Text(
-                        '${event.startsAt.day.toString().padLeft(2, "0")}/${event.startsAt.month.toString().padLeft(2, "0")}/${event.startsAt.year} • ${event.location} • Chủ đề: ${event.topic.isEmpty ? "Chung" : event.topic}',
+                        '${event.clubName.isNotEmpty ? "CLB: ${event.clubName} • " : ""}${event.startsAt.day.toString().padLeft(2, "0")}/${event.startsAt.month.toString().padLeft(2, "0")}/${event.startsAt.year} • ${event.location} • Chủ đề: ${event.topic.isEmpty ? "Chung" : event.topic}',
                         style: AppTypography.textTheme.labelSmall?.copyWith(
                           color: AppColors.textSecondary,
                         ),
@@ -501,32 +512,40 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
                           onPressed: () => _confirmReject(context, event),
                         ),
                       ],
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(
-                          minHeight: AppTouchTargets.min,
-                        ),
-                        child: ElevatedButton.icon(
-                          icon: const Icon(Icons.qr_code, size: 16),
-                          label: const Text('Điểm danh QR'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: canCheckIn
-                                ? AppColors.primary
-                                : AppColors.surfaceSubtle,
-                            foregroundColor: canCheckIn
-                                ? AppColors.onPrimary
-                                : AppColors.textDisabled,
-                            elevation: 0,
+                      if (!isAdmin)
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(
+                            minHeight: AppTouchTargets.min,
                           ),
-                          onPressed: canCheckIn
-                              ? () => context.go('/events/${event.id}/checkin')
-                              : null,
+                          child: ElevatedButton.icon(
+                            icon: const Icon(Icons.qr_code, size: 16),
+                            label: const Text('Điểm danh QR'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: canCheckIn
+                                  ? AppColors.primary
+                                  : AppColors.surfaceSubtle,
+                              foregroundColor: canCheckIn
+                                  ? AppColors.onPrimary
+                                  : AppColors.textDisabled,
+                              elevation: 0,
+                            ),
+                            onPressed: canCheckIn
+                                ? () => context.go('/events/${event.id}/checkin')
+                                : null,
+                          ),
                         ),
-                      ),
                       ConstrainedBox(
                         constraints: AppTouchTargets.minConstraints,
                         child: IconButton(
-                          icon: const Icon(Icons.edit_outlined, size: 20),
-                          tooltip: 'Chỉnh sửa sự kiện',
+                          icon: Icon(
+                            isAdmin
+                                ? Icons.visibility_outlined
+                                : Icons.edit_outlined,
+                            size: 20,
+                          ),
+                          tooltip: isAdmin
+                              ? 'Xem chi tiết đề xuất'
+                              : 'Chỉnh sửa sự kiện',
                           onPressed: () => _openEventEditor(context, event),
                         ),
                       ),

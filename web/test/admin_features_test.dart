@@ -8,6 +8,8 @@ import 'package:eventhub_web/screens/clubs/admin_clubs_screen.dart';
 import 'package:eventhub_web/screens/users/admin_users_screen.dart';
 import 'package:eventhub_web/screens/shell/app_shell.dart';
 import 'package:eventhub_web/screens/reviews/review_queue_screen.dart';
+import 'package:eventhub_web/screens/events/club_events_screen.dart';
+import 'package:eventhub_web/screens/events/live_qr_panel_screen.dart';
 import 'package:eventhub_web/services/web_contracts.dart';
 import 'package:eventhub_web/viewmodels/admin_clubs_viewmodel.dart';
 import 'package:eventhub_web/viewmodels/admin_dashboard_viewmodel.dart';
@@ -136,8 +138,57 @@ void main() {
       expect(u1.role, 'staff');
       expect(u1.clubId, 'c_fuda');
     });
-  });
 
+    testWidgets('AdminUsersScreen displays club name for staff and excludes assigned clubs in role dialog', (tester) async {
+      tester.view.physicalSize = const Size(1280, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() => tester.view.resetPhysicalSize());
+
+      final fakeAuth = FakeWebAuthService(initialUser: adminUser);
+      final fakeAdmin = FakeAdminService(
+        initialUsers: sampleUsers,
+        initialClubs: sampleClubs,
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            webAuthServiceProvider.overrideWithValue(fakeAuth),
+            adminServiceProvider.overrideWithValue(fakeAdmin),
+          ],
+          child: const MaterialApp(
+            home: AdminUsersScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Tran Van B is staff of c_fcode ('CLB F-Code')
+      expect(find.text('Trưởng CLB: CLB F-Code'), findsOneWidget);
+
+      // Open role dialog for first user (Nguyen Van A)
+      await tester.tap(find.text('Phân quyền').first);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Phân quyền người dùng'), findsOneWidget);
+
+      // Switch role to staff
+      await tester.tap(find.text('Sinh viên / Người tham gia (user)'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Trưởng CLB (staff)').last);
+      await tester.pumpAndSettle();
+
+      // Club c_fcode already has a leader (Tran Van B), so only c_fuda should be available!
+      expect(find.text('CLB Mỹ thuật FUDA'), findsOneWidget);
+
+      // Open club dropdown
+      await tester.tap(find.text('CLB Mỹ thuật FUDA'));
+      await tester.pumpAndSettle();
+
+      // 'Câu lạc bộ F-Code' must NOT be in the dropdown items because it already has a leader!
+      expect(find.text('Câu lạc bộ F-Code'), findsNothing);
+    });
+  });
   group('Admin Features - Club Directory Management', () {
     testWidgets('AdminClubsScreen renders clubs and allows searching', (tester) async {
       tester.view.physicalSize = const Size(1280, 800);
@@ -333,6 +384,108 @@ void main() {
       expect(find.text('Phân quyền Duyệt Đăng ký'), findsOneWidget);
       expect(find.text('Đến Giám sát & Phê duyệt Sự kiện'), findsOneWidget);
     });
+
+    testWidgets(
+      'ClubEventsScreen hides create button & QR check-in for Admin and allows approving proposals',
+      (tester) async {
+        tester.view.physicalSize = const Size(1280, 800);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() => tester.view.resetPhysicalSize());
+
+        final testEvent = Event(
+          id: 'ev_prop_1',
+          title: 'Workshop AI Gen',
+          clubName: 'CLB F-Code',
+          location: 'Lab 201',
+          startsAt: DateTime.now().add(const Duration(days: 3)),
+          endsAt: DateTime.now().add(const Duration(days: 3, hours: 2)),
+          status: 'pending_approval',
+          clubId: 'c_fcode',
+          mode: 'required',
+          capacity: 50,
+        );
+
+        final fakeAuth = FakeWebAuthService(initialUser: adminUser);
+        final fakeAdmin = FakeAdminService(
+          initialUsers: sampleUsers,
+          initialClubs: sampleClubs,
+          initialEvents: [testEvent],
+        );
+        final fakeClub = FakeClubService(initialEvents: [testEvent]);
+        final fakeAnalytics = FakeWebAnalyticsService();
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              webAuthServiceProvider.overrideWithValue(fakeAuth),
+              adminServiceProvider.overrideWithValue(fakeAdmin),
+              clubServiceProvider.overrideWithValue(fakeClub),
+              webAnalyticsServiceProvider.overrideWithValue(fakeAnalytics),
+            ],
+            child: MaterialApp(
+              theme: EventHubTheme.lightTheme,
+              home: const ClubEventsScreen(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Giám sát & Phê duyệt Sự kiện CLB'), findsOneWidget);
+        // Admin does not create events
+        expect(find.text('Tạo sự kiện mới'), findsNothing);
+        // Admin does not manage QR check-in
+        expect(find.text('Điểm danh QR'), findsNothing);
+
+        // Pending proposal has Approve and Reject buttons
+        expect(find.text('Phê duyệt'), findsOneWidget);
+        expect(find.text('Từ chối'), findsOneWidget);
+
+        // Tap Approve
+        await tester.tap(find.text('Phê duyệt'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+
+        expect(find.text('Phê duyệt đề xuất sự kiện'), findsOneWidget);
+        await tester.tap(find.text('Phê duyệt sự kiện'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+
+        // Still no QR check-in button for Admin even when published
+        expect(find.text('Điểm danh QR'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'LiveQrPanelScreen displays role boundary notice when accessed by Admin',
+      (tester) async {
+        tester.view.physicalSize = const Size(1280, 800);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() => tester.view.resetPhysicalSize());
+
+        final fakeAuth = FakeWebAuthService(initialUser: adminUser);
+        final fakeAdmin = FakeAdminService();
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              webAuthServiceProvider.overrideWithValue(fakeAuth),
+              adminServiceProvider.overrideWithValue(fakeAdmin),
+              clubServiceProvider.overrideWithValue(FakeClubService()),
+            ],
+            child: const MaterialApp(
+              home: LiveQrPanelScreen(eventId: 'ev_prop_1'),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Phân quyền Điểm danh QR'), findsOneWidget);
+        expect(
+          find.text('Quay lại Giám sát & Phê duyệt Sự kiện'),
+          findsOneWidget,
+        );
+      },
+    );
   });
 }
 

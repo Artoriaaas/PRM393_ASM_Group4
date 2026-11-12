@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:eventhub_core/eventhub_core.dart';
 import '../../viewmodels/qr_checkin_viewmodel.dart';
+import '../../viewmodels/web_auth_viewmodel.dart';
 
 class LiveQrPanelScreen extends ConsumerWidget {
   const LiveQrPanelScreen({
@@ -25,6 +26,68 @@ class LiveQrPanelScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(currentStaffProfileProvider);
+    final isAdmin = user?.isAdmin ?? false;
+
+    if (isAdmin) {
+      return Scaffold(
+        backgroundColor: AppColors.surfaceSubtle,
+        body: Center(
+          child: Container(
+            padding: const EdgeInsets.all(AppSpacing.s32),
+            margin: const EdgeInsets.all(AppSpacing.s24),
+            constraints: const BoxConstraints(maxWidth: 580),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: AppRadius.borderR16,
+              border: Border.all(color: AppColors.border),
+              boxShadow: AppShadows.elevation1,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(AppSpacing.s16),
+                  decoration: const BoxDecoration(
+                    color: AppColors.brandSubtle,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.qr_code_scanner,
+                    size: 40,
+                    color: AppColors.primary,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.s20),
+                Text(
+                  'Phân quyền Điểm danh QR',
+                  style: AppTypography.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AppSpacing.s12),
+                Text(
+                  'Theo phân quyền hệ thống, việc mở phiên và điều phối điểm danh QR do chính Ban tổ chức/Trưởng Câu lạc bộ trực tiếp phụ trách tại sự kiện. Quản trị viên chỉ thực hiện giám sát và phê duyệt đề xuất sự kiện, không quản lý việc điểm danh.',
+                  style: AppTypography.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                    height: 1.5,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AppSpacing.s24),
+                AppButton(
+                  label: 'Quay lại Giám sát & Phê duyệt Sự kiện',
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () => context.go('/events'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
     final qrState = ref.watch(qrCheckinViewModelProvider(eventId));
 
     if (!qrState.eventLoaded && qrState.isLoading) {
