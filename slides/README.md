@@ -8,7 +8,7 @@ Bộ slide này được xây dựng và thiết kế lại hoàn toàn dựa tr
 
 ---
 
-## 1. Danh Mục 28 Bản Vẽ Kỹ Thuật
+## 1. Danh Mục 29 Bản Vẽ Kỹ Thuật
 
 | STT | Mã trang | Phase / Section | Tiêu đề & Nội dung then chốt |
 |:---:|:---:|:---|:---|
@@ -19,27 +19,28 @@ Bộ slide này được xây dựng và thiết kế lại hoàn toàn dựa tr
 | **05** | `03` | `P1 · PROBLEM` | **Problem**: 3 Pain points (Ùn tắc đón tiếp, Vượt sức chứa, Mù xét duyệt) |
 | **06** | `04` | `P1 · PROBLEM` | **Proposed Solution**: Kiến trúc Serverless Realtime, QR SHA-256 & Phạm vi MVP |
 | **07** | `05` | `P1 · PROBLEM` | **Main Actors**: 4 Tác nhân (user, staff, admin, Firebase) & Ranh giới bảo mật |
-| **08** | `06` | `P1 · PROBLEM` | **Main Features**: 4 Nhóm tính năng & 3 Workflow lõi liên thiết bị sẽ demo |
-| **09** | `07` | `P2 · DESIGN` | **Business Flow**: Sơ đồ phân làn (Swimlane) 4 làn kèm các điểm rẽ BR-01..BR-05 |
-| **10** | `08` | `P2 · DESIGN` | **State Machine**: Vòng đời Registration, Atomic Invariants & Chuyển trạng thái cấm |
-| **11** | `09` | `P2 · DESIGN` | **System Architecture**: Sơ đồ C4 Container Serverless & 3 Quyết định kiến trúc |
-| **12** | `10` | `P2 · DESIGN` | **Technology Stack**: Bảng công nghệ 8 nhóm (Flutter 3.29, Gemini AI Level 2) |
-| **13** | `11` | `P2 · DESIGN` | **UI/UX Design**: Sitemap, Tiến trình Figma, 4 UI States, Cải tiến D11/D08 |
-| **14** | `12` | `P2 · DESIGN` | **Sequence Diagram**: Duyệt đơn (`approveRegistration` Tx) & Nhánh ngoại lệ hết chỗ |
-| **15** | `13` | `P2 · DESIGN` | **Class Design**: Clean Architecture MVVM, Service Contracts & Domain Models |
-| **16** | `14` | `P2 · DESIGN` | **Conceptual Database**: ERD Ngữ nghĩa, Cardinality & Ràng buộc toàn vẹn IC-01..IC-03 |
-| **17** | `15` | `P2 · DESIGN` | **Physical Database**: NoSQL Schema Firestore, Composite Indexes & Security Rules |
-| **18** | `16` | `P2 · DESIGN` | **Traceability**: Ma trận truy vết khép kín 100% Feature ↔ Screen ↔ Class ↔ DB ↔ Test |
-| **19** | `17` | `P3 · DEMO` | **Demo Plan**: Storyboard 3 bước demo liên vai trò (Đăng ký → Duyệt → Điểm danh) |
-| **20** | `18` | `P3 · DEMO` | **Demo WF-01**: Sinh viên nộp đơn đăng ký trên Mobile App (Đơn PENDING, A04..A06) |
-| **21** | `19` | `P3 · DEMO` | **Demo WF-02**: Trưởng CLB duyệt đơn trên Web Admin Review Queue (APPROVED + FCM) |
-| **22** | `20` | `P3 · DEMO` | **Demo WF-03**: Mở phiên phát QR & Sinh viên quét check-in (Biên nhận A12 realtime) |
-| **23** | `21` | `P4 · PROOF` | **Testing**: 132 Tests tự động Pass 100%, 0 Crashlytics sessions, 12 nhóm Rules |
-| **24** | `22` | `P4 · PROOF` | **Achievements**: Đối chiếu cam kết: Giảm 90% thời gian check-in (<3s), 0 lỗi quá tải |
-| **25** | `23` | `P4 · PROOF` | **Limitations**: Ranh giới kỹ thuật trung thực & Lộ trình nâng cấp công nghệ tiếp theo |
-| **26** | `24` | `P4 · PROOF` | **Conclusion**: 3 Thông điệp chính, liên kết Live Demo, GitHub, Figma và bắt đầu Q&A |
-| **27** | `25` | **Phụ lục** | **Appendix / Backup**: 6 Nhóm tài liệu A1..A6 sẵn sàng trả lời phản biện chuyên sâu |
-| **28** | `G5` | **Checklist** | **Quality Gate**: 8/8 Tiêu chuẩn tự rà soát đạt mức độ hoàn thiện tối đa |
+| **08** | `06` | `P1 · PROBLEM` | **Main Features**: 4 Nhóm tính năng bao phủ trọn vẹn vòng đời sự kiện CLB |
+| **09** | `06B` | `P1 · PROBLEM` | **Core Workflows**: 3 Workflow chính liên thiết bị (Sợi chỉ xuyên suốt bài bảo vệ) |
+| **10** | `07` | `P2 · DESIGN` | **Business Flow**: Sơ đồ phân làn (Swimlane) 4 làn kèm các điểm rẽ BR-01..BR-05 |
+| **11** | `08` | `P2 · DESIGN` | **State Machine**: Registration Lifecycle, State Transitions &amp; Atomic Invariants |
+| **12** | `09` | `P2 · DESIGN` | **System Architecture**: Sơ đồ C4 Container Serverless &amp; 3 Quyết định kiến trúc |
+| **13** | `10` | `P2 · DESIGN` | **Technology Stack**: Bảng công nghệ 8 nhóm (Flutter 3.29, Gemini AI Level 2) |
+| **14** | `11` | `P2 · DESIGN` | **UI/UX Design**: Sitemap, Tiến trình Figma, 4 UI States, Cải tiến D11/D08 |
+| **15** | `12` | `P2 · DESIGN` | **Sequence Diagram**: Duyệt đơn (`approveRegistration` Tx) & Nhánh ngoại lệ hết chỗ |
+| **16** | `13` | `P2 · DESIGN` | **Class Design**: Clean Architecture MVVM, Service Contracts & Domain Models |
+| **17** | `14` | `P2 · DESIGN` | **Conceptual Database**: ERD Ngữ nghĩa, Cardinality & Ràng buộc toàn vẹn IC-01..IC-03 |
+| **18** | `15` | `P2 · DESIGN` | **Physical Database**: NoSQL Schema Firestore, Composite Indexes & Security Rules |
+| **19** | `16` | `P2 · DESIGN` | **Traceability**: Ma trận truy vết khép kín 100% Feature ↔ Screen ↔ Class ↔ DB ↔ Test |
+| **20** | `17` | `P3 · DEMO` | **Demo Plan**: Storyboard 3 bước demo liên vai trò (Đăng ký → Duyệt → Điểm danh) |
+| **21** | `18` | `P3 · DEMO` | **Demo WF-01**: Sinh viên nộp đơn đăng ký trên Mobile App (Đơn PENDING, A04..A06) |
+| **22** | `19` | `P3 · DEMO` | **Demo WF-02**: Trưởng CLB duyệt đơn trên Web Admin Review Queue (APPROVED + FCM) |
+| **23** | `20` | `P3 · DEMO` | **Demo WF-03**: Mở phiên phát QR & Sinh viên quét check-in (Biên nhận A12 realtime) |
+| **24** | `21` | `P4 · PROOF` | **Testing**: 132 Tests tự động Pass 100%, 0 Crashlytics sessions, 12 nhóm Rules |
+| **25** | `22` | `P4 · PROOF` | **Achievements**: Đối chiếu cam kết: Giảm 90% thời gian check-in (<3s), 0 lỗi quá tải |
+| **26** | `23` | `P4 · PROOF` | **Limitations**: Ranh giới kỹ thuật trung thực & Lộ trình nâng cấp công nghệ tiếp theo |
+| **27** | `24` | `P4 · PROOF` | **Conclusion**: 3 Thông điệp chính, liên kết Live Demo, GitHub, Figma và bắt đầu Q&A |
+| **28** | `25` | **Phụ lục** | **Appendix / Backup**: 6 Nhóm tài liệu A1..A6 sẵn sàng trả lời phản biện chuyên sâu |
+| **29** | `G5` | **Checklist** | **Quality Gate**: 8/8 Tiêu chuẩn tự rà soát đạt mức độ hoàn thiện tối đa |
 
 ---
 

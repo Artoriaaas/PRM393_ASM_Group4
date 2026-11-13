@@ -21,7 +21,7 @@ def get_p3_p4_slides():
       </div>
 
       <div class="s-head">
-        <h2>Kế hoạch Demo: <em>Câu chuyện liên vai trò nối liền 3 Workflow lõi</em></h2>
+        <h2>Kế hoạch Demo: <em>Câu chuyện liên vai trò nối liền 3 Workflow chính</em></h2>
         <p class="sub">Minh chứng end-to-end hoàn chỉnh: kết quả của workflow trước là đầu vào trực tiếp của workflow tiếp theo, vận hành đồng bộ giữa Mobile và Web.</p>
       </div>
 
@@ -632,7 +632,7 @@ def get_p3_p4_slides():
               <div style="font: 800 24px var(--display); color: var(--pink); margin-bottom: 6px;">01. PROBLEM SOLVED</div>
               <div style="font-size: 18px; font-weight: 800; color: var(--vai);">Giải quyết đúng vấn đề</div>
               <div style="font-size: 15px; color: var(--vai-2); margin-top: 8px; line-height: 1.45;">
-                Chấm dứt hoàn toàn tình trạng ùn tắc check-in giấy (<3s/người) và khóa sức chứa hội trường nguyên tử bảo đảm 0 lỗi quá tải.
+                Chấm dứt hoàn toàn tình trạng ùn tắc check-in giấy (&lt;3s/người) và Atomic Capacity Invariants bảo đảm 0 lỗi quá tải.
               </div>
             </div>
 
@@ -814,7 +814,7 @@ def get_p3_p4_slides():
               <strong style="font-size: 16px;">2. Features phân nhóm theo nghiệp vụ</strong>
             </div>
             <div style="font-size: 13.5px; color: var(--vai-2); margin-top: 4px;">
-              Chia thành 4 nhóm tính năng rõ rệt; chọn ra đúng 3 workflow lõi để trình diễn trực tiếp.
+              Chia thành 4 nhóm tính năng rõ rệt; chọn ra đúng 3 workflow chính để trình diễn trực tiếp.
             </div>
           </div>
 
