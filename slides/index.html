@@ -476,7 +476,7 @@
             <span style="color: var(--son);">VÀ ĐIỂM DANH QR THỜI GIAN THỰC</span>
           </h1>
           <p style="font-size: 22px; color: var(--vai-2); line-height: 1.4; margin-top: 14px; max-width: 1200px;">
-            Giải pháp số hóa toàn diện: Flutter Android App cho Sinh viên · Flutter Web Admin cho Trưởng CLB &amp; Ban Quản trị · 100% Phân quyền &amp; Ràng buộc nguyên tử qua Cloud Firestore Security Rules.
+            Giải pháp số hóa toàn diện: Flutter Android App cho Sinh viên · Flutter Web Admin cho Trưởng CLB &amp; Ban Quản trị · 100% Phân quyền &amp; Atomic Invariants qua Cloud Firestore Security Rules.
           </p>
         </div>
 
@@ -511,7 +511,7 @@
             </div>
             <div style="font-size: 20px; font-weight: 800; color: var(--vai); margin-top: 8px;">DEMO</div>
             <div style="font-size: 15px; color: var(--vai-2); margin-top: 4px; line-height: 1.35;">
-              3 Workflow lõi liên thiết bị: Mobile Đăng ký → Web Duyệt đơn (FCM) → Quét QR tại hội trường.
+              3 Workflow chính liên thiết bị: Mobile Đăng ký → Web Duyệt đơn (FCM) → Quét QR tại hội trường.
             </div>
           </div>
 
@@ -568,14 +568,15 @@
           <!-- P1 -->
           <div class="panel accent-pink">
             <div style="font: 800 24px var(--display); color: var(--pink); margin-bottom: 8px;">P1 · PROBLEM</div>
-            <div style="font: 600 13px var(--mono); color: var(--vai-3); margin-bottom: 14px;">6 SLIDES · TẠI SAO LÀM?</div>
-            <div style="display: flex; flex-direction: column; gap: 8px; font-size: 14.5px;">
+            <div style="font: 600 13px var(--mono); color: var(--vai-3); margin-bottom: 14px;">7 SLIDES · TẠI SAO LÀM?</div>
+            <div style="display: flex; flex-direction: column; gap: 7px; font-size: 14px;">
               <div><strong>01</strong> Overview dự án 30s</div>
               <div><strong>02</strong> Context &amp; Quy trình giấy</div>
               <div><strong>03</strong> 3 Pain points cốt lõi</div>
               <div><strong>04</strong> Proposed Solution &amp; MVP</div>
               <div><strong>05</strong> Main Actors &amp; Role Gate</div>
-              <div><strong>06</strong> Main Features &amp; Workflows</div>
+              <div><strong>06</strong> Main Features (4 Nhóm tính năng)</div>
+              <div><strong>06B</strong> Core Workflows (3 Workflow chính)</div>
             </div>
           </div>
 
@@ -667,8 +668,7 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
               <span class="tag nghe">ĐỘT PHÁ CÔNG NGHỆ</span>
               <span style="font: 600 13px var(--mono); color: var(--vai-3);">SERVERLESS REALTIME</span>
-            </div>
-            <div style="font-size: 20px; font-weight: 800; color: var(--vai);">Điểm danh QR &lt;3s/người · Khóa sức chứa nguyên tử</div>
+            <div style="font-size: 20px; font-weight: 800; color: var(--vai);">Điểm danh QR &lt;3s/người · Atomic Capacity Invariants</div>
             <div style="font-size: 15px; color: var(--vai-2); margin-top: 6px; line-height: 1.4;">
               Mã QR băm SHA-256 đối chiếu phiên mở; Firestore Atomic Transaction bảo đảm không bao giờ nhận vượt số ghế; cập nhật tức thời hai chiều giữa Web và Mobile.
             </div>
@@ -694,7 +694,7 @@
           </div>
 
           <div style="width: 290px; height: 580px; background: #000; border-radius: 36px; padding: 10px; box-shadow: 0 16px 40px rgba(0,0,0,0.25); border: 4px solid #1E293B; margin-top: 30px; overflow: hidden; display: flex; flex-direction: column;">
-            <img src="../evidence/discover_screen.png" alt="EventHub Live App" 
+            <img src="../evidence/anh_trang_chu.jpg" alt="Màn hình Khám phá EventHub Trang Chủ" 
                  style="width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 26px;">
           </div>
           <div style="font: 600 13px var(--mono); color: var(--vai-3); margin-top: 10px;">Màn hình Khám phá A02 trên thiết bị Android thật</div>
@@ -884,8 +884,8 @@
           </div>
 
           <div style="width: 250px; height: 490px; background: #000; border-radius: 32px; padding: 8px; box-shadow: 0 16px 40px rgba(0,0,0,0.25); border: 4px solid #1E293B; margin-top: 8px; overflow: hidden; display: flex; flex-direction: column;">
-            <img src="../evidence/system_ui_not_responding.png" alt="System UI Not Responding ANR" 
-                 style="width: 100%; height: 100%; object-fit: contain; border-radius: 24px;">
+            <img src="../evidence/screen_ui_not_responding.png" alt="System UI Not Responding ANR" 
+                 style="width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 24px;">
           </div>
 
           <div style="font: 600 12px var(--mono); color: var(--vai-3); text-align: center; margin-top: 8px;">
@@ -909,7 +909,7 @@
       </div>
 
       <div class="s-head">
-        <h2>Giải pháp đề xuất: <em>Serverless Realtime &amp; Ràng buộc nguyên tử</em></h2>
+        <h2>Giải pháp đề xuất: <em>Serverless Realtime &amp; Atomic Transactions</em></h2>
         <p class="sub">Ánh xạ trực tiếp từ Pain Point → Giải pháp công nghệ → Giá trị mang lại cho người dùng và xác định phạm vi MVP.</p>
       </div>
 
@@ -1100,105 +1100,239 @@
     <!-- SLIDE 06 · MAIN FEATURES -->
     <section class="slide" id="slide-06" data-page="06" data-title="06 Main Features">
       <div class="s-top">
-        <div class="eb">P1 · PROBLEM · 06 MAIN FEATURES &amp; WORKFLOWS</div>
+        <div class="eb">P1 · PROBLEM · 06 MAIN FEATURES (4 NHÓM TÍNH NĂNG NGHIỆP VỤ)</div>
         <div class="pg-badge">BẢN VẼ 06 / 24</div>
       </div>
 
       <div class="s-head">
-        <h2>4 Nhóm tính năng &amp; <em>3 Workflow lõi liên thiết bị sẽ demo</em></h2>
-        <p class="sub">Tập trung vào tính năng mang lại giá trị nghiệp vụ thay vì các màn hình CRUD riêng lẻ; 3 workflow được chọn để trình diễn trực tiếp.</p>
+        <h2>4 Nhóm tính năng: <em>Bao phủ trọn vẹn vòng đời sự kiện CLB</em></h2>
+        <p class="sub">Hệ thống phân rã theo giá trị nghiệp vụ thay vì các thao tác CRUD đơn lẻ; phân định rõ ranh giới giữa Mobile App (Sinh viên) và Web Admin (Cán bộ CLB &amp; Nhà trường).</p>
       </div>
 
-      <div class="s-body" style="flex-direction: column; gap: 18px;">
-        <!-- 4 Nhóm tính năng chính -->
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
-          <div class="panel" style="padding: 18px;">
-            <div style="font: 800 16px var(--mono); color: var(--pink); margin-bottom: 6px;">F1 · KHÁM PHÁ &amp; ĐĂNG KÝ</div>
-            <div style="font-size: 14.5px; color: var(--vai-2); line-height: 1.4;">
-              • Danh mục sự kiện, bộ lọc CLB &amp; thời gian<br>
-              • Chi tiết sự kiện, chỉ báo chỗ còn lại realtime<br>
-              • Form đăng ký thông minh, lưu nháp cục bộ<br>
-              • Khóa đơn nguyên tử chống gửi lặp (48-hex opId)
+      <div class="s-body" style="flex-direction: column; gap: 16px;">
+        <!-- 4 Nhóm tính năng dạng 4 cột lớn chi tiết -->
+        <div style="flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;">
+          <!-- F1 -->
+          <div class="panel accent-pink" style="display: flex; flex-direction: column; justify-content: space-between; padding: 20px;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span class="tag pink">F1 · MOBILE APP</span>
+                <span style="font: 600 12px var(--mono); color: var(--pink);">ROLE: USER</span>
+              </div>
+              <h3 style="font-size: 20px; color: var(--vai);">Khám phá &amp; Đăng ký</h3>
+              <div style="font-size: 13.5px; color: var(--vai-3); font-weight: 600; margin: 4px 0 10px 0;">Màn hình: A02, A03, A04, A05, A06</div>
+              <div style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: var(--vai-2); line-height: 1.4;">
+                <div>• <strong>Bộ lọc thông minh:</strong> Lọc sự kiện theo CLB, thời gian và chủ đề công nghệ.</div>
+                <div>• <strong>Chỉ số chỗ realtime:</strong> Hiển thị số ghế còn lại `(capacity - activeCount)`.</div>
+                <div>• <strong>Lưu nháp offline (D08):</strong> Tự động giữ dữ liệu form khi mất kết nối mạng.</div>
+                <div>• <strong>Khóa chống gửi lặp:</strong> Client sinh `lastOperationId` 48-hex nguyên tử.</div>
+                <div>• <strong>Hủy đơn hoàn chỗ:</strong> Sinh viên tự hủy đơn trước giờ bắt đầu để trả lại ghế.</div>
+              </div>
+            </div>
+            <div style="background: rgba(219,39,119,0.08); padding: 8px 12px; border-radius: 6px; font: 600 12px var(--mono); color: var(--pink); margin-top: 12px;">
+              BẢO MẬT: Chỉ tạo đơn pending; không tự duyệt
             </div>
           </div>
 
-          <div class="panel" style="padding: 18px;">
-            <div style="font: 800 16px var(--mono); color: var(--nghe); margin-bottom: 6px;">F2 · QUẢN TRỊ &amp; DUYỆT ĐƠN</div>
-            <div style="font-size: 14.5px; color: var(--vai-2); line-height: 1.4;">
-              • Quản lý sự kiện theo CLB, hỗ trợ soạn bài bằng AI<br>
-              • Review Queue: danh sách chờ duyệt trực quan<br>
-              • Phê duyệt đơn / Từ chối kèm lý do bắt buộc<br>
-              • Khóa sức chứa nguyên tử `activeCount &lt;= capacity`
+          <!-- F2 -->
+          <div class="panel accent-nghe" style="display: flex; flex-direction: column; justify-content: space-between; padding: 20px;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span class="tag nghe">F2 · WEB ADMIN</span>
+                <span style="font: 600 12px var(--mono); color: var(--nghe);">ROLE: STAFF / ADMIN</span>
+              </div>
+              <h3 style="font-size: 20px; color: var(--vai);">Quản trị &amp; Xét duyệt</h3>
+              <div style="font-size: 13.5px; color: var(--vai-3); font-weight: 600; margin: 4px 0 10px 0;">Màn hình: Events, Editor, ReviewQueue</div>
+              <div style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: var(--vai-2); line-height: 1.4;">
+                <div>• <strong>Quản lý sự kiện CLB:</strong> Tạo draft, chỉnh sửa thông tin trong phạm vi `clubId`.</div>
+                <div>• <strong>Trợ lý Gemini AI (Level 2):</strong> Gợi ý nội dung JSON có cấu trúc 5 trường.</div>
+                <div>• <strong>Review Queue trực quan:</strong> Hàng đợi xét duyệt snapshot thời gian thực.</div>
+                <div>• <strong>Duyệt đơn nguyên tử:</strong> Atomic Transaction tăng `activeCount &lt;= capacity`.</div>
+                <div>• <strong>Từ chối có kiểm soát:</strong> Bắt buộc nhập lý do từ chối (`reason &ge; 3` ký tự).</div>
+              </div>
+            </div>
+            <div style="background: rgba(234,88,12,0.08); padding: 8px 12px; border-radius: 6px; font: 600 12px var(--mono); color: var(--nghe); margin-top: 12px;">
+              BẢO MẬT: Rules kiểm tra isStaffOf(event.clubId)
             </div>
           </div>
 
-          <div class="panel" style="padding: 18px;">
-            <div style="font: 800 16px var(--mono); color: var(--son); margin-bottom: 6px;">F3 · ĐIỂM DANH QR CODE</div>
-            <div style="font-size: 14.5px; color: var(--vai-2); line-height: 1.4;">
-              • Mở/đóng phiên điểm danh trên Web hội trường<br>
-              • Sinh mã QR băm SHA-256 chống làm giả<br>
-              • Quét mã tốc độ cao trên Mobile, phản hồi &lt;3s<br>
-              • Biên nhận thành công A12, chặn quét trùng lặp
+          <!-- F3 -->
+          <div class="panel accent-son" style="display: flex; flex-direction: column; justify-content: space-between; padding: 20px;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span class="tag son">F3 · WEB &amp; MOBILE</span>
+                <span style="font: 600 12px var(--mono); color: var(--son);">ROLE: ALL ROLES</span>
+              </div>
+              <h3 style="font-size: 20px; color: var(--vai);">Điểm danh QR SHA-256</h3>
+              <div style="font-size: 13.5px; color: var(--vai-3); font-weight: 600; margin: 4px 0 10px 0;">Màn hình: LiveQrPanel, A11 Scanner, A12</div>
+              <div style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: var(--vai-2); line-height: 1.4;">
+                <div>• <strong>Mở phiên hội trường:</strong> Web quản trị mở phiên `checkinSessions` động.</div>
+                <div>• <strong>Băm mật mã SHA-256:</strong> Mã QR mã hóa đối chiếu với `qrCredentials`.</div>
+                <div>• <strong>Quét camera tốc độ cao:</strong> Mobile Scanner 6.0 phản hồi dưới 1 giây.</div>
+                <div>• <strong>Chống gian lận:</strong> Chặn quét sai sự kiện, chặn quét lặp (BR-05).</div>
+                <div>• <strong>Biên nhận A12:</strong> Ghi `checkInAt = serverTimestamp()`, bảo vệ PII.</div>
+              </div>
+            </div>
+            <div style="background: rgba(29,78,216,0.08); padding: 8px 12px; border-radius: 6px; font: 600 12px var(--mono); color: var(--son); margin-top: 12px;">
+              BẢO MẬT: Phiên mở + Đơn approved mới được quét
             </div>
           </div>
 
-          <div class="panel" style="padding: 18px;">
-            <div style="font: 800 16px var(--mono); color: var(--si); margin-bottom: 6px;">F4 · GIÁM SÁT &amp; BÁO CÁO</div>
-            <div style="font-size: 14.5px; color: var(--vai-2); line-height: 1.4;">
-              • Dashboard thống kê số liệu tham dự trực tiếp<br>
-              • Thông báo đẩy FCM &amp; Hộp thư thông báo A09<br>
-              • Xuất báo cáo PDF lịch tham gia đã ký số cục bộ<br>
-              • Quản lý tài khoản, phân vai người dùng
+          <!-- F4 -->
+          <div class="panel accent-si" style="display: flex; flex-direction: column; justify-content: space-between; padding: 20px;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span class="tag si">F4 · HỆ THỐNG</span>
+                <span style="font: 600 12px var(--mono); color: var(--si);">ROLE: ALL ROLES</span>
+              </div>
+              <h3 style="font-size: 20px; color: var(--vai);">Giám sát, PDF &amp; Push</h3>
+              <div style="font-size: 13.5px; color: var(--vai-3); font-weight: 600; margin: 4px 0 10px 0;">Màn hình: Dashboard, Notifications, Export</div>
+              <div style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: var(--vai-2); line-height: 1.4;">
+                <div>• <strong>Live Dashboard:</strong> Thống kê số lượng tham dự và biểu đồ trực tiếp.</div>
+                <div>• <strong>Thông báo đẩy FCM:</strong> Tức thì báo tin khi đơn được duyệt/từ chối.</div>
+                <div>• <strong>Hộp thư A09:</strong> Phân cấp thông báo theo scope (toàn trường, CLB, cá nhân).</div>
+                <div>• <strong>Xuất PDF lịch tham gia:</strong> Tạo file PDF cục bộ và lưu metadata Firestore.</div>
+                <div>• <strong>Phân vai người dùng:</strong> Admin gán role và phân quyền quản lý CLB.</div>
+              </div>
+            </div>
+            <div style="background: rgba(11,122,110,0.08); padding: 8px 12px; border-radius: 6px; font: 600 12px var(--mono); color: var(--si); margin-top: 12px;">
+              BẢO MẬT: Users/{uid}/reports chỉ chủ sở hữu được đọc
             </div>
           </div>
         </div>
 
-        <!-- 3 Thẻ Workflow lõi sẽ demo -->
-        <div style="background: var(--cham-2); border: 2px solid var(--son); border-radius: 8px; padding: 18px 24px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <span style="font: 800 16px var(--display); color: var(--son); text-transform: uppercase;">
-              ★ 3 WORKFLOW LÕI LIÊN THIẾT BỊ ĐƯỢC CHỌN ĐỂ TRÌNH DIỄN TRỰC TIẾP (DEMO):
-            </span>
-            <span class="tag son">CHIẾM 40% THỜI LƯỢNG BẢO VỆ</span>
+        <!-- Thanh kiến trúc bảo mật -->
+        <div class="panel" style="padding: 12px 20px; background: var(--cham-2); display: flex; justify-content: space-between; align-items: center;">
+          <div style="font-size: 14px; color: var(--vai);">
+            <strong>TÍNH NHẤT QUÁN MÃ NGUỒN:</strong> 4 Nhóm tính năng dùng chung 100% data models và service interfaces trong <code>packages/core</code>; không có sự sai lệch logic giữa Web và Mobile.
+          </div>
+          <span class="tag si">DÙNG CHUNG CORE 100%</span>
+        </div>
+      </div>
+
+      <div class="s-foot">
+        <div class="foot-left"><span class="mono-meta">FEATURE ARCHITECTURE: 4 CORE FUNCTIONAL MODULES · CLEAN BOUNDARY SEPARATION</span></div>
+        <div class="foot-right"><span class="mono-meta">06 / 24</span></div>
+      </div>
+    </section>
+    
+
+    <!-- SLIDE 06B · CORE WORKFLOWS -->
+    <section class="slide" id="slide-06b" data-page="06B" data-title="06B Core Workflows">
+      <div class="s-top">
+        <div class="eb">P1 · PROBLEM · 06B CORE WORKFLOWS (3 WORKFLOW CHÍNH)</div>
+        <div class="pg-badge">BẢN VẼ 06B / 24</div>
+      </div>
+
+      <div class="s-head">
+        <h2>3 Workflow chính liên thiết bị: <em>Sợi chỉ xuyên suốt toàn bộ đồ án</em></h2>
+        <p class="sub">Đạt chuẩn 5/5 tiêu chí nghiệp vụ (W05); kết nối liền mạch từ Sinh viên (Mobile) → Trưởng CLB (Web Admin) → Điểm danh tại hội trường.</p>
+      </div>
+
+      <div class="s-body" style="flex-direction: column; gap: 16px;">
+        <!-- 3 Thẻ Workflow lớn chi tiết 7 thành phần -->
+        <div style="flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;">
+          <!-- WF-01 -->
+          <div class="panel accent-pink" style="display: flex; flex-direction: column; justify-content: space-between; padding: 20px;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span class="tag pink">WF-01 · KHỞI TẠO</span>
+                <span style="font: 600 12px var(--mono); color: var(--pink);">MOBILE ANDROID</span>
+              </div>
+              <h3 style="font-size: 21px; color: var(--vai);">Gửi yêu cầu đăng ký</h3>
+              <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px; font-size: 13.5px; color: var(--vai-2); line-height: 1.4;">
+                <div><strong>• Actor &amp; Trigger:</strong> Sinh viên (`user`) bấm nút "Đăng ký" trên màn A04.</div>
+                <div><strong>• Precondition:</strong> Sự kiện `published`, `now &lt; deadline`, `activeCount &lt; capacity` (BR-01).</div>
+                <div><strong>• Happy Path (4 bước):</strong>
+                  <div style="padding-left: 10px; margin-top: 2px;">
+                    1. SV điền form A05 (MSSV, Khóa K, Email)<br>
+                    2. Client kiểm tra không bỏ trống (BR-02)<br>
+                    3. Tạo `registrations/{id}` với `status = 'pending'`<br>
+                    4. Chuyển màn A06 xác nhận gửi thành công
+                  </div>
+                </div>
+                <div><strong>• Postcondition:</strong> Đơn ở trạng thái <code>PENDING</code>, tức thời xuất hiện trên Review Queue của CLB.</div>
+                <div><strong>• Exception:</strong> Bỏ trống form (báo đỏ A05); gửi khi hết chỗ (chặn BR-01).</div>
+              </div>
+            </div>
+            <div style="background: rgba(219,39,119,0.08); padding: 8px 12px; border-radius: 6px; font: 600 12px var(--mono); color: var(--pink); margin-top: 12px;">
+              KẾT QUẢ: Đơn #REG-102 tạo lúc 08:30 (PENDING)
+            </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
-            <div style="background: var(--cham-deep); border: 1px solid var(--cham-3); border-radius: 6px; padding: 12px 16px;">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span class="tag pink">WF-01</span>
-                <span style="font-weight: 800; color: var(--vai);">Gửi yêu cầu đăng ký</span>
+          <!-- WF-02 -->
+          <div class="panel accent-nghe" style="display: flex; flex-direction: column; justify-content: space-between; padding: 20px;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span class="tag nghe">WF-02 · XÉT DUYỆT</span>
+                <span style="font: 600 12px var(--mono); color: var(--nghe);">FLUTTER WEB ADMIN</span>
               </div>
-              <div style="font-size: 13.5px; color: var(--vai-2); margin-top: 6px;">
-                Sinh viên thao tác trên <strong>Mobile App</strong>: Điền form, xác thực thông tin, Firestore tạo đơn `PENDING`.
+              <h3 style="font-size: 21px; color: var(--vai);">Xét duyệt đơn &amp; Khóa chỗ</h3>
+              <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px; font-size: 13.5px; color: var(--vai-2); line-height: 1.4;">
+                <div><strong>• Actor &amp; Trigger:</strong> Trưởng CLB (`staff`) mở hàng đợi Review Queue.</div>
+                <div><strong>• Precondition:</strong> Đơn `PENDING`, người duyệt có `clubId` khớp sự kiện.</div>
+                <div><strong>• Happy Path (4 bước):</strong>
+                  <div style="padding-left: 10px; margin-top: 2px;">
+                    1. Trưởng CLB xem hồ sơ tự khai của sinh viên<br>
+                    2. Bấm "Phê duyệt" → kích hoạt Transaction<br>
+                    3. Transaction: `reg.status = approved` &amp; `activeCount + 1`<br>
+                    4. Bắn FCM Push và lưu thông báo A09
+                  </div>
+                </div>
+                <div><strong>• Postcondition:</strong> Đơn đổi <code>APPROVED</code>; `activeCount` tăng; SV nhận vé QR.</div>
+                <div><strong>• Exception:</strong> Từ chối thiếu lý do (&lt;3 ký tự) bị chặn BR-03; hết chỗ bị rollback.</div>
               </div>
             </div>
+            <div style="background: rgba(234,88,12,0.08); padding: 8px 12px; border-radius: 6px; font: 600 12px var(--mono); color: var(--nghe); margin-top: 12px;">
+              KẾT QUẢ: #REG-102 APPROVED · activeCount 14 → 15
+            </div>
+          </div>
 
-            <div style="background: var(--cham-deep); border: 1px solid var(--cham-3); border-radius: 6px; padding: 12px 16px;">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span class="tag nghe">WF-02</span>
-                <span style="font-weight: 800; color: var(--vai);">Xét duyệt đơn &amp; Khóa chỗ</span>
+          <!-- WF-03 -->
+          <div class="panel accent-son" style="display: flex; flex-direction: column; justify-content: space-between; padding: 20px;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span class="tag son">WF-03 · ĐIỂM DANH</span>
+                <span style="font: 600 12px var(--mono); color: var(--son);">WEB + MOBILE REALTIME</span>
               </div>
-              <div style="font-size: 13.5px; color: var(--vai-2); margin-top: 6px;">
-                Trưởng CLB thao tác trên <strong>Web Admin</strong>: Xem Review Queue, duyệt đơn (activeCount +1), gửi FCM Push về Mobile.
+              <h3 style="font-size: 21px; color: var(--vai);">Phát mã QR &amp; Check-in</h3>
+              <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px; font-size: 13.5px; color: var(--vai-2); line-height: 1.4;">
+                <div><strong>• Actor &amp; Trigger:</strong> Cán bộ mở phiên Web; SV đưa camera quét mã QR.</div>
+                <div><strong>• Precondition:</strong> Đơn `APPROVED`, phiên mở (`checkinSessions.open = true`).</div>
+                <div><strong>• Happy Path (4 bước):</strong>
+                  <div style="padding-left: 10px; margin-top: 2px;">
+                    1. Web hiển thị mã QR động băm SHA-256<br>
+                    2. SV mở camera A11 quét mã tại bàn đón tiếp<br>
+                    3. Client băm SHA-256, gửi request ghi `checkInAt`<br>
+                    4. Rules kiểm tra mã hợp lệ &amp; `checkInAt == null`
+                  </div>
+                </div>
+                <div><strong>• Postcondition:</strong> Lưu <code>checkInAt = serverTimestamp()</code>; Web nhảy số trong 1s.</div>
+                <div><strong>• Exception:</strong> Quét khi phiên đóng (báo lỗi); quét trùng chặn BR-05.</div>
               </div>
             </div>
+            <div style="background: rgba(29,78,216,0.08); padding: 8px 12px; border-radius: 6px; font: 600 12px var(--mono); color: var(--son); margin-top: 12px;">
+              KẾT QUẢ: ATTENDED · Biên nhận A12 · Web 15/15 có mặt
+            </div>
+          </div>
+        </div>
 
-            <div style="background: var(--cham-deep); border: 1px solid var(--cham-3); border-radius: 6px; padding: 12px 16px;">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span class="tag son">WF-03</span>
-                <span style="font-weight: 800; color: var(--vai);">Điểm danh mã QR SHA-256</span>
-              </div>
-              <div style="font-size: 13.5px; color: var(--vai-2); margin-top: 6px;">
-                <strong>Web hội trường</strong> mở phiên phát QR; <strong>Mobile</strong> quét mã, ghi nhận `checkInAt` và Web nhảy số tức thì.
-              </div>
-            </div>
+        <!-- Bảng 5 câu hỏi kiểm tra nhanh theo quy chuẩn Workflow PDF (W05) -->
+        <div class="panel" style="padding: 12px 20px; background: var(--cham-2);">
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13.5px;">
+            <span style="font: 700 13px var(--mono); color: var(--si);">TIÊU CHÍ NHẬN DIỆN WORKFLOW (W05):</span>
+            <span><strong>1. Trigger rõ ràng:</strong> ✓ Có</span>
+            <span><strong>2. Kết quả có giá trị:</strong> ✓ Có</span>
+            <span><strong>3. Đổi trạng thái thực thể:</strong> ✓ Pending → Approved → Attended</span>
+            <span><strong>4. Rẽ nhánh theo BR:</strong> ✓ BR-01..05</span>
+            <span><strong>5. Ngôn ngữ nghiệp vụ:</strong> ✓ Không mô tả tên nút</span>
           </div>
         </div>
       </div>
 
       <div class="s-foot">
-        <div class="foot-left"><span class="mono-meta">TIÊU CHUẨN WORKFLOW: 3-5 BƯỚC MỖI WF · RẼ NHÁNH THEO BR · KẾT THÚC BẰNG GIÁ TRỊ NGHIỆP VỤ</span></div>
-        <div class="foot-right"><span class="mono-meta">06 / 24</span></div>
+        <div class="foot-left"><span class="mono-meta">WORKFLOW CONTRACT: 3 CORE WORKFLOWS FORM A SEAMLESS END-TO-END BUSINESS STORY</span></div>
+        <div class="foot-right"><span class="mono-meta">06B / 24</span></div>
       </div>
     </section>
     
@@ -1274,8 +1408,8 @@
       </div>
 
       <div class="s-head">
-        <h2>Vòng đời Đơn đăng ký: <em>Kiểm soát chuyển trạng thái &amp; Ràng buộc nguyên tử</em></h2>
-        <p class="sub">Đối tượng trọng tâm `Registration` được quản lý vòng đời chặt chẽ; Firestore Security Rules cấm tuyệt đối các bước chuyển trạng thái nhảy cóc.</p>
+        <h2>Registration Lifecycle: <em>State Transitions &amp; Atomic Invariants</em></h2>
+        <p class="sub">Đối tượng trọng tâm <code>Registration</code> được quản lý State Transitions chặt chẽ; Firestore Security Rules thực thi Atomic Invariants và cấm tuyệt đối các bước chuyển trạng thái nhảy cóc.</p>
       </div>
 
       <div class="s-body">
@@ -1375,7 +1509,7 @@
           <div class="panel accent-nghe" style="padding: 14px;">
             <div style="font: 800 15px var(--display); color: var(--nghe);">QUYẾT ĐỊNH 2: CLOUD FIRESTORE SECURITY RULES</div>
             <div style="font-size: 13.5px; color: var(--vai-2); margin-top: 4px; line-height: 1.4;">
-              Sử dụng `getAfter()` để bảo đảm tính nguyên tử của giao dịch (Atomic Transaction): nếu `activeCount > capacity` thì toàn bộ transaction tự động rollback.
+              Sử dụng <code>getAfter()</code> để bảo đảm Atomic Transactions: nếu <code>activeCount &gt; capacity</code> thì toàn bộ transaction tự động rollback.
             </div>
           </div>
 
@@ -1798,7 +1932,7 @@
           <div class="panel accent-si" style="flex: 1;">
             <div style="font: 800 15px var(--display); color: var(--si); margin-bottom: 6px;">MINH CHỨNG FIRESTORE SECURITY RULES (TRÍCH ĐOẠN):</div>
             <pre style="background: #0F172A; color: #F8FAFC; padding: 14px; border-radius: 6px; font: 500 12px/1.45 var(--mono); margin: 0; overflow-x: auto;">
-// Ràng buộc tăng activeCount nguyên tử khi duyệt đơn
+// Atomic Invariant: Tăng activeCount có điều kiện khi duyệt đơn
 function canApprove() {
   return isStaffOf(resource.data.clubId)
     && resource.data.status == 'pending'
@@ -1912,7 +2046,7 @@ function canApprove() {
       </div>
 
       <div class="s-head">
-        <h2>Kế hoạch Demo: <em>Câu chuyện liên vai trò nối liền 3 Workflow lõi</em></h2>
+        <h2>Kế hoạch Demo: <em>Câu chuyện liên vai trò nối liền 3 Workflow chính</em></h2>
         <p class="sub">Minh chứng end-to-end hoàn chỉnh: kết quả của workflow trước là đầu vào trực tiếp của workflow tiếp theo, vận hành đồng bộ giữa Mobile và Web.</p>
       </div>
 
@@ -2495,7 +2629,7 @@ function canApprove() {
               <div style="font: 800 24px var(--display); color: var(--pink); margin-bottom: 6px;">01. PROBLEM SOLVED</div>
               <div style="font-size: 18px; font-weight: 800; color: var(--vai);">Giải quyết đúng vấn đề</div>
               <div style="font-size: 15px; color: var(--vai-2); margin-top: 8px; line-height: 1.45;">
-                Chấm dứt hoàn toàn tình trạng ùn tắc check-in giấy (<3s/người) và khóa sức chứa hội trường nguyên tử bảo đảm 0 lỗi quá tải.
+                Chấm dứt hoàn toàn tình trạng ùn tắc check-in giấy (&lt;3s/người) và Atomic Capacity Invariants bảo đảm 0 lỗi quá tải.
               </div>
             </div>
 
@@ -2669,7 +2803,7 @@ function canApprove() {
               <strong style="font-size: 16px;">2. Features phân nhóm theo nghiệp vụ</strong>
             </div>
             <div style="font-size: 13.5px; color: var(--vai-2); margin-top: 4px;">
-              Chia thành 4 nhóm tính năng rõ rệt; chọn ra đúng 3 workflow lõi để trình diễn trực tiếp.
+              Chia thành 4 nhóm tính năng rõ rệt; chọn ra đúng 3 workflow chính để trình diễn trực tiếp.
             </div>
           </div>
 
@@ -2748,7 +2882,7 @@ function canApprove() {
         <!-- Knots generated dynamically -->
       </div>
       <div class="thread-meta">
-        <span id="slideIndicator">01 / 28</span>
+        <span id="slideIndicator">01 / 29</span>
         <button class="btn-tool" onclick="toggleTheme()" title="Đổi kiểu màu (Phím D)">🎨 THEME [D]</button>
         <button class="btn-tool" onclick="toggleOverview()" title="Lưới tổng quan (Phím O)">☰ LƯỚI [O]</button>
         <button class="btn-tool" onclick="toggleFullscreen()" title="Toàn màn hình (Phím F)">⛶ TOÀN MÀN HÌNH [F]</button>

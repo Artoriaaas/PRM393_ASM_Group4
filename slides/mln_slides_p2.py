@@ -88,8 +88,8 @@ def get_p2_slides():
       </div>
 
       <div class="s-head">
-        <h2>Vòng đời Đơn đăng ký: <em>Kiểm soát chuyển trạng thái &amp; Ràng buộc nguyên tử</em></h2>
-        <p class="sub">Đối tượng trọng tâm `Registration` được quản lý vòng đời chặt chẽ; Firestore Security Rules cấm tuyệt đối các bước chuyển trạng thái nhảy cóc.</p>
+        <h2>Registration Lifecycle: <em>State Transitions &amp; Atomic Invariants</em></h2>
+        <p class="sub">Đối tượng trọng tâm <code>Registration</code> được quản lý State Transitions chặt chẽ; Firestore Security Rules thực thi Atomic Invariants và cấm tuyệt đối các bước chuyển trạng thái nhảy cóc.</p>
       </div>
 
       <div class="s-body">
@@ -193,7 +193,7 @@ def get_p2_slides():
           <div class="panel accent-nghe" style="padding: 14px;">
             <div style="font: 800 15px var(--display); color: var(--nghe);">QUYẾT ĐỊNH 2: CLOUD FIRESTORE SECURITY RULES</div>
             <div style="font-size: 13.5px; color: var(--vai-2); margin-top: 4px; line-height: 1.4;">
-              Sử dụng `getAfter()` để bảo đảm tính nguyên tử của giao dịch (Atomic Transaction): nếu `activeCount > capacity` thì toàn bộ transaction tự động rollback.
+              Sử dụng <code>getAfter()</code> để bảo đảm Atomic Transactions: nếu <code>activeCount &gt; capacity</code> thì toàn bộ transaction tự động rollback.
             </div>
           </div>
 
@@ -640,7 +640,7 @@ def get_p2_slides():
           <div class="panel accent-si" style="flex: 1;">
             <div style="font: 800 15px var(--display); color: var(--si); margin-bottom: 6px;">MINH CHỨNG FIRESTORE SECURITY RULES (TRÍCH ĐOẠN):</div>
             <pre style="background: #0F172A; color: #F8FAFC; padding: 14px; border-radius: 6px; font: 500 12px/1.45 var(--mono); margin: 0; overflow-x: auto;">
-// Ràng buộc tăng activeCount nguyên tử khi duyệt đơn
+// Atomic Invariant: Tăng activeCount có điều kiện khi duyệt đơn
 function canApprove() {
   return isStaffOf(resource.data.clubId)
     && resource.data.status == 'pending'
