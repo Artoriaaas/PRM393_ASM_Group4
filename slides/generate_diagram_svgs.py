@@ -238,16 +238,6 @@ svg_08 = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width=
   <text x="235" y="235" font-family="Calibri, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#D97706">Nộp lại đơn</text>
   <text x="235" y="248" font-family="Calibri, Arial, sans-serif" font-size="7.5" fill="#64748B">(gen + 1)</text>
 
-  <!-- FORBIDDEN TRANSITIONS (RED DASHED) -->
-  <!-- 1. DRAFT -> APPROVED (FORBIDDEN) -->
-  <path d="M 175 95 C 175 40, 637 40, 637 90" fill="none" stroke="#DC2626" stroke-width="2.2" stroke-dasharray="5,4" marker-end="url(#arrow-red)" />
-  <rect x="340" y="42" width="195" height="24" rx="4" fill="#FEF2F2" stroke="#DC2626" stroke-width="1" />
-  <text x="437" y="58" font-family="Calibri, Arial, sans-serif" font-size="10" font-weight="700" fill="#DC2626" text-anchor="middle">CẤM: DRAFT → APPROVED (Rules chặn)</text>
-
-  <!-- 2. REJECTED -> APPROVED (FORBIDDEN) -->
-  <path d="M 470 292 C 515 292, 515 180, 560 150" fill="none" stroke="#DC2626" stroke-width="1.8" stroke-dasharray="4,3" marker-end="url(#arrow-red)" />
-  <text x="515" y="235" font-family="Calibri, Arial, sans-serif" font-size="8" font-weight="700" fill="#DC2626" text-anchor="middle">CẤM: REJECTED → APPROVED</text>
-
   <!-- Bottom Rule Summary -->
   <rect x="20" y="375" width="920" height="50" rx="6" fill="#F8FAFC" stroke="#E2E8F0" />
   <text x="35" y="396" font-family="Calibri, Arial, sans-serif" font-size="11.5" font-weight="700" fill="#1E293B">NGUYÊN TẮC: Transition = Event [Guard] / Action</text>
