@@ -1,0 +1,2467 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>PRM393 — Báo Cáo Bảo Vệ Đồ Án Lab 3 | EventHub (Group 4)</title>
+  
+  <!-- Reveal.js CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.0.4/reset.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.0.4/reveal.min.css">
+  
+  <!-- Google Fonts: Inter & Be Vietnam Pro -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root {
+      --bg-light: #FFF8F3;
+      --bg-card: rgba(255, 255, 255, 0.82);
+      --border-card: rgba(255, 140, 60, 0.28);
+      --primary: #FF6B35;
+      --primary-glow: rgba(255, 107, 53, 0.35);
+      --secondary: #F7A844;
+      --accent: #FF8C69;
+      --success: #E8A44A;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --pink: #F472B6;
+      --rose: #FB7185;
+      --text-main: #3D1F0A;
+      --text-muted: #8B6650;
+      --font-main: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-code: 'JetBrains Mono', monospace;
+    }
+
+    /* Light warm background */
+    html, body, .reveal-viewport, .reveal {
+      background-color: #FFF8F3 !important;
+      background:
+        radial-gradient(circle at 8% 12%,  rgba(255, 180, 100, 0.30) 0%, transparent 42%),
+        radial-gradient(circle at 92% 10%,  rgba(244, 114, 182, 0.22) 0%, transparent 38%),
+        radial-gradient(circle at 50% 92%,  rgba(255, 107, 53, 0.18) 0%, transparent 48%),
+        radial-gradient(circle at 88% 85%,  rgba(251, 191, 36, 0.20) 0%, transparent 40%),
+        radial-gradient(circle at 15% 80%,  rgba(249, 115, 22, 0.14) 0%, transparent 36%),
+        linear-gradient(155deg, #FFF8F3 0%, #FFF1E6 55%, #FEF3F0 100%) !important;
+      font-family: var(--font-main);
+      color: var(--text-main) !important;
+      overflow: hidden;
+    }
+
+    /* Soft dot pattern */
+    .reveal::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background-image: radial-gradient(rgba(255, 140, 60, 0.12) 1.5px, transparent 1.5px);
+      background-size: 36px 36px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .reveal {
+      font-family: var(--font-main);
+      font-size: 21px;
+      color: var(--text-main);
+      z-index: 2;
+    }
+
+    .reveal .slides {
+      text-align: left;
+    }
+
+    /* Top presentation banner */
+    .header-bar {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #A0714F;
+      border-bottom: 1px solid rgba(255, 140, 60, 0.30);
+      padding-bottom: 8px;
+      z-index: 10;
+    }
+    .header-bar .tag {
+      background: rgba(255, 107, 53, 0.15);
+      color: #E84D1C;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 107, 53, 0.45);
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    /* Slide Titles */
+    .slide-title-group {
+      margin-top: 25px;
+      margin-bottom: 16px;
+    }
+    .slide-sub {
+      font-size: 13.5px;
+      font-weight: 800;
+      letter-spacing: 2.5px;
+      color: #E84D1C;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .slide-title {
+      font-size: 32px !important;
+      font-weight: 800 !important;
+      letter-spacing: -0.5px;
+      color: #2D1206 !important;
+      margin: 0 !important;
+      line-height: 1.25 !important;
+      text-transform: none !important;
+    }
+    .slide-title span {
+      background: linear-gradient(135deg, #FF6B35 0%, #F7A844 50%, #F472B6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 14px;
+      padding: 18px 20px;
+      box-shadow: 0 6px 24px rgba(255, 107, 53, 0.10), 0 2px 8px rgba(0,0,0,0.06);
+      backdrop-filter: blur(16px);
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card:hover {
+      border-color: rgba(255, 140, 60, 0.55);
+      box-shadow: 0 10px 32px rgba(255, 107, 53, 0.20);
+      transform: translateY(-2px);
+    }
+    .card.highlight {
+      border: 1px solid rgba(244, 114, 182, 0.55);
+      background: linear-gradient(145deg, rgba(255, 236, 220, 0.90) 0%, rgba(255, 248, 243, 0.98) 100%);
+      box-shadow: 0 10px 32px rgba(244, 114, 182, 0.18);
+    }
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #2D1206;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Paragraphs */
+    p {
+      font-size: 15px;
+      line-height: 1.55;
+      color: #6B3A20;
+      margin: 0 0 10px 0;
+    }
+
+    /* Grid Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      align-items: stretch;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+    .grid-1-2 {
+      display: grid;
+      grid-template-columns: 1.1fr 1.9fr;
+      gap: 18px;
+      align-items: center;
+    }
+    .grid-2-1 {
+      display: grid;
+      grid-template-columns: 1.8fr 1.2fr;
+      gap: 18px;
+      align-items: center;
+    }
+
+    /* Evidence Image Frame */
+    .img-frame {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 140, 60, 0.30);
+      background: #FFF1E6;
+      box-shadow: 0 10px 30px rgba(255, 107, 53, 0.15);
+    }
+    .img-frame img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 275px;
+      object-fit: contain;
+      background: #FFF8F3;
+      margin: 0 !important;
+    }
+    .img-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(255, 248, 243, 0.92);
+      color: #E84D1C;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 107, 53, 0.45);
+      backdrop-filter: blur(6px);
+      letter-spacing: 0.5px;
+    }
+    .img-caption {
+      font-size: 13px;
+      color: #A0714F;
+      text-align: center;
+      margin-top: 8px;
+      line-height: 1.45;
+    }
+
+    /* Badges & Pills */
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .badge-blue { background: rgba(255, 107, 53, 0.15); color: #E84D1C; border: 1px solid rgba(255, 107, 53, 0.40); }
+    .badge-orange { background: rgba(247, 168, 68, 0.20); color: #C97B00; border: 1px solid rgba(247, 168, 68, 0.50); }
+    .badge-green { background: rgba(244, 114, 182, 0.15); color: #C2185B; border: 1px solid rgba(244, 114, 182, 0.40); }
+    .badge-purple { background: rgba(251, 113, 133, 0.15); color: #BE185D; border: 1px solid rgba(251, 113, 133, 0.40); }
+
+    /* Code Blocks */
+    pre.code-box {
+      background: #FFF1E6 !important;
+      border: 1px solid rgba(255, 140, 60, 0.30) !important;
+      border-radius: 10px !important;
+      padding: 12px 14px !important;
+      font-family: var(--font-code) !important;
+      font-size: 13px !important;
+      line-height: 1.45 !important;
+      color: #3D1F0A !important;
+      box-shadow: inset 0 2px 8px rgba(255, 107, 53, 0.08);
+      margin: 8px 0 !important;
+      overflow-x: auto;
+    }
+    pre.code-box code {
+      font-family: var(--font-code) !important;
+      color: inherit;
+    }
+
+    /* Lists */
+    ul.check-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    ul.check-list li {
+      font-size: 15px;
+      margin-bottom: 9px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      line-height: 1.5;
+      color: #5A2D0C;
+    }
+    ul.check-list li i {
+      margin-top: 3px;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    /* Tables */
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+    table.data-table th {
+      background: rgba(255, 107, 53, 0.15);
+      color: #E84D1C;
+      padding: 9px 12px;
+      text-align: left;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(255, 107, 53, 0.35);
+    }
+    table.data-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid rgba(255, 140, 60, 0.15);
+      color: #4A2010;
+    }
+    table.data-table tr:hover td {
+      background: rgba(255, 140, 60, 0.07);
+    }
+
+    /* Big Numbers */
+    .stat-box {
+      text-align: center;
+      padding: 14px;
+      background: var(--bg-card);
+      border-radius: 12px;
+      border: 1px solid var(--border-card);
+      box-shadow: 0 6px 20px rgba(255, 107, 53, 0.12);
+    }
+    .stat-num {
+      font-size: 38px;
+      font-weight: 800;
+      color: #E84D1C;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 12.5px;
+      color: #A0714F;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 600;
+    }
+
+    /* Reveal Progress Bar & Controls Customization */
+    .reveal .progress {
+      height: 5px;
+      color: #FF6B35;
+      background: rgba(255, 140, 60, 0.20);
+    }
+    .reveal .slide-number {
+      font-family: var(--font-code);
+      font-size: 13.5px;
+      background: rgba(255, 248, 243, 0.92);
+      border: 1px solid rgba(255, 140, 60, 0.35);
+      border-radius: 6px;
+      color: #E84D1C;
+      right: 25px;
+      bottom: 25px;
+      padding: 6px 12px;
+      font-weight: 700;
+    }
+
+    /* Glow pulse animation for highlights */
+    @keyframes pulse-glow {
+      0% { box-shadow: 0 0 15px rgba(255, 107, 53, 0.25); }
+      50% { box-shadow: 0 0 28px rgba(244, 114, 182, 0.45); }
+      100% { box-shadow: 0 0 15px rgba(255, 107, 53, 0.25); }
+    }
+    .glow {
+      animation: pulse-glow 3s infinite;
+    }
+
+    /*
+     * Content-safe layout for the main deck.
+     * Each content slide gets a fixed presentation canvas so the absolute
+     * header cannot collapse the section height or overlap the title.
+     * Only apply flex layout to the currently active slide (.present) so Reveal.js
+     * can properly hide inactive slides.
+     */
+    .reveal .slides > section:not(:first-child):not(:last-child) {
+      box-sizing: border-box;
+      height: 720px;
+      padding: 72px 0 48px;
+    }
+
+    .reveal .slides > section.present:not(:first-child):not(:last-child) {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .reveal .slides > section:not(:first-child):not(:last-child) .slide-title-group {
+      flex: 0 0 auto;
+      margin-top: 0 !important;
+      margin-bottom: 22px;
+    }
+
+    .reveal .slides > section:not(:first-child):not(:last-child) .slide-title {
+      font-size: 36px !important;
+      line-height: 1.2 !important;
+    }
+
+    .reveal .slides > section:not(:first-child):not(:last-child) .slide-sub {
+      font-size: 14px;
+    }
+
+    .reveal .slides > section:not(:first-child):not(:last-child) .card-title {
+      font-size: 19px;
+    }
+
+    .reveal .slides > section:not(:first-child):not(:last-child) p,
+    .reveal .slides > section:not(:first-child):not(:last-child) ul.check-list li {
+      font-size: 15.5px;
+    }
+
+    /* Workflow Specific Styles */
+    .workflow-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .workflow-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 12px;
+      padding: 14px 14px;
+      box-shadow: 0 4px 16px rgba(255, 107, 53, 0.08);
+      position: relative;
+    }
+    .workflow-step-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .architecture-slide .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .architecture-slide .card {
+      min-width: 0;
+      padding: 16px 18px;
+    }
+
+    .architecture-slide ul.check-list li {
+      font-size: 14px !important;
+      line-height: 1.5;
+      margin-bottom: 11px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .architecture-slide ul.check-list li:last-child {
+      margin-bottom: 0;
+    }
+
+    .architecture-slide ul.check-list li div {
+      flex: 1;
+      min-width: 0;
+      word-break: normal;
+      overflow-wrap: normal;
+    }
+
+    .architecture-slide ul.check-list li code {
+      white-space: nowrap;
+      font-size: 12.5px;
+      padding: 1px 5px;
+      background: rgba(255, 140, 60, 0.12);
+      border-radius: 4px;
+      color: #C94A1A;
+    }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- ==========================================
+           SLIDE 1: COVER
+      =========================================== -->
+      <section data-transition="zoom">
+        <div class="header-bar">
+          <span>PRM393 — Mobile Programming</span>
+          <span class="tag">LAB 3 DEFENSE</span>
+          <span>Semester Fall 2026</span>
+        </div>
+        
+        <div style="margin-top: 50px; text-align: center;">
+          <div style="display: inline-flex; align-items: center; gap: 10px; background: rgba(255, 87, 34, 0.2); border: 1px solid rgba(255, 87, 34, 0.5); padding: 8px 22px; border-radius: 24px; font-size: 14px; color: #FFA726; font-weight: 800; margin-bottom: 20px; letter-spacing: 0.5px;">
+            <i class="fa-solid fa-fire"></i> GOOGLE CLOUD & FIREBASE BACKEND SUITE
+          </div>
+          
+          <h1 style="font-size: 50px; font-weight: 900; letter-spacing: -1.5px; margin: 0 0 16px 0; color: #2D1206; line-height: 1.2;">
+            EventHub — Kiến Trúc & Tích Hợp<br>
+            <span style="background: linear-gradient(135deg, #FF6E40 0%, #38BDF8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+              Hệ Thống Dịch Vụ Đám Mây Firebase
+            </span>
+          </h1>
+          
+          <p style="font-size: 18px; color: #6B3A20; max-width: 860px; margin: 0 auto 35px auto; line-height: 1.6;">
+            Báo cáo toàn diện 6 dịch vụ Firebase (Auth, Storage, FCM, Analytics, Crashlytics, Remote Config), 
+            kiểm thử tự động ARTEMIS và tối ưu mã nguồn với AI Code Review.
+          </p>
+
+          <div style="display: flex; justify-content: center; gap: 22px; margin-bottom: 30px;">
+            <div class="card" style="padding: 16px 28px; text-align: center; border-color: rgba(255, 140, 60, 0.35);">
+              <div style="font-size: 12.5px; color: #A0714F; text-transform: uppercase; font-weight: 600; letter-spacing: 0.8px;">Nhóm thực hiện</div>
+              <div style="font-size: 19px; font-weight: 800; color: #E84D1C; margin-top: 4px;"><i class="fa-solid fa-users"></i> Nhóm 4 (Group 4)</div>
+            </div>
+            <div class="card" style="padding: 16px 28px; text-align: center; border-color: rgba(255, 87, 34, 0.35);">
+              <div style="font-size: 12.5px; color: #A0714F; text-transform: uppercase; font-weight: 600; letter-spacing: 0.8px;">Project ID</div>
+              <div style="font-size: 19px; font-weight: 800; color: #FF7043; margin-top: 4px;"><i class="fa-solid fa-cloud"></i> eventhub-group4</div>
+            </div>
+            <div class="card" style="padding: 16px 28px; text-align: center; border-color: rgba(16, 185, 129, 0.35);">
+              <div style="font-size: 12.5px; color: #A0714F; text-transform: uppercase; font-weight: 600; letter-spacing: 0.8px;">Test Coverage</div>
+              <div style="font-size: 19px; font-weight: 800; color: #BE185D; margin-top: 4px;"><i class="fa-solid fa-shield-check"></i> 65 Unit + 25 ARTEMIS</div>
+            </div>
+          </div>
+
+          <div style="font-size: 14px; color: #A0714F;">
+            Thành viên chính: <strong style="color: #2D1206;">Nguyễn Trọng Kiệt (KietNTSE)</strong> & Nhóm 4 &bull; Giảng viên hướng dẫn: <strong style="color: #2D1206;">Bộ môn SE FPT University</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 2: AGENDA
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>PRM393 Lab 3</span>
+          <span class="tag">MỤC LỤC BÁO CÁO</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-compass"></i> TỔNG QUAN NỘI DUNG</div>
+          <h2 class="slide-title">Lộ Trình Báo Cáo <span>Lab 3 Defense</span></h2>
+        </div>
+
+        <div class="grid-3" style="margin-top: 15px;">
+          <div class="card">
+            <div class="card-title"><i class="fa-solid fa-cubes text-accent" style="color: #E84D1C;"></i> Phần 1: Nền Tảng Dự Án</div>
+            <ul class="check-list">
+              <li><i class="fa-solid fa-angle-right" style="color: #E84D1C;"></i> Tổng quan giải pháp EventHub</li>
+              <li><i class="fa-solid fa-angle-right" style="color: #E84D1C;"></i> Môi trường &amp; Khởi tạo Firebase SDK</li>
+              <li><i class="fa-solid fa-angle-right" style="color: #E84D1C;"></i> Kiến trúc Clean Architecture MVVM</li>
+              <li><i class="fa-solid fa-angle-right" style="color: #E84D1C;"></i> Quy Chuẩn Workflow &amp; Đặc Tả WF-01</li>
+              <li><i class="fa-solid fa-angle-right" style="color: #E84D1C;"></i> Giao diện người dùng thực tế</li>
+            </ul>
+          </div>
+
+          <div class="card highlight">
+            <div class="card-title"><i class="fa-solid fa-fire" style="color: #FF5722;"></i> Phần 2: 6 Dịch Vụ Firebase</div>
+            <ul class="check-list">
+              <li><i class="fa-solid fa-angle-right" style="color: #FF7043;"></i> <strong>1. Auth:</strong> Session & Zero PII</li>
+              <li><i class="fa-solid fa-angle-right" style="color: #FF7043;"></i> <strong>2. Storage:</strong> Export & Security Rules</li>
+              <li><i class="fa-solid fa-angle-right" style="color: #FF7043;"></i> <strong>3. FCM:</strong> 3 Trạng thái Push Notif</li>
+              <li><i class="fa-solid fa-angle-right" style="color: #FF7043;"></i> <strong>4. Analytics:</strong> 7+ Custom Events</li>
+              <li><i class="fa-solid fa-angle-right" style="color: #FF7043;"></i> <strong>5. Crashlytics:</strong> Fatal & Non-fatal</li>
+              <li><i class="fa-solid fa-angle-right" style="color: #FF7043;"></i> <strong>6. Remote Config:</strong> Realtime flags</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><i class="fa-solid fa-vial-circle-check" style="color: #DB2777;"></i> Phần 3: QA & Bàn Giao</div>
+            <ul class="check-list">
+              <li><i class="fa-solid fa-angle-right" style="color: #BE185D;"></i> Kiểm thử tự động ARTEMIS (25 TCs)</li>
+              <li><i class="fa-solid fa-angle-right" style="color: #BE185D;"></i> AI Code Review & Security fixes</li>
+              <li><i class="fa-solid fa-angle-right" style="color: #BE185D;"></i> Bằng chứng Design Changes (D03, D11)</li>
+              <li><i class="fa-solid fa-angle-right" style="color: #BE185D;"></i> Danh mục bàn giao & Live Demo</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 3: TỔNG QUAN ỨNG DỤNG EVENTHUB
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 1: Nền Tảng Dự Án</span>
+          <span class="tag">TỔNG QUAN ỨNG DỤNG</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-ticket"></i> GIỚI THIỆU HỆ THỐNG</div>
+          <h2 class="slide-title">Ứng Dụng <span>EventHub</span> & Bài Toán Nghiệp Vụ</h2>
+        </div>
+
+        <div class="grid-2-1" style="align-items: stretch;">
+          <div class="card">
+            <div class="card-title"><i class="fa-solid fa-bullseye" style="color: #FF5722;"></i> Mục Tiêu & Chức Năng Cốt Lõi</div>
+            <p style="font-size: 13px; color: #6B3A20; line-height: 1.5; margin-bottom: 12px;">
+              <strong>EventHub</strong> là nền tảng di động quản trị, tìm kiếm và đặt vé sự kiện công nghệ / âm nhạc trực tiếp, 
+              được thiết kế theo tiêu chuẩn công nghiệp với trải nghiệm mượt mà và bảo mật nghiêm ngặt.
+            </p>
+            <div class="grid-2" style="gap: 10px; margin-bottom: 12px;">
+              <div style="background: rgba(2,132,199,0.1); border-left: 3px solid #FF6B35; padding: 8px 10px; border-radius: 4px;">
+                <div style="font-weight: 700; color: #E84D1C; font-size: 12px;"><i class="fa-solid fa-compass"></i> Discover & Search</div>
+                <div style="font-size: 11px; color: #A0714F;">Tìm kiếm theo từ khóa, lọc theo danh mục, địa điểm, thời gian.</div>
+              </div>
+              <div style="background: rgba(255,87,34,0.1); border-left: 3px solid #FF5722; padding: 8px 10px; border-radius: 4px;">
+                <div style="font-weight: 700; color: #FF7043; font-size: 12px;"><i class="fa-solid fa-bookmark"></i> Instant Booking</div>
+                <div style="font-size: 11px; color: #A0714F;">Đăng ký vé tức thì, sinh mã đặt chỗ và vé điện tử.</div>
+              </div>
+              <div style="background: rgba(16,185,129,0.1); border-left: 3px solid #DB2777; padding: 8px 10px; border-radius: 4px;">
+                <div style="font-weight: 700; color: #BE185D; font-size: 12px;"><i class="fa-solid fa-bell"></i> Push Notification</div>
+                <div style="font-size: 11px; color: #A0714F;">Nhận thông báo nhắc lịch và trạng thái vé qua Firebase Cloud Messaging.</div>
+              </div>
+              <div style="background: rgba(139,92,246,0.1); border-left: 3px solid #F43F5E; padding: 8px 10px; border-radius: 4px;">
+                <div style="font-weight: 700; color: #FB7185; font-size: 12px;"><i class="fa-solid fa-sliders"></i> Dynamic Remote Config</div>
+                <div style="font-size: 11px; color: #A0714F;">Điều khiển giao diện và logic gợi ý từ Cloud không cần build lại app.</div>
+              </div>
+            </div>
+            <div style="font-size: 11px; color: #64748B; border-top: 1px solid var(--border-card); padding-top: 8px;">
+              <i class="fa-solid fa-lock" style="color: #DB2777;"></i> <strong>Zero PII Policy:</strong> Tuyệt đối không gửi email, số điện thoại hay thông tin định danh cá nhân lên Analytics/Crashlytics.
+            </div>
+          </div>
+
+          <div class="card" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+            <div class="img-frame" style="max-height: 250px; width: 100%; margin-bottom: 8px;">
+              <img src="../evidence/eventhub_live.png" alt="EventHub Live App">
+              <span class="img-badge">LIVE APP SCREEN</span>
+            </div>
+            <div style="font-size: 12px; font-weight: 700; color: #2D1206;">EventHub v1.0.0+1</div>
+            <div style="font-size: 11px; color: #A0714F;">Màn hình Discover & Live Recommendations</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 4: MÔI TRƯỜNG & CÔNG NGHỆ
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 1: Nền Tảng Dự Án</span>
+          <span class="tag">MÔI TRƯỜNG & STACK</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-laptop-code"></i> DEVELOPMENT ENVIRONMENT</div>
+          <h2 class="slide-title">Môi Trường Kỹ Thuật & <span>Tech Stack</span></h2>
+        </div>
+
+        <div class="grid-4" style="margin-top: 15px;">
+          <div class="card">
+            <div class="card-title"><i class="fa-brands fa-flutter" style="color: #FF6B35;"></i> Flutter & Dart</div>
+            <ul class="check-list">
+              <li><i class="fa-solid fa-check" style="color: #E84D1C;"></i> Flutter 3.29.x Channel stable</li>
+              <li><i class="fa-solid fa-check" style="color: #E84D1C;"></i> Dart 3.7.x with Null Safety</li>
+              <li><i class="fa-solid fa-check" style="color: #E84D1C;"></i> Material 3 Typography</li>
+              <li><i class="fa-solid fa-check" style="color: #E84D1C;"></i> Android API 24+ (target 34)</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><i class="fa-solid fa-fire" style="color: #FF5722;"></i> Firebase Suite</div>
+            <ul class="check-list">
+              <li><i class="fa-solid fa-check" style="color: #FF7043;"></i> firebase_core: ^3.12.1</li>
+              <li><i class="fa-solid fa-check" style="color: #FF7043;"></i> firebase_auth: ^5.5.1</li>
+              <li><i class="fa-solid fa-check" style="color: #FF7043;"></i> firebase_messaging: ^15.2.4</li>
+              <li><i class="fa-solid fa-check" style="color: #FF7043;"></i> firebase_analytics: ^11.4.4</li>
+              <li><i class="fa-solid fa-check" style="color: #FF7043;"></i> firebase_crashlytics: ^4.3.4</li>
+              <li><i class="fa-solid fa-check" style="color: #FF7043;"></i> firebase_remote_config: ^5.3.4</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><i class="fa-solid fa-layer-group" style="color: #F43F5E;"></i> State & Storage</div>
+            <ul class="check-list">
+              <li><i class="fa-solid fa-check" style="color: #FB7185;"></i> flutter_riverpod: ^2.6.1</li>
+              <li><i class="fa-solid fa-check" style="color: #FB7185;"></i> sqflite: ^2.4.1 (Local DB)</li>
+              <li><i class="fa-solid fa-check" style="color: #FB7185;"></i> http / dio: REST Client</li>
+              <li><i class="fa-solid fa-check" style="color: #FB7185;"></i> Cloudinary Upload API</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><i class="fa-solid fa-vial" style="color: #DB2777;"></i> Testing & CI/CD</div>
+            <ul class="check-list">
+              <li><i class="fa-solid fa-check" style="color: #BE185D;"></i> flutter_test (65 tests)</li>
+              <li><i class="fa-solid fa-check" style="color: #BE185D;"></i> ARTEMIS Automation Protocol</li>
+              <li><i class="fa-solid fa-check" style="color: #BE185D;"></i> GitHub Actions CI Workflow</li>
+              <li><i class="fa-solid fa-check" style="color: #BE185D;"></i> GitHub Pages Deploy</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 5: KHỞI TẠO FIREBASE & SEQUENCE
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 1: Nền Tảng Dự Án</span>
+          <span class="tag">KHỞI TẠO DỰ ÁN</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-power-off"></i> INITIALIZATION LIFECYCLE</div>
+          <h2 class="slide-title">Trình Tự Khởi Tạo <span>Firebase SDK</span> Tại main.dart</h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title"><i class="fa-solid fa-code" style="color: #E84D1C;"></i> Code Thực Thi Trong main()</div>
+            <pre class="code-box"><code>void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // 1. Khởi tạo Firebase từ DefaultFirebaseOptions
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // 2. Thiết lập Crashlytics bắt lỗi toàn cục
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
+
+  // 3. Khởi tạo FCM Background Handler & Permission
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  // 4. Remote Config Fetch ban đầu (1 giờ interval cho prod)
+  await RemoteConfigService().initialize();
+
+  runApp(const ProviderScope(child: EventHubApp()));
+}</code></pre>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><i class="fa-solid fa-list-check" style="color: #DB2777;"></i> Quy Chuẩn Cấu Hình Chuẩn Guideline</div>
+            <ul class="check-list">
+              <li>
+                <i class="fa-solid fa-check-circle" style="color: #DB2777;"></i>
+                <div>
+                  <strong>google-services.json hợp lệ:</strong> Đã đặt đúng tại thư mục <code>android/app/google-services.json</code> với package name <code>com.eventhub.app</code>.
+                </div>
+              </li>
+              <li>
+                <i class="fa-solid fa-check-circle" style="color: #DB2777;"></i>
+                <div>
+                  <strong>Crashlytics Gradle Plugin:</strong> Đã add plugin <code>com.google.firebase.crashlytics</code> trong <code>build.gradle</code> để upload de-obfuscation mapping files.
+                </div>
+              </li>
+              <li>
+                <i class="fa-solid fa-check-circle" style="color: #DB2777;"></i>
+                <div>
+                  <strong>Security Rule:</strong> Không commit API key thô, các service được bọc trong Repository/Service pattern sạch sẽ.
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 6: ĐỊNH NGHĨA KIẾN TRÚC MVVM & PHÂN TẦNG
+      =========================================== -->
+      <section class="architecture-slide" data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 1: Nền Tảng Dự Án</span>
+          <span class="tag">KIẾN TRÚC PHẦN MỀM</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-sitemap"></i> SOFTWARE ARCHITECTURE DEFINITION</div>
+          <h2 class="slide-title">Mô Hình <span>MVVM + Riverpod</span> Trong Dự Án EventHub</h2>
+        </div>
+
+        <div class="grid-3">
+          <div class="card" style="border-top: 3px solid #FF6B35;">
+            <div class="card-title" style="color: #E84D1C;"><i class="fa-solid fa-mobile-screen"></i> 1. View (Giao Diện)</div>
+            <div style="font-size: 11.5px; color: #A0714F; margin-top: -6px; margin-bottom: 10px; font-weight: 600;">Thư mục: <code>lib/screens/</code> &amp; <code>lib/widgets/</code></div>
+            <ul class="check-list">
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #E84D1C;"></i>
+                <div><strong>ConsumerWidget:</strong> Thuần UI, chỉ rebuild khi state theo dõi thay đổi qua <code>ref.watch()</code>.</div>
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #E84D1C;"></i>
+                <div><strong>Dispatch Action:</strong> Bắt sự kiện người dùng (tap, input) gửi intent xuống qua <code>ref.read().action()</code>.</div>
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #E84D1C;"></i>
+                <div><strong>Zero Direct Firebase:</strong> Tuyệt đối không gọi SDK Firebase trực tiếp tại Widget, luôn qua ViewModel.</div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="card" style="border-top: 3px solid #F59E0B;">
+            <div class="card-title" style="color: #D97706;"><i class="fa-solid fa-sliders"></i> 2. ViewModel (Điều Phối)</div>
+            <div style="font-size: 11.5px; color: #A0714F; margin-top: -6px; margin-bottom: 10px; font-weight: 600;">Thư mục: <code>lib/viewmodels/</code> (Riverpod)</div>
+            <ul class="check-list">
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #D97706;"></i>
+                <div><strong>Quản lý UI State:</strong> Nắm giữ state dạng <code>AsyncNotifier</code>, tự động phân tách Loading / Data / Error.</div>
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #D97706;"></i>
+                <div><strong>Cầu Nối Nghiệp Vụ:</strong> Tiếp nhận User Intent, gọi xuống Services xử lý, bắt lỗi &amp; sanitize dữ liệu.</div>
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #D97706;"></i>
+                <div><strong>Reactive Notification:</strong> Tự động phát tín hiệu cập nhật UI đồng bộ mà không cần gọi <code>setState()</code>.</div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="card" style="border-top: 3px solid #DB2777;">
+            <div class="card-title" style="color: #BE185D;"><i class="fa-solid fa-database"></i> 3. Model &amp; Services</div>
+            <div style="font-size: 11.5px; color: #A0714F; margin-top: -6px; margin-bottom: 10px; font-weight: 600;">Thư mục: <code>lib/models/</code> &amp; <code>lib/services/</code></div>
+            <ul class="check-list">
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #BE185D;"></i>
+                <div><strong>Domain Models:</strong> Thực thể bất biến (<code>Event</code>, <code>Booking</code>, <code>User</code>) hỗ trợ serialization JSON.</div>
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #BE185D;"></i>
+                <div><strong>Service Contracts:</strong> Abstract interface cách ly chi tiết công nghệ (Firebase SDK, SQLite, Cloudinary).</div>
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #BE185D;"></i>
+                <div><strong>Bảo Mật Zero PII:</strong> Tự động lọc sạch email, password, số điện thoại trước khi đẩy lên Cloud log.</div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 14px; background: rgba(255, 140, 60, 0.08); border-color: rgba(255, 140, 60, 0.25); padding: 10px 18px;">
+          <div style="font-size: 13px; font-weight: 600; color: #6B3A20; display: flex; align-items: center; justify-content: space-around;">
+            <span><i class="fa-solid fa-eye" style="color: #FF6B35;"></i> View (Widgets)</span>
+            <i class="fa-solid fa-arrow-right" style="color: #FF6B35; font-size: 12px;"></i>
+            <span><i class="fa-solid fa-bolt" style="color: #F59E0B;"></i> ViewModel (Notifiers)</span>
+            <i class="fa-solid fa-arrow-right" style="color: #F59E0B; font-size: 12px;"></i>
+            <span><i class="fa-solid fa-gears" style="color: #D97706;"></i> Domain Services</span>
+            <i class="fa-solid fa-arrow-right" style="color: #DB2777; font-size: 12px;"></i>
+            <span><i class="fa-solid fa-cloud" style="color: #DB2777;"></i> Firebase Backend</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 6B: KHUNG NHẬN DIỆN LUỒNG NGHIỆP VỤ (WORKFLOW)
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 1: Nền Tảng Dự Án</span>
+          <span class="tag">NGHIỆP VỤ &amp; WORKFLOW</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-diagram-project"></i> SOFTWARE PROJECT GUIDELINE V3 · W01 - W07</div>
+          <h2 class="slide-title">Định Nghĩa &amp; Khung Nhận Diện <span>Luồng Nghiệp Vụ (Workflow)</span></h2>
+        </div>
+
+        <!-- Definition Callout (W03) -->
+        <div class="card" style="padding: 10px 16px; margin-bottom: 12px; background: rgba(255, 107, 53, 0.08); border-left: 4px solid #FF6B35;">
+          <div style="font-size: 13px; color: #2D1206; line-height: 1.45;">
+            <strong style="color: #E84D1C;"><i class="fa-solid fa-lightbulb"></i> Định nghĩa chuẩn (W03):</strong>
+            <strong>Workflow</strong> là một chuỗi bước có thứ tự từ <strong>Trigger</strong> &rarr; <strong>Bước &amp; Quyết định (BR)</strong> &rarr; <strong>Thay đổi trạng thái đối tượng</strong> &rarr; <strong>Kết quả có giá trị cho Actor</strong>.
+            <span style="display: block; font-size: 12px; color: #7C2D12; font-weight: 600; margin-top: 2px;">
+              &bull; Bản chất: <em>"Ai làm gì, theo thứ tự nào, để đạt kết quả gì"</em> — không phải <em>"người dùng bấm những nút nào"</em>.
+            </span>
+          </div>
+        </div>
+
+        <!-- 3 Columns: 7 Components, 5 Quick Questions, Common Misconceptions -->
+        <div class="grid-3" style="gap: 12px;">
+          <!-- Col 1: 7 Thành phần cốt lõi (W04) -->
+          <div class="card" style="border-top: 3px solid #FF6B35; padding: 12px 14px;">
+            <div class="card-title" style="color: #E84D1C; font-size: 13.5px; margin-bottom: 8px;">
+              <i class="fa-solid fa-cubes-stacked"></i> 7 Thành Phần Cốt Lõi (W04)
+            </div>
+            <ul class="check-list" style="font-size: 11.5px; line-height: 1.4;">
+              <li><i class="fa-solid fa-circle-check" style="color: #E84D1C;"></i><div><strong>1. Mã &amp; Tên:</strong> <code>WF-__</code> (Động từ + Đối tượng)</div></li>
+              <li><i class="fa-solid fa-circle-check" style="color: #E84D1C;"></i><div><strong>2. Actor:</strong> Sinh viên, Cán bộ, Hệ thống</div></li>
+              <li><i class="fa-solid fa-circle-check" style="color: #E84D1C;"></i><div><strong>3. Trigger:</strong> Sự kiện bắt đầu luồng</div></li>
+              <li><i class="fa-solid fa-circle-check" style="color: #E84D1C;"></i><div><strong>4. Precondition:</strong> Điều kiện tiên quyết phải đúng</div></li>
+              <li><i class="fa-solid fa-circle-check" style="color: #E84D1C;"></i><div><strong>5. Bước &amp; BR:</strong> Happy Path + điểm rẽ nhánh BR</div></li>
+              <li><i class="fa-solid fa-circle-check" style="color: #E84D1C;"></i><div><strong>6. Postcondition:</strong> Trạng thái mới, giá trị actor</div></li>
+              <li><i class="fa-solid fa-circle-check" style="color: #E84D1C;"></i><div><strong>7. Exception:</strong> Xử lý vi phạm, từ chối</div></li>
+            </ul>
+          </div>
+
+          <!-- Col 2: 5 Câu hỏi kiểm tra nhanh (W05) -->
+          <div class="card" style="border-top: 3px solid #F59E0B; padding: 12px 14px;">
+            <div class="card-title" style="color: #D97706; font-size: 13.5px; margin-bottom: 8px;">
+              <i class="fa-solid fa-clipboard-question"></i> 5 Câu Hỏi Kiểm Nhanh (W05)
+            </div>
+            <ul class="check-list" style="font-size: 11.5px; line-height: 1.4;">
+              <li><i class="fa-solid fa-circle-check" style="color: #D97706;"></i><div><strong>1. Có Trigger rõ ràng?</strong> Có (User gửi đơn / mở phiên)</div></li>
+              <li><i class="fa-solid fa-circle-check" style="color: #D97706;"></i><div><strong>2. Kết quả có giá trị?</strong> Có (Nhận vé QR / danh sách điểm danh)</div></li>
+              <li><i class="fa-solid fa-circle-check" style="color: #D97706;"></i><div><strong>3. Thay đổi trạng thái?</strong> Có (<code>DRAFT</code>&rarr;<code>PENDING</code>&rarr;<code>APPROVED</code>)</div></li>
+              <li><i class="fa-solid fa-circle-check" style="color: #D97706;"></i><div><strong>4. Rẽ nhánh theo BR?</strong> Có (Hết chỗ BR-01, form BR-02)</div></li>
+              <li><i class="fa-solid fa-circle-check" style="color: #D97706;"></i><div><strong>5. Ngôn ngữ nghiệp vụ?</strong> Có (Không mô tả nút bấm)</div></li>
+            </ul>
+            <div style="margin-top: 6px; padding: 4px 8px; background: rgba(245, 158, 11, 0.12); border-radius: 6px; font-size: 10.5px; color: #92400E; font-weight: 700; text-align: center;">
+              <i class="fa-solid fa-circle-check"></i> Đạt chuẩn 5/5 tiêu chí Guideline V3
+            </div>
+          </div>
+
+          <!-- Col 3: Những thứ hay nhầm lẫn (W06, W07) -->
+          <div class="card" style="border-top: 3px solid #DB2777; padding: 12px 14px;">
+            <div class="card-title" style="color: #BE185D; font-size: 13.5px; margin-bottom: 8px;">
+              <i class="fa-solid fa-triangle-exclamation"></i> Những Thứ Hay Nhầm Lẫn (W06-07)
+            </div>
+            <ul class="check-list" style="font-size: 11.5px; line-height: 1.4;">
+              <li><i class="fa-solid fa-circle-xmark" style="color: #DC2626;"></i><div><strong>Màn hình UI:</strong> Chỉ là nơi diễn ra 1 bước; không đại diện cho cả quy trình.</div></li>
+              <li><i class="fa-solid fa-circle-xmark" style="color: #DC2626;"></i><div><strong>CRUD đơn lẻ:</strong> Thao tác DB kỹ thuật (Tạo/Sửa), thiếu kết quả nghiệp vụ xuyên suốt.</div></li>
+              <li><i class="fa-solid fa-circle-xmark" style="color: #DC2626;"></i><div><strong>User flow:</strong> Chuỗi chuyển màn hình (UI click chain), thiếu backend rules.</div></li>
+              <li><i class="fa-solid fa-circle-xmark" style="color: #DC2626;"></i><div><strong>Đăng nhập:</strong> Chỉ là Precondition, không phải Workflow độc lập.</div></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Bottom Thread Banner (W02) -->
+        <div class="card" style="margin-top: 10px; background: linear-gradient(90deg, rgba(255,107,53,0.12) 0%, rgba(219,39,119,0.12) 100%); border: 1px solid rgba(255,107,53,0.3); padding: 8px 16px;">
+          <div style="font-size: 11.5px; font-weight: 700; color: #7C2D12; display: flex; align-items: center; justify-content: space-between; text-align: center;">
+            <span style="color: #E84D1C;"><i class="fa-solid fa-route"></i> Sợi Chỉ Đỏ (W02):</span>
+            <span>FR</span> <i class="fa-solid fa-chevron-right" style="font-size: 9px; color: #E84D1C;"></i>
+            <span style="color: #E84D1C; font-weight: 800;">Workflow</span> <i class="fa-solid fa-chevron-right" style="font-size: 9px; color: #E84D1C;"></i>
+            <span>Activity Diagram (BPMN)</span> <i class="fa-solid fa-chevron-right" style="font-size: 9px; color: #E84D1C;"></i>
+            <span>State Machine</span> <i class="fa-solid fa-chevron-right" style="font-size: 9px; color: #E84D1C;"></i>
+            <span>Sequence</span> <i class="fa-solid fa-chevron-right" style="font-size: 9px; color: #E84D1C;"></i>
+            <span>UI Mockup</span> <i class="fa-solid fa-chevron-right" style="font-size: 9px; color: #E84D1C;"></i>
+            <span>Traceability</span> <i class="fa-solid fa-chevron-right" style="font-size: 9px; color: #E84D1C;"></i>
+            <span style="color: #BE185D; font-weight: 800;">Test Cases</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 6C: ĐẶC TẢ CHI TIẾT WORKFLOW LÕI WF-01
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 1: Nền Tảng Dự Án</span>
+          <span class="tag">ĐẶC TẢ WORKFLOW LÕI</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-ticket-simple"></i> CORE BUSINESS WORKFLOW · W10 - W13</div>
+          <h2 class="slide-title">Đặc Tả <span>WF-01 · Đăng Ký &amp; Xét Duyệt Vé Tham Gia Sự Kiện</span></h2>
+        </div>
+
+        <div class="grid-2" style="gap: 14px; align-items: stretch;">
+          <!-- Left Column: Standard Specification Table (W11) -->
+          <div class="card" style="border-top: 3px solid #FF6B35; padding: 12px 14px; display: flex; flex-direction: column;">
+            <div class="card-title" style="color: #E84D1C; font-size: 13.5px; margin-bottom: 6px;">
+              <i class="fa-solid fa-table-list"></i> Bảng Đặc Tả Chuẩn 7 Thành Phần (W11)
+            </div>
+            <table class="data-table" style="font-size: 11.5px; margin-top: 4px;">
+              <tbody>
+                <tr>
+                  <td style="width: 28%; font-weight: 700; color: #E84D1C;">Mã &amp; Tên</td>
+                  <td><strong>WF-01 · Đăng ký &amp; xét duyệt vé sự kiện</strong></td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 700; color: #E84D1C;">Actor</td>
+                  <td>Sinh viên (Mobile App) &bull; Trưởng CLB (Web Admin) &bull; Cloud Firestore / FCM</td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 700; color: #E84D1C;">Trigger</td>
+                  <td>Sinh viên chọn sự kiện và bấm gửi đơn đăng ký tại màn hình A04/A05</td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 700; color: #E84D1C;">Precondition</td>
+                  <td>1. Đã đăng nhập &bull; 2. Event mở (<code>now &lt; deadline</code>) &bull; 3. Còn chỗ (<code>activeCount &lt; capacity</code> - BR-01)</td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 700; color: #E84D1C;">Postcondition</td>
+                  <td>Đơn chuyển <code>APPROVED</code> / <code>REJECTED</code>; nếu Approved: tăng <code>activeCount +1</code>, sinh vé QR có ký số SHA-256, đẩy FCM Push</td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 700; color: #E84D1C;">Truy Vết</td>
+                  <td><strong>FR-01..04</strong> &bull; <strong>BR-01, 02, 03</strong> &bull; <strong>UI-04, 05, 08, Web-02</strong> &bull; <strong>TC01–TC08</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Right Column: Happy Path & State Machine to Test Cases -->
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <!-- Happy Path + Business Rules (W12) -->
+            <div class="card" style="border-top: 3px solid #F59E0B; padding: 10px 14px;">
+              <div class="card-title" style="color: #D97706; font-size: 13px; margin-bottom: 6px;">
+                <i class="fa-solid fa-shoe-prints"></i> Trình Tự Các Bước (Happy Path &amp; BR)
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px; font-size: 11px; color: #4A2010;">
+                <div style="display: flex; gap: 8px; align-items: flex-start;">
+                  <span class="badge" style="background: rgba(255,107,53,0.15); color: #E84D1C; font-weight: 800; padding: 2px 6px;">B1</span>
+                  <div><strong>Sinh viên (Mobile):</strong> Điền đơn A05 &rarr; <span style="color: #BE185D; font-weight: 700;">[BR-02: Kiểm tra form hợp lệ]</span></div>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: flex-start;">
+                  <span class="badge" style="background: rgba(245,158,11,0.15); color: #D97706; font-weight: 800; padding: 2px 6px;">B2</span>
+                  <div><strong>Hệ thống (Firestore):</strong> Đối chiếu <span style="color: #BE185D; font-weight: 700;">[BR-01: activeCount &lt; capacity]</span> &rarr; Tạo đơn <code>PENDING</code>, stream realtime sang Web</div>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: flex-start;">
+                  <span class="badge" style="background: rgba(219,39,119,0.15); color: #BE185D; font-weight: 800; padding: 2px 6px;">B3</span>
+                  <div><strong>Trưởng CLB (Web Admin):</strong> Xem hồ sơ trên Review Queue &rarr; <span style="color: #BE185D; font-weight: 700;">[BR-03: Quyền duyệt]</span> &rarr; Duyệt / Từ chối</div>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: flex-start;">
+                  <span class="badge" style="background: rgba(16,185,129,0.15); color: #059669; font-weight: 800; padding: 2px 6px;">B4</span>
+                  <div><strong>Hệ thống (Transaction):</strong> Cập nhật <code>APPROVED</code>, tăng <code>activeCount +1</code>, sinh mã vé QR &amp; bắn thông báo FCM Push</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- State Machine mapped to Test Cases (W13) -->
+            <div class="card" style="border-top: 3px solid #DB2777; padding: 10px 14px;">
+              <div class="card-title" style="color: #BE185D; font-size: 13px; margin-bottom: 6px;">
+                <i class="fa-solid fa-arrows-split-up-and-left"></i> State Machine &amp; Ánh Xạ Test Cases (W13)
+              </div>
+              <div style="font-size: 11px; color: #4A2010; line-height: 1.45;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; padding: 4px 6px; background: rgba(255,255,255,0.6); border-radius: 6px;">
+                  <span><code>DRAFT</code> &rarr; <code>PENDING</code></span>
+                  <span style="color: #A0714F; font-size: 10.5px;">Gửi đơn thành công</span>
+                  <span class="badge badge-orange" style="font-size: 10px;">TC01, TC02</span>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; padding: 4px 6px; background: rgba(16,185,129,0.08); border-radius: 6px;">
+                  <span><code>PENDING</code> &rarr; <code>APPROVED</code></span>
+                  <span style="color: #059669; font-weight: 600; font-size: 10.5px;">CLB duyệt &bull; BR-01 pass &bull; Cấp vé QR</span>
+                  <span class="badge badge-green" style="font-size: 10px;">TC03, TC04, TC05</span>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 4px 6px; background: rgba(239,68,68,0.08); border-radius: 6px;">
+                  <span><code>PENDING</code> &rarr; <code>REJECTED</code></span>
+                  <span style="color: #DC2626; font-weight: 600; font-size: 10.5px;">Hết slot / CLB từ chối &bull; Gửi FCM lý do</span>
+                  <span class="badge" style="background: rgba(239,68,68,0.15); color: #DC2626; font-size: 10px;">TC06, TC07, TC08</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 7: UI PROTOTYPE & APP SHOWCASE
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 1: Nền Tảng Dự Án</span>
+          <span class="tag">GIAO DIỆN THỰC TẾ</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-images"></i> VISUAL DESIGN EVIDENCE</div>
+          <h2 class="slide-title">Hình Ảnh Thực Tế <span>Giao Diện EventHub</span></h2>
+        </div>
+
+        <div class="grid-3">
+          <div class="card" style="padding: 10px; text-align: center;">
+            <div class="img-frame" style="max-height: 280px;">
+              <img src="../evidence/discover_screen.png" alt="Discover Screen">
+              <span class="img-badge">DISCOVER FEED</span>
+            </div>
+            <div class="img-caption">Khám phá sự kiện, bộ lọc danh mục và banner gợi ý</div>
+          </div>
+
+          <div class="card" style="padding: 10px; text-align: center;">
+            <div class="img-frame" style="max-height: 280px;">
+              <img src="../evidence/ui-prototype/event-detail.png" alt="Event Detail">
+              <span class="img-badge">EVENT DETAIL</span>
+            </div>
+            <div class="img-caption">Chi tiết sự kiện, thông tin diễn giả, giá vé & Đặt chỗ</div>
+          </div>
+
+          <div class="card" style="padding: 10px; text-align: center;">
+            <div class="img-frame" style="max-height: 280px;">
+              <img src="../evidence/ui-prototype/catalog.png" alt="Catalog">
+              <span class="img-badge">CATALOG VIEW</span>
+            </div>
+            <div class="img-caption">Danh mục sự kiện phân loại theo thời gian & chuyên ngành</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 8: FIREBASE AUTH - KHÁI NIỆM & CƠ CHẾ
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 2: 6 Dịch Vụ Firebase</span>
+          <span class="tag">1. FIREBASE AUTHENTICATION</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-key"></i> AUTHENTICATION & IDENTITY</div>
+          <h2 class="slide-title">Khái Niệm & <span>Cơ Chế Xác Thực</span> Người Dùng</h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title"><i class="fa-solid fa-shield-halved" style="color: #FF5722;"></i> Kiến Trúc Xác Thực Trong EventHub</div>
+            <ul class="check-list">
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #DB2777;"></i>
+                <div>
+                  <strong>Multi-Provider Auth:</strong> Hỗ trợ Đăng nhập bằng Email/Password và tài khoản thử nghiệm Mock Auth chuyên dụng cho môi trường QA/Test.
+                </div>
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #DB2777;"></i>
+                <div>
+                  <strong>JWT & Session Persistence:</strong> Quản lý phiên làm việc thông qua token do Firebase Auth cấp phát tự động, tự refresh token khi hết hạn.
+                </div>
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check" style="color: #DB2777;"></i>
+                <div>
+                  <strong>Reactive Stream:</strong> Lắng nghe thay đổi trạng thái qua <code>authStateChanges()</code> stream trong Riverpod để tự động điều hướng Login &harr; Home.
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="card highlight">
+            <div class="card-title"><i class="fa-solid fa-user-shield" style="color: #E84D1C;"></i> Zero PII (Personally Identifiable Information)</div>
+            <p style="font-size: 13px; color: #6B3A20; line-height: 1.5;">
+              Tuân thủ tuyệt đối quy định bảo vệ dữ liệu người dùng của Guideline:
+            </p>
+            <div style="background: rgba(255, 240, 225, 0.80); padding: 12px; border-radius: 6px; font-size: 12px; border-left: 3px solid #DB2777; margin-top: 8px;">
+              <div style="color: #BE185D; font-weight: 700; margin-bottom: 4px;"><i class="fa-solid fa-check"></i> An toàn:</div>
+              Chỉ truyền <code>uid</code> (User Identifier dạng Hash) trong analytics tracking và crash logging.
+            </div>
+            <div style="background: rgba(255, 240, 225, 0.80); padding: 12px; border-radius: 6px; font-size: 12px; border-left: 3px solid #EF4444; margin-top: 8px;">
+              <div style="color: #F87171; font-weight: 700; margin-bottom: 4px;"><i class="fa-solid fa-xmark"></i> Nghiêm cấm:</div>
+              Không bao giờ đính kèm raw email, password, số điện thoại hoặc họ tên thật vào log Crashlytics hay sự kiện Analytics.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 9: FIREBASE AUTH - TÍCH HỢP CODE
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 2: 6 Dịch Vụ Firebase</span>
+          <span class="tag">1. FIREBASE AUTHENTICATION</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-code"></i> IMPLEMENTATION CODE</div>
+          <h2 class="slide-title">Tích Hợp <span>AuthService</span> & State Management</h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title"><i class="fa-solid fa-file-code" style="color: #E84D1C;"></i> Code AuthService Thực Tế</div>
+            <pre class="code-box"><code>class AuthService {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  // Reactive stream cho Riverpod Provider
+  Stream&lt;User?&gt; get authStateChanges =&gt; _auth.authStateChanges();
+
+  User? get currentUser =&gt; _auth.currentUser;
+
+  Future&lt;UserCredential&gt; signIn(String email, String password) async {
+    try {
+      final cred = await _auth.signInWithEmailAndPassword(
+        email: email.trim(),
+        password: password,
+      );
+      // Gán user_id dạng hash cho Analytics & Crashlytics
+      await AnalyticsService().setUserId(cred.user?.uid);
+      await CrashlyticsService().setUserId(cred.user?.uid);
+      return cred;
+    } on FirebaseAuthException catch (e) {
+      throw AuthFailure(e.code, e.message);
+    }
+  }
+}</code></pre>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><i class="fa-solid fa-diagram-project" style="color: #DB2777;"></i> Quản Lý Luồng Đăng Nhập</div>
+            <ul class="check-list">
+              <li>
+                <i class="fa-solid fa-arrow-right" style="color: #E84D1C;"></i>
+                <div><strong>authStateProvider:</strong> StreamProvider lắng nghe Firebase Auth thay đổi để rebuild App Router tức thì.</div>
+              </li>
+              <li>
+                <i class="fa-solid fa-arrow-right" style="color: #E84D1C;"></i>
+                <div><strong>Token Interceptor:</strong> Gắn <code>Authorization: Bearer &lt;idToken&gt;</code> vào header các request REST API.</div>
+              </li>
+              <li>
+                <i class="fa-solid fa-arrow-right" style="color: #E84D1C;"></i>
+                <div><strong>Sign Out Sanitization:</strong> Xóa sạch cache, session tokens và unregister FCM token khi đăng xuất.</div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 10: FIREBASE AUTH - BẰNG CHỨNG THỰC TẾ
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 2: 6 Dịch Vụ Firebase</span>
+          <span class="tag">1. FIREBASE AUTHENTICATION</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-camera"></i> EVIDENCE CAPTURE</div>
+          <h2 class="slide-title">Bằng Chứng Kiểm Thử <span>Màn Hình Authentication</span></h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card" style="padding: 10px; text-align: center;">
+            <div class="img-frame" style="max-height: 290px;">
+              <img src="../evidence/step4/login-configured.png" alt="Login Configured">
+              <span class="img-badge">AUTH CONFIGURED (READY)</span>
+            </div>
+            <div class="img-caption">
+              <strong>Hình A:</strong> Màn hình Login khi Firebase Auth đã cấu hình thành công &bull; Sẵn sàng đăng nhập với form Email / Password
+            </div>
+          </div>
+
+          <div class="card" style="padding: 10px; text-align: center;">
+            <div class="img-frame" style="max-height: 290px;">
+              <img src="../evidence/step4/login-unconfigured.png" alt="Login Unconfigured Fallback">
+              <span class="img-badge">FALLBACK GRACEFUL DEGRADATION</span>
+            </div>
+            <div class="img-caption">
+              <strong>Hình B:</strong> Màn hình ứng phó khi Firebase Auth chưa có credential &bull; Hiển thị cảnh báo hướng dẫn người dùng mà không bị crash
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 11: STORAGE & EXPORT - KHÁI NIỆM & CƠ CHẾ
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 2: 6 Dịch Vụ Firebase</span>
+          <span class="tag">2. CLOUD STORAGE & EXPORT</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-cloud-arrow-up"></i> FILE STORAGE ARCHITECTURE</div>
+          <h2 class="slide-title">Khái Niệm & <span>Quy Trình Xuất File Dữ Liệu</span></h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title"><i class="fa-solid fa-file-export" style="color: #FF5722;"></i> Nghiệp Vụ Xuất Vé & Báo Cáo Sự Kiện</div>
+            <ul class="check-list">
+              <li>
+                <i class="fa-solid fa-check" style="color: #FF7043;"></i>
+                <div><strong>Export Engine:</strong> Tổng hợp dữ liệu đăng ký vé (registration count, event details, timestamp) thành định dạng JSON/PDF.</div>
+              </li>
+              <li>
+                <i class="fa-solid fa-check" style="color: #FF7043;"></i>
+                <div><strong>Multi-Cloud Strategy:</strong> Hỗ trợ Cloud Storage Bucket kết hợp Cloudinary CDN nhằm tối ưu tốc độ tải và phân phối tài nguyên ảnh / tài liệu.</div>
+              </li>
+              <li>
+                <i class="fa-solid fa-check" style="color: #FF7043;"></i>
+                <div><strong>Byte & Row Tracking:</strong> Tự động ghi nhận dung lượng tệp tải lên (byte_count) và số dòng dữ liệu (row_count) phục vụ giám sát.</div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="card highlight">
+            <div class="card-title"><i class="fa-solid fa-user-lock" style="color: #DB2777;"></i> Quy Chuẩn Security Rules Phân Quyền UID</div>
+            <p style="font-size: 13px; color: #6B3A20; margin-bottom: 8px;">
+              Bảo vệ dữ liệu người dùng tuyệt đối trong tệp <code>storage.rules</code>:
+            </p>
+            <pre class="code-box"><code>rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Chỉ người dùng đã đăng nhập mới được thao tác
+    // Chỉ đọc/ghi đúng thư mục UID của chính mình
+    match /users/{userId}/exports/{fileName} {
+      allow read, write: if request.auth != null 
+                         &amp;&amp; request.auth.uid == userId
+                         &amp;&amp; request.resource.size &lt; 5 * 1024 * 1024; // Max 5MB
+    }
+  }
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 12: STORAGE & EXPORT - BẰNG CHỨNG ANALYTICS LOG
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 2: 6 Dịch Vụ Firebase</span>
+          <span class="tag">2. CLOUD STORAGE & EXPORT</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-chart-line"></i> EXPORT VERIFICATION EVIDENCE</div>
+          <h2 class="slide-title">Bằng Chứng Thực Tế <span>Export & Upload Log</span></h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card" style="padding: 10px; text-align: center;">
+            <div class="img-frame" style="max-height: 290px;">
+              <img src="../evidence/instrumentation/analytics/export-generate-row-count-2.png" alt="Export Generate Event">
+              <span class="img-badge">DEBUGVIEW: export_generate</span>
+            </div>
+            <div class="img-caption">
+              <strong>Sự kiện export_generate:</strong> Ghi nhận tham số <code>row_count = 2</code> và thời gian khởi tạo file thành công
+            </div>
+          </div>
+
+          <div class="card" style="padding: 10px; text-align: center;">
+            <div class="img-frame" style="max-height: 290px;">
+              <img src="../evidence/instrumentation/analytics/export-upload-byte-count-13803.png" alt="Export Upload Event">
+              <span class="img-badge">DEBUGVIEW: export_upload</span>
+            </div>
+            <div class="img-caption">
+              <strong>Sự kiện export_upload:</strong> Ghi nhận tham số <code>byte_count = 13803 bytes</code> được đẩy lên đám mây an toàn
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 13: FCM - KHÁI NIỆM & KIẾN TRÚC PUSH NOTIFICATION
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 2: 6 Dịch Vụ Firebase</span>
+          <span class="tag">3. FIREBASE CLOUD MESSAGING</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-paper-plane"></i> PUSH NOTIFICATION SYSTEM</div>
+          <h2 class="slide-title">Kiến Trúc & <span>3 Trạng Thái Hoạt Động FCM</span></h2>
+        </div>
+
+        <div class="grid-3">
+          <div class="card" style="border-top: 3px solid #DB2777;">
+            <div class="card-title" style="color: #BE185D;"><i class="fa-solid fa-mobile"></i> 1. Foreground State</div>
+            <p style="font-size: 12px; color: #6B3A20; line-height: 1.4;">
+              App đang mở và tương tác trên màn hình.
+            </p>
+            <ul class="check-list" style="margin-top: 8px;">
+              <li><i class="fa-solid fa-arrow-right" style="color: #BE185D;"></i> Lắng nghe qua <code>FirebaseMessaging.onMessage</code></li>
+              <li><i class="fa-solid fa-arrow-right" style="color: #BE185D;"></i> Tự tạo Local Notification Heads-up Banner</li>
+              <li><i class="fa-solid fa-arrow-right" style="color: #BE185D;"></i> Cập nhật badge hòm thư thông báo tức thời</li>
+            </ul>
+          </div>
+
+          <div class="card" style="border-top: 3px solid #F59E0B;">
+            <div class="card-title" style="color: #FBBF24;"><i class="fa-solid fa-window-minimize"></i> 2. Background State</div>
+            <p style="font-size: 12px; color: #6B3A20; line-height: 1.4;">
+              App bị thu nhỏ (người dùng bấm Home / qua app khác).
+            </p>
+            <ul class="check-list" style="margin-top: 8px;">
+              <li><i class="fa-solid fa-arrow-right" style="color: #FBBF24;"></i> Xử lý ngầm qua <code>onBackgroundMessage</code></li>
+              <li><i class="fa-solid fa-arrow-right" style="color: #FBBF24;"></i> Android OS hiển thị thông báo trên Notification Tray</li>
+              <li><i class="fa-solid fa-arrow-right" style="color: #FBBF24;"></i> Bấm vào thông báo &rarr; Mở deep link vào Inbox Tab</li>
+            </ul>
+          </div>
+
+          <div class="card" style="border-top: 3px solid #EF4444;">
+            <div class="card-title" style="color: #F87171;"><i class="fa-solid fa-power-off"></i> 3. Terminated State</div>
+            <p style="font-size: 12px; color: #6B3A20; line-height: 1.4;">
+              App đã bị đóng hoàn toàn (Force Stop / Vuốt tắt).
+            </p>
+            <ul class="check-list" style="margin-top: 8px;">
+              <li><i class="fa-solid fa-arrow-right" style="color: #F87171;"></i> OS nhận thông báo từ Google Play Services</li>
+              <li><i class="fa-solid fa-arrow-right" style="color: #F87171;"></i> Bắt Intent qua <code>getInitialMessage()</code></li>
+              <li><i class="fa-solid fa-arrow-right" style="color: #F87171;"></i> Điều hướng chính xác tới chi tiết vé hoặc sự kiện</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 14px; background: rgba(255,87,34,0.08); border-color: rgba(255,87,34,0.25);">
+          <div style="font-size: 12px; color: #6B3A20; display: flex; align-items: center; gap: 12px;">
+            <span class="badge badge-orange"><i class="fa-solid fa-shield"></i> Android 13+ Compliance</span>
+            <span>Yêu cầu quyền <code>POST_NOTIFICATIONS</code> lúc runtime &bull; Khai báo Notification Channel bắt buộc theo quy định Google.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 14: FCM - TÍCH HỢP CODE & PERMISSION
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 2: 6 Dịch Vụ Firebase</span>
+          <span class="tag">3. FIREBASE CLOUD MESSAGING</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-code"></i> IMPLEMENTATION CODE</div>
+          <h2 class="slide-title">Tích Hợp <span>FCM Handlers & Permission</span></h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title"><i class="fa-solid fa-bell" style="color: #E84D1C;"></i> Background Message Top-level Handler</div>
+            <pre class="code-box"><code>// Top-level function độc lập bắt buộc cho FCM background
+@pragma('vm:entry-point')
+Future&lt;void&gt; _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  // Xử lý payload và lưu vào SQLite Local Storage
+  final db = await DatabaseHelper.instance.database;
+  await db.insert('notifications', {
+    'id': message.messageId,
+    'title': message.notification?.title ?? 'EventHub',
+    'body': message.notification?.body ?? '',
+    'created_at': DateTime.now().toIso8601String(),
+    'read': 0,
+  });
+}</code></pre>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><i class="fa-solid fa-sliders" style="color: #DB2777;"></i> Xin Quyền Android 13+ & Routing</div>
+            <pre class="code-box"><code>Future&lt;void&gt; setupFCM(BuildContext context) async {
+  // Xin quyền người dùng Android 13+
+  NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
+    alert: true, badge: true, sound: true,
+  );
+
+  // Xử lý trường hợp App mở từ Terminated State
+  RemoteMessage? initialMessage = 
+      await FirebaseMessaging.instance.getInitialMessage();
+  if (initialMessage != null) {
+    _handleMessageNavigation(initialMessage);
+  }
+
+  // Lắng nghe khi bấm notification từ Background
+  FirebaseMessaging.onMessageOpenedApp.listen(_handleMessageNavigation);
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 15: FCM - BẰNG CHỨNG FOREGROUND
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 2: 6 Dịch Vụ Firebase</span>
+          <span class="tag">3. FIREBASE CLOUD MESSAGING</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-image"></i> LIVE TESTING EVIDENCE</div>
+          <h2 class="slide-title">Bằng Chứng FCM <span>Foreground Notification</span></h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card" style="padding: 10px; text-align: center;">
+            <div class="img-frame" style="max-height: 290px;">
+              <img src="../evidence/instrumentation/fcm/foreground-console-and-receipt.png" alt="Foreground Console & Receipt">
+              <span class="img-badge">FCM CONSOLE & APP TOOL</span>
+            </div>
+            <div class="img-caption">
+              <strong>Hình 1:</strong> Bắn push test từ Firebase Console &bull; Ứng dụng EventHub đang mở và ghi nhận message receipt tức thì
+            </div>
+          </div>
+
+          <div class="card" style="padding: 10px; text-align: center;">
+            <div class="img-frame" style="max-height: 290px;">
+              <img src="../evidence/instrumentation/fcm/foreground-inbox.png" alt="Foreground Inbox">
+              <span class="img-badge">APP INBOX RECEIPT</span>
+            </div>
+            <div class="img-caption">
+              <strong>Hình 2:</strong> Thông báo lập tức xuất hiện trong tab Hòm thư (Inbox) mà không cần reload ứng dụng
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 16: FCM - BẰNG CHỨNG BACKGROUND & TERMINATED
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 2: 6 Dịch Vụ Firebase</span>
+          <span class="tag">3. FIREBASE CLOUD MESSAGING</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-images"></i> LIVE TESTING EVIDENCE</div>
+          <h2 class="slide-title">Bằng Chứng FCM <span>Background & Terminated State</span></h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card" style="padding: 10px; text-align: center;">
+            <div class="img-frame" style="max-height: 290px;">
+              <img src="../evidence/instrumentation/fcm/background-system-notifications.png" alt="Background System Notification">
+              <span class="img-badge">ANDROID SYSTEM SHADE</span>
+            </div>
+            <div class="img-caption">
+              <strong>Background:</strong> Notification hiển thị rõ ràng trên thanh trạng thái hệ thống khi app đang chạy ngầm
+            </div>
+          </div>
+
+          <div class="card" style="padding: 10px; text-align: center;">
+            <div class="img-frame" style="max-height: 290px;">
+              <img src="../evidence/instrumentation/fcm/background-open-inbox-tab-fixed.png" alt="Background Open Inbox">
+              <span class="img-badge">DEEP LINKING INBOX</span>
+            </div>
+            <div class="img-caption">
+              <strong>Bấm Notification:</strong> Điều hướng chính xác vào Tab Hòm thư, hiển thị danh sách 6 thông báo đã nhận
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 17: ANALYTICS - CHIẾN LƯỢC ĐO LƯỜNG
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 2: 6 Dịch Vụ Firebase</span>
+          <span class="tag">4. GOOGLE ANALYTICS FOR FIREBASE</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-chart-pie"></i> MEASUREMENT STRATEGY</div>
+          <h2 class="slide-title">Chiến Lược & <span>Mô Hình Đo Lường Analytics</span></h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title"><i class="fa-solid fa-bullseye" style="color: #FF5722;"></i> Mục Tiêu Tracking Sự Kiện</div>
+            <p style="font-size: 13px; color: #6B3A20; line-height: 1.5;">
+              Hệ thống Analytics trong EventHub được thiết kế để theo dõi toàn bộ phễu chuyển đổi (User Conversion Funnel):
+            </p>
+            <ul class="check-list" style="margin-top: 10px;">
+              <li><i class="fa-solid fa-magnifying-glass" style="color: #E84D1C;"></i> <strong>Khám phá:</strong> Tìm kiếm, lọc sự kiện, độ dài query.</li>
+              <li><i class="fa-solid fa-eye" style="color: #E84D1C;"></i> <strong>Xem chi tiết:</strong> Đo lường sự quan tâm đối với từng sự kiện (A04).</li>
+              <li><i class="fa-solid fa-cart-plus" style="color: #E84D1C;"></i> <strong>Đặt vé:</strong> Đo lường tỷ lệ submit form đăng ký.</li>
+              <li><i class="fa-solid fa-circle-check" style="color: #E84D1C;"></i> <strong>Thành công:</strong> Xác nhận đặt vé thành công và xuất vé.</li>
+            </ul>
+          </div>
+
+          <div class="card highlight">
+            <div class="card-title"><i class="fa-solid fa-shield-virus" style="color: #DB2777;"></i> Nguyên Tắc Vàng: Zero PII</div>
+            <div style="font-size: 13px; color: #6B3A20; line-height: 1.5;">
+              <p>Mỗi tham số truyền lên Firebase Analytics đều được filter qua bộ tiền xử lý:</p>
+              <table class="data-table">
+                <tr><th>Thông tin</th><th>Chính sách</th><th>Ví dụ thực tế</th></tr>
+                <tr><td>Tên / Email</td><td style="color:#EF4444; font-weight:700;">Loại bỏ 100%</td><td>Không log vào param</td></tr>
+                <tr><td>Event ID</td><td style="color:#DB2777; font-weight:700;">Cho phép</td><td><code>event_id: "A04"</code></td></tr>
+                <tr><td>Query</td><td style="color:#F59E0B; font-weight:700;">Chỉ lấy độ dài</td><td><code>query_length: 8</code></td></tr>
+                <tr><td>Trạng thái</td><td style="color:#DB2777; font-weight:700;">Cho phép</td><td><code>result: "confirmed"</code></td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 18: ANALYTICS - KẾ HOẠCH ĐO LƯỜNG (TABLE)
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 2: 6 Dịch Vụ Firebase</span>
+          <span class="tag">4. GOOGLE ANALYTICS FOR FIREBASE</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-table-list"></i> MEASUREMENT PLAN</div>
+          <h2 class="slide-title">Kế Hoạch Đo Lường: <span>7+ Custom Events Chuẩn</span></h2>
+        </div>
+
+        <div class="card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Tên Event (Snake_case)</th>
+                <th>Trigger Point (Thời điểm phát sinh)</th>
+                <th>Parameters Kèm Theo</th>
+                <th>Mục Đích Đánh Giá</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="badge badge-blue">search</span></td>
+                <td>Người dùng gõ tìm kiếm sự kiện</td>
+                <td><code>query_length (int)</code></td>
+                <td>Nhu cầu tìm kiếm theo độ dài keyword</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-blue">view_event_detail</span></td>
+                <td>Bấm xem chi tiết một sự kiện</td>
+                <td><code>event_id (string), category (string)</code></td>
+                <td>Mức độ thu hút của từng sự kiện</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-orange">booking_submit</span></td>
+                <td>Bấm nút "Đăng Ký Tham Gia"</td>
+                <td><code>event_id (string), ticket_type (string)</code></td>
+                <td>Đo lường ý định mua vé / đăng ký</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-green">booking_result</span></td>
+                <td>Sau khi server xác nhận đơn đặt vé</td>
+                <td><code>event_id (string), result: "confirmed"</code></td>
+                <td>Tỷ lệ chuyển đổi thành công (Conversion)</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-purple">view_registration_detail</span></td>
+                <td>Xem chi tiết vé trong mục Đã đặt</td>
+                <td><code>registration_id (string)</code></td>
+                <td>Tương tác xem lại vé điện tử</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-orange">export_generate</span></td>
+                <td>Khởi tạo báo cáo hoặc file vé</td>
+                <td><code>row_count (int), format: "json"</code></td>
+                <td>Giám sát hiệu suất xuất file báo cáo</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-green">export_upload</span></td>
+                <td>File được đẩy lên Cloud Storage</td>
+                <td><code>byte_count (int), status: "success"</code></td>
+                <td>Đo lường băng thông lưu trữ đám mây</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 19: ANALYTICS - BẰNG CHỨNG DEBUGVIEW 1
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 2: 6 Dịch Vụ Firebase</span>
+          <span class="tag">4. GOOGLE ANALYTICS FOR FIREBASE</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-chart-simple"></i> DEBUGVIEW REALTIME EVIDENCE</div>
+          <h2 class="slide-title">Bằng Chứng DebugView: <span>Search & View Detail</span></h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card" style="padding: 10px; text-align: center;">
+            <div class="img-frame" style="max-height: 290px;">
+              <img src="../evidence/instrumentation/analytics/search-query-length-8.png" alt="Search query length 8">
+              <span class="img-badge">DEBUGVIEW: search</span>
+            </div>
+            <div class="img-caption">
+              <strong>Sự kiện search:</strong> DebugView ghi nhận parameter <code>query_length = 8</code> &bull; Hoàn toàn không truyền raw search text bảo vệ PII
+            </div>
+          </div>
+
+          <div class="card" style="padding: 10px; text-align: center;">
+            <div class="img-frame" style="max-height: 290px;">
+              <img src="../evidence/instrumentation/analytics/view-event-detail-A04.png" alt="View event detail A04">
+              <span class="img-badge">DEBUGVIEW: view_event_detail</span>
+            </div>
+            <div class="img-caption">
+              <strong>Sự kiện view_event_detail:</strong> Ghi nhận truy cập sự kiện mã <code>event_id = "A04"</code>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 20: ANALYTICS - BẰNG CHỨNG DEBUGVIEW 2
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 2: 6 Dịch Vụ Firebase</span>
+          <span class="tag">4. GOOGLE ANALYTICS FOR FIREBASE</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-cart-shopping"></i> DEBUGVIEW CONVERSION EVIDENCE</div>
+          <h2 class="slide-title">Bằng Chứng DebugView: <span>Booking Conversion Funnel</span></h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card" style="padding: 10px; text-align: center;">
+            <div class="img-frame" style="max-height: 290px;">
+              <img src="../evidence/instrumentation/analytics/booking-submit-register.png" alt="Booking Submit">
+              <span class="img-badge">DEBUGVIEW: booking_submit</span>
+            </div>
+            <div class="img-caption">
+              <strong>Bước 1 - Submit:</strong> Ghi nhận sự kiện bấm đăng ký vé tham dự sự kiện
+            </div>
+          </div>
+
+          <div class="card" style="padding: 10px; text-align: center;">
+            <div class="img-frame" style="max-height: 290px;">
+              <img src="../evidence/instrumentation/analytics/booking-result-confirmed.png" alt="Booking Result Confirmed">
+              <span class="img-badge">DEBUGVIEW: booking_result</span>
+            </div>
+            <div class="img-caption">
+              <strong>Bước 2 - Confirmed:</strong> Server phản hồi thành công &bull; Ghi nhận <code>result = "confirmed"</code>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 21: CRASHLYTICS - KHÁI NIỆM & ERROR POLICY
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 2: 6 Dịch Vụ Firebase</span>
+          <span class="tag">5. FIREBASE CRASHLYTICS</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-bug"></i> STABILITY & CRASH REPORTING</div>
+          <h2 class="slide-title">Khái Niệm & <span>Chiến Lược Bắt Lỗi Crashlytics</span></h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title"><i class="fa-solid fa-triangle-exclamation" style="color: #EF4444;"></i> Phân Loại Lỗi Hệ Thống</div>
+            <div style="margin-bottom: 12px;">
+              <span class="badge badge-orange">1. Fatal Crashes (Nghiêm Trọng)</span>
+              <p style="font-size: 12px; color: #6B3A20; margin-top: 4px;">
+                Lỗi crash native hoặc unhandled exception làm tắt đột ngột ứng dụng. Được hứng bởi <code>FlutterError.onError</code> và <code>PlatformDispatcher</code>.
+              </p>
+            </div>
+            <div>
+              <span class="badge badge-blue">2. Non-Fatal Errors (Ngoại Lệ Đã Xử Lý)</span>
+              <p style="font-size: 12px; color: #6B3A20; margin-top: 4px;">
+                Ngoại lệ API, lỗi kết nối mạng hoặc lỗi upload tệp được bắt trong khối <code>try-catch</code>, ghi lại log lên dashboard để sửa chữa nhưng không làm sập app.
+              </p>
+            </div>
+          </div>
+
+          <div class="card highlight">
+            <div class="card-title"><i class="fa-solid fa-tags" style="color: #DB2777;"></i> Custom Keys & Contextual Metadata</div>
+            <p style="font-size: 13px; color: #6B3A20; line-height: 1.5;">
+              Để lập trình viên có thể tái hiện lỗi ngay lập tức, mỗi crash/error được đính kèm:
+            </p>
+            <ul class="check-list" style="margin-top: 8px;">
+              <li><i class="fa-solid fa-tag" style="color: #BE185D;"></i> <code>error_category:</code> "network", "storage", "auth"</li>
+              <li><i class="fa-solid fa-tag" style="color: #BE185D;"></i> <code>screen:</code> Tên màn hình đang đứng khi lỗi xảy ra</li>
+              <li><i class="fa-solid fa-tag" style="color: #BE185D;"></i> <code>user_id:</code> Mã UID ẩn danh của người dùng</li>
+              <li><i class="fa-solid fa-tag" style="color: #BE185D;"></i> <code>custom_logs:</code> Chuỗi hành động gần nhất của user</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 22: CRASHLYTICS - TÍCH HỢP CODE BẮT LỖI
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 2: 6 Dịch Vụ Firebase</span>
+          <span class="tag">5. FIREBASE CRASHLYTICS</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-code"></i> IMPLEMENTATION CODE</div>
+          <h2 class="slide-title">Tích Hợp <span>Crashlytics Handler</span> Toàn Cục</h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title"><i class="fa-solid fa-file-code" style="color: #E84D1C;"></i> CrashlyticsService Toàn Cục</div>
+            <pre class="code-box"><code>class CrashlyticsService {
+  final FirebaseCrashlytics _crashlytics = FirebaseCrashlytics.instance;
+
+  // Ghi nhận lỗi Non-fatal kèm Context Keys
+  Future&lt;void&gt; recordNonFatal({
+    required dynamic exception,
+    required StackTrace stack,
+    required String reason,
+    Map&lt;String, Object&gt;? customKeys,
+  }) async {
+    if (customKeys != null) {
+      for (final entry in customKeys.entries) {
+        await _crashlytics.setCustomKey(entry.key, entry.value);
+      }
+    }
+    await _crashlytics.recordError(
+      exception,
+      stack,
+      reason: reason,
+      fatal: false,
+    );
+  }
+}</code></pre>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><i class="fa-solid fa-bomb" style="color: #EF4444;"></i> Cơ Chế Test Crash Có Kiểm Soát</div>
+            <pre class="code-box"><code>// Chỉ kích hoạt trong Debug / Firebase Tools Screen
+void triggerControlledTestCrash() {
+  FirebaseCrashlytics.instance.setCustomKey("test_type", "defense_demo");
+  FirebaseCrashlytics.instance.setCustomKey("executed_by", "Group4_Tester");
+  FirebaseCrashlytics.instance.log("Initiating test crash from UI fixture");
+  
+  // Kích hoạt crash giả lập theo chuẩn Google
+  FirebaseCrashlytics.instance.crash();
+}</code></pre>
+            <div style="font-size: 11px; color: #A0714F; margin-top: 6px;">
+              <i class="fa-solid fa-info-circle"></i> Được cô lập trong menu ẩn Firebase Tools, không bao giờ ảnh hưởng đến End-User trên production.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 23: CRASHLYTICS - BẰNG CHỨNG FATAL TEST CRASH
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 2: 6 Dịch Vụ Firebase</span>
+          <span class="tag">5. FIREBASE CRASHLYTICS</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-fire"></i> FATAL CRASH VERIFICATION</div>
+          <h2 class="slide-title">Bằng Chứng Dashboard: <span>Fatal Crash Test</span></h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card" style="padding: 10px; text-align: center;">
+            <div class="img-frame" style="max-height: 290px;">
+              <img src="../evidence/instrumentation/crashlytics/crashes-dashboard.png" alt="Crashes Dashboard">
+              <span class="img-badge">CRASHLYTICS CONSOLE DASHBOARD</span>
+            </div>
+            <div class="img-caption">
+              <strong>Dashboard Console:</strong> Ghi nhận 1 sự cố Fatal Crash từ thiết bị Android test kèm thống kê % người dùng không bị sự cố
+            </div>
+          </div>
+
+          <div class="card" style="padding: 10px; text-align: center;">
+            <div class="img-frame" style="max-height: 290px;">
+              <img src="../evidence/instrumentation/crashlytics/test-crash-custom-keys.png" alt="Test Crash Custom Keys">
+              <span class="img-badge">CUSTOM KEYS & STACK TRACE</span>
+            </div>
+            <div class="img-caption">
+              <strong>Chi tiết Stacktrace:</strong> Custom keys ghi nhận đầy đủ phiên bản app, thiết bị và dấu vết dòng lệnh gây crash
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 24: CRASHLYTICS - BẰNG CHỨNG NON-FATAL REAL ERROR
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 2: 6 Dịch Vụ Firebase</span>
+          <span class="tag">5. FIREBASE CRASHLYTICS</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-shield-virus"></i> NON-FATAL REAL ERROR</div>
+          <h2 class="slide-title">Bằng Chứng Dashboard: <span>Lỗi Thực Tế Non-Fatal</span></h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card" style="padding: 10px; text-align: center;">
+            <div class="img-frame" style="max-height: 290px;">
+              <img src="../evidence/instrumentation/crashlytics/real-upload-error-app.png" alt="Upload Error on App">
+              <span class="img-badge">APP ERROR UI GRACEFUL</span>
+            </div>
+            <div class="img-caption">
+              <strong>Trên Ứng Dụng:</strong> Khi upload file lỗi, app hiển thị thông báo thân thiện và cho phép thử lại (không crash sập màn hình)
+            </div>
+          </div>
+
+          <div class="card" style="padding: 10px; text-align: center;">
+            <div class="img-frame" style="max-height: 290px;">
+              <img src="../evidence/instrumentation/crashlytics/real-upload-error-dashboard.png" alt="Real Upload Error Dashboard">
+              <span class="img-badge">CRASHLYTICS NON-FATAL DASHBOARD</span>
+            </div>
+            <div class="img-caption">
+              <strong>Trên Console:</strong> Chi tiết lỗi upload tệp được gửi ngầm lên Crashlytics với đầy đủ mã lỗi HTTP và Custom Keys
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 25: REMOTE CONFIG - KHÁI NIỆM & ỨNG DỤNG
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 2: 6 Dịch Vụ Firebase</span>
+          <span class="tag">6. FIREBASE REMOTE CONFIG</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-sliders"></i> DYNAMIC CONFIGURATION</div>
+          <h2 class="slide-title">Khái Niệm & <span>Ứng Dụng Remote Config</span></h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title"><i class="fa-solid fa-wand-magic-sparkles" style="color: #FF5722;"></i> Sức Mạnh Của Feature Flags</div>
+            <p style="font-size: 13px; color: #6B3A20; line-height: 1.5;">
+              Firebase Remote Config cho phép thay đổi giao diện, cấu hình nghiệp vụ và bật/tắt tính năng theo thời gian thực 
+              <strong>mà không cần người dùng phải cập nhật phiên bản mới từ Google Play</strong>.
+            </p>
+            <ul class="check-list" style="margin-top: 10px;">
+              <li><i class="fa-solid fa-bolt" style="color: #FF7043;"></i> <strong>Zero App Store Review:</strong> Thay đổi cấu hình lập tức.</li>
+              <li><i class="fa-solid fa-flask" style="color: #FF7043;"></i> <strong>A/B Testing:</strong> Thử nghiệm số lượng sự kiện hiển thị tối ưu.</li>
+              <li><i class="fa-solid fa-toggle-on" style="color: #FF7043;"></i> <strong>Kill Switch:</strong> Tắt ngay tính năng lỗi nếu server quá tải.</li>
+            </ul>
+          </div>
+
+          <div class="card highlight">
+            <div class="card-title"><i class="fa-solid fa-sliders" style="color: #E84D1C;"></i> 2 Tham Số Cốt Lõi Trong EventHub</div>
+            <div style="background: rgba(255, 240, 225, 0.80); padding: 12px; border-radius: 8px; margin-bottom: 10px;">
+              <div style="font-weight: 700; color: #E84D1C; font-size: 13px;">1. recommendation_limit (Integer)</div>
+              <div style="font-size: 12px; color: #A0714F; margin-top: 2px;">
+                Số lượng sự kiện đề xuất hiển thị trên màn hình chính.<br>
+                <em>Default: 10 &bull; Có thể đổi thành 1, 3, 20 từ Firebase Console.</em>
+              </div>
+            </div>
+            <div style="background: rgba(255, 240, 225, 0.80); padding: 12px; border-radius: 8px;">
+              <div style="font-weight: 700; color: #BE185D; font-size: 13px;">2. show_recommendations (Boolean)</div>
+              <div style="font-size: 12px; color: #A0714F; margin-top: 2px;">
+                Cờ công tắc bật hoặc ẩn toàn bộ mục "Gợi ý cho bạn".<br>
+                <em>Default: true &bull; Khi false: Widget tự động ẩn và dồn layout mượt mà.</em>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 26: REMOTE CONFIG - TÍCH HỢP CODE
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 2: 6 Dịch Vụ Firebase</span>
+          <span class="tag">6. FIREBASE REMOTE CONFIG</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-code"></i> IMPLEMENTATION CODE</div>
+          <h2 class="slide-title">Tích Hợp <span>RemoteConfigService</span> & Cache Policy</h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title"><i class="fa-solid fa-file-code" style="color: #E84D1C;"></i> Code Tích Hợp Đầy Đủ</div>
+            <pre class="code-box"><code>class RemoteConfigService {
+  final FirebaseRemoteConfig _rc = FirebaseRemoteConfig.instance;
+
+  Future&lt;void&gt; initialize() async {
+    // 1. Đặt giá trị mặc định tránh null khi offline
+    await _rc.setDefaults({
+      'recommendation_limit': 10,
+      'show_recommendations': true,
+    });
+
+    // 2. Cấu hình Cache Expiration linh hoạt
+    await _rc.setConfigSettings(RemoteConfigSettings(
+      fetchTimeout: const Duration(seconds: 10),
+      minimumFetchInterval: kDebugMode 
+          ? Duration.zero              // Realtime trong lúc dev/test
+          : const Duration(hours: 1),  // 1 giờ cho production
+    ));
+
+    // 3. Fetch và kích hoạt cấu hình mới nhất
+    await _rc.fetchAndActivate();
+  }
+}</code></pre>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><i class="fa-solid fa-eye" style="color: #DB2777;"></i> Tiêu Thụ Trong Presentation Widget</div>
+            <pre class="code-box"><code>// ConsumerWidget đọc qua Riverpod
+Widget build(BuildContext context, WidgetRef ref) {
+  final showRecs = ref.watch(showRecommendationsProvider);
+  final limit = ref.watch(recommendationLimitProvider);
+
+  if (!showRecs) {
+    return const SizedBox.shrink(); // Ẩn hoàn toàn layout
+  }
+
+  return RecommendationCarousel(
+    limit: limit,
+    events: events.take(limit).toList(),
+  );
+}</code></pre>
+            <div style="font-size: 11px; color: #A0714F; margin-top: 6px;">
+              <i class="fa-solid fa-check"></i> Phản ứng tức thì khi người dùng mở lại app hoặc sau lệnh fetch.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 27: REMOTE CONFIG - BẰNG CHỨNG LIVE A/B LIMIT
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 2: 6 Dịch Vụ Firebase</span>
+          <span class="tag">6. FIREBASE REMOTE CONFIG</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-flask"></i> LIVE A/B TESTING EVIDENCE</div>
+          <h2 class="slide-title">Bằng Chứng: <span>Thay Đổi recommendation_limit = 1</span></h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card" style="padding: 10px; text-align: center;">
+            <div class="img-frame" style="max-height: 290px;">
+              <img src="../evidence/instrumentation/remote-config/limit-1-console-and-app.png" alt="Limit 1 Console and App">
+              <span class="img-badge">CONSOLE & APP REALTIME (LIMIT = 1)</span>
+            </div>
+            <div class="img-caption">
+              <strong>Hình A:</strong> Đặt <code>recommendation_limit = 1</code> trên Firebase Console &bull; Ứng dụng Android lập tức chỉ render đúng 1 sự kiện duy nhất
+            </div>
+          </div>
+
+          <div class="card" style="padding: 10px; text-align: center;">
+            <div class="img-frame" style="max-height: 290px;">
+              <img src="../evidence/instrumentation/remote-config/baseline-console.png" alt="Baseline Console">
+              <span class="img-badge">CONSOLE BASELINE SETUP</span>
+            </div>
+            <div class="img-caption">
+              <strong>Hình B:</strong> Cấu hình Baseline chuẩn trên Firebase Console với 2 parameters sẵn sàng xuất bản
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 28: REMOTE CONFIG - BẰNG CHỨNG DYNAMIC TOGGLE
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 2: 6 Dịch Vụ Firebase</span>
+          <span class="tag">6. FIREBASE REMOTE CONFIG</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-toggle-on"></i> FEATURE TOGGLE EVIDENCE</div>
+          <h2 class="slide-title">Bằng Chứng: <span>Bật / Tắt show_recommendations</span></h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card" style="padding: 10px; text-align: center;">
+            <div class="img-frame" style="max-height: 290px;">
+              <img src="../evidence/instrumentation/remote-config/recommendations-hidden-app.png" alt="Recommendations Hidden App">
+              <span class="img-badge">TOGGLE = FALSE (MỤC GỢI Ý ẨN)</span>
+            </div>
+            <div class="img-caption">
+              <strong>Hình A:</strong> Khi <code>show_recommendations = false</code> &bull; Mục gợi ý hoàn toàn biến mất khỏi Discover Screen mà không để lại khoảng trống lỗi
+            </div>
+          </div>
+
+          <div class="card" style="padding: 10px; text-align: center;">
+            <div class="img-frame" style="max-height: 290px;">
+              <img src="../evidence/instrumentation/remote-config/restored-10-true-console-and-app.png" alt="Restored 10 and true">
+              <span class="img-badge">RESTORED TO DEFAULT (10 & TRUE)</span>
+            </div>
+            <div class="img-caption">
+              <strong>Hình B:</strong> Phục hồi về mặc định <code>limit = 10, show = true</code> &bull; Ứng dụng khôi phục đầy đủ danh sách bình thường
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 29: ARTEMIS PROTOCOL - TỔNG QUAN KIỂM THỬ
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 3: Đảm Bảo Chất Lượng (QA)</span>
+          <span class="tag">KIỂM THỬ TỰ ĐỘNG ARTEMIS</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-vial-circle-check"></i> AUTOMATED TEST SUITE</div>
+          <h2 class="slide-title">Giao Thức Kiểm Thử <span>ARTEMIS: 25 Test Cases</span></h2>
+        </div>
+
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-title"><i class="fa-solid fa-scale-balanced" style="color: #E84D1C;"></i> Tiêu Chuẩn Guideline</div>
+            <ul class="check-list">
+              <li><i class="fa-solid fa-check" style="color: #E84D1C;"></i> Yêu cầu tối thiểu &ge;10 Test Cases tự động.</li>
+              <li><i class="fa-solid fa-check" style="color: #E84D1C;"></i> <strong>EventHub triển khai: 25 Test Cases</strong> bao phủ toàn bộ 6 dịch vụ Firebase.</li>
+              <li><i class="fa-solid fa-check" style="color: #E84D1C;"></i> Mỗi test case được chạy lặp lại <strong>3 lần liên tiếp</strong> để đảm bảo tính ổn định (Idempotence).</li>
+            </ul>
+          </div>
+
+          <div class="card highlight">
+            <div class="card-title"><i class="fa-solid fa-list-ol" style="color: #FF5722;"></i> Phân Bổ 25 Test Cases</div>
+            <table class="data-table">
+              <tr><td>Auth Test Cases</td><td><strong>4 TCs</strong> (Session, Error, Mock)</td></tr>
+              <tr><td>Storage Test Cases</td><td><strong>4 TCs</strong> (Upload, Export, Size)</td></tr>
+              <tr><td>FCM Test Cases</td><td><strong>4 TCs</strong> (Fore, Back, Term, Ch)</td></tr>
+              <tr><td>Analytics Cases</td><td><strong>5 TCs</strong> (Events, Zero PII)</td></tr>
+              <tr><td>Crashlytics Cases</td><td><strong>4 TCs</strong> (Fatal, NonFatal, Keys)</td></tr>
+              <tr><td>Remote Config Cases</td><td><strong>4 TCs</strong> (Limit, Toggle, Cache)</td></tr>
+            </table>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><i class="fa-solid fa-file-code" style="color: #DB2777;"></i> Định Dạng Nhật Ký Test</div>
+            <p style="font-size: 12px; color: #6B3A20; line-height: 1.4;">
+              Mỗi lần chạy sinh ra tệp log JSON chuẩn hóa gồm:
+            </p>
+            <ul class="check-list" style="margin-top: 6px;">
+              <li><i class="fa-solid fa-code" style="color: #BE185D;"></i> <code>test_id, run_index (1,2,3)</code></li>
+              <li><i class="fa-solid fa-code" style="color: #BE185D;"></i> <code>assertions, duration_ms</code></li>
+              <li><i class="fa-solid fa-code" style="color: #BE185D;"></i> <code>status: "PASSED" / "FAILED"</code></li>
+              <li><i class="fa-solid fa-code" style="color: #BE185D;"></i> Lưu tại <code>evidence/artemis/</code></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 30: ARTEMIS PROTOCOL - KẾT QUẢ THỰC THI
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 3: Đảm Bảo Chất Lượng (QA)</span>
+          <span class="tag">KIỂM THỬ TỰ ĐỘNG ARTEMIS</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-square-poll-vertical"></i> TEST EXECUTION RESULTS</div>
+          <h2 class="slide-title">Kết Quả Thực Thi <span>ARTEMIS & Unit Test Suite</span></h2>
+        </div>
+
+        <div class="grid-4" style="margin-bottom: 16px;">
+          <div class="stat-box" style="border-top: 3px solid #DB2777;">
+            <div class="stat-num" style="color: #BE185D;">65 / 65</div>
+            <div class="stat-label">Flutter Unit Tests Pass</div>
+          </div>
+          <div class="stat-box" style="border-top: 3px solid #FF6B35;">
+            <div class="stat-num" style="color: #E84D1C;">5 / 5</div>
+            <div class="stat-label">Firestore Emulator Tests</div>
+          </div>
+          <div class="stat-box" style="border-top: 3px solid #FF5722;">
+            <div class="stat-num" style="color: #FF7043;">25</div>
+            <div class="stat-label">ARTEMIS Test Cases</div>
+          </div>
+          <div class="stat-box" style="border-top: 3px solid #F43F5E;">
+            <div class="stat-num" style="color: #FB7185;">3x</div>
+            <div class="stat-label">Runs Per Case Verified</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i class="fa-solid fa-shield-halved" style="color: #E84D1C;"></i> Đánh Giá Tính Tin Cậy Của Bộ Test</div>
+          <div class="grid-2" style="font-size: 12px; color: #6B3A20;">
+            <div>
+              <p><i class="fa-solid fa-circle-check" style="color: #DB2777;"></i> <strong>Zero Flakiness:</strong> Không có bài kiểm thử nào cho kết quả ngẫu nhiên do đã mock và cô lập network phụ thuộc.</p>
+              <p><i class="fa-solid fa-circle-check" style="color: #DB2777;"></i> <strong>Fast Feedback Loop:</strong> Toàn bộ 65 Flutter tests chạy hoàn thành dưới 15 giây trên máy phát triển.</p>
+            </div>
+            <div>
+              <p><i class="fa-solid fa-circle-check" style="color: #DB2777;"></i> <strong>Regression Protection:</strong> Đảm bảo các thay đổi giao diện hoặc logic Firebase không làm hỏng chức năng cũ.</p>
+              <p><i class="fa-solid fa-circle-check" style="color: #DB2777;"></i> <strong>CI/CD Integration:</strong> Bộ test được tích hợp chạy tự động trước khi đóng gói ứng dụng.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 31: AI CODE REVIEW & HARDENING
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 3: Đảm Bảo Chất Lượng (QA)</span>
+          <span class="tag">AI CODE REVIEW & FIXES</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-robot"></i> CODE REVIEW AUDIT</div>
+          <h2 class="slide-title">AI Code Review: <span>5 Findings & 3 Commits Sửa Lỗi</span></h2>
+        </div>
+
+        <div class="card" style="margin-bottom: 12px;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Phân Loại</th>
+                <th>Vấn Đề Phát Hiện Qua AI Review</th>
+                <th>Giải Pháp Khắc Phục</th>
+                <th>Commit SHA</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>PR01</strong></td>
+                <td><span class="badge badge-orange">Concurrency</span></td>
+                <td>Race condition khi gọi Remote Config fetch đồng thời</td>
+                <td>Thêm mutex lock &amp; singleton cache guard</td>
+                <td rowspan="2"><code style="color: #E84D1C;">fe02d20</code></td>
+              </tr>
+              <tr>
+                <td><strong>PR02</strong></td>
+                <td><span class="badge badge-orange">Concurrency</span></td>
+                <td>Double registration token refresh trong FCM</td>
+                <td>Debounce token stream bằng rxdart/delay</td>
+              </tr>
+              <tr>
+                <td><strong>PR03</strong></td>
+                <td><span class="badge badge-blue">Architecture</span></td>
+                <td>Widgets trực tiếp gọi FirebaseAnalytics instance</td>
+                <td>Tách qua AnalyticsService interface trung gian</td>
+                <td rowspan="2"><code style="color: #E84D1C;">9f92864</code></td>
+              </tr>
+              <tr>
+                <td><strong>PR04</strong></td>
+                <td><span class="badge badge-blue">Architecture</span></td>
+                <td>Hardcoded string key trong Crashlytics context</td>
+                <td>Định nghĩa Enum &amp; Constants type-safe</td>
+              </tr>
+              <tr>
+                <td><strong>PR05</strong></td>
+                <td><span class="badge badge-green">Reliability</span></td>
+                <td>Thiếu timeout khi upload export PDF dung lượng lớn</td>
+                <td>Bổ sung timeout 15s + fallback retry logic</td>
+                <td><code style="color: #E84D1C;">53eae7e</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="font-size: 11px; color: #A0714F; text-align: center;">
+          <i class="fa-solid fa-circle-info"></i> Toàn bộ 5 findings được ghi nhận tại Pull Request #3 và đã được merge hoàn chỉnh vào nhánh chính.
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 32: BẰNG CHỨNG DESIGN CHANGES
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Phần 3: Đảm Bảo Chất Lượng (QA)</span>
+          <span class="tag">DESIGN CHANGES EVIDENCE</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-wand-magic"></i> UI/UX EVOLUTION</div>
+          <h2 class="slide-title">Bằng Chứng Cải Tiến: <span>D03 Tools & D11 Filters</span></h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card" style="padding: 10px; text-align: center;">
+            <div class="img-frame" style="max-height: 290px;">
+              <img src="../evidence/design-changes/D03-firebase-tools/after-tools-ui-fixture.png" alt="D03 Firebase Tools">
+              <span class="img-badge">D03: FIREBASE TOOLS SCREEN</span>
+            </div>
+            <div class="img-caption">
+              <strong>Cải tiến D03:</strong> Thêm màn hình kiểm thử chuyên dụng cho phép trigger Fatal Crash, Push FCM test và Fetch Remote Config trực quan
+            </div>
+          </div>
+
+          <div class="card" style="padding: 10px; text-align: center;">
+            <div class="img-frame" style="max-height: 290px;">
+              <img src="../evidence/design-changes/D11-discover-filters/after-android.png" alt="D11 Discover Filters">
+              <span class="img-badge">D11: DISCOVER CHIP FILTERS</span>
+            </div>
+            <div class="img-caption">
+              <strong>Cải tiến D11:</strong> Nâng cấp bộ lọc dạng Filter Chips cuộn ngang, tối ưu hóa diện tích hiển thị trên màn hình điện thoại
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 33: DANH MỤC SẢN PHẨM BÀN GIAO
+      =========================================== -->
+      <section data-transition="slide">
+        <div class="header-bar">
+          <span>Tổng Kết & Đánh Giá</span>
+          <span class="tag">DELIVERABLES CHECKLIST</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div class="slide-title-group">
+          <div class="slide-sub"><i class="fa-solid fa-box-open"></i> DELIVERABLES AUDIT</div>
+          <h2 class="slide-title">Danh Mục Bàn Giao <span>Lab 3 Chuẩn Guideline</span></h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title"><i class="fa-solid fa-list-check" style="color: #DB2777;"></i> Bảng Đối Chiếu Sản Phẩm Bàn Giao</div>
+            <table class="data-table">
+              <tr>
+                <td><strong>1. Slide Thuyết Trình</strong></td>
+                <td><span class="badge badge-green">Hoàn thành</span></td>
+                <td>34 Slides trực quan kèm ảnh Evidence thực tế</td>
+              </tr>
+              <tr>
+                <td><strong>2. GitHub Pages Slide</strong></td>
+                <td><span class="badge badge-green">Deployed</span></td>
+                <td>Hosting tự động qua GitHub Actions</td>
+              </tr>
+              <tr>
+                <td><strong>3. Báo Cáo Kỹ Thuật (PDF)</strong></td>
+                <td><span class="badge badge-green">Hoàn thành</span></td>
+                <td>Báo cáo chi tiết nhóm & phân công thành viên</td>
+              </tr>
+              <tr>
+                <td><strong>4. Mã Nguồn Ứng Dụng</strong></td>
+                <td><span class="badge badge-green">Clean & Tested</span></td>
+                <td>65/65 unit tests pass, Clean Architecture</td>
+              </tr>
+              <tr>
+                <td><strong>5. Thư Mục Evidence</strong></td>
+                <td><span class="badge badge-green">54 Screenshots</span></td>
+                <td>Bằng chứng kiểm thử cả 6 dịch vụ Firebase</td>
+              </tr>
+              <tr>
+                <td><strong>6. Bộ Test ARTEMIS</strong></td>
+                <td><span class="badge badge-green">25 Test Cases</span></td>
+                <td>3x runs log JSON kiểm chứng</td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="card highlight">
+            <div class="card-title"><i class="fa-solid fa-link" style="color: #E84D1C;"></i> Liên Kết Truy Cập Tài Nguyên</div>
+            <ul class="check-list" style="margin-top: 10px;">
+              <li>
+                <i class="fa-brands fa-github" style="color: #E84D1C;"></i>
+                <div>
+                  <strong>Repository Fork (Cá nhân):</strong><br>
+                  <a href="https://github.com/KietNTSE/PRM393_Lab03_Group4_pre" target="_blank" style="color: #E84D1C; font-size: 11px;">github.com/KietNTSE/PRM393_Lab03_Group4_pre</a>
+                </div>
+              </li>
+              <li>
+                <i class="fa-brands fa-github" style="color: #E84D1C;"></i>
+                <div>
+                  <strong>Repository Upstream (Nhóm 4):</strong><br>
+                  <a href="https://github.com/ThinhCri/PRM393_Lab03_Group4" target="_blank" style="color: #E84D1C; font-size: 11px;">github.com/ThinhCri/PRM393_Lab03_Group4</a>
+                </div>
+              </li>
+              <li>
+                <i class="fa-solid fa-globe" style="color: #DB2777;"></i>
+                <div>
+                  <strong>Live Presentation (GitHub Pages):</strong><br>
+                  <a href="https://kietntse.github.io/PRM393_Lab03_Group4_pre/slides/" target="_blank" style="color: #BE185D; font-size: 11px;">kietntse.github.io/PRM393_Lab03_Group4_pre/slides/</a>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 34: TỔNG KẾT & Q&A
+      =========================================== -->
+      <section data-transition="zoom">
+        <div class="header-bar">
+          <span>PRM393 Lab 3 Defense</span>
+          <span class="tag">KẾT THÚC BÁO CÁO</span>
+          <span>EventHub Group 4</span>
+        </div>
+
+        <div style="margin-top: 55px; text-align: center;">
+          <div style="display: inline-flex; align-items: center; gap: 10px; background: rgba(244, 114, 182, 0.18); border: 1px solid rgba(244, 114, 182, 0.50); padding: 8px 22px; border-radius: 24px; font-size: 14px; color: #BE185D; font-weight: 800; margin-bottom: 22px; letter-spacing: 0.5px;">
+            <i class="fa-solid fa-check-double"></i> MISSION ACCOMPLISHED
+          </div>
+
+          <h1 style="font-size: 52px; font-weight: 900; letter-spacing: -1.5px; margin: 0 0 18px 0; color: #2D1206; line-height: 1.2;">
+            Cảm Ơn Thầy Cô & Các Bạn<br>
+            <span style="background: linear-gradient(135deg, #FF6E40 0%, #38BDF8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+              Đã Lắng Nghe Phần Trình Bày!
+            </span>
+          </h1>
+
+          <p style="font-size: 18px; color: #6B3A20; max-width: 780px; margin: 0 auto 35px auto; line-height: 1.6;">
+            Nhóm 4 sẵn sàng trả lời các câu hỏi phản biện từ Hội đồng và thực hiện Live Demo ứng dụng EventHub.
+          </p>
+
+          <div style="display: inline-flex; gap: 24px;">
+            <div class="card" style="padding: 18px 36px; text-align: center; border-color: rgba(255, 140, 60, 0.40);">
+              <div style="font-size: 20px; font-weight: 800; color: #E84D1C;"><i class="fa-solid fa-comments"></i> Q & A SESSION</div>
+              <div style="font-size: 13.5px; color: #A0714F; margin-top: 6px;">Hỏi đáp &amp; Phản biện</div>
+            </div>
+
+            <div class="card" style="padding: 18px 36px; text-align: center; border-color: rgba(255, 87, 34, 0.4);">
+              <div style="font-size: 20px; font-weight: 800; color: #FF7043;"><i class="fa-solid fa-play"></i> LIVE DEMO</div>
+              <div style="font-size: 13.5px; color: #A0714F; margin-top: 6px;">Demo trực tiếp trên Android Emulator</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Reveal.js Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.0.4/reveal.min.js"></script>
+  <script>
+    Reveal.initialize({
+      hash: true,
+      slideNumber: 'c/t',
+      controls: true,
+      progress: true,
+      center: false,
+      transition: 'slide',
+      transitionSpeed: 'default',
+      backgroundTransition: 'fade',
+      width: 1280,
+      height: 720,
+      margin: 0.04,
+      minScale: 0.2,
+      maxScale: 2.0
+    });
+  </script>
+</body>
+</html>

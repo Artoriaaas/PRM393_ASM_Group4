@@ -1,93 +1,89 @@
-# Bộ Slide Thuyết Trình Lab 3 — EventHub (35 Slide Trực Quan & Evidence Thực Tế)
+# Bộ Slide Thuyết Trình Bảo Vệ Đồ Án — EventHub (Guideline V11 · Cam Vàng Hồng)
 
-Bộ slide này được xây dựng bằng **Reveal.js (HTML/CSS thuần qua CDN, 0 dependencies)**, tích hợp hiệu ứng thị giác hiện đại (glassmorphism cards, glowing badges, device framing, smooth transitions) và **26 ảnh bằng chứng thực nghiệm** trích xuất từ thư mục `evidence/`. Nội dung bám sát và mở rộng đầy đủ toàn bộ yêu cầu của tài liệu **PRM393 / HƯỚNG DẪN CHUẨN BỊ LAB 3 THỰC HÀNH** (đáp ứng vượt mức &ge;25 slide tối thiểu).
-
----
-
-## 1. Cách Chạy Slide Trên GitHub Pages (`github.io`)
-
-File slide được đặt trực tiếp tại `slides/index.html`. Để chia sẻ link online cho giảng viên và hội đồng xem trực tiếp:
-
-1. Đẩy code lên GitHub:
-   ```bash
-   git add slides/
-   git commit -m "docs(slides): update HTML presentation slide deck for Lab 3"
-   git push origin main
-   ```
-2. Vào GitHub Repository $\rightarrow$ **Settings** $\rightarrow$ chọn mục **Pages** (cột bên trái).
-3. Tại phần **Build and deployment**:
-   - **Cách 1 (Tự động qua GitHub Actions - Khuyên dùng)**:
-     - **Source**: Chọn `GitHub Actions`. Workflow `.github/workflows/deploy-slides.yml` đã được cấu hình sẵn sẽ tự động kích hoạt và deploy mỗi khi push code lên `main`.
-   - **Cách 2 (Deploy trực tiếp từ Branch)**:
-     - **Source**: Chọn `Deploy from a branch`.
-     - **Branch**: Chọn `main`, thư mục `/ (root)`. Nhấn **Save**.
-4. Sau 1–2 phút, link slide online hoạt động tại:
-   - Repo nhóm chính: `https://thinhcri.github.io/PRM393_Lab03_Group4/slides/`
-   - Repo fork: `https://kietntse.github.io/PRM393_Lab03_Group4_pre/slides/`
+Bộ slide này được xây dựng và thiết kế lại hoàn toàn tuân thủ theo **"Software Project Presentation Guideline V11"** (30 slide chuẩn mực) và đặc tả thiết kế **`Slide_Template_Spec_CamVangHong.md`** (bảng màu Cam – Vàng – Hồng, canvas cố định 1280 × 720 px, tỉ lệ 16:9). Toàn bộ nội dung bám sát 100% dự án **EventHub (PRM393 ASM Group 4)**.
 
 ---
 
-## 2. Cách Xuất Ra File PDF Chuẩn (`Lab03_Group4_slides.pdf`)
+## 1. Cấu Trúc 30 Slide Chuẩn Guideline V11
 
-Reveal.js hỗ trợ chế độ in PDF chuyên dụng giữ nguyên độ nét vector và màu sắc:
+| Số trang | Nhãn | Phase / Section | Nội dung chính của đề tài EventHub |
+|:---:|:---:|:---|:---|
+| **01** | `G1` | **Bìa chính (Layout DARK)** | EventHub — Nền tảng quản lý sự kiện và điểm danh QR liên vai trò |
+| **02** | `G2` | **Nguyên tắc chung** | 4 Nguyên tắc cốt lõi & cấu trúc khung chuẩn của một slide |
+| **03** | `G3` | **Cách chia nội dung** | Phân định ranh giới: Thiết kế cho tổng thể, Demo theo workflow |
+| **04** | `G4` | **Danh mục slide** | Lộ trình 24 slide nội dung, 4 phần, ngân sách 18–20 phút |
+| **05** | `01` | `P1 · PROBLEM` | **Overview**: Giới thiệu EventHub trong 30 giây (Mobile + Web Admin) |
+| **06** | `02` | `P1 · PROBLEM` | **Context**: Hiện trạng tổ chức sự kiện tại ĐH FPT (Quy trình 4 bước giấy/Excel) |
+| **07** | `03` | `P1 · PROBLEM` | **Problem**: 3 Pain points (Ùn tắc check-in, Vượt sức chứa, Mù xét duyệt) |
+| **08** | `04` | `P1 · PROBLEM` | **Proposed Solution**: Kiến trúc Serverless, QR băm SHA-256, Review Queue |
+| **09** | `05` | `P1 · PROBLEM` | **Main Actors**: Sinh viên (`user`), Trưởng CLB (`staff`), Quản trị viên (`admin`), Firebase |
+| **10** | `06` | `P1 · PROBLEM` | **Main Features**: 4 Nhóm tính năng & 3 Workflow liên thiết bị sẽ demo |
+| **11** | `07` | `P2 · DESIGN` | **Business Flow**: Sơ đồ phân làn (Swimlane) 4 làn kèm các điểm rẽ BR-01..BR-04 |
+| **12** | `08` | `P2 · DESIGN` | **State Machine**: Vòng đời Registration (`PENDING → APPROVED / REJECTED → ATTENDED`) |
+| **13** | `09` | `P2 · DESIGN` | **System Architecture**: Sơ đồ C4 Container Serverless & Quyết định kiến trúc |
+| **14** | `10` | `P2 · DESIGN` | **Technology Stack**: Bảng công nghệ 7 nhóm (Flutter 3.29, Riverpod, Firestore, Rules) |
+| **15** | `11` | `P2 · DESIGN` | **UI/UX Design**: Sitemap, Wireframe → Figma → Flutter, 4 UI States, Cải tiến D11 |
+| **16** | `12` | `P2 · DESIGN` | **Sequence Diagram**: Trưởng CLB duyệt đơn (`approveRegistration` transaction + alt hết chỗ) |
+| **17** | `13` | `P2 · DESIGN` | **Class Design**: Clean Architecture MVVM (`BookingViewModel`, `FirestoreEventService`) |
+| **18** | `14` | `P2 · DESIGN` | **Database Conceptual**: Sơ đồ thực thể Conceptual ERD (User, Club, Event, Registration) |
+| **19** | `15` | `P2 · DESIGN` | **Database Physical**: NoSQL Schema Firestore, kiểu dữ liệu, index, rules bảo vệ |
+| **20** | `16` | `P2 · DESIGN` | **Traceability**: Ma trận truy vết Feature ↔ Screen ↔ Class ↔ Database ↔ Tests |
+| **21** | `17` | `P3 · DEMO` | **Demo Plan**: Storyboard 3 bước demo liên vai trò (Đăng ký → Duyệt → Điểm danh) |
+| **22** | `18` | `P3 · DEMO` | **Demo WF-01**: Sinh viên gửi yêu cầu đăng ký trên Mobile App (Đơn PENDING) |
+| **23** | `19` | `P3 · DEMO` | **Demo WF-02**: Trưởng CLB duyệt đơn trên Web Admin Review Queue (APPROVED + FCM) |
+| **24** | `20` | `P3 · DEMO` | **Demo WF-03**: Mở phiên phát QR & Sinh viên quét check-in (ATTENDED realtime) |
+| **25** | `21` | `P4 · PROOF` | **Testing**: 65 Tests pass (Unit 35/35, Rules Emulator 16/16, ARTEMIS E2E 25/25) |
+| **26** | `22` | `P4 · PROOF` | **Achievements**: Đối chiếu cam kết, giảm 90% thời gian check-in (<3s), 0 lỗi sức chứa |
+| **27** | `23` | `P4 · PROOF` | **Limitations**: Check-in phụ thuộc mạng, chưa stress-test tải nặng, thiếu cổng thanh toán |
+| **28** | `24` | `P4 · PROOF` | **Conclusion**: 3 Thông điệp chính, link Live Demo, Repo, Figma và bắt đầu Q&A |
+| **29** | `25` | **Phụ lục** | **Appendix / Backup**: 6 Nhóm tài liệu A1..A6 sẵn sàng trả lời phản biện chuyên sâu |
+| **30** | `G5` | **Checklist** | **Quality Gate**: 8 Tiêu chí tự rà soát trước khi bảo vệ trước Hội đồng |
 
-1. Mở file `slides/index.html` bằng trình duyệt **Google Chrome** hoặc **Microsoft Edge** (chạy local hoặc mở link GitHub Pages).
-2. Thêm tham số `?print-pdf` vào cuối URL, ví dụ:
-   - Chạy local: `file:///D:/GitHub/PRM_LAB3/PRM393_Lab03_Group4/slides/index.html?print-pdf`
-   - Hoặc link online: `https://.../slides/?print-pdf`
-3. Nhấn tổ hợp phím **`Ctrl + P`** (hoặc `Cmd + P` trên Mac).
-4. Thiết lập trong hộp thoại In của trình duyệt:
-   - **Destination (Máy in đích)**: `Save as PDF` (Lưu dưới dạng PDF).
+---
+
+## 2. Cách Sử Dụng & Điều Khiển Trình Diễn
+
+Trực tiếp mở file `slides/index.html` bằng bất kỳ trình duyệt hiện đại nào (Google Chrome, Microsoft Edge, Safari, Firefox). Ứng dụng tự động co giãn (`transform: scale()`) khớp với kích thước màn hình mà không làm lệch toạ độ thiết kế.
+
+### Phím tắt điều khiển:
+- **`Phím Mũi tên Phải` / `Phím Cách (Space)` / `PageDown`**: Chuyển sang slide kế tiếp.
+- **`Phím Mũi tên Trái` / `PageUp`**: Quay lại slide trước.
+- **`Home`**: Về slide đầu tiên (Slide G1 bìa).
+- **`End`**: Đến slide cuối cùng (Slide G5 Checklist).
+- **`Phím O`**: Mở danh mục lưới (Overview Grid) 30 slide để nhảy nhanh đến bất kỳ slide nào.
+- **`Phím F`**: Bật / Tắt chế độ Toàn màn hình (Fullscreen).
+- **`Esc`**: Đóng danh mục lưới.
+
+---
+
+## 3. Cách Xuất Ra File PDF Chuẩn Không Lỗi Layout
+
+Bộ slide đã được nhúng sẵn cấu hình in ấn chuyên dụng (`@media print` và `@page { size: 1280px 720px; margin: 0; }`):
+
+1. Mở file `slides/index.html` trong trình duyệt Google Chrome hoặc Microsoft Edge.
+2. Nhấn tổ hợp phím **`Ctrl + P`** (hoặc `Cmd + P` trên macOS).
+3. Cài đặt các thông số trong hộp thoại In:
+   - **Destination (Máy in)**: `Save as PDF` (Lưu dưới dạng PDF).
    - **Layout (Bố cục)**: `Landscape` (Khổ ngang).
-   - **Margins (Lề)**: `None` (Không có).
-   - **Options (Tùy chọn)**: Tích chọn **`Background graphics`** (Đồ họa nền) để nhận đầy đủ màu nền và khung thẻ.
-5. Nhấn **Save** và lưu file vào:
-   `slides/Lab03_Group4_slides.pdf`
+   - **Paper size (Khổ giấy)**: Tùy chỉnh hoặc A4/Letter ngang.
+   - **Margins (Lề)**: `None` (Không lề).
+   - **Options (Tùy chọn)**: Tích chọn **`Background graphics`** (Đồ họa nền) để hiển thị đầy đủ màu sắc, thẻ và viền.
+4. Nhấn **Save** để nhận file PDF 30 trang sắc nét.
 
 ---
 
-## 3. Cấu Trúc Nội Dung 35 Slide Trực Quan (Vượt mức chuẩn ≥25 slide)
+## 4. Danh Mục Ảnh & Minh Chứng Nhóm Cần Chuẩn Bị Thêm
 
-Bộ slide bao gồm 35 slide phân bổ theo 3 phần chính, minh họa bằng 26 ảnh bằng chứng thực tế:
+Hệ thống slide hiện tại đã tích hợp sẵn:
+- Ảnh chụp thực tế của Mobile App: `evidence/discover_screen.png`, `evidence/eventhub_live.png`.
+- Các sơ đồ kỹ thuật (Swimlane, State Machine, C4 Container, Sequence Diagram, Class Design, ERD, Traceability Matrix) được render bằng vector SVG/HTML sắc nét.
 
-### Phần 1: Nền Tảng Dự Án (Slide 01 – 08)
-- **Slide 01**: Bìa Đề Tài — EventHub & Hệ Thống Firebase Backend Suite.
-- **Slide 02**: Mục Lục Báo Cáo — Lộ trình 3 phần chuẩn bị bảo vệ.
-- **Slide 03**: Tổng Quan Ứng Dụng EventHub & Nghiệp vụ cốt lõi.
-- **Slide 04**: Môi Trường Kỹ Thuật & Tech Stack (Flutter 3.29, Firebase SDK, Riverpod).
-- **Slide 05**: Khởi Tạo Firebase & Lifecycle trong `main.dart`.
-- **Slide 06**: Kiến Trúc Phần Mềm — Định nghĩa Mô hình Clean Architecture MVVM + Riverpod trong EventHub.
-- **Slide 07**: MVVM Workflow — Quy Trình Kết Nối & Luồng Dữ Liệu 4 Bước (Action Stream vs Reactive Data Binding).
-- **Slide 08**: Visual Design Evidence — Ảnh thực tế Discover, Event Detail, Catalog.
-
-### Phần 2: 6 Dịch Vụ Firebase Chuyên Sâu (Slide 09 – 29)
-- **Slide 09**: Firebase Auth — Khái niệm, Cơ chế JWT, Zero PII Policy.
-- **Slide 10**: Firebase Auth — Tích hợp code `AuthService` & Riverpod stream.
-- **Slide 11**: Firebase Auth — Bằng chứng kiểm thử màn hình Login Configured vs Fallback.
-- **Slide 12**: Cloud Storage & Export — Khái niệm, Export Engine, `storage.rules`.
-- **Slide 13**: Cloud Storage & Export — Bằng chứng DebugView (`export_generate`, `export_upload`).
-- **Slide 14**: FCM — Khái niệm, Kiến trúc Push & 3 trạng thái (Foreground, Background, Terminated).
-- **Slide 15**: FCM — Tích hợp code Background Handler & Quyền Android 13+ `POST_NOTIFICATIONS`.
-- **Slide 16**: FCM — Bằng chứng Foreground Push Test & Hòm thư Inbox.
-- **Slide 17**: FCM — Bằng chứng Background System Tray & Deep Linking Inbox.
-- **Slide 18**: Firebase Analytics — Chiến lược đo lường Conversion Funnel & Zero PII Policy.
-- **Slide 19**: Firebase Analytics — Bảng Kế hoạch đo lường (Measurement Plan) 7+ Custom Events.
-- **Slide 20**: Firebase Analytics — Bằng chứng DebugView 1 (`search` & `view_event_detail`).
-- **Slide 21**: Firebase Analytics — Bằng chứng DebugView 2 (`booking_submit` & `booking_result`).
-- **Slide 22**: Firebase Crashlytics — Khái niệm Fatal vs Non-Fatal, Custom Keys Context.
-- **Slide 23**: Firebase Crashlytics — Tích hợp code `CrashlyticsService` & Test Crash UI.
-- **Slide 24**: Firebase Crashlytics — Bằng chứng Console Dashboard Fatal Crash & Stacktrace.
-- **Slide 25**: Firebase Crashlytics — Bằng chứng Console Dashboard Non-Fatal & Graceful App UI.
-- **Slide 26**: Remote Config — Khái niệm Feature Flags, 2 tham số (`recommendation_limit`, `show_recommendations`).
-- **Slide 27**: Remote Config — Tích hợp code `RemoteConfigService` & Cache Expiration Policy.
-- **Slide 28**: Remote Config — Bằng chứng Live A/B Feature Flag (`recommendation_limit = 1`).
-- **Slide 29**: Remote Config — Bằng chứng Live Feature Toggle (`show_recommendations = false`).
-
-### Phần 3: Đảm Bảo Chất Lượng & Bàn Giao (Slide 30 – 35)
-- **Slide 30**: ARTEMIS Protocol — Khung kiểm thử tự động E2E (25 Test Cases, 3x Execution).
-- **Slide 31**: ARTEMIS Protocol — Kết quả thực thi (65/65 Unit tests pass, 5/5 Firestore emulator).
-- **Slide 32**: AI Code Review — Bảng 5 Findings & 3 Commits khắc phục (PR #3).
-- **Slide 33**: Bằng Chứng Cải Tiến Giao Diện — Màn hình D03 Firebase Tools & D11 Filter Chips.
-- **Slide 34**: Danh Mục Sản Phẩm Bàn Giao (Deliverables Checklist & URLs).
-- **Slide 35**: Tổng Kết & Hỏi Đáp (Q&A Session & Live Demo).
-- **Slide 34**: Tổng Kết Báo Cáo & Phiên Hỏi Đáp Q&A / Live Demo.
+**Các tài nguyên bổ sung nhóm có thể cung cấp thêm:**
+1. **Ảnh chụp Web Admin màn hình rộng (&ge; 1280px)**:
+   - Ảnh màn hình Review Queue duyệt đơn (`evidence/web-admin/07-review-queue-approve.png`) để thay thế khung minh họa tại Slide 19 (Demo WF-02).
+   - Ảnh màn hình Live QR Check-in Panel (`evidence/web-admin/06-live-qr-checkin-panel.png`) để thay thế khung minh họa tại Slide 20 (Demo WF-03).
+   - Ảnh màn hình Dashboard số liệu thống kê (`evidence/web-admin/03-dashboard-figures-chart.png`) cho Phụ lục A1.
+2. **Ảnh sơ đồ vẽ tay hoặc xuất từ Draw.io / Figma (nếu muốn thay thế vector HTML)**:
+   - File PNG/SVG sơ đồ Swimlane (Slide 07), State Machine (Slide 08), C4 Architecture (Slide 09).
+3. **Video Demo Dự phòng (4K/FullHD)**:
+   - Ghi lại quá trình Sinh viên đăng ký trên điện thoại $\rightarrow$ Trưởng CLB duyệt trên Web $\rightarrow$ Quét QR tại bàn đón tiếp để gắn link vào Phụ lục A6.
