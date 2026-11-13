@@ -537,14 +537,14 @@ svg_13 = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width=
   <text x="605" y="91" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#FFF" text-anchor="middle">SERVICE CONTRACTS</text>
 
   <rect x="515" y="115" width="180" height="90" rx="5" fill="#FFF" stroke="#FCD34D" />
-  <text x="525" y="132" font-family="Calibri, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#B45309">&laquo;interface&raquo; EventService</text>
+  <text x="525" y="132" font-family="Calibri, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#B45309">&#171;interface&#187; EventService</text>
   <text x="525" y="150" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#1E293B">+ registerEvent(form, opId)</text>
   <text x="525" y="165" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#1E293B">+ approveRegistration(id)</text>
   <text x="525" y="180" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#1E293B">+ checkInWithQr(qrHash)</text>
   <text x="525" y="195" font-family="Calibri, Arial, sans-serif" font-size="8.5" fill="#64748B">Dễ dàng Fake / Mock khi Test</text>
 
   <rect x="515" y="215" width="180" height="85" rx="5" fill="#FFF" stroke="#FCD34D" />
-  <text x="525" y="232" font-family="Calibri, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#B45309">&laquo;interface&raquo; QrCameraService</text>
+  <text x="525" y="232" font-family="Calibri, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#B45309">&#171;interface&#187; QrCameraService</text>
   <text x="525" y="250" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#1E293B">+ startScanning()</text>
   <text x="525" y="265" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#1E293B">+ stopScanning()</text>
   <text x="525" y="280" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#1E293B">+ torchToggle()</text>
@@ -574,7 +574,7 @@ svg_13 = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width=
   <!-- Domain Entity Box (Bottom Bar) -->
   <rect x="25" y="345" width="910" height="75" rx="6" fill="#FDF2F8" stroke="#DB2777" stroke-width="1" />
   <text x="45" y="368" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#9D174D">DOMAIN MODELS (PACKAGE: packages/core/lib/models/)</text>
-  <text x="45" y="390" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B"><strong>Registration:</strong> id, uid, eventId, clubId, status, generation, participant, reason, checkInAt, createdAt, lastOperationId</text>
+  <text x="45" y="390" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B"><tspan font-weight="700">Registration:</tspan> id, uid, eventId, clubId, status, generation, participant, reason, checkInAt, createdAt, lastOperationId</text>
   <text x="45" y="408" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">Hoàn toàn độc lập với Flutter UI và SDK Cloud, chia sẻ 100% giữa Mobile App và Web.</text>
 </svg>
 """
@@ -584,6 +584,12 @@ svg_13 = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width=
 # -----------------------------------------------------------------------------
 svg_14 = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width="100%" height="100%">
   <defs>
+    <style>
+      .rel-text { font-family: Calibri, Arial, sans-serif; font-size: 10px; font-weight: 700; fill: #475569; paint-order: stroke fill; stroke: #FFFFFF; stroke-width: 3.5px; stroke-linejoin: round; }
+      .card-text { font-family: Calibri, Arial, sans-serif; font-size: 11px; font-weight: 700; fill: #64748B; paint-order: stroke fill; stroke: #FFFFFF; stroke-width: 3px; stroke-linejoin: round; }
+      .entity-title { font-family: Calibri, Arial, sans-serif; font-size: 12.5px; font-weight: 700; fill: #FFFFFF; text-anchor: middle; }
+      .attr-text { font-family: Calibri, Arial, sans-serif; font-size: 10px; fill: #1E293B; }
+    </style>
     <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
       <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.08" />
     </filter>
@@ -596,91 +602,97 @@ svg_14 = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width=
   <text x="24" y="48" font-family="Calibri, Arial, sans-serif" font-size="11.5" fill="#64748B">EventHub PRM393 · 5 Thực thể cốt lõi, quan hệ bản số (cardinality) và quy tắc toàn vẹn nghiệp vụ chi phối</text>
 
   <!-- Entity 1: CLUB -->
-  <rect x="35" y="90" width="165" height="115" rx="8" fill="#FFF7ED" stroke="#F97316" stroke-width="2" filter="url(#shadow)" />
-  <rect x="35" y="90" width="165" height="30" rx="8" fill="#F97316" />
-  <text x="117" y="111" font-family="Calibri, Arial, sans-serif" font-size="13" font-weight="700" fill="#FFF" text-anchor="middle">CLUB (CÂU LẠC BỘ)</text>
-  <text x="45" y="138" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Mã câu lạc bộ (PK)</text>
-  <text x="45" y="156" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Tên CLB &amp; Logo</text>
-  <text x="45" y="174" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Trưởng CLB (staffUid)</text>
-  <text x="45" y="192" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Trạng thái hoạt động</text>
+  <rect x="30" y="80" width="160" height="125" rx="8" fill="#FFF7ED" stroke="#F97316" stroke-width="2" filter="url(#shadow)" />
+  <rect x="30" y="80" width="160" height="30" rx="8" fill="#F97316" />
+  <text x="110" y="100" class="entity-title">CLUB (CÂU LẠC BỘ)</text>
+  <text x="42" y="126" class="attr-text">• Mã câu lạc bộ (PK)</text>
+  <text x="42" y="144" class="attr-text">• Tên CLB &amp; Logo</text>
+  <text x="42" y="162" class="attr-text">• Trưởng CLB (staffUid)</text>
+  <text x="42" y="180" class="attr-text">• Trạng thái hoạt động</text>
 
-  <!-- Line CLUB to EVENT -->
-  <line x1="200" y1="147" x2="275" y2="147" stroke="#64748B" stroke-width="2" />
-  <text x="210" y="140" font-family="Calibri, Arial, sans-serif" font-size="11" font-weight="700" fill="#64748B">1</text>
-  <text x="240" y="138" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">tổ chức</text>
-  <text x="260" y="140" font-family="Calibri, Arial, sans-serif" font-size="11" font-weight="700" fill="#64748B">0..*</text>
+  <!-- Line CLUB to EVENT (Gap 95px: x=190 to x=285) -->
+  <line x1="190" y1="142" x2="285" y2="142" stroke="#64748B" stroke-width="2" />
+  <text x="237" y="134" class="rel-text" text-anchor="middle">organizes</text>
+  <text x="200" y="157" class="card-text" text-anchor="start">1</text>
+  <text x="275" y="157" class="card-text" text-anchor="end">0..*</text>
 
   <!-- Entity 2: EVENT -->
-  <rect x="275" y="75" width="180" height="145" rx="8" fill="#FFFBEB" stroke="#D97706" stroke-width="2" filter="url(#shadow)" />
-  <rect x="275" y="75" width="180" height="30" rx="8" fill="#D97706" />
-  <text x="365" y="96" font-family="Calibri, Arial, sans-serif" font-size="13" font-weight="700" fill="#FFF" text-anchor="middle">EVENT (SỰ KIỆN)</text>
-  <text x="285" y="123" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Mã sự kiện (PK)</text>
-  <text x="285" y="140" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Tiêu đề &amp; Mô tả</text>
-  <text x="285" y="157" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Sức chứa (capacity)</text>
-  <text x="285" y="174" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Số đã duyệt (activeCount)</text>
-  <text x="285" y="191" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Thời hạn &amp; Bắt đầu</text>
-  <text x="285" y="208" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Trạng thái (status)</text>
+  <rect x="285" y="65" width="180" height="155" rx="8" fill="#FFFBEB" stroke="#D97706" stroke-width="2" filter="url(#shadow)" />
+  <rect x="285" y="65" width="180" height="30" rx="8" fill="#D97706" />
+  <text x="375" y="85" class="entity-title">EVENT (SỰ KIỆN)</text>
+  <text x="295" y="112" class="attr-text">• Mã sự kiện (PK)</text>
+  <text x="295" y="129" class="attr-text">• Tiêu đề &amp; Mô tả</text>
+  <text x="295" y="146" class="attr-text">• Sức chứa (capacity)</text>
+  <text x="295" y="163" class="attr-text">• Số đã duyệt (activeCount)</text>
+  <text x="295" y="180" class="attr-text">• Thời hạn &amp; Bắt đầu</text>
+  <text x="295" y="197" class="attr-text">• Trạng thái (status)</text>
 
-  <!-- Line EVENT to REGISTRATION -->
-  <line x1="455" y1="147" x2="535" y2="147" stroke="#64748B" stroke-width="2" />
-  <text x="465" y="140" font-family="Calibri, Arial, sans-serif" font-size="11" font-weight="700" fill="#64748B">1</text>
-  <text x="485" y="138" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">được ĐK</text>
-  <text x="520" y="140" font-family="Calibri, Arial, sans-serif" font-size="11" font-weight="700" fill="#64748B">0..*</text>
+  <!-- Line EVENT to REGISTRATION (Gap 90px: x=465 to x=555) -->
+  <line x1="465" y1="142" x2="555" y2="142" stroke="#64748B" stroke-width="2" />
+  <text x="510" y="134" class="rel-text" text-anchor="middle">receives</text>
+  <text x="475" y="157" class="card-text" text-anchor="start">1</text>
+  <text x="545" y="157" class="card-text" text-anchor="end">0..*</text>
 
   <!-- Entity 3: REGISTRATION (Associative Entity) -->
-  <rect x="535" y="75" width="195" height="145" rx="8" fill="#FDF2F8" stroke="#DB2777" stroke-width="2.2" filter="url(#shadow)" />
-  <rect x="535" y="75" width="195" height="30" rx="8" fill="#DB2777" />
-  <text x="632" y="96" font-family="Calibri, Arial, sans-serif" font-size="13" font-weight="700" fill="#FFF" text-anchor="middle">REGISTRATION (ĐƠN ĐK)</text>
-  <text x="545" y="123" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• ID: {uid}_{eventId} (PK)</text>
-  <text x="545" y="140" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Thông tin SV (participant)</text>
-  <text x="545" y="157" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Trạng thái (status: pending...)</text>
-  <text x="545" y="174" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Lần gửi (generation)</text>
-  <text x="545" y="191" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• checkInAt (thời điểm checkin)</text>
-  <text x="545" y="208" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Lý do từ chối (reason)</text>
+  <rect x="555" y="65" width="190" height="155" rx="8" fill="#FDF2F8" stroke="#DB2777" stroke-width="2.2" filter="url(#shadow)" />
+  <rect x="555" y="65" width="190" height="30" rx="8" fill="#DB2777" />
+  <text x="650" y="85" class="entity-title">REGISTRATION (ĐƠN ĐK)</text>
+  <text x="565" y="112" class="attr-text">• ID: {uid}_{eventId} (PK)</text>
+  <text x="565" y="129" class="attr-text">• Thông tin SV (participant)</text>
+  <text x="565" y="146" class="attr-text">• Trạng thái (status: pending...)</text>
+  <text x="565" y="163" class="attr-text">• Lần gửi (generation)</text>
+  <text x="565" y="180" class="attr-text">• checkInAt (thời điểm checkin)</text>
+  <text x="565" y="197" class="attr-text">• Lý do từ chối (reason)</text>
 
-  <!-- Line USER to REGISTRATION -->
-  <line x1="730" y1="147" x2="805" y2="147" stroke="#64748B" stroke-width="2" />
-  <text x="740" y="140" font-family="Calibri, Arial, sans-serif" font-size="11" font-weight="700" fill="#64748B">0..*</text>
-  <text x="760" y="138" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">gửi bởi</text>
-  <text x="790" y="140" font-family="Calibri, Arial, sans-serif" font-size="11" font-weight="700" fill="#64748B">1</text>
+  <!-- Line REGISTRATION to USER (Gap 70px: x=745 to x=815) -->
+  <line x1="745" y1="142" x2="815" y2="142" stroke="#64748B" stroke-width="2" />
+  <text x="780" y="134" class="rel-text" text-anchor="middle">submits</text>
+  <text x="755" y="157" class="card-text" text-anchor="start">0..*</text>
+  <text x="805" y="157" class="card-text" text-anchor="end">1</text>
 
   <!-- Entity 4: USER -->
-  <rect x="805" y="90" width="130" height="115" rx="8" fill="#F8FAFC" stroke="#64748B" stroke-width="2" filter="url(#shadow)" />
-  <rect x="805" y="90" width="130" height="30" rx="8" fill="#64748B" />
-  <text x="870" y="111" font-family="Calibri, Arial, sans-serif" font-size="13" font-weight="700" fill="#FFF" text-anchor="middle">USER</text>
-  <text x="815" y="138" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• UID (PK)</text>
-  <text x="815" y="156" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Họ tên, MSSV</text>
-  <text x="815" y="174" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Vai trò (role)</text>
-  <text x="815" y="192" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• clubId (nếu staff)</text>
+  <rect x="815" y="80" width="125" height="125" rx="8" fill="#F8FAFC" stroke="#64748B" stroke-width="2" filter="url(#shadow)" />
+  <rect x="815" y="80" width="125" height="30" rx="8" fill="#64748B" />
+  <text x="877" y="100" class="entity-title">USER (NGƯỜI DÙNG)</text>
+  <text x="825" y="126" class="attr-text">• UID (PK)</text>
+  <text x="825" y="144" class="attr-text">• Họ tên, MSSV</text>
+  <text x="825" y="162" class="attr-text">• Vai trò (role)</text>
+  <text x="825" y="180" class="attr-text">• clubId (nếu staff)</text>
 
   <!-- Entity 5: CHECKIN_SESSION -->
-  <rect x="275" y="270" width="180" height="100" rx="8" fill="#FFFBEB" stroke="#D97706" stroke-width="1.8" filter="url(#shadow)" />
-  <rect x="275" y="270" width="180" height="28" rx="8" fill="#D97706" />
-  <text x="365" y="289" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#FFF" text-anchor="middle">CHECKIN_SESSION</text>
-  <text x="285" y="315" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#1E293B">• eventId (PK)</text>
-  <text x="285" y="333" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#1E293B">• Trạng thái mở (open)</text>
-  <text x="285" y="351" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#1E293B">• openedAt (thời điểm mở)</text>
+  <rect x="285" y="265" width="180" height="100" rx="8" fill="#FFFBEB" stroke="#D97706" stroke-width="1.8" filter="url(#shadow)" />
+  <rect x="285" y="265" width="180" height="28" rx="8" fill="#D97706" />
+  <text x="375" y="284" class="entity-title">CHECKIN_SESSION</text>
+  <text x="295" y="310" class="attr-text">• eventId (PK, FK)</text>
+  <text x="295" y="328" class="attr-text">• Trạng thái mở (open)</text>
+  <text x="295" y="346" class="attr-text">• openedAt (thời điểm mở)</text>
 
-  <!-- Line EVENT to CHECKIN_SESSION -->
-  <line x1="365" y1="220" x2="365" y2="270" stroke="#64748B" stroke-width="2" />
-  <text x="372" y="235" font-family="Calibri, Arial, sans-serif" font-size="10" font-weight="700" fill="#64748B">1</text>
-  <text x="372" y="260" font-family="Calibri, Arial, sans-serif" font-size="10" font-weight="700" fill="#64748B">0..1</text>
+  <!-- Line EVENT to CHECKIN_SESSION (Vertical gap 45px: y=220 to y=265) -->
+  <line x1="375" y1="220" x2="375" y2="265" stroke="#64748B" stroke-width="2" />
+  <text x="388" y="246" class="rel-text" text-anchor="start">opens</text>
+  <text x="362" y="235" class="card-text" text-anchor="end">1</text>
+  <text x="362" y="258" class="card-text" text-anchor="end">0..1</text>
 
   <!-- Entity 6: QR_CREDENTIAL -->
-  <rect x="535" y="270" width="195" height="100" rx="8" fill="#FFF7ED" stroke="#F97316" stroke-width="1.8" filter="url(#shadow)" />
-  <rect x="535" y="270" width="195" height="28" rx="8" fill="#F97316" />
-  <text x="632" y="289" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#FFF" text-anchor="middle">QR_CREDENTIAL</text>
-  <text x="545" y="315" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#1E293B">• qrHash = sha256(token)</text>
-  <text x="545" y="333" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#1E293B">• eventId &amp; clubId</text>
-  <text x="545" y="351" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#1E293B">• enabled: true/false</text>
+  <rect x="555" y="265" width="190" height="100" rx="8" fill="#FFF7ED" stroke="#F97316" stroke-width="1.8" filter="url(#shadow)" />
+  <rect x="555" y="265" width="190" height="28" rx="8" fill="#F97316" />
+  <text x="650" y="284" class="entity-title">QR_CREDENTIAL</text>
+  <text x="565" y="310" class="attr-text">• qrHash = sha256(token) (PK)</text>
+  <text x="565" y="328" class="attr-text">• eventId (FK) &amp; clubId</text>
+  <text x="565" y="346" class="attr-text">• enabled: true/false</text>
 
-  <!-- Line CHECKIN_SESSION to QR_CREDENTIAL -->
-  <line x1="455" y1="320" x2="535" y2="320" stroke="#64748B" stroke-width="1.5" stroke-dasharray="3,3" />
-  <text x="475" y="312" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B">liên kết</text>
+  <!-- Line CHECKIN_SESSION to QR_CREDENTIAL (Gap 90px: x=465 to x=555) -->
+  <line x1="465" y1="315" x2="555" y2="315" stroke="#64748B" stroke-width="1.6" stroke-dasharray="4,3" />
+  <text x="510" y="307" class="rel-text" text-anchor="middle">issues</text>
+  <text x="475" y="330" class="card-text" text-anchor="start">1</text>
+  <text x="545" y="330" class="card-text" text-anchor="end">1..*</text>
 
   <!-- Bottom Rules Note -->
-  <rect x="25" y="390" width="910" height="38" rx="6" fill="#F8FAFC" stroke="#E2E8F0" />
-  <text x="35" y="413" font-family="Calibri, Arial, sans-serif" font-size="11" fill="#1E293B"><strong>Ràng buộc toàn vẹn ngữ nghĩa:</strong> Mỗi Sinh viên chỉ có tối đa 1 Registration hoạt động cho 1 Event (khóa {uid}_{eventId}). Một Event chỉ có tối đa 1 phiên QR đang mở.</text>
+  <rect x="25" y="385" width="910" height="38" rx="6" fill="#F8FAFC" stroke="#E2E8F0" />
+  <text x="35" y="408" font-family="Calibri, Arial, sans-serif" font-size="11" fill="#1E293B">
+    <tspan font-weight="700" fill="#475569">Ràng buộc toàn vẹn ngữ nghĩa (Business Integrity Constraints):</tspan>
+    <tspan fill="#334155"> Mỗi Sinh viên chỉ có tối đa 1 Registration hoạt động cho 1 Event (khóa {uid}_{eventId}). Một Event chỉ có tối đa 1 phiên QR đang mở.</tspan>
+  </text>
 </svg>
 """
 
