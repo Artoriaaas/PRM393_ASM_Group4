@@ -1,6 +1,7 @@
 # EventHub — PRM393 Final Assignment / Group 4
 
 Một hệ thống gồm Flutter Mobile cho người tham gia, Flutter Web cho staff/admin và Firebase project **eventhub-group4**. Chủ đề kế thừa Lab 2/3; repo này dùng để nộp Final, không dùng bộ bàn giao Lab03.
+slide: https://artoriaaas.github.io/PRM393_ASM_Group4/slides/#G1
 
 ## Phạm vi theo đề Final
 
