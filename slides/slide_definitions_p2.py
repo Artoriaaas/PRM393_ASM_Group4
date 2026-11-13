@@ -271,7 +271,7 @@ def get_p2_slides():
         "panel_label": "MẪU BỐ CỤC",
         "panel_content_html": """
           <div style="width: 100%; height: 100%; position: relative;">
-            <img src="../evidence/diagrams/09-system-architecture.svg" alt="System Architecture Diagram" 
+            <img src="../evidence/diagrams/09-system-architecture.svg?v=c4_perfect_clean" alt="System Architecture Diagram" 
                  style="width: 100%; height: 100%; object-fit: contain; display: block;" 
                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
             
