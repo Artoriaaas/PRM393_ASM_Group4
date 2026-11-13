@@ -1,0 +1,7 @@
+{
+  "case_id": "TC07",
+  "status": "client_error",
+  "acceptance_status": "not_passed",
+  "elapsed_seconds": 2.1366036999988864,
+  "error_type": "NetworkError"
+}
