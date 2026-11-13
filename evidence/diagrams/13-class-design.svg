@@ -30,7 +30,7 @@
 
   <rect x="35" y="245" width="160" height="55" rx="5" fill="#FFF" stroke="#F472B6" />
   <text x="45" y="263" font-family="Calibri, Arial, sans-serif" font-size="11" font-weight="700" fill="#DB2777">ReviewQueueView</text>
-  <text x="45" y="280" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B">Web Admin: Phê duyệt</text>
+  <text x="45" y="280" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B">Web: Phê duyệt</text>
 
   <!-- Box 2: ViewModel Layer -->
   <rect x="245" y="70" width="220" height="260" rx="8" fill="#FFF7ED" stroke="#F97316" stroke-width="1.8" filter="url(#shadow)" />
@@ -93,5 +93,5 @@
   <rect x="25" y="345" width="910" height="75" rx="6" fill="#FDF2F8" stroke="#DB2777" stroke-width="1" />
   <text x="45" y="368" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#9D174D">DOMAIN MODELS (PACKAGE: packages/core/lib/models/)</text>
   <text x="45" y="390" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B"><tspan font-weight="700">Registration:</tspan> id, uid, eventId, clubId, status, generation, participant, reason, checkInAt, createdAt, lastOperationId</text>
-  <text x="45" y="408" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">Hoàn toàn độc lập với Flutter UI và SDK Cloud, chia sẻ 100% giữa Mobile App và Web Admin.</text>
+  <text x="45" y="408" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">Hoàn toàn độc lập với Flutter UI và SDK Cloud, chia sẻ 100% giữa Mobile App và Web.</text>
 </svg>

@@ -22,7 +22,7 @@ def get_p2_slides():
 
       <div class="s-head">
         <h2>Luồng nghiệp vụ tổng thể: <em>3 Làn phối hợp &amp; Điểm rẽ theo Business Rule</em></h2>
-        <p class="sub">Sơ đồ Activity phân làn (Swimlane) thể hiện sự phối hợp liên ứng dụng giữa Sinh viên (Mobile App), Hệ thống (Firestore Rules) và Trưởng CLB (Web Admin).</p>
+        <p class="sub">Sơ đồ Activity phân làn (Swimlane) thể hiện sự phối hợp liên ứng dụng giữa Sinh viên (Mobile App), Hệ thống (Firestore Rules) và Trưởng CLB (Web).</p>
       </div>
 
       <div class="s-body">
@@ -171,8 +171,7 @@ def get_p2_slides():
 
       <div class="s-head">
         <h2>Kiến trúc C4 Container: <em>Serverless Realtime &amp; 0 Máy chủ trung gian</em></h2>
-        <p class="sub">Flutter Mobile và Flutter Web Admin giao tiếp trực tiếp với Cloud Firestore qua kết nối gRPC/HTTPS; toàn bộ ranh giới nghiệp vụ do Security Rules kiểm soát.</p>
-      </div>
+        <p class="sub">Flutter Mobile và Flutter Web giao tiếp trực tiếp với Cloud Firestore qua kết nối gRPC/HTTPS; toàn bộ ranh giới nghiệp vụ do Security Rules kiểm soát.</p>
 
       <div class="s-body">
         <!-- Khung sơ đồ C4 Container Vector -->
@@ -286,7 +285,7 @@ def get_p2_slides():
               <tr>
                 <td><span class="tag nghe">DevOps</span></td>
                 <td><strong>GitHub Actions • Firebase Hosting • Docker</strong></td>
-                <td>Tự động hóa CI/CD, kiểm tra code analyze và deploy bản Web Admin</td>
+                <td>Tự động hóa CI/CD, kiểm tra code analyze và deploy bản Web</td>
                 <td style="text-align: center;"><span class="tag">Automated</span></td>
               </tr>
             </tbody>
@@ -332,7 +331,7 @@ def get_p2_slides():
             </div>
             <div style="font-size: 19px; font-weight: 800; color: var(--vai);">Low-fi Wireframe</div>
             <div style="font-size: 14px; color: var(--vai-2); margin-top: 6px; line-height: 1.4;">
-              Định hình khung xương và luồng điều hướng của 12 màn hình Mobile (A01..A12) cùng 5 màn Web Admin, sắp xếp bố cục hợp lý trước khi đổ màu.
+              Định hình khung xương và luồng điều hướng của 12 màn hình Mobile (A01..A12) cùng 5 màn Web, sắp xếp bố cục hợp lý trước khi đổ màu.
             </div>
           </a>
 

@@ -40,9 +40,9 @@
   <text x="48" y="213" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">• MobileScanner quét QR Token</text>
   <text x="48" y="242" font-family="Calibri, Arial, sans-serif" font-size="9" font-weight="700" fill="#DB2777">Platform: Android 10+ (API 29+)</text>
 
-  <!-- Web Admin Box -->
+  <!-- Web Box -->
   <rect x="36" y="272" width="222" height="120" rx="6" fill="#FFF" stroke="#F472B6" stroke-width="1.2" filter="url(#shadow)" />
-  <text x="48" y="294" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#DB2777">Flutter Web Admin</text>
+  <text x="48" y="294" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#DB2777">Flutter Web</text>
   <text x="48" y="312" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">• Dành cho Trưởng CLB (staff) &amp; Admin</text>
   <text x="48" y="328" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">• 5 Màn hình: Dashboard, Reviews, QR...</text>
   <text x="48" y="344" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">• GoRouter 14.8 responsive web</text>

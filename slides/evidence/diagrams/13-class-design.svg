@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width="100%" height="100%">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#64748B" />
+    </marker>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.08" />
+    </filter>
+  </defs>
+
+  <rect width="960" height="440" rx="8" fill="#FFFFFF" />
+
+  <!-- Title -->
+  <text x="24" y="32" font-family="Calibri, Arial, sans-serif" font-size="16" font-weight="700" fill="#1E293B">SƠ ĐỒ THIẾT KẾ LỚP (CLASS DESIGN &amp; LAYERED ARCHITECTURE)</text>
+  <text x="24" y="48" font-family="Calibri, Arial, sans-serif" font-size="11.5" fill="#64748B">EventHub PRM393 · Clean MVVM: Tách biệt rõ View (UI), ViewModel (Riverpod), Service Contracts và Domain Models</text>
+
+  <!-- 3 Main Columns: View -> ViewModel -> Service Contract -->
+  <!-- Box 1: View Layer -->
+  <rect x="25" y="70" width="180" height="260" rx="8" fill="#FDF2F8" stroke="#DB2777" stroke-width="1.5" filter="url(#shadow)" />
+  <rect x="25" y="70" width="180" height="32" rx="8" fill="#DB2777" />
+  <text x="115" y="91" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#FFF" text-anchor="middle">VIEW (UI SCREENS)</text>
+  
+  <rect x="35" y="115" width="160" height="55" rx="5" fill="#FFF" stroke="#F472B6" />
+  <text x="45" y="133" font-family="Calibri, Arial, sans-serif" font-size="11" font-weight="700" fill="#DB2777">RegistrationFormScreen</text>
+  <text x="45" y="150" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B">Màn A05: Nhập thông tin</text>
+
+  <rect x="35" y="180" width="160" height="55" rx="5" fill="#FFF" stroke="#F472B6" />
+  <text x="45" y="198" font-family="Calibri, Arial, sans-serif" font-size="11" font-weight="700" fill="#DB2777">ScannerScreen</text>
+  <text x="45" y="215" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B">Màn A11: Camera QR</text>
+
+  <rect x="35" y="245" width="160" height="55" rx="5" fill="#FFF" stroke="#F472B6" />
+  <text x="45" y="263" font-family="Calibri, Arial, sans-serif" font-size="11" font-weight="700" fill="#DB2777">ReviewQueueView</text>
+  <text x="45" y="280" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B">Web: Phê duyệt</text>
+
+  <!-- Box 2: ViewModel Layer -->
+  <rect x="245" y="70" width="220" height="260" rx="8" fill="#FFF7ED" stroke="#F97316" stroke-width="1.8" filter="url(#shadow)" />
+  <rect x="245" y="70" width="220" height="32" rx="8" fill="#F97316" />
+  <text x="355" y="91" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#FFF" text-anchor="middle">VIEWMODELS (RIVERPOD)</text>
+
+  <rect x="255" y="115" width="200" height="90" rx="5" fill="#FFF" stroke="#FB923C" />
+  <text x="265" y="133" font-family="Calibri, Arial, sans-serif" font-size="11.5" font-weight="700" fill="#EA580C">BookingViewModel</text>
+  <text x="265" y="152" font-family="Calibri, Arial, sans-serif" font-size="9.5" fill="#1E293B">+ submitRegistration(form)</text>
+  <text x="265" y="168" font-family="Calibri, Arial, sans-serif" font-size="9.5" fill="#1E293B">+ cancelRegistration(id)</text>
+  <text x="265" y="184" font-family="Calibri, Arial, sans-serif" font-size="9.5" fill="#1E293B">+ state: AsyncValue&lt;BookingState&gt;</text>
+
+  <rect x="255" y="215" width="200" height="85" rx="5" fill="#FFF" stroke="#FB923C" />
+  <text x="265" y="233" font-family="Calibri, Arial, sans-serif" font-size="11.5" font-weight="700" fill="#EA580C">ScannerViewModel</text>
+  <text x="265" y="252" font-family="Calibri, Arial, sans-serif" font-size="9.5" fill="#1E293B">+ onQrCodeDetected(rawToken)</text>
+  <text x="265" y="268" font-family="Calibri, Arial, sans-serif" font-size="9.5" fill="#1E293B">+ verifyAndCheckIn()</text>
+  <text x="265" y="284" font-family="Calibri, Arial, sans-serif" font-size="9.5" fill="#1E293B">+ lockDuplicateScans()</text>
+
+  <!-- Box 3: Service Contracts (Interfaces) -->
+  <rect x="505" y="70" width="200" height="260" rx="8" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5" filter="url(#shadow)" />
+  <rect x="505" y="70" width="200" height="32" rx="8" fill="#D97706" />
+  <text x="605" y="91" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#FFF" text-anchor="middle">SERVICE CONTRACTS</text>
+
+  <rect x="515" y="115" width="180" height="90" rx="5" fill="#FFF" stroke="#FCD34D" />
+  <text x="525" y="132" font-family="Calibri, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#B45309">&#171;interface&#187; EventService</text>
+  <text x="525" y="150" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#1E293B">+ registerEvent(form, opId)</text>
+  <text x="525" y="165" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#1E293B">+ approveRegistration(id)</text>
+  <text x="525" y="180" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#1E293B">+ checkInWithQr(qrHash)</text>
+  <text x="525" y="195" font-family="Calibri, Arial, sans-serif" font-size="8.5" fill="#64748B">Dễ dàng Fake / Mock khi Test</text>
+
+  <rect x="515" y="215" width="180" height="85" rx="5" fill="#FFF" stroke="#FCD34D" />
+  <text x="525" y="232" font-family="Calibri, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#B45309">&#171;interface&#187; QrCameraService</text>
+  <text x="525" y="250" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#1E293B">+ startScanning()</text>
+  <text x="525" y="265" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#1E293B">+ stopScanning()</text>
+  <text x="525" y="280" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#1E293B">+ torchToggle()</text>
+
+  <!-- Box 4: Implementation Layer -->
+  <rect x="745" y="70" width="190" height="260" rx="8" fill="#F8FAFC" stroke="#64748B" stroke-width="1.5" filter="url(#shadow)" />
+  <rect x="745" y="70" width="190" height="32" rx="8" fill="#64748B" />
+  <text x="840" y="91" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#FFF" text-anchor="middle">IMPLEMENTATIONS</text>
+
+  <rect x="755" y="115" width="170" height="90" rx="5" fill="#FFF" stroke="#CBD5E1" />
+  <text x="765" y="132" font-family="Calibri, Arial, sans-serif" font-size="11" font-weight="700" fill="#334155">FirestoreEventService</text>
+  <text x="765" y="150" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B">implements EventService</text>
+  <text x="765" y="168" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#1E293B">Gọi Cloud Firestore SDK</text>
+  <text x="765" y="184" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#1E293B">Thực thi Transactions</text>
+
+  <rect x="755" y="215" width="170" height="85" rx="5" fill="#FFF" stroke="#CBD5E1" />
+  <text x="765" y="232" font-family="Calibri, Arial, sans-serif" font-size="11" font-weight="700" fill="#334155">SecureBookingStore</text>
+  <text x="765" y="250" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#1E293B">FlutterSecureStorage</text>
+  <text x="765" y="266" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#1E293B">Lưu pending operationId</text>
+  <text x="765" y="282" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#1E293B">Phục hồi khi mất mạng (D08)</text>
+
+  <!-- Connectors -->
+  <line x1="205" y1="145" x2="243" y2="145" stroke="#DB2777" stroke-width="1.5" marker-end="url(#arrow)" />
+  <line x1="465" y1="145" x2="503" y2="145" stroke="#EA580C" stroke-width="1.5" marker-end="url(#arrow)" />
+  <line x1="705" y1="145" x2="743" y2="145" stroke="#D97706" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arrow)" />
+
+  <!-- Domain Entity Box (Bottom Bar) -->
+  <rect x="25" y="345" width="910" height="75" rx="6" fill="#FDF2F8" stroke="#DB2777" stroke-width="1" />
+  <text x="45" y="368" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#9D174D">DOMAIN MODELS (PACKAGE: packages/core/lib/models/)</text>
+  <text x="45" y="390" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B"><tspan font-weight="700">Registration:</tspan> id, uid, eventId, clubId, status, generation, participant, reason, checkInAt, createdAt, lastOperationId</text>
+  <text x="45" y="408" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">Hoàn toàn độc lập với Flutter UI và SDK Cloud, chia sẻ 100% giữa Mobile App và Web.</text>
+</svg>

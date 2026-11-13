@@ -51,7 +51,7 @@ def get_p3_p4_slides():
             </div>
             <h3 style="font-size: 20px; color: var(--vai);">Trưởng CLB duyệt &amp; Khóa chỗ</h3>
             <div style="font-size: 14.5px; color: var(--vai-2); margin-top: 6px; line-height: 1.4;">
-              • <strong>Thiết bị:</strong> Laptop Web Admin (Chrome)<br>
+              • <strong>Thiết bị:</strong> Laptop Web (Chrome)<br>
               • <strong>Tài khoản:</strong> Trưởng CLB F-Code (staff)<br>
               • <strong>Thao tác:</strong> Mở Review Queue, kiểm tra hồ sơ, bấm Phê duyệt.<br>
               • <strong>Kết quả:</strong> Đơn đổi <code>APPROVED</code>, `activeCount + 1`, bắn Push FCM về điện thoại.
@@ -67,7 +67,7 @@ def get_p3_p4_slides():
             <h3 style="font-size: 20px; color: var(--vai);">Phát mã QR &amp; Quét check-in</h3>
             <div style="font-size: 14.5px; color: var(--vai-2); margin-top: 6px; line-height: 1.4;">
               • <strong>Thiết bị:</strong> Màn hình máy chiếu + Điện thoại<br>
-              • <strong>Phát mã:</strong> Web Admin mở phiên phát mã QR động<br>
+              • <strong>Phát mã:</strong> Web mở phiên phát mã QR động<br>
               • <strong>Thao tác:</strong> Sinh viên quét mã bằng camera A11.<br>
               • <strong>Kết quả:</strong> Nhận biên nhận A12, Web nhảy số có mặt trong 1 giây.
             </div>
@@ -132,7 +132,7 @@ def get_p3_p4_slides():
           <div class="panel" style="padding: 12px 16px; background: rgba(219,39,119,0.06);">
             <div style="font: 600 13px var(--mono); color: var(--pink);">MINH CHỨNG QUAN SÁT TỨC THỜI:</div>
             <div style="font-size: 13.5px; color: var(--vai); margin-top: 4px;">
-              Đơn #REG-102 vừa tạo xuất hiện ngay lập tức trên Review Queue của Web Admin mà không cần tải lại trang.
+              Đơn #REG-102 vừa tạo xuất hiện ngay lập tức trên Review Queue của Web mà không cần tải lại trang.
             </div>
           </div>
         </div>
@@ -175,18 +175,18 @@ def get_p3_p4_slides():
     """)
 
     # -------------------------------------------------------------------------
-    # SLIDE 19 · DEMO WF-02 (Web Admin + Real FCM Push Evidence!)
+    # SLIDE 19 · DEMO WF-02 (Web + Real FCM Push Evidence!)
     # -------------------------------------------------------------------------
     slides_html.append("""
     <!-- SLIDE 19 · DEMO WF-02 -->
     <section class="slide" id="slide-19" data-page="19" data-title="19 Demo WF-02">
       <div class="s-top">
-        <div class="eb">P3 · DEMO · 19 WF-02: XÉT DUYỆT ĐƠN &amp; KHÓA CHỖ (WEB ADMIN)</div>
+        <div class="eb">P3 · DEMO · 19 WF-02: XÉT DUYỆT ĐƠN &amp; KHÓA CHỖ (WEB)</div>
         <div class="pg-badge">BẢN VẼ 19 / 24</div>
       </div>
 
       <div class="s-head">
-        <h2>Demo WF-02: <em>Trưởng CLB xét duyệt đơn (Web Admin) &amp; Push FCM</em></h2>
+        <h2>Demo WF-02: <em>Trưởng CLB xét duyệt đơn (Web) &amp; Push FCM</em></h2>
         <p class="sub">Xử lý nghiệp vụ: Atomic Transaction duyệt đơn tăng `activeCount + 1` và tự động bắn thông báo đẩy FCM về điện thoại sinh viên.</p>
       </div>
 
@@ -196,11 +196,11 @@ def get_p3_p4_slides():
           <div class="panel accent-nghe" style="padding: 16px;">
             <div style="font: 800 15px var(--display); color: var(--nghe); margin-bottom: 6px;">KỊCH BẢN THAO TÁC TRỰC TIẾP:</div>
             <div style="font-size: 14.5px; color: var(--vai); line-height: 1.45;">
-              1. Trưởng CLB mở màn hình <strong>Review Queue</strong> trên Web Admin.<br>
-              2. Nhìn thấy đơn #REG-102 của sinh viên Nguyễn Văn A vừa nộp.<br>
-              3. Bấm <strong>"Phê duyệt"</strong> → Firestore chạy Atomic Transaction:
-                 đơn chuyển sang <code>APPROVED</code>, `activeCount` tăng từ 14 lên 15/30.<br>
-              4. Điện thoại của sinh viên lập tức rung và hiện thông báo đẩy FCM.
+              1. Trưởng CLB mở màn hình <strong>Hàng đợi xét duyệt</strong> trên Web.<br>
+              2. Nhìn thấy đơn của sinh viên <strong>Huy PhamGia</strong> (Sự kiện Giao lưu cầu lông FPT) vừa nộp.<br>
+              3. Bấm <strong>"Duyệt (Approve)"</strong> → Firestore chạy Atomic Transaction:
+                 đơn chuyển sang <code>APPROVED</code>, sức chứa tự động cập nhật còn 49 chỗ.<br>
+              4. Điện thoại của sinh viên lập tức cập nhật màn hình A08 sang <strong>ĐÃ ĐƯỢC DUYỆT</strong>.
             </div>
           </div>
 
@@ -220,64 +220,56 @@ def get_p3_p4_slides():
           </div>
         </div>
 
-        <!-- Cột phải: 2 Khối minh chứng (Web Admin Interface + FCM Push Android) -->
-        <div style="flex: 1.1; display: flex; flex-direction: column; gap: 14px;">
-          <!-- Khung Web Admin Review Queue Mockup sắc nét -->
-          <div class="panel" style="flex: 1; padding: 16px; background: #FFFFFF; border: 1.5px solid var(--cham-3);">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--cham-3); padding-bottom: 8px; margin-bottom: 10px;">
-              <span style="font: 700 14px var(--mono); color: var(--nghe);">FLUTTER WEB ADMIN: REVIEW QUEUE (/reviews)</span>
-              <span class="tag si">● WEBSOCKET LIVE</span>
+        <!-- Cột phải: 2 Khối minh chứng (Web Review Queue + Mobile Approved A08) -->
+        <div style="flex: 1.15; display: flex; flex-direction: column; gap: 12px;">
+          <!-- Khung Web Review Queue (Ảnh 1) -->
+          <div class="panel" style="flex: 1.05; padding: 12px 16px; background: #FFFFFF; border: 1.5px solid var(--cham-3); display: flex; flex-direction: column; justify-content: space-between;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--cham-3); padding-bottom: 6px; margin-bottom: 6px;">
+              <span style="font: 700 13px var(--mono); color: var(--nghe);">FLUTTER WEB: HÀNG ĐỢI XÉT DUYỆT ĐĂNG KÝ (/reviews)</span>
+              <span class="tag si">● LIVE TRÊN WEB</span>
             </div>
 
-            <div style="background: var(--cham); border-radius: 6px; padding: 12px; margin-bottom: 10px;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-weight: 800; font-size: 15px;">Workshop Lập trình Flutter &amp; Firebase · CLB F-Code</span>
-                <span class="tag nghe">Sức chứa: 15 / 30 chỗ</span>
-              </div>
+            <div style="height: 190px; overflow: hidden; border-radius: 6px; border: 1px solid var(--cham-3); background: #FFF; display: flex; align-items: center; justify-content: center;">
+              <img src="../evidence/web_review_queue_live.png" alt="Flutter Web Review Queue Live" 
+                   style="width: 100%; height: 100%; object-fit: contain; object-position: center;">
             </div>
-
-            <table class="spec-table" style="font-size: 13.5px;">
-              <thead>
-                <tr>
-                  <th>Mã đơn</th>
-                  <th>Sinh viên</th>
-                  <th>MSSV</th>
-                  <th>Thời gian gửi</th>
-                  <th style="text-align: right;">Thao tác duyệt</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr style="background: rgba(234,88,12,0.08);">
-                  <td style="font-weight: 700; color: var(--nghe);">#REG-102</td>
-                  <td><strong>Nguyễn Văn A</strong></td>
-                  <td>SE180001</td>
-                  <td>Vừa xong</td>
-                  <td style="text-align: right;">
-                    <span class="tag si" style="cursor: pointer;">✓ DUYỆT</span>
-                    <span class="tag red" style="cursor: pointer;">✗ TỪ CHỐI</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <div style="font: 600 11.5px var(--mono); color: var(--vai-3); margin-top: 4px; text-align: center;">
+              Giao diện thật của Trưởng CLB đang xét duyệt đơn cho sinh viên Huy PhamGia
+            </div>
           </div>
 
-          <!-- Ảnh chụp thật thông báo đẩy FCM trên Android -->
-          <div class="panel accent-pink" style="padding: 12px 16px; background: #FFFFFF;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-              <span style="font: 700 13px var(--mono); color: var(--pink);">MINH CHỨNG THẬT: THÔNG BÁO ĐẨY FCM TRÊN ANDROID</span>
-              <span class="tag pink">EVIDENCE</span>
+          <!-- Khung Mobile Approved A08 (Ảnh 2) -->
+          <div class="panel accent-si" style="flex: 0.95; padding: 12px 16px; background: #FFFFFF; display: flex; flex-direction: column; justify-content: space-between;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--cham-3); padding-bottom: 6px; margin-bottom: 6px;">
+              <span style="font: 700 13px var(--mono); color: var(--si);">MINH CHỨNG THẬT: MOBILE TỨC THÌ ĐỔI SANG "ĐÃ ĐƯỢC DUYỆT" (A08)</span>
+              <span class="tag si">EVIDENCE</span>
             </div>
-            <div style="height: 120px; overflow: hidden; border-radius: 6px; border: 1px solid var(--cham-3);">
-              <img src="../evidence/instrumentation/fcm/foreground-console-and-receipt.png" alt="FCM Notification Receipt" 
-                   style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
+
+            <div style="display: flex; gap: 14px; align-items: center; height: 190px;">
+              <!-- Thông tin chi tiết bên trái -->
+              <div style="flex: 1.1; font-size: 13px; color: var(--vai); line-height: 1.45;">
+                <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                  <span class="tag si" style="font-size: 11px;">APPROVED</span>
+                  <strong>Khóa sức chứa thành công</strong>
+                </div>
+                <div>• <strong>Sự kiện:</strong> Giao lưu cầu lông FPT</div>
+                <div>• <strong>Sinh viên:</strong> Huy PhamGia (phamgiahuy5513@gmail.com)</div>
+                <div>• <strong>Sức chứa realtime:</strong> Tự động trừ thành <em>Còn 49 chỗ</em></div>
+                <div>• <strong>Đồng bộ hai chiều:</strong> Web duyệt → Mobile đổi trạng thái &lt;1s</div>
+              </div>
+
+              <!-- Ảnh điện thoại thật (Ảnh 2) bên phải -->
+              <div style="flex: 0.9; height: 100%; display: flex; justify-content: center; align-items: center; background: var(--cham-2); border-radius: 6px; padding: 4px; border: 1px solid var(--cham-3);">
+                <img src="../evidence/mobile_registration_approved.png" alt="Mobile Registration Approved A08" 
+                     style="height: 100%; max-width: 100%; object-fit: contain; border-radius: 4px;">
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <div class="s-foot">
-        <div class="foot-left"><span class="mono-meta">WF-02 COMPLETED: TRANSACTION COMMITTED · STATUS = 'APPROVED' · ACTIVECOUNT: 14 → 15</span></div>
-        <div class="foot-right"><span class="mono-meta">19 / 24</span></div>
+        <div class="foot-left"><span class="mono-meta">WF-02 COMPLETED: TRANSACTION COMMITTED · STATUS = 'APPROVED' · CÒN 49/50 CHỖ</span></div>
       </div>
     </section>
     """)
@@ -295,7 +287,7 @@ def get_p3_p4_slides():
 
       <div class="s-head">
         <h2>Demo WF-03: <em>Điểm danh QR tại sự kiện &amp; Biên nhận A12 realtime</em></h2>
-        <p class="sub">Tổng hợp kết quả: Màn hình hội trường phát mã QR băm SHA-256; Sinh viên quét mã, nhận biên nhận và Web Admin cập nhật số lượng có mặt tức thì.</p>
+        <p class="sub">Tổng hợp kết quả: Màn hình hội trường phát mã QR băm SHA-256; Sinh viên quét mã, nhận biên nhận và Web cập nhật số lượng có mặt tức thì.</p>
       </div>
 
       <div class="s-body">
@@ -333,7 +325,7 @@ def get_p3_p4_slides():
           <!-- Khung Web Live QR Panel Mockup -->
           <div class="panel" style="flex: 1; padding: 16px; background: #FFFFFF; border: 1.5px solid var(--cham-3);">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--cham-3); padding-bottom: 8px; margin-bottom: 10px;">
-              <span style="font: 700 14px var(--mono); color: var(--son);">WEB ADMIN: PHIÊN ĐIỂM DANH LIVE (/checkin)</span>
+              <span style="font: 700 14px var(--mono); color: var(--son);">WEB: PHIÊN ĐIỂM DANH LIVE (/checkin)</span>
               <span class="tag si">● SESSION ACTIVE</span>
             </div>
 
@@ -423,7 +415,7 @@ def get_p3_p4_slides():
                 <td style="text-align: right;"><span class="tag si">86 / 86 PASS</span></td>
               </tr>
               <tr>
-                <td><strong>Web Admin Tests</strong></td>
+                <td><strong>Web Tests</strong></td>
                 <td>28 bài test: Admin Features, AI Event Assistant, Review Queue, Policy Tests</td>
                 <td style="text-align: right;"><span class="tag si">28 / 28 PASS</span></td>
               </tr>
@@ -514,7 +506,7 @@ def get_p3_p4_slides():
             <h3 style="font-size: 20px; color: var(--vai);">Sản phẩm bàn giao</h3>
             <div style="font-size: 15px; color: var(--vai-2); margin-top: 10px; line-height: 1.45; flex: 1;">
               • <strong>12 Màn hình Mobile App</strong> (Flutter Android 10+).<br>
-              • <strong>5 Màn hình Web Admin</strong> (Flutter Web Hosting).<br>
+              • <strong>5 Màn hình Web</strong> (Flutter Web Hosting).<br>
               • <strong>100% Security Rules</strong> bảo vệ toàn bộ 7 collections.<br>
               • <strong>Trợ lý Gemini AI</strong> sinh nội dung JSON Level 2.
             </div>
@@ -661,7 +653,7 @@ def get_p3_p4_slides():
             <div style="display: flex; gap: 16px; flex-wrap: wrap;">
               <a href="https://eventhub-group4.web.app" target="_blank" 
                  style="text-decoration: none; background: var(--son); color: #FFF; font: 600 14px var(--mono); padding: 10px 18px; border-radius: 6px;">
-                🌐 LIVE WEB ADMIN ↗
+                🌐 LIVE WEB ↗
               </a>
               <a href="https://github.com/thinhcri/PRM393_Lab03_Group4" target="_blank" 
                  style="text-decoration: none; background: #0F172A; color: #FFF; font: 600 14px var(--mono); padding: 10px 18px; border-radius: 6px;">
@@ -709,7 +701,7 @@ def get_p3_p4_slides():
           <div class="panel accent-pink">
             <div style="font: 800 16px var(--mono); color: var(--pink); margin-bottom: 6px;">A1 · UI &amp; MÀN HÌNH PHỤ</div>
             <div style="font-size: 14px; color: var(--vai-2); line-height: 1.4; flex: 1;">
-              Hồ sơ đặc tả 12 màn hình Mobile A01..A12, 5 màn hình Web Admin, Figma Design Tokens và bảng ánh xạ components.
+              Hồ sơ đặc tả 12 màn hình Mobile A01..A12, 5 màn hình Web, Figma Design Tokens và bảng ánh xạ components.
             </div>
             <a href="../docs/flutter-handoff.md" target="_blank" style="font: 600 13px var(--mono); color: var(--pink); text-decoration: none; margin-top: 8px;">
               📄 MỞ FLUTTER-HANDOFF.MD ↗

@@ -43,7 +43,7 @@ svg_07 = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width=
 
   <!-- Title & Legend -->
   <text x="24" y="30" font-family="Calibri, Arial, sans-serif" font-size="16" font-weight="700" fill="#1E293B">SƠ ĐỒ NGHIỆP VỤ LIÊN VAI TRÒ (CROSS-ROLE ACTIVITY &amp; BUSINESS FLOW)</text>
-  <text x="24" y="46" font-family="Calibri, Arial, sans-serif" font-size="11.5" fill="#64748B">EventHub PRM393 ASM · 3 Làn phối hợp: Sinh viên (Mobile App), Hệ thống (Firestore Rules), Trưởng CLB (Web Admin)</text>
+  <text x="24" y="46" font-family="Calibri, Arial, sans-serif" font-size="11.5" fill="#64748B">EventHub PRM393 ASM · 3 Làn phối hợp: Sinh viên (Mobile App), Hệ thống (Firestore Rules), Trưởng CLB (Web)</text>
 
   <!-- Swimlane 1: Sinh viên -->
   <rect x="20" y="58" width="920" height="112" rx="6" fill="#FDF2F8" stroke="#FBCFE8" stroke-width="1" />
@@ -108,7 +108,7 @@ svg_07 = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width=
   <rect x="20" y="302" width="920" height="120" rx="6" fill="#FFF7ED" stroke="#FED7AA" stroke-width="1" />
   <rect x="20" y="302" width="125" height="120" rx="6" fill="#EA580C" opacity="0.12" />
   <text x="32" y="358" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#C2410C">TRƯỞNG CLB</text>
-  <text x="32" y="375" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">Web Admin (Role: staff)</text>
+  <text x="32" y="375" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">Web (Role: staff)</text>
 
   <!-- Review Queue -->
   <rect x="408" y="339" width="112" height="46" rx="6" fill="#FFF" stroke="#EA580C" stroke-width="1.5" filter="url(#shadow)" />
@@ -326,9 +326,9 @@ svg_09 = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 485" width=
   <text x="48" y="213" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">• MobileScanner quét QR Token</text>
   <text x="48" y="242" font-family="Calibri, Arial, sans-serif" font-size="9" font-weight="700" fill="#DB2777">Platform: Android 10+ (API 29+)</text>
 
-  <!-- Web Admin Box -->
+  <!-- Web Box -->
   <rect x="36" y="272" width="222" height="120" rx="6" fill="#FFF" stroke="#F472B6" stroke-width="1.2" filter="url(#shadow)" />
-  <text x="48" y="294" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#DB2777">Flutter Web Admin</text>
+  <text x="48" y="294" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#DB2777">Flutter Web</text>
   <text x="48" y="312" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">• Dành cho Trưởng CLB (staff) &amp; Admin</text>
   <text x="48" y="328" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">• 5 Màn hình: Dashboard, Reviews, QR...</text>
   <text x="48" y="344" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">• GoRouter 14.8 responsive web</text>
@@ -528,7 +528,7 @@ svg_13 = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width=
 
   <rect x="35" y="245" width="160" height="55" rx="5" fill="#FFF" stroke="#F472B6" />
   <text x="45" y="263" font-family="Calibri, Arial, sans-serif" font-size="11" font-weight="700" fill="#DB2777">ReviewQueueView</text>
-  <text x="45" y="280" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B">Web Admin: Phê duyệt</text>
+  <text x="45" y="280" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B">Web: Phê duyệt</text>
 
   <!-- Box 2: ViewModel Layer -->
   <rect x="245" y="70" width="220" height="260" rx="8" fill="#FFF7ED" stroke="#F97316" stroke-width="1.8" filter="url(#shadow)" />
@@ -591,7 +591,7 @@ svg_13 = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width=
   <rect x="25" y="345" width="910" height="75" rx="6" fill="#FDF2F8" stroke="#DB2777" stroke-width="1" />
   <text x="45" y="368" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#9D174D">DOMAIN MODELS (PACKAGE: packages/core/lib/models/)</text>
   <text x="45" y="390" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B"><tspan font-weight="700">Registration:</tspan> id, uid, eventId, clubId, status, generation, participant, reason, checkInAt, createdAt, lastOperationId</text>
-  <text x="45" y="408" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">Hoàn toàn độc lập với Flutter UI và SDK Cloud, chia sẻ 100% giữa Mobile App và Web Admin.</text>
+  <text x="45" y="408" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">Hoàn toàn độc lập với Flutter UI và SDK Cloud, chia sẻ 100% giữa Mobile App và Web.</text>
 </svg>
 """
 
