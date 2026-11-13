@@ -288,6 +288,41 @@ class AppShell extends ConsumerWidget {
                             color: AppColors.onPrimary.withValues(alpha: 0.9),
                           ),
                         ),
+                        if (!isAdmin && clubDisplayName.isNotEmpty) ...[
+                          const SizedBox(height: AppSpacing.s4),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.s8,
+                              vertical: AppSpacing.s4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.onPrimary.withValues(alpha: 0.15),
+                              borderRadius: AppRadius.borderR6,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.groups_outlined,
+                                  size: 14,
+                                  color: AppColors.onPrimary,
+                                ),
+                                const SizedBox(width: AppSpacing.s4),
+                                Flexible(
+                                  child: Text(
+                                    clubDisplayName,
+                                    style: AppTypography.textTheme.labelSmall?.copyWith(
+                                      color: AppColors.onPrimary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
