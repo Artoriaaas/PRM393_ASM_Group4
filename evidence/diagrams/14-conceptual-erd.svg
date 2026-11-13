@@ -15,7 +15,7 @@
   <rect x="35" y="90" width="165" height="115" rx="8" fill="#FFF7ED" stroke="#F97316" stroke-width="2" filter="url(#shadow)" />
   <rect x="35" y="90" width="165" height="30" rx="8" fill="#F97316" />
   <text x="117" y="111" font-family="Calibri, Arial, sans-serif" font-size="13" font-weight="700" fill="#FFF" text-anchor="middle">CLUB (CÂU LẠC BỘ)</text>
-  <text x="45" y="138" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Mã câu lạc bộ (ID)</text>
+  <text x="45" y="138" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Mã câu lạc bộ (PK)</text>
   <text x="45" y="156" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Tên CLB &amp; Logo</text>
   <text x="45" y="174" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Trưởng CLB (staffUid)</text>
   <text x="45" y="192" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Trạng thái hoạt động</text>
@@ -30,7 +30,7 @@
   <rect x="275" y="75" width="180" height="145" rx="8" fill="#FFFBEB" stroke="#D97706" stroke-width="2" filter="url(#shadow)" />
   <rect x="275" y="75" width="180" height="30" rx="8" fill="#D97706" />
   <text x="365" y="96" font-family="Calibri, Arial, sans-serif" font-size="13" font-weight="700" fill="#FFF" text-anchor="middle">EVENT (SỰ KIỆN)</text>
-  <text x="285" y="123" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Mã sự kiện (ID)</text>
+  <text x="285" y="123" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Mã sự kiện (PK)</text>
   <text x="285" y="140" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Tiêu đề &amp; Mô tả</text>
   <text x="285" y="157" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Sức chứa (capacity)</text>
   <text x="285" y="174" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Số đã duyệt (activeCount)</text>
@@ -47,7 +47,7 @@
   <rect x="535" y="75" width="195" height="145" rx="8" fill="#FDF2F8" stroke="#DB2777" stroke-width="2.2" filter="url(#shadow)" />
   <rect x="535" y="75" width="195" height="30" rx="8" fill="#DB2777" />
   <text x="632" y="96" font-family="Calibri, Arial, sans-serif" font-size="13" font-weight="700" fill="#FFF" text-anchor="middle">REGISTRATION (ĐƠN ĐK)</text>
-  <text x="545" y="123" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Khóa ghép: {uid}_{eventId}</text>
+  <text x="545" y="123" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• ID: {uid}_{eventId} (PK)</text>
   <text x="545" y="140" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Thông tin SV (participant)</text>
   <text x="545" y="157" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Trạng thái (status: pending...)</text>
   <text x="545" y="174" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Lần gửi (generation)</text>
@@ -64,7 +64,7 @@
   <rect x="805" y="90" width="130" height="115" rx="8" fill="#F8FAFC" stroke="#64748B" stroke-width="2" filter="url(#shadow)" />
   <rect x="805" y="90" width="130" height="30" rx="8" fill="#64748B" />
   <text x="870" y="111" font-family="Calibri, Arial, sans-serif" font-size="13" font-weight="700" fill="#FFF" text-anchor="middle">USER</text>
-  <text x="815" y="138" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Định danh người dùng (UID)</text>
+  <text x="815" y="138" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• UID (PK)</text>
   <text x="815" y="156" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Họ tên, MSSV</text>
   <text x="815" y="174" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• Vai trò (role)</text>
   <text x="815" y="192" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#1E293B">• clubId (nếu staff)</text>
@@ -73,7 +73,7 @@
   <rect x="275" y="270" width="180" height="100" rx="8" fill="#FFFBEB" stroke="#D97706" stroke-width="1.8" filter="url(#shadow)" />
   <rect x="275" y="270" width="180" height="28" rx="8" fill="#D97706" />
   <text x="365" y="289" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#FFF" text-anchor="middle">CHECKIN_SESSION</text>
-  <text x="285" y="315" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#1E293B">• Mã sự kiện liên kết</text>
+  <text x="285" y="315" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#1E293B">• eventId (PK)</text>
   <text x="285" y="333" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#1E293B">• Trạng thái mở (open)</text>
   <text x="285" y="351" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#1E293B">• openedAt (thời điểm mở)</text>
 
@@ -96,5 +96,5 @@
 
   <!-- Bottom Rules Note -->
   <rect x="25" y="390" width="910" height="38" rx="6" fill="#F8FAFC" stroke="#E2E8F0" />
-  <text x="35" y="413" font-family="Calibri, Arial, sans-serif" font-size="11" fill="#1E293B"><strong>Ràng buộc toàn vẹn ngữ nghĩa:</strong> IC-01: Mỗi SV tối đa 1 Registration active cho 1 Event ({uid}_{eventId}). IC-02: Mỗi Event thuộc đúng 1 Club. IC-03: Tối đa 1 phiên QR mở tại một thời điểm.</text>
+  <text x="35" y="413" font-family="Calibri, Arial, sans-serif" font-size="11" fill="#1E293B"><strong>Ràng buộc toàn vẹn ngữ nghĩa:</strong> Mỗi Sinh viên chỉ có tối đa 1 Registration hoạt động cho 1 Event (khóa {uid}_{eventId}). Một Event chỉ có tối đa 1 phiên QR đang mở.</text>
 </svg>

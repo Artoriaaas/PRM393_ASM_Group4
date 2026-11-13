@@ -57,7 +57,7 @@
   <!-- State 4: ATTENDED (Final state) -->
   <rect x="790" y="95" width="145" height="70" rx="8" fill="#FDF2F8" stroke="#9D174D" stroke-width="2.5" filter="url(#shadow)" />
   <text x="862" y="125" font-family="Calibri, Arial, sans-serif" font-size="14" font-weight="700" fill="#9D174D" text-anchor="middle">ATTENDED</text>
-  <text x="862" y="145" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#64748B" text-anchor="middle">checkInAt != null</text>
+  <text x="862" y="145" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#64748B" text-anchor="middle">Đã điểm danh (checkInAt)</text>
 
   <!-- State 5: REJECTED -->
   <rect x="320" y="260" width="150" height="65" rx="8" fill="#FEF2F2" stroke="#DC2626" stroke-width="1.8" filter="url(#shadow)" />

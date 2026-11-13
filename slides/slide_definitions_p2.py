@@ -24,9 +24,9 @@ def get_p2_slides():
         "pill_right": None,
         "question": "Nghiệp vụ của hệ thống vận hành thế nào, ai làm gì ở đâu?",
         "duration": "60 s",
-        "evidence": "Sơ đồ swimlane 4 làn (Sinh viên, Hệ thống, Trưởng CLB, Admin) kèm mã BR",
+        "evidence": "Sơ đồ swimlane 3 làn (Sinh viên, Hệ thống, Trưởng CLB) kèm mã BR",
         "left_items": [
-            "Toàn bộ 4 làn phối hợp: Sinh viên (Mobile), Hệ thống (Rules), Trưởng CLB (Web), Admin (Web).",
+            "Toàn bộ 3 làn phối hợp: Sinh viên (Mobile App), Hệ thống (Firestore Rules), Trưởng CLB (Web Admin).",
             "Trình tự từ đề xuất sự kiện → mở đăng ký → duyệt đơn → mở phiên QR → điểm danh.",
             "Thể hiện rõ các nhánh ngoại lệ: Sai form (FAIL BR-02), Hết chỗ (BR-01), Từ chối duyệt (BR-03).",
             "Gán mã quy tắc nghiệp vụ BR-01..BR-05 tại điểm rẽ để nối với State Machine và Test Case."
@@ -60,8 +60,8 @@ def get_p2_slides():
                 <text x="177" y="41" fill="#DB2777" font-size="10.5" font-weight="700" text-anchor="middle">Điền form A05</text>
 
                 <rect x="390" y="16" width="105" height="42" rx="4" fill="#FDF2F8" stroke="#DB2777" stroke-width="1.5" />
-                <text x="442" y="35" fill="#DB2777" font-size="10" font-weight="700" text-anchor="middle">Nhận vé QR</text>
-                <text x="442" y="48" fill="#64748B" font-size="9" text-anchor="middle">FCM + Inbox A09</text>
+                <text x="442" y="35" fill="#DB2777" font-size="10" font-weight="700" text-anchor="middle">Thông báo duyệt</text>
+                <text x="442" y="48" fill="#64748B" font-size="9" text-anchor="middle">Inbox A09 · A08</text>
 
                 <rect x="545" y="16" width="105" height="42" rx="4" fill="#FDF2F8" stroke="#DB2777" stroke-width="1.5" />
                 <text x="597" y="35" fill="#DB2777" font-size="10" font-weight="700" text-anchor="middle">Quét QR (A11)</text>
