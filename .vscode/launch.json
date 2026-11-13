@@ -9,22 +9,6 @@
       "cwd": "mobile"
     },
     {
-      "name": "EventHub Web — Mock Leader (Chrome)",
-      "request": "launch",
-      "type": "dart",
-      "program": "lib/main_mock.dart",
-      "cwd": "web",
-      "deviceId": "chrome"
-    },
-    {
-      "name": "EventHub Web — Mock Admin (Chrome)",
-      "request": "launch",
-      "type": "dart",
-      "program": "lib/main_mock_admin.dart",
-      "cwd": "web",
-      "deviceId": "chrome"
-    },
-    {
       "name": "EventHub Web — Firebase app (Chrome)",
       "request": "launch",
       "type": "dart",
