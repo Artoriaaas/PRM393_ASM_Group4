@@ -63,15 +63,28 @@ class ClubAttendanceChart extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text('$maxVal', style: AppTypography.textTheme.labelSmall),
-                  Text(
-                    '${(maxVal / 2).round()}',
-                    style: AppTypography.textTheme.labelSmall,
+                  SizedBox(
+                    height: 160,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text('$maxVal', style: AppTypography.textTheme.labelSmall),
+                        Text(
+                          '${(maxVal / 2).round()}',
+                          style: AppTypography.textTheme.labelSmall,
+                        ),
+                        Text('0', style: AppTypography.textTheme.labelSmall),
+                      ],
+                    ),
                   ),
-                  Text('0', style: AppTypography.textTheme.labelSmall),
+                  const SizedBox(height: AppSpacing.s8),
+                  const SizedBox(height: 1),
+                  const SizedBox(height: AppSpacing.s8),
+                  const SizedBox(height: 38),
                 ],
               ),
               const SizedBox(width: AppSpacing.s12),
@@ -144,41 +157,50 @@ class ClubAttendanceChart extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                _buildBar(
-                  capHeight,
-                  AppColors.info,
-                  'Sức chứa: ${item.capacity}',
-                ),
-                const SizedBox(width: AppSpacing.s4),
-                _buildBar(
-                  appHeight,
-                  AppColors.primary,
-                  'Đã duyệt: ${item.approvedCount}',
-                ),
-                const SizedBox(width: AppSpacing.s4),
-                _buildBar(
-                  chkHeight,
-                  AppColors.success,
-                  'Đã điểm danh: ${item.checkedInCount}',
-                ),
-              ],
+            SizedBox(
+              height: chartHeight,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  _buildBar(
+                    capHeight,
+                    AppColors.info,
+                    'Sức chứa: ${item.capacity}',
+                  ),
+                  const SizedBox(width: AppSpacing.s4),
+                  _buildBar(
+                    appHeight,
+                    AppColors.primary,
+                    'Đã duyệt: ${item.approvedCount}',
+                  ),
+                  const SizedBox(width: AppSpacing.s4),
+                  _buildBar(
+                    chkHeight,
+                    AppColors.success,
+                    'Đã điểm danh: ${item.checkedInCount}',
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: AppSpacing.s8),
             const Divider(height: 1, color: AppColors.border),
             const SizedBox(height: AppSpacing.s8),
-            Text(
-              item.eventTitle,
-              style: AppTypography.textTheme.labelSmall?.copyWith(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.w500,
+            SizedBox(
+              height: 38,
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Text(
+                  item.eventTitle,
+                  style: AppTypography.textTheme.labelSmall?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                ),
               ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
             ),
           ],
         ),

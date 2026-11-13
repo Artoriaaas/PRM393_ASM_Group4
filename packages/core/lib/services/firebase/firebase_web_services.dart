@@ -460,10 +460,17 @@ class FirestoreClubService implements IClubService {
   }
 
   @override
-  Stream<List<Registration>> streamEventRegistrations(String eventId) {
-    return _firestore
+  Stream<List<Registration>> streamEventRegistrations(
+    String eventId, {
+    String? clubId,
+  }) {
+    var query = _firestore
         .collection('registrations')
-        .where('eventId', isEqualTo: eventId)
+        .where('eventId', isEqualTo: eventId);
+    if (clubId != null && clubId.trim().isNotEmpty) {
+      query = query.where('clubId', isEqualTo: clubId.trim());
+    }
+    return query
         .snapshots()
         .map((snap) => snap.docs.map(_mapRegistrationDoc).toList());
   }
