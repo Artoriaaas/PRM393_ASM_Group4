@@ -73,8 +73,8 @@ Mỗi lỗi gửi: bước/role/màn, thao tác, ảnh hoặc log và kết qu�
 - AI Gemini qua Firebase AI Logic chưa có; đề cho phép ở web hoặc mobile. Cần RC model/prompt/flag, App Check, no PII, JSON/Dart+confirm để đạt full,3 input/output thật+1 failure,3 events và demo RC off. Không thêm server.
 - ARTEMIS mới:25ca×3 đều skipped do thiếu ARTEMIS_BASE_URL và ARTEMIS_TEST_ACCOUNT_EMAIL; có client_error NetworkError. Chưa có Final pass; cần cross-role/AI coverage và3 lượt thực mỗi ca.
 - Cross-role trên deployment3 lần và measured latency; web checklist ảnh từng main action/error/empty; Console App Check/instrumentation Final.
-- Matrix Rules allowed/denied từng role/collection còn phải chốt;11 nhóm test không đồng nghĩa đủ matrix. Bổ sung test cho các lỗi vừa tìm thấy.
-- Code review mới cần đóng findings và có fix commits/bằng chứng; phần sửa local hiện chưa commit/push.
+- Matrix Rules allowed/denied từng role/collection còn phải chốt;12 nhóm test đã đạt, gồm lỗi quyền sự kiện vừa sửa; vẫn cần rà matrix từng role/collection.
+- Fix commits đã push: 261d191 (cleanup), 0e9854f (fix/tests), 496e6ba (docs). Còn bằng chứng review trên PR và quyết định cho ít nhất 3 findings theo đề.
 - README còn thiếu Admin đầu tiên/demo accounts/URL verified/video/ID theo mẫu đề; kiểm tra lịch sử Git tiếp nối Lab3 và đóng góp nhóm.
 - Report Final10–15 trang, slides12–15, video live8–12 phút chưa chốt. Slide nhóm giữ nguyên, phải đối chiếu riêng độ dài/số liệu thực. Figma chưa xác nhận đồng bộ hết.
 

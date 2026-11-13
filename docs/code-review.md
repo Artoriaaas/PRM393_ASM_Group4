@@ -102,4 +102,4 @@ Mỗi commit mới có một audit ID. Đây không sửa lại lịch sử PR #
 - W05: RC web fetch nhưng không dùng. Dashboard đọc giới hạn recent/chart, có test tác động đầu ra; không dùng RC quyết định quyền.
 - M01–M02: đăng ký cũ thắng bản hủy mới và vùng bấm tab nhỏ. Dùng canonical/generation/time chung lịch/detail/PDF; tăng vùng bấm và test text lớn.
 
-Kết quả: mobile86, web28, core6, Rules12 nhóm đạt. Đây là review source và fix local, chưa thay thế bộ bằng chứng review trên PR. Fix commit: `0e9854f`; cleanup runtime: `261d191`. AI/ARTEMIS chưa thực hiện trong đợt này.
+Kết quả: mobile86, web28, core6, Rules12 nhóm đạt. Các fix đã commit/push; review source này chưa thay thế bộ bằng chứng review trên PR. Fix commit: `0e9854f`; cleanup runtime: `261d191`. AI/ARTEMIS chưa thực hiện trong đợt này.
