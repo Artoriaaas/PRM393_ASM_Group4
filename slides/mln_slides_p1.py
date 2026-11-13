@@ -228,12 +228,12 @@ def get_p1_slides():
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
               <span class="tag nghe">ĐỘT PHÁ CÔNG NGHỆ</span>
               <span style="font: 600 13px var(--mono); color: var(--vai-3);">SERVERLESS REALTIME</span>
+            </div>
             <div style="font-size: 20px; font-weight: 800; color: var(--vai);">Điểm danh QR &lt;3s/người · Atomic Capacity Invariants</div>
             <div style="font-size: 15px; color: var(--vai-2); margin-top: 6px; line-height: 1.4;">
               Mã QR băm SHA-256 đối chiếu phiên mở; Firestore Atomic Transaction bảo đảm không bao giờ nhận vượt số ghế; cập nhật tức thời hai chiều giữa Web và Mobile.
             </div>
           </div>
-
           <div class="panel accent-si" style="flex: 1;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
               <span class="tag si">MÔI TRƯỜNG TRIỂN KHAI</span>
