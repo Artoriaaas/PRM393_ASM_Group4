@@ -81,7 +81,10 @@ abstract class IClubService {
     required String staffUid,
     String? previousQrHash,
   });
-  Stream<List<Registration>> streamEventRegistrations(String eventId);
+  Stream<List<Registration>> streamEventRegistrations(
+    String eventId, {
+    String? clubId,
+  });
 
   // Cross-Role Flow 1: Review Queue
   Stream<List<Registration>> streamClubPendingRegistrations(String clubId);
