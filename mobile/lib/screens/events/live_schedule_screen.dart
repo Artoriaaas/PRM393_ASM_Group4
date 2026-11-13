@@ -39,7 +39,12 @@ class _LiveScheduleState extends ConsumerState<LiveScheduleScreen> {
               vertical: AppSpacing.s12,
             ),
             child: Container(
-              height: 44,
+              height:
+                  AppTouchTargets.min *
+                      MediaQuery.textScalerOf(context)
+                          .scale(1)
+                          .clamp(1.0, 2.0) +
+                  AppSpacing.s8,
               padding: const EdgeInsets.all(AppSpacing.s4),
               decoration: BoxDecoration(
                 color: AppColors.surface,
@@ -51,7 +56,7 @@ class _LiveScheduleState extends ConsumerState<LiveScheduleScreen> {
                   for (final item in [
                     (0, 'Sắp tới'),
                     (1, 'Đã kết thúc'),
-                    (2, 'Đã hủy'),
+                    (2, 'Đã hủy / Từ chối'),
                   ])
                     Expanded(
                       child: Semantics(
@@ -77,15 +82,17 @@ class _LiveScheduleState extends ConsumerState<LiveScheduleScreen> {
                               alignment: Alignment.center,
                               child: Text(
                                 item.$2,
-                                style: AppTypography.textTheme.labelMedium?.copyWith(
-                                  color: tab == item.$1
-                                      ? AppColors.onPrimary
-                                      : AppColors.textSecondary,
-                                  fontWeight: tab == item.$1
-                                      ? FontWeight.bold
-                                      : FontWeight.w500,
-                                ),
-                                maxLines: 1,
+                                style: AppTypography.textTheme.labelMedium
+                                    ?.copyWith(
+                                      color: tab == item.$1
+                                          ? AppColors.onPrimary
+                                          : AppColors.textSecondary,
+                                      fontWeight: tab == item.$1
+                                          ? FontWeight.bold
+                                          : FontWeight.w500,
+                                    ),
+                                maxLines: 2,
+                                textAlign: TextAlign.center,
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),

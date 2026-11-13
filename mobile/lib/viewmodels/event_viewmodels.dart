@@ -128,23 +128,11 @@ final scheduleEntriesProvider =
         return AsyncError(regs.error!, regs.stackTrace ?? StackTrace.current);
       }
       if (!regs.hasValue) return const AsyncLoading();
-      final bestRegByEvent = <String, Registration>{};
-      int priority(Registration r) {
-        if (r.checkInAt != null) return 5;
-        if (r.status == 'approved') return 4;
-        if (r.status == 'active') return 3;
-        if (r.status == 'pending') return 2;
-        if (r.status == 'rejected') return 1;
-        return 0;
-      }
-      for (final r in regs.requireValue) {
-        final existing = bestRegByEvent[r.eventId];
-        if (existing == null || priority(r) > priority(existing)) {
-          bestRegByEvent[r.eventId] = r;
-        }
-      }
       final list = <ScheduleEntry>[];
-      for (final r in bestRegByEvent.values) {
+      for (final r in currentRegistrations(
+        regs.requireValue,
+        uid: ref.watch(signedInUidProvider),
+      )) {
         final e = ref.watch(eventProvider(r.eventId));
         if (e.hasError) {
           return AsyncError(e.error!, e.stackTrace ?? StackTrace.current);
@@ -173,12 +161,10 @@ final eventAvailabilityProvider = Provider.autoDispose.family<String?, String>((
 });
 final activeRegistrationForEventProvider = Provider.autoDispose
     .family<Registration?, String>(
-      (ref, id) => ref
-          .watch(registrationsProvider)
-          .asData
-          ?.value
-          .where((r) => r.eventId == id && r.hasRequest)
-          .firstOrNull,
+      (ref, id) => currentRegistrations(
+        ref.watch(registrationsProvider).asData?.value ?? [],
+        uid: ref.watch(signedInUidProvider),
+      ).where((r) => r.eventId == id && r.hasRequest).firstOrNull,
     );
 final canCancelRegistrationProvider = Provider.autoDispose.family<bool, String>(
   (ref, id) {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eventhub_core/eventhub_core.dart';
+
 import '../../viewmodels/dashboard_viewmodel.dart';
 import 'club_attendance_chart.dart';
 
@@ -15,10 +16,12 @@ class ClubDashboardScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.surfaceSubtle,
       body: state.loadState.when(
-        initial: () =>
-            const Center(child: AppLoadingState(message: 'Đang tải thống kê CLB…')),
-        loading: (_) =>
-            const Center(child: AppLoadingState(message: 'Đang tải thống kê CLB…')),
+        initial: () => const Center(
+          child: AppLoadingState(message: 'Đang tải thống kê CLB…'),
+        ),
+        loading: (_) => const Center(
+          child: AppLoadingState(message: 'Đang tải thống kê CLB…'),
+        ),
         empty: (msg) => Center(
           child: AppEmptyState(
             title: 'Chưa có sự kiện nào',
@@ -79,7 +82,8 @@ class ClubDashboardScreen extends ConsumerWidget {
               ),
               AppButton(
                 label: 'Tạo sự kiện mới',
-                semanticsLabel: 'Chuyển tới màn hình quản lý sự kiện để tạo mới',
+                semanticsLabel:
+                    'Chuyển tới màn hình quản lý sự kiện để tạo mới',
                 icon: const Icon(Icons.add, size: 18),
                 onPressed: () => context.go('/events'),
               ),
@@ -173,7 +177,7 @@ class ClubDashboardScreen extends ConsumerWidget {
                         ),
                         const SizedBox(height: AppSpacing.s4),
                         Text(
-                          'So sánh 5 sự kiện gần nhất của câu lạc bộ',
+                          'So sánh ${state.chartData.length} sự kiện gần nhất của câu lạc bộ',
                           style: AppTypography.textTheme.labelSmall?.copyWith(
                             color: AppColors.textSecondary,
                           ),
@@ -425,10 +429,7 @@ class ClubDashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildRecentEventsCard(
-    BuildContext context,
-    List<Event> events,
-  ) {
+  Widget _buildRecentEventsCard(BuildContext context, List<Event> events) {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.s20),
       decoration: BoxDecoration(
@@ -528,26 +529,26 @@ class ClubDashboardScreen extends ConsumerWidget {
   }
 
   String _mapEventStatus(String status) => switch (status) {
-        'published' => 'Đang mở',
-        'draft' => 'Bản nháp',
-        'cancelled' => 'Đã hủy',
-        'archived' => 'Lưu trữ',
-        _ => status,
-      };
+    'published' => 'Đang mở',
+    'draft' => 'Bản nháp',
+    'cancelled' => 'Đã hủy',
+    'archived' => 'Lưu trữ',
+    _ => status,
+  };
 
   AppBadgeVariant _mapStatusVariant(String status) => switch (status) {
-        'published' => AppBadgeVariant.success,
-        'draft' => AppBadgeVariant.neutral,
-        'cancelled' => AppBadgeVariant.error,
-        'archived' => AppBadgeVariant.info,
-        _ => AppBadgeVariant.neutral,
-      };
+    'published' => AppBadgeVariant.success,
+    'draft' => AppBadgeVariant.neutral,
+    'cancelled' => AppBadgeVariant.error,
+    'archived' => AppBadgeVariant.info,
+    _ => AppBadgeVariant.neutral,
+  };
 
   IconData _mapStatusIcon(String status) => switch (status) {
-        'published' => Icons.public,
-        'draft' => Icons.edit_note,
-        'cancelled' => Icons.cancel_outlined,
-        'archived' => Icons.archive_outlined,
-        _ => Icons.info_outline,
-      };
+    'published' => Icons.public,
+    'draft' => Icons.edit_note,
+    'cancelled' => Icons.cancel_outlined,
+    'archived' => Icons.archive_outlined,
+    _ => Icons.info_outline,
+  };
 }

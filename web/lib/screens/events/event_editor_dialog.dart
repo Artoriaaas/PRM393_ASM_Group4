@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eventhub_core/eventhub_core.dart';
+
 import '../../app/providers.dart';
 import '../../viewmodels/club_events_viewmodel.dart';
 import '../../viewmodels/web_auth_viewmodel.dart';
 import 'mobile_preview_card.dart';
 
 class EventEditorDialog extends ConsumerStatefulWidget {
-  const EventEditorDialog({
-    super.key,
-    this.initialEvent,
-  });
+  const EventEditorDialog({super.key, this.initialEvent});
 
   final Event? initialEvent;
 
@@ -56,7 +54,8 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
     );
 
     final baseStart = DateTime.now().add(const Duration(days: 3));
-    _startsAt = ev?.startsAt ??
+    _startsAt =
+        ev?.startsAt ??
         DateTime(baseStart.year, baseStart.month, baseStart.day, 9, 0);
     _endsAt = ev?.endsAt ?? _startsAt.add(const Duration(hours: 3));
     _deadline = ev?.deadline ?? _startsAt.subtract(const Duration(days: 1));
@@ -105,6 +104,7 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
     required DateTime current,
     required ValueChanged<DateTime> onPicked,
   }) async {
+    if (ref.read(currentStaffProfileProvider)?.isAdmin == true) return;
     final now = DateTime.now();
     final firstDate = current.isBefore(now)
         ? DateTime(current.year, 1, 1)
@@ -147,29 +147,29 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
     if (_registrationMode == 'required') {
       if (_deadline == null || !_deadline!.isBefore(_startsAt)) {
         setState(() {
-          _errorMessage =
-              'Hạn đăng ký phải trước thời gian bắt đầu sự kiện.';
+          _errorMessage = 'Hạn đăng ký phải trước thời gian bắt đầu sự kiện.';
         });
         return;
       }
     }
 
     final user = ref.read(currentStaffProfileProvider);
-    String clubId = (widget.initialEvent?.clubId.isNotEmpty == true)
-        ? widget.initialEvent!.clubId
-        : ref.read(currentClubIdProvider);
-    if (clubId.isEmpty) {
-      final clubs = ref.read(allClubsStreamProvider).asData?.value ?? [];
-      if (clubs.isNotEmpty) {
-        clubId = clubs.first.id;
-      }
+    final clubId = ref.read(currentClubIdProvider);
+    if (user?.role != 'staff' ||
+        clubId.isEmpty ||
+        (widget.initialEvent != null &&
+            widget.initialEvent!.clubId != clubId)) {
+      setState(
+        () => _errorMessage =
+            'Chỉ CLB được phân công mới có thể tạo hoặc sửa sự kiện của mình.',
+      );
+      return;
     }
-    final String clubName = (widget.initialEvent?.clubName.isNotEmpty == true)
-        ? widget.initialEvent!.clubName
-        : (ref.read(activeClubProvider(clubId)).asData?.value?.name ??
-            ref.read(allClubsStreamProvider).asData?.value.where((c) => c.id == clubId).firstOrNull?.name ??
-            user?.clubName ??
-            'Câu lạc bộ');
+    final clubName =
+        widget.initialEvent?.clubName ??
+        ref.read(activeClubProvider(clubId)).asData?.value?.name ??
+        user?.clubName ??
+        'Câu lạc bộ';
     final capacity = int.tryParse(_capacityController.text.trim()) ?? 0;
     final isEdit = widget.initialEvent != null;
 
@@ -202,6 +202,8 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
       audience: _audienceController.text.trim(),
       preparation: _preparationController.text.trim(),
       activities: activities,
+      coverKey: widget.initialEvent?.coverKey ?? '',
+      coverUrl: widget.initialEvent?.coverUrl ?? '',
       mode: _registrationMode,
       status: targetStatus,
       capacity: _registrationMode == 'free' ? 0 : capacity,
@@ -268,11 +270,11 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                     child: Text(
                       isAdmin
                           ? (widget.initialEvent?.status == 'pending_approval'
-                              ? 'Xét duyệt Đề xuất Sự kiện'
-                              : 'Chi tiết Sự kiện')
+                                ? 'Xét duyệt Đề xuất Sự kiện'
+                                : 'Chi tiết Sự kiện')
                           : (widget.initialEvent != null
-                              ? 'Chỉnh sửa sự kiện'
-                              : 'Tạo sự kiện mới'),
+                                ? 'Chỉnh sửa sự kiện'
+                                : 'Tạo sự kiện mới'),
                       style: AppTypography.textTheme.titleLarge?.copyWith(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.bold,
@@ -565,10 +567,8 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                             const SizedBox(height: AppSpacing.s16),
                             _buildTextField(
                               controller: _activitiesController,
-                              label:
-                                  'Các hoạt động chính (mỗi dòng một mục)',
-                              hintText:
-                                  'VD:\nCheck-in nhận quà\nDiễn giả chia sẻ\nQ&A',
+                              label: 'Các hoạt động chính (mỗi dòng một mục)',
+                              hintText: 'VD:\nCheck-in nhận quà\nDiễn giả chia sẻ\nQ&A',
                               maxLines: 3,
                               readOnly: isAdmin,
                             ),
@@ -585,7 +585,10 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(child: formWidget),
-                        const VerticalDivider(width: 1, color: AppColors.border),
+                        const VerticalDivider(
+                          width: 1,
+                          color: AppColors.border,
+                        ),
                         const SizedBox(width: AppSpacing.s16),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -642,10 +645,14 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                       onPressed: _isSaving
                           ? null
                           : () => Navigator.of(context).pop(),
-                      child: Text(isAdmin && widget.initialEvent != null ? 'Đóng' : 'Hủy'),
+                      child: Text(
+                        isAdmin && widget.initialEvent != null ? 'Đóng' : 'Hủy',
+                      ),
                     ),
                   ),
-                  if (isAdmin && existingStatus == 'pending_approval' && widget.initialEvent != null) ...[
+                  if (isAdmin &&
+                      existingStatus == 'pending_approval' &&
+                      widget.initialEvent != null) ...[
                     OutlinedButton.icon(
                       icon: const Icon(Icons.cancel_outlined, size: 16),
                       label: const Text('Từ chối đề xuất'),
@@ -673,7 +680,7 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                             .approveEvent(widget.initialEvent!.id);
                       },
                     ),
-                  ] else ...[
+                  ] else if (!isAdmin) ...[
                     if (!isEditingNonDraft)
                       AppButton(
                         label: 'Lưu bản nháp',
@@ -693,18 +700,18 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                     AppButton(
                       label: existingStatus == 'published'
                           ? 'Cập nhật sự kiện'
-                          : (isAdmin
-                              ? 'Công bố sự kiện'
-                              : (existingStatus == 'pending_approval'
-                                  ? 'Cập nhật đề xuất'
-                                  : 'Gửi Admin phê duyệt')),
+                          : (existingStatus == 'pending_approval'
+                                ? 'Cập nhật đề xuất'
+                                : 'Gửi Admin phê duyệt'),
                       variant: AppButtonVariant.primary,
                       isLoading: _isSaving,
                       onPressed: _isSaving
                           ? null
-                          : () => _submit(existingStatus == 'published' || isAdmin
-                              ? 'published'
-                              : 'pending_approval'),
+                          : () => _submit(
+                              existingStatus == 'published'
+                                  ? 'published'
+                                  : 'pending_approval',
+                            ),
                     ),
                   ],
                 ],
@@ -790,7 +797,9 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Nhập lý do từ chối sự kiện "${event.title}" của ${event.clubName}:'),
+            Text(
+              'Nhập lý do từ chối sự kiện "${event.title}" của ${event.clubName}:',
+            ),
             const SizedBox(height: AppSpacing.s12),
             TextField(
               controller: reasonController,

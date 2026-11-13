@@ -1,10 +1,12 @@
 import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eventhub_core/eventhub_core.dart';
+
 import '../services/firebase_web_services.dart';
 import '../services/unconfigured_web_services.dart';
 import '../services/web_contracts.dart';
@@ -62,21 +64,20 @@ final activeClubProvider = FutureProvider.autoDispose.family<Club?, String>((
   return service.getClub(clubId);
 });
 
-final clubPendingRegistrationsStreamProvider =
-    StreamProvider.autoDispose.family<List<Registration>, String>((
-  ref,
-  clubId,
-) {
-  if (clubId.isEmpty) return Stream<List<Registration>>.value(const []);
-  final service = ref.watch(clubServiceProvider);
-  return service.streamClubPendingRegistrations(clubId);
-});
+final clubPendingRegistrationsStreamProvider = StreamProvider.autoDispose
+    .family<List<Registration>, String>((ref, clubId) {
+      if (clubId.isEmpty) return Stream<List<Registration>>.value(const []);
+      final service = ref.watch(clubServiceProvider);
+      return service.streamClubPendingRegistrations(clubId);
+    });
 
-final pendingRegistrationsBadgeCountProvider =
-    Provider.autoDispose.family<int, String>((ref, clubId) {
-  final asyncVal = ref.watch(clubPendingRegistrationsStreamProvider(clubId));
-  return asyncVal.asData?.value.length ?? 0;
-});
+final pendingRegistrationsBadgeCountProvider = Provider.autoDispose
+    .family<int, String>((ref, clubId) {
+      final asyncVal = ref.watch(
+        clubPendingRegistrationsStreamProvider(clubId),
+      );
+      return asyncVal.asData?.value.length ?? 0;
+    });
 
 final adminServiceProvider = Provider<IAdminService>((ref) {
   if (!ref.watch(webFirebaseReadyProvider)) {
@@ -94,3 +95,18 @@ final allClubsStreamProvider = StreamProvider<List<Club>>((ref) {
   return service.streamAllClubs();
 });
 
+/// Only presentation limits, never authorization or registration capacity.
+final webDashboardSettingsProvider =
+    Provider<({int recentLimit, int chartLimit})>((ref) {
+      final initialized = ref.watch(webRemoteConfigInitProvider);
+      if (!initialized.hasValue) return (recentLimit: 4, chartLimit: 5);
+      final config = ref.watch(webRemoteConfigServiceProvider);
+      return (
+        recentLimit: config
+            .getInt('web_dashboard_recent_limit', defaultValue: 4)
+            .clamp(1, 20),
+        chartLimit: config
+            .getInt('web_dashboard_chart_limit', defaultValue: 5)
+            .clamp(1, 10),
+      );
+    });

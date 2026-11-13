@@ -1,6 +1,8 @@
 import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eventhub_core/eventhub_core.dart';
+
 import '../app/providers.dart';
 import 'web_auth_viewmodel.dart';
 
@@ -122,7 +124,8 @@ class ClubEventsViewModel extends Notifier<ClubEventsState> {
   ) {
     final normalized = query.trim().toLowerCase();
     return events.where((e) {
-      final matchesQuery = normalized.isEmpty ||
+      final matchesQuery =
+          normalized.isEmpty ||
           e.title.toLowerCase().contains(normalized) ||
           e.location.toLowerCase().contains(normalized) ||
           e.topic.toLowerCase().contains(normalized);
@@ -168,6 +171,18 @@ class ClubEventsViewModel extends Notifier<ClubEventsState> {
 
   Future<Result<String>> saveEvent(Event event, {required bool isNew}) async {
     state = state.copyWith(actionMessage: null, errorMessage: null);
+    final user = ref.read(currentStaffProfileProvider);
+    if (user?.role != 'staff' ||
+        user?.clubId != event.clubId ||
+        event.clubId.isEmpty ||
+        (isNew && !['draft', 'pending_approval'].contains(event.status))) {
+      const failure = AppFailure(
+        code: 'unauthorized',
+        message: 'Chỉ CLB được phân công mới được tạo/sửa sự kiện và gửi Admin duyệt.',
+      );
+      state = state.copyWith(errorMessage: failure.message);
+      return Result.failure(failure);
+    }
     final service = ref.read(clubServiceProvider);
     final analytics = ref.read(webAnalyticsServiceProvider);
 
@@ -265,6 +280,19 @@ class ClubEventsViewModel extends Notifier<ClubEventsState> {
     return res;
   }
 
+  Future<Result<String>> submitEventForApproval(String eventId) async {
+    final event = state.allEvents.where((e) => e.id == eventId).firstOrNull;
+    if (event == null || !['draft', 'rejected'].contains(event.status)) {
+      return Result.failure(
+        AppFailure(
+          code: 'invalid-status',
+          message: 'Chỉ có thể gửi duyệt bản nháp hoặc đề xuất bị từ chối.',
+        ),
+      );
+    }
+    return saveEvent(event.copyWith(status: 'pending_approval'), isNew: false);
+  }
+
   Future<Result<void>> approveEvent(String eventId) async {
     state = state.copyWith(actionMessage: null, errorMessage: null);
     final user = ref.read(currentStaffProfileProvider);
@@ -294,7 +322,10 @@ class ClubEventsViewModel extends Notifier<ClubEventsState> {
     return res;
   }
 
-  Future<Result<void>> rejectEvent(String eventId, {required String reason}) async {
+  Future<Result<void>> rejectEvent(
+    String eventId, {
+    required String reason,
+  }) async {
     state = state.copyWith(actionMessage: null, errorMessage: null);
     final user = ref.read(currentStaffProfileProvider);
     if (!(user?.isAdmin ?? false)) {
@@ -329,5 +360,5 @@ class ClubEventsViewModel extends Notifier<ClubEventsState> {
 
 final clubEventsViewModelProvider =
     NotifierProvider<ClubEventsViewModel, ClubEventsState>(
-  ClubEventsViewModel.new,
-);
+      ClubEventsViewModel.new,
+    );

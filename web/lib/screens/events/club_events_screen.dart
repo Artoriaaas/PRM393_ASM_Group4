@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eventhub_core/eventhub_core.dart';
+
 import '../../viewmodels/club_events_viewmodel.dart';
 import '../../viewmodels/web_auth_viewmodel.dart';
 import 'event_editor_dialog.dart';
@@ -89,7 +90,9 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Nhập lý do từ chối sự kiện "${event.title}" của ${event.clubName}:'),
+            Text(
+              'Nhập lý do từ chối sự kiện "${event.title}" của ${event.clubName}:',
+            ),
             const SizedBox(height: AppSpacing.s12),
             TextField(
               controller: reasonController,
@@ -125,6 +128,7 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
       ),
     );
   }
+
   void _clearAllFilters() {
     _searchController.clear();
     ref.read(clubEventsViewModelProvider.notifier).clearFilters();
@@ -172,12 +176,14 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
                     ),
                   ],
                 ),
-                AppButton(
-                  label: 'Tạo sự kiện mới',
-                  semanticsLabel: 'Mở biểu mẫu tạo sự kiện mới cho câu lạc bộ',
-                  icon: const Icon(Icons.add, size: 18),
-                  onPressed: () => _openEventEditor(context),
-                ),
+                if (!isAdmin)
+                  AppButton(
+                    label: 'Tạo sự kiện mới',
+                    semanticsLabel:
+                        'Mở biểu mẫu tạo sự kiện mới cho câu lạc bộ',
+                    icon: const Icon(Icons.add, size: 18),
+                    onPressed: () => _openEventEditor(context),
+                  ),
               ],
             ),
             const SizedBox(height: AppSpacing.s20),
@@ -253,8 +259,7 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
                     label: 'Ô tìm kiếm sự kiện theo tên, địa điểm hoặc chủ đề',
                     child: AppSearchField(
                       controller: _searchController,
-                      hintText:
-                          'Tìm theo tên sự kiện, địa điểm hoặc chủ đề...',
+                      hintText: 'Tìm theo tên sự kiện, địa điểm hoặc chủ đề...',
                       onChanged: (q) => ref
                           .read(clubEventsViewModelProvider.notifier)
                           .setSearchQuery(q),
@@ -313,14 +318,17 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
             ),
             const SizedBox(height: AppSpacing.s20),
             state.loadState.when(
-              initial: () =>
-                  const Center(child: AppLoadingState(message: 'Đang tải sự kiện…')),
-              loading: (_) =>
-                  const Center(child: AppLoadingState(message: 'Đang tải sự kiện…')),
+              initial: () => const Center(
+                child: AppLoadingState(message: 'Đang tải sự kiện…'),
+              ),
+              loading: (_) => const Center(
+                child: AppLoadingState(message: 'Đang tải sự kiện…'),
+              ),
               empty: (msg) => Center(
                 child: AppEmptyState(
                   title: 'Chưa có sự kiện',
-                  message: msg ??
+                  message:
+                      msg ??
                       (isAdmin
                           ? 'Chưa có đề xuất sự kiện nào từ các câu lạc bộ.'
                           : 'Câu lạc bộ chưa khởi tạo sự kiện nào.'),
@@ -341,8 +349,7 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
                   return Center(
                     child: AppEmptyState(
                       title: 'Không có kết quả',
-                      message:
-                          'Không tìm thấy sự kiện nào khớp với bộ lọc hiện tại.',
+                      message: 'Không tìm thấy sự kiện nào khớp với bộ lọc hiện tại.',
                       actionLabel: 'Xóa bộ lọc',
                       onAction: _clearAllFilters,
                     ),
@@ -490,10 +497,10 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
                     runSpacing: AppSpacing.s8,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      if (event.status == 'draft') ...[
+                      if (!isAdmin && event.status == 'draft') ...[
                         ElevatedButton.icon(
                           icon: const Icon(Icons.publish, size: 16),
-                          label: const Text('Công bố sự kiện'),
+                          label: const Text('Gửi Admin phê duyệt'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primary,
                             foregroundColor: AppColors.onPrimary,
@@ -501,12 +508,15 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
                           ),
                           onPressed: () => ref
                               .read(clubEventsViewModelProvider.notifier)
-                              .approveEvent(event.id),
+                              .submitEventForApproval(event.id),
                         ),
                       ],
                       if (isAdmin && event.status == 'pending_approval') ...[
                         ElevatedButton.icon(
-                          icon: const Icon(Icons.check_circle_outline, size: 16),
+                          icon: const Icon(
+                            Icons.check_circle_outline,
+                            size: 16,
+                          ),
                           label: const Text('Phê duyệt'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.success,
@@ -525,7 +535,7 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
                           onPressed: () => _confirmReject(context, event),
                         ),
                       ],
-                      if (canCheckIn)
+                      if (!isAdmin && canCheckIn)
                         ConstrainedBox(
                           constraints: const BoxConstraints(
                             minHeight: AppTouchTargets.min,
@@ -656,32 +666,32 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
   }
 
   String _mapStatusLabel(String status) => switch (status) {
-        'pending_approval' => 'Chờ Admin duyệt',
-        'published' => 'Đang mở (Đã duyệt)',
-        'draft' => 'Bản nháp',
-        'rejected' => 'Bị từ chối',
-        'cancelled' => 'Đã hủy',
-        'archived' => 'Lưu trữ',
-        _ => status,
-      };
+    'pending_approval' => 'Chờ Admin duyệt',
+    'published' => 'Đang mở (Đã duyệt)',
+    'draft' => 'Bản nháp',
+    'rejected' => 'Bị từ chối',
+    'cancelled' => 'Đã hủy',
+    'archived' => 'Lưu trữ',
+    _ => status,
+  };
 
   AppBadgeVariant _mapStatusVariant(String status) => switch (status) {
-        'pending_approval' => AppBadgeVariant.warning,
-        'published' => AppBadgeVariant.success,
-        'draft' => AppBadgeVariant.neutral,
-        'rejected' => AppBadgeVariant.error,
-        'cancelled' => AppBadgeVariant.error,
-        'archived' => AppBadgeVariant.info,
-        _ => AppBadgeVariant.neutral,
-      };
+    'pending_approval' => AppBadgeVariant.warning,
+    'published' => AppBadgeVariant.success,
+    'draft' => AppBadgeVariant.neutral,
+    'rejected' => AppBadgeVariant.error,
+    'cancelled' => AppBadgeVariant.error,
+    'archived' => AppBadgeVariant.info,
+    _ => AppBadgeVariant.neutral,
+  };
 
   IconData _mapStatusIcon(String status) => switch (status) {
-        'pending_approval' => Icons.pending_actions,
-        'published' => Icons.public,
-        'draft' => Icons.edit_note,
-        'rejected' => Icons.cancel,
-        'cancelled' => Icons.cancel_outlined,
-        'archived' => Icons.archive_outlined,
-        _ => Icons.info_outline,
-      };
+    'pending_approval' => Icons.pending_actions,
+    'published' => Icons.public,
+    'draft' => Icons.edit_note,
+    'rejected' => Icons.cancel,
+    'cancelled' => Icons.cancel_outlined,
+    'archived' => Icons.archive_outlined,
+    _ => Icons.info_outline,
+  };
 }

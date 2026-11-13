@@ -184,6 +184,7 @@ class FirestoreClubService implements IClubService {
       deadline: (d['deadline'] as Timestamp?)?.toDate(),
       description: d['description'] as String? ?? '',
       coverKey: d['coverKey'] as String? ?? '',
+      coverUrl: d['coverUrl'] as String? ?? '',
       topic: d['topic'] as String? ?? '',
       audience: d['audience'] as String? ?? '',
       preparation: d['preparation'] as String? ?? '',
@@ -794,6 +795,7 @@ Event mapEventDoc(
     deadline: (d['deadline'] as Timestamp?)?.toDate(),
     description: d['description'] as String? ?? '',
     coverKey: d['coverKey'] as String? ?? '',
+    coverUrl: d['coverUrl'] as String? ?? '',
     topic: d['topic'] as String? ?? '',
     audience: d['audience'] as String? ?? '',
     preparation: d['preparation'] as String? ?? '',
@@ -1337,6 +1339,8 @@ class FirebaseWebRemoteConfigService implements IWebRemoteConfigService {
       await _remoteConfig.setDefaults(const {
         'show_recommendations': true,
         'recommendation_limit': 10,
+        'web_dashboard_recent_limit': 4,
+        'web_dashboard_chart_limit': 5,
       });
       await _remoteConfig.fetchAndActivate();
     } catch (_) {

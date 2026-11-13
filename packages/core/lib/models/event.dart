@@ -40,6 +40,30 @@ class Event {
   final List<String> activities;
   final int capacity, activeCount;
   final DateTime? updatedAt;
+  Event copyWith({String? status}) => Event(
+    id: id,
+    title: title,
+    clubName: clubName,
+    location: location,
+    startsAt: startsAt,
+    endsAt: endsAt,
+    deadline: deadline,
+    description: description,
+    coverKey: coverKey,
+    coverUrl: coverUrl,
+    topic: topic,
+    audience: audience,
+    preparation: preparation,
+    activities: activities,
+    mode: mode,
+    status: status ?? this.status,
+    capacity: capacity,
+    activeCount: activeCount,
+    clubId: clubId,
+    visibility: visibility,
+    updatedAt: updatedAt,
+  );
+
   bool get isFree => mode == 'free';
   int get available =>
       (capacity - activeCount).clamp(0, capacity < 0 ? 0 : capacity);
@@ -223,3 +247,35 @@ BookingResult registrationOutcome(String id, Map<String, dynamic> data) =>
       },
       code: data['status'] == 'rejected' ? 'registration-rejected' : null,
     );
+
+/// The canonical Firestore document is authoritative. Legacy duplicates fall
+/// back to the latest generation/time, never to a more favourable old status.
+List<Registration> currentRegistrations(
+  List<Registration> rows, {
+  String? uid,
+}) {
+  final selected = <String, Registration>{};
+  int compare(Registration a, Registration b) {
+    if (uid != null) {
+      final ac = a.id == '${uid}_${a.eventId}';
+      final bc = b.id == '${uid}_${b.eventId}';
+      if (ac != bc) return ac ? 1 : -1;
+    }
+    var order = a.generation.compareTo(b.generation);
+    if (order != 0) return order;
+    order = (a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0)).compareTo(
+      b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0),
+    );
+    if (order != 0) return order;
+    order = (a.reviewedAt ?? DateTime.fromMillisecondsSinceEpoch(0)).compareTo(
+      b.reviewedAt ?? DateTime.fromMillisecondsSinceEpoch(0),
+    );
+    return order != 0 ? order : a.id.compareTo(b.id);
+  }
+
+  for (final row in rows) {
+    final old = selected[row.eventId];
+    if (old == null || compare(row, old) > 0) selected[row.eventId] = row;
+  }
+  return selected.values.toList(growable: false);
+}

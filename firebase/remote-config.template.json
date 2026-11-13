@@ -13,6 +13,20 @@
       },
       "valueType": "BOOLEAN",
       "description": "Show recommendations; search always remains available."
+    },
+    "web_dashboard_recent_limit": {
+      "defaultValue": {
+        "value": "4"
+      },
+      "valueType": "NUMBER",
+      "description": "Web dashboard presentation limit; does not change permissions or capacity."
+    },
+    "web_dashboard_chart_limit": {
+      "defaultValue": {
+        "value": "5"
+      },
+      "valueType": "NUMBER",
+      "description": "Web dashboard presentation limit; does not change permissions or capacity."
     }
   }
 }

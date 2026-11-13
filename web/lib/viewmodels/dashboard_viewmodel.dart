@@ -1,6 +1,8 @@
 import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eventhub_core/eventhub_core.dart';
+
 import '../app/providers.dart';
 import 'web_auth_viewmodel.dart';
 
@@ -76,6 +78,7 @@ class DashboardState {
 
 class DashboardViewModel extends Notifier<DashboardState> {
   int _epoch = 0;
+  int _recentLimit = 4, _chartLimit = 5;
   StreamSubscription<List<Event>>? _eventsSub;
   StreamSubscription<List<Registration>>? _regsSub;
   List<Event>? _latestEvents;
@@ -84,6 +87,9 @@ class DashboardViewModel extends Notifier<DashboardState> {
 
   @override
   DashboardState build() {
+    final settings = ref.watch(webDashboardSettingsProvider);
+    _recentLimit = settings.recentLimit;
+    _chartLimit = settings.chartLimit;
     final clubId = ref.watch(currentClubIdProvider);
     _epoch++;
     _latestEvents = null;
@@ -164,23 +170,17 @@ class DashboardViewModel extends Notifier<DashboardState> {
       );
     }
 
-    _eventsSub = clubService.streamClubEvents(clubId).listen(
-      (events) {
-        if (!ref.mounted || requestEpoch != _epoch) return;
-        _latestEvents = events;
-        _recomputeIfReady();
-      },
-      onError: onStreamFailure,
-    );
+    _eventsSub = clubService.streamClubEvents(clubId).listen((events) {
+      if (!ref.mounted || requestEpoch != _epoch) return;
+      _latestEvents = events;
+      _recomputeIfReady();
+    }, onError: onStreamFailure);
 
-    _regsSub = clubService.streamAllClubRegistrations(clubId).listen(
-      (regs) {
-        if (!ref.mounted || requestEpoch != _epoch) return;
-        _latestRegs = regs;
-        _recomputeIfReady();
-      },
-      onError: onStreamFailure,
-    );
+    _regsSub = clubService.streamAllClubRegistrations(clubId).listen((regs) {
+      if (!ref.mounted || requestEpoch != _epoch) return;
+      _latestRegs = regs;
+      _recomputeIfReady();
+    }, onError: onStreamFailure);
 
     try {
       final counts = await Future.wait([
@@ -206,8 +206,7 @@ class DashboardViewModel extends Notifier<DashboardState> {
     if (events.isEmpty && allRegs.isEmpty) {
       state = const DashboardState(
         loadState: LoadState.empty(
-          message:
-              'Câu lạc bộ của bạn chưa tạo sự kiện nào. Hãy khởi tạo sự kiện đầu tiên để bắt đầu nhận đăng ký.',
+          message: 'Câu lạc bộ của bạn chưa tạo sự kiện nào. Hãy khởi tạo sự kiện đầu tiên để bắt đầu nhận đăng ký.',
         ),
       );
       return;
@@ -218,7 +217,7 @@ class DashboardViewModel extends Notifier<DashboardState> {
     final pendingRegs = allRegs.where((r) => r.isPending).toList();
 
     final chartList = <EventAttendanceMetrics>[];
-    for (final ev in sortedEvents.take(5)) {
+    for (final ev in sortedEvents.take(_chartLimit)) {
       final checkedIn = allRegs
           .where((r) => r.eventId == ev.id && r.isCheckedIn)
           .length;
@@ -238,7 +237,7 @@ class DashboardViewModel extends Notifier<DashboardState> {
       pendingRegistrationsCount: counts[1],
       approvedRegistrationsCount: counts[2],
       checkedInRegistrationsCount: counts[3],
-      recentEvents: sortedEvents.take(4).toList(),
+      recentEvents: sortedEvents.take(_recentLimit).toList(),
       recentPendingRegistrations: pendingRegs.take(5).toList(),
       chartData: chartList,
     );
@@ -247,5 +246,5 @@ class DashboardViewModel extends Notifier<DashboardState> {
 
 final dashboardViewModelProvider =
     NotifierProvider<DashboardViewModel, DashboardState>(
-  DashboardViewModel.new,
-);
+      DashboardViewModel.new,
+    );

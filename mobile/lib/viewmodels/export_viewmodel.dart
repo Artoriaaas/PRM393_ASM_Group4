@@ -7,6 +7,7 @@ import '../viewmodels/event_data_providers.dart';
 import '../viewmodels/cloud_state.dart';
 import '../services/report_providers.dart';
 import '../models/report_row.dart';
+import '../models/event.dart';
 import '../utils/event_formatters.dart' show eventWhen;
 
 final reportRowsProvider = FutureProvider.autoDispose<List<ReportRow>>((
@@ -14,9 +15,14 @@ final reportRowsProvider = FutureProvider.autoDispose<List<ReportRow>>((
 ) async {
   final registrations = await ref.watch(registrationsProvider.future);
   final rows = <ReportRow>[];
-  for (final r in registrations) {
+  for (final r in currentRegistrations(
+    registrations,
+    uid: ref.watch(signedInUidProvider),
+  )) {
     final e = await ref.watch(eventProvider(r.eventId).future);
-    if (e == null) continue;
+    if (e == null) {
+      throw StateError('Registration event unavailable');
+    }
     rows.add(
       ReportRow(
         title: e.title,

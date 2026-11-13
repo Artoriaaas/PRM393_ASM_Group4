@@ -633,3 +633,41 @@ test('announcement read receipts belong only to their reader and require a real 
   await assertFails(setDoc(doc(alice,'users/alice/announcementReads/missing'),{readAt:serverTimestamp()}));
   await assertFails(setDoc(doc(alice,path),{readAt:serverTimestamp(),role:'admin'}));
 });
+
+
+test('unpublished events stay private; staff submits but cannot publish or impersonate another club', async () => {
+  await seedSystem();
+  await env.withSecurityRulesDisabled(async c => {
+    for (const status of ['draft', 'pending_approval', 'rejected']) {
+      await c.firestore().doc('events/private_' + status).set({
+        title: 'Private proposal', status, visibility: 'public', clubId: 'club_it',
+        registrationMode: 'required', capacity: 3, activeCount: 0,
+      });
+    }
+  });
+  const user = authedDb('alice'), staff = authedDb('staff_it'), admin = authedDb('admin_1');
+  for (const status of ['draft', 'pending_approval', 'rejected']) {
+    await assertFails(getDoc(doc(user, 'events/private_' + status)));
+    await assertSucceeds(getDoc(doc(staff, 'events/private_' + status)));
+    await assertSucceeds(getDoc(doc(admin, 'events/private_' + status)));
+  }
+  await assertSucceeds(getDoc(doc(user, 'events/ev_ai_1')));
+  await assertFails(updateDoc(doc(staff, 'events/private_draft'), {
+    status: 'published', updatedAt: serverTimestamp(),
+  }));
+  await assertSucceeds(updateDoc(doc(staff, 'events/private_draft'), {
+    status: 'pending_approval', updatedAt: serverTimestamp(),
+  }));
+  await assertSucceeds(updateDoc(doc(admin, 'events/private_draft'), {
+    status: 'published', updatedAt: serverTimestamp(),
+  }));
+  await assertSucceeds(getDoc(doc(user, 'events/private_draft')));
+  const payload = {title: 'Proposal', clubId: 'club_it', visibility: 'public',
+    registrationMode: 'required', capacity: 3, activeCount: 0,
+    startsAt: Timestamp.fromMillis(Date.now()+7200000),
+    endsAt: Timestamp.fromMillis(Date.now()+10800000), updatedAt: serverTimestamp()};
+  await assertFails(setDoc(doc(admin, 'events/admin_create'), {...payload, status:'draft'}));
+  await assertFails(setDoc(doc(staff, 'events/staff_publish'), {...payload, status:'published'}));
+  await assertFails(setDoc(doc(authedDb('staff_music'), 'events/other_club'), {...payload, status:'draft'}));
+  await assertSucceeds(setDoc(doc(staff, 'events/staff_proposal'), {...payload, status:'pending_approval'}));
+});

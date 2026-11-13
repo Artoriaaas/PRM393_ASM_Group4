@@ -95,8 +95,24 @@ service cloud.firestore {
         && (!('updatedAt' in changed) || request.resource.data.updatedAt == request.time);
     }
 
+    function eventStatusTransitionAllowed() {
+      let old = resource.data.status;
+      let next = request.resource.data.status;
+      return (isAdmin() && (
+          (old == 'pending_approval' && next in ['published', 'rejected'])
+          || next in ['cancelled', 'archived']))
+        || (isStaff() && resource.data.clubId == myClubId() && (
+          (old == 'draft' && next in ['draft', 'pending_approval', 'cancelled', 'archived'])
+          || (old == 'pending_approval' && next in ['pending_approval', 'cancelled', 'archived'])
+          || (old == 'rejected' && next in ['rejected', 'draft', 'pending_approval', 'cancelled', 'archived'])
+          || (old == 'published' && next in ['published', 'cancelled', 'archived'])
+          || (old == 'cancelled' && next in ['cancelled', 'archived'])
+          || (old == 'archived' && next == 'archived')));
+    }
+
     function staffEventMetadataUpdate() {
       return isStaffOf(resource.data.clubId)
+        && eventStatusTransitionAllowed()
         && request.resource.data.get('clubId', '') == resource.data.get('clubId', '')
         && request.resource.data.activeCount == resource.data.activeCount
         && request.resource.data.status in ['draft', 'published', 'pending_approval', 'rejected', 'cancelled', 'archived']
@@ -224,13 +240,14 @@ service cloud.firestore {
 
     match /events/{id} {
       allow list: if member()
-        && (resource.data.visibility == 'public' || isStaffOf(resource.data.clubId));
+        && ((resource.data.visibility == 'public' && resource.data.status == 'published')
+            || isStaffOf(resource.data.clubId));
       allow get: if member()
         && (!exists(eventPath(id))
-            || resource.data.visibility == 'public'
+            || (resource.data.visibility == 'public' && resource.data.status == 'published')
             || (exists(regPath(id)) && get(regPath(id)).data.uid == request.auth.uid)
             || isStaffOf(resource.data.clubId));
-      allow create: if isStaffOf(request.resource.data.clubId)
+      allow create: if isStaff() && request.resource.data.clubId == myClubId()
         && request.resource.data.clubId is string
         && request.resource.data.clubId.size() > 0
         && request.resource.data.title is string
@@ -238,7 +255,7 @@ service cloud.firestore {
         && request.resource.data.title.size() <= 120
         && request.resource.data.registrationMode in ['required', 'free']
         && request.resource.data.visibility == 'public'
-        && request.resource.data.status in ['draft', 'published', 'pending_approval']
+        && request.resource.data.status in ['draft', 'pending_approval']
         && request.resource.data.capacity is int
         && request.resource.data.capacity >= 0
         && request.resource.data.activeCount == 0

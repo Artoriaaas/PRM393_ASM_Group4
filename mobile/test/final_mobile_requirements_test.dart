@@ -63,6 +63,37 @@ class _Metadata implements ReportMetadataService {
 }
 
 void main() {
+  test(
+    'export refuses a partial schedule when a registered event is missing',
+    () async {
+      final c = ProviderContainer(
+        overrides: [
+          sessionViewModelProvider.overrideWith(_Session.new),
+          registrationsProvider.overrideWith(
+            (ref) => Stream.value([
+              const Registration(
+                id: 'r',
+                eventId: 'missing',
+                status: 'pending',
+                generation: 1,
+                participant: Participant(
+                  name: 'Test',
+                  email: 'test@example.org',
+                  group: 'guest',
+                ),
+              ),
+            ]),
+          ),
+          eventProvider('missing').overrideWith((ref) => Stream.value(null)),
+        ],
+      );
+      addTearDown(c.dispose);
+      final keep = c.listen(reportRowsProvider, (_, _) {});
+      addTearDown(keep.close);
+      await expectLater(c.read(reportRowsProvider.future), throwsStateError);
+    },
+  );
+
   test('ownerless legacy events explain the approval setup before opening the form', () async {
     final event = Event(
       id: 'e',
