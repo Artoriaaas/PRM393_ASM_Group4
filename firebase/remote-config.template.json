@@ -27,6 +27,27 @@
       },
       "valueType": "NUMBER",
       "description": "Web dashboard presentation limit; does not change permissions or capacity."
+    },
+    "ai_feature_enabled": {
+      "defaultValue": {
+        "value": "true"
+      },
+      "valueType": "BOOLEAN",
+      "description": "Master switch to enable or disable Gemini AI content assistant."
+    },
+    "ai_model_name": {
+      "defaultValue": {
+        "value": "gemini-1.5-flash"
+      },
+      "valueType": "STRING",
+      "description": "Gemini model name used for content generation via Developer API."
+    },
+    "ai_prompt_template": {
+      "defaultValue": {
+        "value": "Bạn là trợ lý AI cho ứng dụng EventHub của trường đại học. Dựa trên ý chính hoặc tiêu đề do CLB cung cấp, hãy đề xuất nội dung sự kiện theo định dạng JSON có cấu trúc gồm các trường: topic, description, audience, preparation, activities. Tuyệt đối không gửi hoặc yêu cầu thông tin cá nhân."
+      },
+      "valueType": "STRING",
+      "description": "Prompt instructions for structured JSON output format."
     }
   }
 }

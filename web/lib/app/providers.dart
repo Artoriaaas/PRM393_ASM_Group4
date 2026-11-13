@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eventhub_core/eventhub_core.dart';
 
 import '../services/firebase_web_services.dart';
+import '../services/gemini_ai_service.dart';
 import '../services/unconfigured_web_services.dart';
 import '../services/web_contracts.dart';
 
@@ -53,6 +54,15 @@ final webRemoteConfigInitProvider = FutureProvider<void>((ref) async {
   await remoteConfig.initialize();
   final analytics = ref.read(webAnalyticsServiceProvider);
   unawaited(analytics.logEvent('remote_config_fetch'));
+});
+
+final geminiAiServiceProvider = Provider<IAiEventAssistService>((ref) {
+  final remoteConfig = ref.watch(webRemoteConfigServiceProvider);
+  final analytics = ref.watch(webAnalyticsServiceProvider);
+  return GeminiAiEventAssistService(
+    remoteConfig: remoteConfig,
+    analytics: analytics,
+  );
 });
 
 final activeClubProvider = FutureProvider.autoDispose.family<Club?, String>((

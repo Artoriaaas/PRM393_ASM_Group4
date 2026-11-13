@@ -1341,6 +1341,10 @@ class FirebaseWebRemoteConfigService implements IWebRemoteConfigService {
         'recommendation_limit': 10,
         'web_dashboard_recent_limit': 4,
         'web_dashboard_chart_limit': 5,
+        'ai_feature_enabled': true,
+        'ai_model_name': 'gemini-1.5-flash',
+        'ai_prompt_template':
+            'Bạn là trợ lý AI cho ứng dụng EventHub của trường đại học. Dựa trên ý chính hoặc tiêu đề do CLB cung cấp, hãy đề xuất nội dung sự kiện theo định dạng JSON có cấu trúc gồm các trường: topic, description, audience, preparation, activities. Tuyệt đối không gửi hoặc yêu cầu thông tin cá nhân.',
       });
       await _remoteConfig.fetchAndActivate();
     } catch (_) {

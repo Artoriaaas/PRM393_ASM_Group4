@@ -1,4 +1,5 @@
 import 'package:eventhub_core/eventhub_core.dart';
+export '../contracts/ai_service.dart';
 
 class WebUserProfile {
   const WebUserProfile({

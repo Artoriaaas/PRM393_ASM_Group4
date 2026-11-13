@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eventhub_core/eventhub_core.dart';
 
 import '../../app/providers.dart';
+import '../../viewmodels/ai_event_assist_viewmodel.dart';
 import '../../viewmodels/club_events_viewmodel.dart';
 import '../../viewmodels/web_auth_viewmodel.dart';
 import 'mobile_preview_card.dart';
@@ -226,9 +227,61 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
     setState(() => _isSaving = false);
 
     res.when(
-      success: (_) => Navigator.of(context).pop(true),
+      success: (_) {
+        final aiState = ref.read(aiEventAssistViewModelProvider);
+        if (aiState.isAiGenerated && !aiState.isAccepted) {
+          ref.read(aiEventAssistViewModelProvider.notifier).markAccepted();
+        }
+        Navigator.of(context).pop(true);
+      },
       failure: (failure) => setState(() => _errorMessage = failure.message),
     );
+  }
+
+  Future<void> _requestAiSuggestion() async {
+    final title = _titleController.text.trim();
+    if (title.length < 3) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Vui lòng nhập tiêu đề hoặc ý tưởng sự kiện (tối thiểu 3 ký tự) trước khi gọi AI.',
+          ),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
+    final suggestion = await ref
+        .read(aiEventAssistViewModelProvider.notifier)
+        .requestSuggestion(
+          title: title,
+          topic: _topicController.text.trim(),
+          currentDescription: _descriptionController.text.trim(),
+        );
+
+    if (suggestion != null && mounted) {
+      setState(() {
+        if (_topicController.text.trim().isEmpty ||
+            _topicController.text.trim() == 'Chưa phân loại') {
+          _topicController.text = suggestion.topic;
+        }
+        _descriptionController.text = suggestion.description;
+        _audienceController.text = suggestion.audience;
+        _preparationController.text = suggestion.preparation;
+        _activitiesController.text = suggestion.activities.join('\n');
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            '✨ Đã áp dụng gợi ý từ Gemini AI! Bạn có thể xem và chỉnh sửa trực tiếp các trường bên dưới trước khi lưu.',
+          ),
+          backgroundColor: AppColors.primary,
+          duration: Duration(seconds: 4),
+        ),
+      );
+    }
   }
 
   @override
@@ -387,6 +440,7 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                               },
                             ),
                             const SizedBox(height: AppSpacing.s16),
+                            _buildAiAssistantCard(isAdmin),
                             Row(
                               children: [
                                 Expanded(
@@ -719,6 +773,139 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildAiAssistantCard(bool isAdmin) {
+    if (isAdmin) return const SizedBox.shrink();
+    final aiState = ref.watch(aiEventAssistViewModelProvider);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppSpacing.s16),
+      padding: const EdgeInsets.all(AppSpacing.s16),
+      decoration: BoxDecoration(
+        color: aiState.isAiGenerated
+            ? AppColors.primary.withValues(alpha: 0.05)
+            : AppColors.surfaceSubtle,
+        borderRadius: AppRadius.borderR12,
+        border: Border.all(
+          color: aiState.isAiGenerated
+              ? AppColors.primary.withValues(alpha: 0.3)
+              : AppColors.border,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.auto_awesome,
+                color: AppColors.primary,
+                size: 20,
+              ),
+              const SizedBox(width: AppSpacing.s8),
+              Expanded(
+                child: Text(
+                  'Trợ lý nội dung Gemini AI (Level 2 Structured Output)',
+                  style: AppTypography.textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ),
+              if (aiState.isAiGenerated)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.s8,
+                    vertical: AppSpacing.s4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    borderRadius: AppRadius.borderR6,
+                  ),
+                  child: Text(
+                    '✨ Đã áp dụng gợi ý',
+                    style: AppTypography.textTheme.labelSmall?.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.s8),
+          Text(
+            'Nhập tên sự kiện hoặc vài từ khóa ý tưởng vào ô tiêu đề trên, sau đó bấm nút để Gemini AI tự động gợi ý chủ đề, mô tả, đối tượng, chuẩn bị và các hoạt động phù hợp. Bạn hoàn toàn có thể kiểm tra và chỉnh sửa trước khi lưu.',
+            style: AppTypography.textTheme.bodySmall?.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+          if (aiState.errorMessage != null) ...[
+            const SizedBox(height: AppSpacing.s8),
+            Container(
+              padding: const EdgeInsets.all(AppSpacing.s8),
+              decoration: BoxDecoration(
+                color: AppColors.errorContainer,
+                borderRadius: AppRadius.borderR8,
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.info_outline,
+                    color: AppColors.onErrorContainer,
+                    size: 16,
+                  ),
+                  const SizedBox(width: AppSpacing.s8),
+                  Expanded(
+                    child: Text(
+                      aiState.errorMessage!,
+                      style: AppTypography.textTheme.bodySmall?.copyWith(
+                        color: AppColors.onErrorContainer,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close, size: 16),
+                    onPressed: () => ref
+                        .read(aiEventAssistViewModelProvider.notifier)
+                        .clearMessage(),
+                    tooltip: 'Đóng thông báo',
+                  ),
+                ],
+              ),
+            ),
+          ],
+          const SizedBox(height: AppSpacing.s12),
+          ElevatedButton.icon(
+            onPressed: aiState.isLoading ? null : _requestAiSuggestion,
+            icon: aiState.isLoading
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : const Icon(Icons.auto_awesome, size: 18),
+            label: Text(
+              aiState.isLoading
+                  ? 'Đang kết nối Gemini AI...'
+                  : (aiState.isAiGenerated
+                      ? '✨ Tạo lại gợi ý khác bằng AI'
+                      : '✨ Gợi ý nội dung bằng AI (Gemini)'),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              shape: const RoundedRectangleBorder(
+                borderRadius: AppRadius.borderR8,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

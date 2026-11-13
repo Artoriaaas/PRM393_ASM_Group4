@@ -1,3 +1,4 @@
+export 'ai_event_suggestion.dart';
 export 'announcement.dart';
 export 'app_notification.dart';
 export 'auth_state.dart';

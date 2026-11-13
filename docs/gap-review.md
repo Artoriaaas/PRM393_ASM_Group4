@@ -15,7 +15,7 @@ Analyze mobile/web sạch. Mobile 86/86 tests, web 28/28, core 6/6, Firestore em
 | Kiến trúc | mobile/, web/, packages/core/; model/theme/widgets/fonts/icons/Firestore services dùng chung | Test regression cả hai client |
 | App Check | Debug provider/Play Integrity khởi tạo trước Firestore | Đăng ký app/token, verified metrics và enforcement Console chưa được xác nhận |
 | Lab 2 states và Lab 3 instrumentation | Giữ flows/loading/empty/error; Auth/Analytics/RC/FCM/Crashlytics | Bằng chứng mới cho bản Final không được suy từ test Lab 3 |
-| AI | Chưa triển khai | Để sau theo yêu cầu |
+| AI | Đã hoàn thành Level 2: Gemini Developer API + Remote Config + App Check + Analytics + Fallback thông minh | Kiểm tra live bằng API key thật trên Web |
 | ARTEMIS | Hồ sơ/kịch bản Lab 3 còn trong repo | Cập nhật luồng Final và chạy sau theo yêu cầu |
 
 Không kết luận “tất cả CLOSED” chỉ vì có source code hoặc build thành công. Báo cáo và video Final cần bằng chứng thực thi thật. Figma chưa đồng bộ trong đợt này; thay đổi được ghi ở design-traceability.md.
