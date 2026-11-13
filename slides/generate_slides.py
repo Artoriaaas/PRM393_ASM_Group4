@@ -82,10 +82,72 @@ def get_html_head():
       overflow: hidden;
       display: none;
       background-color: var(--bg);
+      z-index: 1;
+      will-change: transform, opacity;
     }
 
     .slide.active {
       display: block;
+      z-index: 2;
+      animation: slideInForward 0.38s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+    }
+
+    .slide.active.backward {
+      animation: slideInBackward 0.38s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+    }
+
+    .slide.prev-slide {
+      display: block;
+      z-index: 1;
+      animation: slideOutForward 0.38s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+    }
+
+    .slide.prev-slide.backward {
+      animation: slideOutBackward 0.38s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+    }
+
+    @keyframes slideInForward {
+      from {
+        opacity: 0;
+        transform: translateX(60px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideOutForward {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(-60px);
+      }
+    }
+
+    @keyframes slideInBackward {
+      from {
+        opacity: 0;
+        transform: translateX(-60px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideOutBackward {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(60px);
+      }
     }
 
     .slide.layout-dark {
@@ -572,6 +634,11 @@ def get_html_head():
         width: 1280px !important;
         height: 720px !important;
         margin: 0 auto 20px auto !important;
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+        transition: none !important;
+        visibility: visible !important;
       }
       @page {
         size: 1280px 720px;
@@ -609,6 +676,7 @@ def get_html_tail():
   <script>
     const slides = Array.from(document.querySelectorAll('.slide'));
     let currentIndex = 0;
+    let cleanupTimer = null;
 
     function updateScale() {
       const stage = document.getElementById('stage');
@@ -624,19 +692,47 @@ def get_html_tail():
       stage.style.transform = `scale(${scale})`;
     }
 
-    function showSlide(index) {
+    function showSlide(index, direction) {
       if (index < 0) index = 0;
       if (index >= slides.length) index = slides.length - 1;
-      
-      slides.forEach((s, i) => {
-        s.classList.toggle('active', i === index);
-      });
+      if (index === currentIndex && slides[index].classList.contains('active')) return;
+
+      const outgoingIndex = currentIndex;
+      const dir = direction || (index >= outgoingIndex ? 'forward' : 'backward');
       currentIndex = index;
-      
+
+      if (cleanupTimer) {
+        clearTimeout(cleanupTimer);
+      }
+
+      slides.forEach((s, i) => {
+        s.classList.remove('active', 'prev-slide', 'backward');
+        if (i === outgoingIndex && outgoingIndex !== index) {
+          s.classList.add('prev-slide');
+          if (dir === 'backward') {
+            s.classList.add('backward');
+          }
+        } else if (i === index) {
+          s.classList.add('active');
+          if (dir === 'backward') {
+            s.classList.add('backward');
+          }
+        }
+      });
+
+      // Cleanup outgoing slide after transition ends
+      cleanupTimer = setTimeout(() => {
+        slides.forEach((s, i) => {
+          if (i !== currentIndex) {
+            s.classList.remove('prev-slide', 'backward');
+          }
+        });
+      }, 400);
+
       const pageId = slides[index].getAttribute('data-page-id') || (index + 1);
       document.getElementById('slide-indicator').textContent = `${String(index + 1).padStart(2, '0')} / ${slides.length}`;
       window.location.hash = pageId;
-      
+
       // Update active in overview
       document.querySelectorAll('.overview-thumb').forEach((thumb, i) => {
         thumb.classList.toggle('active', i === index);
@@ -645,13 +741,13 @@ def get_html_tail():
 
     function nextSlide() {
       if (currentIndex < slides.length - 1) {
-        showSlide(currentIndex + 1);
+        showSlide(currentIndex + 1, 'forward');
       }
     }
 
     function prevSlide() {
       if (currentIndex > 0) {
-        showSlide(currentIndex - 1);
+        showSlide(currentIndex - 1, 'backward');
       }
     }
 

@@ -43,7 +43,7 @@ Bộ slide này được xây dựng và thiết kế lại hoàn toàn tuân th
 
 ## 2. Cách Sử Dụng & Điều Khiển Trình Diễn
 
-Trực tiếp mở file `slides/index.html` bằng bất kỳ trình duyệt hiện đại nào (Google Chrome, Microsoft Edge, Safari, Firefox). Ứng dụng tự động co giãn (`transform: scale()`) khớp với kích thước màn hình mà không làm lệch toạ độ thiết kế.
+Trực tiếp mở file `slides/index.html` bằng bất kỳ trình duyệt hiện đại nào (Google Chrome, Microsoft Edge, Safari, Firefox). Ứng dụng tự động co giãn (`transform: scale()`) khớp với kích thước màn hình mà không làm lệch toạ độ thiết kế, đồng thời tích hợp hiệu ứng chuyển slide mượt mà (Smooth Slide Push Transition) 0.38s hai chiều theo hướng tới/lui.
 
 ### Phím tắt điều khiển:
 - **`Phím Mũi tên Phải` / `Phím Cách (Space)` / `PageDown`**: Chuyển sang slide kế tiếp.
