@@ -85,25 +85,6 @@ service cloud.firestore {
     function directEvent(id) {
       return !('clubId' in get(eventPath(id)).data);
     }
-    function directRegistration(id) {
-      let d = request.resource.data;
-      return isUser() && directEvent(d.eventId)
-        && id == request.auth.uid + '_' + d.eventId && d.uid == request.auth.uid
-        && d.keys().hasOnly(['uid','eventId','status','generation','participant','checkInAt','createdAt','lastOperationId'])
-        && d.status == 'active' && d.checkInAt == null && d.createdAt == request.time
-        && participantValid(d.participant) && operationValid(d.lastOperationId)
-        && canRegister(d.eventId)
-        && getAfter(eventPath(d.eventId)).data.activeCount == get(eventPath(d.eventId)).data.activeCount + 1;
-    }
-    function directSeatIncrement(id) {
-      let after = getAfter(regPath(id)).data;
-      return isUser() && directEvent(id)
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['activeCount'])
-        && request.resource.data.activeCount == resource.data.activeCount + 1
-        && request.resource.data.activeCount <= resource.data.capacity
-        && after.uid == request.auth.uid && after.eventId == id && after.status == 'active'
-        && (!exists(regPath(id)) || get(regPath(id)).data.status == 'cancelled');
-    }
     function staffEventSeatIncrement() {
       let changed = request.resource.data.diff(resource.data).affectedKeys();
       return isStaffOf(resource.data.clubId)
@@ -198,6 +179,28 @@ service cloud.firestore {
         allow delete: if false;
       }
 
+      match /reports/{id} {
+        allow read: if isUser() && request.auth.uid == uid;
+        allow create: if isUser() && request.auth.uid == uid
+          && id.matches('^report-[a-z0-9-]+$')
+          && request.resource.data.keys().hasAll(['fileName','mimeType','byteCount','rowCount','createdAt'])
+          && request.resource.data.keys().hasOnly(['fileName','mimeType','byteCount','rowCount','createdAt'])
+          && request.resource.data.fileName == id + '.pdf'
+          && request.resource.data.mimeType == 'application/pdf'
+          && request.resource.data.byteCount is int && request.resource.data.byteCount > 0 && request.resource.data.byteCount <= 20000000
+          && request.resource.data.rowCount is int && request.resource.data.rowCount > 0 && request.resource.data.rowCount <= 10000
+          && request.resource.data.createdAt == request.time;
+        allow update, delete: if false;
+      }
+      match /announcementReads/{id} {
+        allow read: if isUser() && request.auth.uid == uid;
+        allow create, update: if isUser() && request.auth.uid == uid
+          && exists(/databases/$(database)/documents/announcements/$(id))
+          && request.resource.data.keys().hasOnly(['readAt'])
+          && request.resource.data.readAt == request.time;
+        allow delete: if false;
+      }
+
       match /devices/{id} {
         allow read, delete: if member() && request.auth.uid == uid;
         allow create, update: if member()
@@ -243,7 +246,7 @@ service cloud.firestore {
         && request.resource.data.endsAt is timestamp
         && request.resource.data.endsAt > request.resource.data.startsAt
         && request.resource.data.updatedAt == request.time;
-      allow update: if directSeatIncrement(id) || userEventCancelDecrement(id)
+      allow update: if userEventCancelDecrement(id)
         || staffEventSeatIncrement()
         || staffEventMetadataUpdate();
       allow delete: if false;
@@ -256,7 +259,7 @@ service cloud.firestore {
         && (!exists(/databases/$(database)/documents/registrations/$(id))
             || resource.data.uid == request.auth.uid
             || isStaffOf(resource.data.clubId));
-      allow create: if (directRegistration(id) && request.resource.data.generation == 1) || isUser()
+      allow create: if isUser()
         && id == request.auth.uid + '_' + request.resource.data.eventId
         && request.resource.data.keys().hasOnly([
              'uid', 'eventId', 'clubId', 'status', 'generation', 'participant',
@@ -282,10 +285,6 @@ service cloud.firestore {
         && getAfter(eventPath(request.resource.data.eventId)).data.activeCount
            == get(eventPath(request.resource.data.eventId)).data.activeCount;
       allow update: if (
-          directRegistration(id) && resource.data.uid == request.auth.uid
-          && resource.data.status == 'cancelled'
-          && request.resource.data.generation == resource.data.generation + 1
-        ) || (
           isUser()
           && resource.data.uid == request.auth.uid
           && id == request.auth.uid + '_' + resource.data.eventId

@@ -569,7 +569,7 @@ test('legacy mobile active registration without clubId can cancel atomically onc
   await assertFails(updateDoc(doc(db,'events/legacy-mobile'),{activeCount:-1}));
 });
 
-test('direct Lab 3 event registration stays atomic without bypassing web approval', async () => {
+test('legacy ownerless events cannot create a new direct registration in ASM', async () => {
   await seedSystem({eventId:'direct-lab3'});
   await env.withSecurityRulesDisabled(async c => {
     const db=c.firestore();const e=(await db.doc('events/direct-lab3').get()).data();delete e.clubId;
@@ -578,7 +578,7 @@ test('direct Lab 3 event registration stays atomic without bypassing web approva
   const db=authedDb('alice');const b=writeBatch(db);
   b.set(doc(db,'registrations/alice_direct-lab3'),{uid:'alice',eventId:'direct-lab3',status:'active',generation:1,participant,checkInAt:null,createdAt:serverTimestamp(),lastOperationId:op1});
   b.update(doc(db,'events/direct-lab3'),{activeCount:1});
-  await assertSucceeds(b.commit());
+  await assertFails(b.commit());
   await assertFails(updateDoc(doc(db,'events/direct-lab3'),{activeCount:2}));
 });
 
@@ -597,4 +597,39 @@ test('pending withdrawal preserves seats and a new request resets review state',
     createdAt: serverTimestamp(), lastOperationId: op3,
   }));
   assert.equal((await getDoc(ref)).data().status, 'pending');
+});
+
+
+test('report metadata is owner-only, shaped, immutable and contains no file URL', async () => {
+  await seedSystem();
+  const alice=authedDb('alice'), bob=authedDb('bob'), staff=authedDb('staff_it'), admin=authedDb('admin_1');
+  const path='users/alice/reports/report-123-abc';
+  const metadata={fileName:'report-123-abc.pdf',mimeType:'application/pdf',byteCount:12000,rowCount:2,createdAt:serverTimestamp()};
+  await assertSucceeds(setDoc(doc(alice,path),metadata));
+  await assertSucceeds(getDoc(doc(alice,path)));
+  for (const db of [bob,staff,admin]) {
+    await assertFails(getDoc(doc(db,path)));
+    await assertFails(setDoc(doc(db,'users/alice/reports/report-other-abc'),{...metadata,fileName:'report-other-abc.pdf'}));
+  }
+  await assertFails(setDoc(doc(alice,'users/alice/reports/report-url-abc'),{...metadata,fileName:'report-url-abc.pdf',url:'https://example.com/private.pdf'}));
+  await assertFails(setDoc(doc(alice,'users/alice/reports/report-empty-abc'),{...metadata,fileName:'report-empty-abc.pdf',rowCount:0}));
+  await assertFails(updateDoc(doc(alice,path),{byteCount:1}));
+  await assertFails(deleteDoc(doc(alice,path)));
+});
+
+test('announcement read receipts belong only to their reader and require a real announcement', async () => {
+  await seedSystem();
+  await env.withSecurityRulesDisabled(async ctx => { await ctx.firestore().doc('announcements/a1').set({title:'Lich sinh hoat',body:'CLB sinh hoat',scope:'global',createdAt:Timestamp.now()}); });
+  const alice=authedDb('alice'), bob=authedDb('bob');
+  for (const uid of ['staff_it','admin_1']) {
+    await assertFails(setDoc(doc(authedDb(uid),`users/${uid}/announcementReads/a1`),{readAt:serverTimestamp()}));
+    await assertFails(getDoc(doc(authedDb(uid),'users/alice/announcementReads/a1')));
+  }
+  const path='users/alice/announcementReads/a1';
+  await assertSucceeds(setDoc(doc(alice,path),{readAt:serverTimestamp()}));
+  await assertSucceeds(getDoc(doc(alice,path)));
+  await assertFails(getDoc(doc(bob,path)));
+  await assertFails(setDoc(doc(bob,path),{readAt:serverTimestamp()}));
+  await assertFails(setDoc(doc(alice,'users/alice/announcementReads/missing'),{readAt:serverTimestamp()}));
+  await assertFails(setDoc(doc(alice,path),{readAt:serverTimestamp(),role:'admin'}));
 });
