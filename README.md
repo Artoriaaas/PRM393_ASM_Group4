@@ -1,47 +1,38 @@
-# EventHub — PRM393 Assignment / Group 4
+# EventHub — PRM393 Final Assignment / Group 4
 
-App Flutter Android cho người tham gia sự kiện. CLB và admin dùng web riêng; mobile không quản trị sự kiện hoặc mở phiên QR.
+Một Firebase project **eventhub-group4** cho mobile người tham gia và web CLB/admin. Mobile dùng đăng ký **Chờ duyệt → CLB duyệt/từ chối → điểm danh QR**. Không dùng Cloud Functions, Cloud Storage hoặc custom server. PDF lưu/chia sẻ trên thiết bị, chỉ metadata lưu Firestore theo đề Final.
 
-## Bắt đầu cho teammate
+## Bắt đầu
 
-1. Mobile: đọc [hướng dẫn chạy và kiểm tra cùng web](docs/mobile-setup.md). Tài liệu Lab 3 bên dưới là hồ sơ nền của mobile.
-2. Cài Flutter/Android SDK, mở emulator hoặc nối điện thoại Android.
-3. Chạy các lệnh dưới đây. Dự án chỉ cấu hình Android. Để xuất/upload PDF, thêm hai dart-define theo [Cloudinary setup](docs/cloudinary-setup.md); không cần API secret.
+- [Chạy mobile và kiểm tra từng chức năng](docs/mobile-setup.md), gồm cấu hình App Check bắt buộc ở Console.
+- `mobile/`: Flutter Android, entrypoint `lib/main.dart`, Firebase app `com.eventhub.app`.
+- `web/`: Flutter Web CLB/admin; giữ cách chạy web hiện có trong VS Code.
+- `packages/core/`: model, Firestore services của hai client, contracts, theme, component và font/icon dùng chung.
+- `firebase/`: Rules/indexes/Remote Config/tests, cấu hình Hosting ở firebase.json.
 
-```sh
-flutter pub get
-flutter devices
-flutter run -t lib/main.dart
+```powershell
+cd mobile
+flutter pub get --enforce-lockfile
+flutter run -d emulator-5554 -t lib/main.dart
 ```
 
-Project Firebase dùng chung: **eventhub-group4**, application ID **com.eventhub.app**. Không tạo Firebase riêng cho từng teammate. Cấu hình Google Sign-In trên máy mới theo [Firebase setup](docs/firebase-setup.md), gồm fingerprint debug của máy đó.
+Máy mới cần `mobile/android/app/google-services.json`, SHA Google Sign-In và App Check debug token riêng. Không commit các file cấu hình local, keystore, secret hay token. Phiên bản kiểm tra: Flutter 3.47.4 / Dart 3.13.3; dependencies cố định trong pubspec và lockfile của từng package. Không dùng lệnh flutter ở gốc repo vì gốc là hệ thống, không còn là package mobile.
 
-Mobile ASM kế thừa giao diện và chức năng Lab 3, nhưng đăng ký dùng chung luồng web: **Chờ duyệt → CLB duyệt hoặc từ chối**. Chỉ đăng ký đã duyệt mới điểm danh; chỗ được tính khi duyệt. Danh sách/nội dung sự kiện đọc từ Firestore, ảnh bìa theo dữ liệu sự kiện. Sự kiện phải có `clubId` của CLB quản lý để nhận yêu cầu mới. Không tự chuyển dữ liệu đăng ký cũ sang trạng thái đã duyệt.
+## Trạng thái trung thực
 
-`lib/` là mobile Android; `web/` là app web CLB/admin, dùng `packages/core/`. Mỗi app có `pubspec.yaml` và lockfile riêng; mobile không còn phụ thuộc package core của web. Cấu hình Hosting, indexes và mã web được giữ lại. Hướng dẫn Lab 3 về đăng ký trực tiếp không áp dụng cho mobile ASM; xem [hợp đồng đăng ký ASM và cách chạy](docs/mobile-setup.md).
+Phần mobile được hoàn thiện theo Final; kết quả kiểm tra mới ghi tại [mobile validation](evidence/mobile-final/validation.md). App Check Console/enforcement và test xuyên mobile–web trên cloud cần xác nhận thực tế. AI và ARTEMIS hoãn theo yêu cầu, không tính đã hoàn tất Assignment. Tài liệu Lab 3 cũ là hồ sơ lịch sử; luồng upload Cloudinary và đăng ký trực tiếp trong đó không áp dụng cho Final.
 
-PDF tiếp tục dùng Cloudinary Free theo [hướng dẫn](docs/cloudinary-setup.md). Preset public hiện tại chưa đáp ứng file riêng theo tài khoản; không xem đây là hạng mục đã hoàn tất.
-
-Theo đề Lab 3, **Tài khoản → Dịch vụ Firebase** mở khu demo thông báo, xuất/upload, Remote Config và Crashlytics. Giảng viên đã cho phép Cloudinary thay Firebase Storage. Quyền truy cập file riêng theo tài khoản vẫn chưa đạt với preset public hiện tại.
-
-## Đọc tài liệu nào?
-
-| Cần làm gì | Tài liệu |
+| Nội dung | Tài liệu hiện hành |
 |---|---|
-| Biết đã xong gì, còn thiếu gì | [Bảng tiến độ duy nhất](docs/lab3-readiness.md) |
-| Hiểu trình tự và yêu cầu bài nộp | [Kế hoạch Lab 3](KE-HOACH-LAB3.md) |
-| Sửa code, hiểu MVVM/service | [Kiến trúc](docs/architecture.md) |
-| Cấu hình Auth trên máy mới | [Firebase setup](docs/firebase-setup.md) |
-| Schema, Rules và deploy | [Backend setup](docs/backend-setup.md) |
-| PDF Cloudinary Free | [Cloudinary setup](docs/cloudinary-setup.md) |
-| Đối chiếu UI/Figma và thay đổi | [Design traceability](docs/design-traceability.md) |
-| Kiểm thử và bằng chứng đã chạy | [Test plan](docs/test-plan.md), [validation](evidence/backend/validation.md) |
-| Test toàn bộ một lượt trên Android | [One-pass test](docs/one-pass-test.md) |
-| Instrumentation và AI review | [Analytics](docs/analytics-plan.md), [code review](docs/code-review.md) |
-| Chạy ARTEMIS | [E2E setup](e2e_test/README.md) |
-| Chuẩn bị bài nộp | [Report](report/README.md), [Slides](slides/README.md) ([Xem online](https://artoriaaas.github.io/PRM393_ASM_Group4/slides/)) |
+| Mobile: cài đặt, Console, test từng bước | [mobile setup](docs/mobile-setup.md) |
+| Kiến trúc dùng chung | [architecture](docs/architecture.md) |
+| Schema và Rules | [data model](docs/data-model.md), [backend setup](docs/backend-setup.md) |
+| Thiết kế thay đổi | [design traceability](docs/design-traceability.md) |
+| Khoảng cách còn lại | [gap review](docs/gap-review.md) |
+| Luồng mobile–web | [cross-role flow](docs/cross-role-flow.md) |
+| Kết quả và bằng chứng | [test report](docs/test-report.md) |
 
-## Sản phẩm bàn giao ASM (Deliverables)
+## Hồ sơ slide và báo cáo Lab 3 (chưa phải bài nộp Final)
 
 - 📊 **Slide Thuyết trình Online (34 Slide Trực Quan & Evidence Thực Tế)**: [https://artoriaaas.github.io/PRM393_ASM_Group4/slides/](https://artoriaaas.github.io/PRM393_ASM_Group4/slides/)  
   *(Link fork cá nhân: [https://kietntse.github.io/PRM393_Lab03_Group4_pre/slides/](https://kietntse.github.io/PRM393_Lab03_Group4_pre/slides/))*
@@ -52,8 +43,9 @@ Theo đề Lab 3, **Tài khoản → Dịch vụ Firebase** mở khu demo thông
 ## Kiểm tra trước khi gửi thay đổi
 
 ```sh
-flutter analyze
-flutter test
+cd mobile
+flutter analyze --no-pub lib test
+flutter test --no-pub
 flutter build apk --debug -t lib/main.dart
 ```
 
@@ -67,12 +59,8 @@ Kiểm kê chi tiết trang 5–10: [requirements audit](docs/lab3-requirements-
 
 ## Phiên bản và AI disclosure
 
-Môi trường kiểm tra source: Flutter **3.47.4**, Dart **3.13.3**, Python **3.12.14**; pytest **8.4.2**. Các dependency Flutter trực tiếp được pin tại `pubspec.yaml`; dependency gián tiếp khóa tại `pubspec.lock`. ARTEMIS/SDK pin **351ca8422f7b5b54e80a9c1ce03a222e02415b6b**; thay đổi tương thích Groq được công bố trong `e2e_test/groq-compact.patch`, chưa chứng minh regression đạt.
+Flutter **3.47.4**, Dart **3.13.3**. Các dependency và lockfile nằm riêng ở mobile/, web/ và packages/core/. Mobile dùng firebase_app_check **0.5.1**, share_plus **13.3.1**. ARTEMIS pin **351ca8422f7b5b54e80a9c1ce03a222e02415b6b**; chưa chạy lại cho Final. Xem [validation](evidence/mobile-final/validation.md) để biết kết quả đúng với code mới.
 
-AI sử dụng theo lịch sử nhóm: Stitch hỗ trợ thiết kế ban đầu, Antigravity hỗ trợ code, Codex hỗ trợ triển khai/review local và diff PR #3/refactor/tài liệu, ARTEMIS với Groq hỗ trợ thử E2E. Xem `docs/code-review.md`; đã có output review PR #3; commit cũ gộp nhiều findings nên chưa khớp chặt yêu cầu mỗi finding một commit riêng. **Video demo: chưa quay/chưa có link nộp.**
+AI sử dụng theo lịch sử nhóm: Stitch hỗ trợ thiết kế, Antigravity hỗ trợ code, Codex hỗ trợ triển khai/review/tài liệu và ARTEMIS/Groq hỗ trợ thử E2E. **Tính năng Gemini cho người dùng chưa được triển khai**. [Code review](docs/code-review.md) ghi các finding/decision; không dùng việc có code review thay thế AI feature theo đề.
 
-Bàn giao 07/11: analyze sạch, 64 test Flutter đạt, 25 ca ARTEMIS được thu thập (chưa tính đạt). Quyền riêng tư Cloudinary, xác nhận cloud/ARTEMIS và tài liệu nộp vẫn mở; trạng thái chi tiết chỉ ghi tại `docs/lab3-readiness.md`.
-
-## Phần teammate vừa bổ sung
-
-`web/` và `packages/core/` được giữ từ nhánh main của nhóm. Phần bàn giao này chỉ xác minh mobile Lab 3; không tuyên bố web đã đạt. Root `flutter analyze` chỉ kiểm tra mobile; kiểm tra riêng từng package bằng `cd packages/core` hoặc `cd web`, rồi `flutter pub get`, `flutter analyze`, `flutter test`. Không dùng web mock làm bằng chứng mobile chạy Firestore thật.
+Video Final, report Final và slides Final chưa hoàn tất trong hạng mục mobile này. Các báo cáo/slide Lab 3 ở trên không được tính là sản phẩm Final đã đạt.
