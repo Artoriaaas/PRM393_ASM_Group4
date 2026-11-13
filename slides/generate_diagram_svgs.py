@@ -14,6 +14,14 @@ os.makedirs(DIAGRAMS_DIR, exist_ok=True)
 # -----------------------------------------------------------------------------
 svg_07 = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width="100%" height="100%">
   <defs>
+    <style>
+      .lbl { font-family: Calibri, Arial, sans-serif; font-size: 8.5px; font-weight: 700; paint-order: stroke fill; stroke: #FFFFFF; stroke-width: 3.5px; stroke-linejoin: round; }
+      .lbl-green { fill: #16A34A; }
+      .lbl-red { fill: #DC2626; font-size: 8px; }
+      .lbl-orange { fill: #EA580C; }
+      .lbl-pink { fill: #DB2777; }
+      .lbl-gray { fill: #475569; font-size: 8px; }
+    </style>
     <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
       <path d="M 0 1 L 8 5 L 0 9 z" fill="#64748B" />
     </marker>
@@ -38,114 +46,140 @@ svg_07 = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width=
   <text x="24" y="46" font-family="Calibri, Arial, sans-serif" font-size="11.5" fill="#64748B">EventHub PRM393 ASM · 3 Làn phối hợp: Sinh viên (Mobile App), Hệ thống (Firestore Rules), Trưởng CLB (Web Admin)</text>
 
   <!-- Swimlane 1: Sinh viên -->
-  <rect x="20" y="58" width="920" height="114" rx="6" fill="#FDF2F8" stroke="#FBCFE8" stroke-width="1" />
-  <rect x="20" y="58" width="130" height="114" rx="6" fill="#DB2777" opacity="0.12" />
-  <text x="35" y="112" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#9D174D">SINH VIÊN</text>
-  <text x="35" y="129" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">Mobile App (Flutter)</text>
+  <rect x="20" y="58" width="920" height="112" rx="6" fill="#FDF2F8" stroke="#FBCFE8" stroke-width="1" />
+  <rect x="20" y="58" width="125" height="112" rx="6" fill="#DB2777" opacity="0.12" />
+  <text x="32" y="112" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#9D174D">SINH VIÊN</text>
+  <text x="32" y="129" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">Mobile App (Flutter)</text>
 
   <!-- SV Nodes -->
-  <circle cx="170" cy="115" r="12" fill="#DB2777" />
-  <text x="170" y="119" font-family="Calibri, Arial, sans-serif" font-size="10" font-weight="700" fill="#FFF" text-anchor="middle">Start</text>
+  <circle cx="155" cy="114" r="10" fill="#DB2777" />
+  <text x="155" y="118" font-family="Calibri, Arial, sans-serif" font-size="9" font-weight="700" fill="#FFF" text-anchor="middle">Start</text>
 
-  <rect x="200" y="93" width="105" height="44" rx="6" fill="#FFF" stroke="#DB2777" stroke-width="1.5" filter="url(#shadow)" />
-  <text x="252" y="112" font-family="Calibri, Arial, sans-serif" font-size="11" font-weight="700" fill="#DB2777" text-anchor="middle">Điền form ĐK</text>
-  <text x="252" y="127" font-family="Calibri, Arial, sans-serif" font-size="9.5" fill="#64748B" text-anchor="middle">Màn hình A05</text>
+  <!-- 1. Điền form -->
+  <rect x="180" y="92" width="92" height="44" rx="6" fill="#FFF" stroke="#DB2777" stroke-width="1.5" filter="url(#shadow)" />
+  <text x="226" y="111" font-family="Calibri, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#DB2777" text-anchor="middle">Điền form ĐK</text>
+  <text x="226" y="126" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B" text-anchor="middle">Màn hình A05</text>
 
-  <rect x="535" y="93" width="130" height="44" rx="6" fill="#FFF" stroke="#DB2777" stroke-width="1.5" filter="url(#shadow)" />
-  <text x="600" y="112" font-family="Calibri, Arial, sans-serif" font-size="11" font-weight="700" fill="#DB2777" text-anchor="middle">Nhận thông báo Duyệt</text>
-  <text x="600" y="127" font-family="Calibri, Arial, sans-serif" font-size="9.5" fill="#64748B" text-anchor="middle">Inbox A09 · Chi tiết A08</text>
+  <!-- Fail BR-01: Hết chỗ -->
+  <rect x="282" y="92" width="94" height="44" rx="6" fill="#FEF2F2" stroke="#DC2626" stroke-width="1.5" stroke-dasharray="3,2" filter="url(#shadow)" />
+  <text x="329" y="111" font-family="Calibri, Arial, sans-serif" font-size="10" font-weight="700" fill="#DC2626" text-anchor="middle">Hết chỗ / Hạn</text>
+  <text x="329" y="126" font-family="Calibri, Arial, sans-serif" font-size="8.5" fill="#991B1B" text-anchor="middle">Báo lỗi A04/A05</text>
 
-  <rect x="745" y="93" width="120" height="44" rx="6" fill="#FFF" stroke="#DB2777" stroke-width="1.5" filter="url(#shadow)" />
-  <text x="805" y="112" font-family="Calibri, Arial, sans-serif" font-size="11" font-weight="700" fill="#DB2777" text-anchor="middle">Quét QR Hội trường</text>
-  <text x="805" y="127" font-family="Calibri, Arial, sans-serif" font-size="9.5" fill="#64748B" text-anchor="middle">Scanner A11 → Biên nhận A12</text>
+  <!-- Fail BR-03: Từ chối -->
+  <rect x="532" y="92" width="104" height="44" rx="6" fill="#FEF2F2" stroke="#DC2626" stroke-width="1.5" stroke-dasharray="3,2" filter="url(#shadow)" />
+  <text x="584" y="111" font-family="Calibri, Arial, sans-serif" font-size="10" font-weight="700" fill="#DC2626" text-anchor="middle">Thông báo Từ chối</text>
+  <text x="584" y="126" font-family="Calibri, Arial, sans-serif" font-size="8.5" fill="#991B1B" text-anchor="middle">Inbox A09 kèm lý do</text>
+
+  <!-- Succeed BR-03: Duyệt -->
+  <rect x="648" y="92" width="100" height="44" rx="6" fill="#FFF" stroke="#DB2777" stroke-width="1.5" filter="url(#shadow)" />
+  <text x="698" y="111" font-family="Calibri, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#DB2777" text-anchor="middle">Thông báo Duyệt</text>
+  <text x="698" y="126" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B" text-anchor="middle">Inbox A09 · Chi tiết A08</text>
+
+  <!-- Quét QR -->
+  <rect x="795" y="92" width="96" height="44" rx="6" fill="#FFF" stroke="#DB2777" stroke-width="1.5" filter="url(#shadow)" />
+  <text x="843" y="111" font-family="Calibri, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#DB2777" text-anchor="middle">Quét QR Hội trường</text>
+  <text x="843" y="126" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B" text-anchor="middle">Scanner A11 → A12</text>
 
   <!-- Swimlane 2: Hệ thống (Firestore & Rules) -->
-  <rect x="20" y="178" width="920" height="118" rx="6" fill="#FFFBEB" stroke="#FDE68A" stroke-width="1" />
-  <rect x="20" y="178" width="130" height="118" rx="6" fill="#D97706" opacity="0.12" />
-  <text x="35" y="234" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#B45309">HỆ THỐNG</text>
-  <text x="35" y="251" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">Firestore Rules Serverless</text>
+  <rect x="20" y="176" width="920" height="120" rx="6" fill="#FFFBEB" stroke="#FDE68A" stroke-width="1" />
+  <rect x="20" y="176" width="125" height="120" rx="6" fill="#D97706" opacity="0.12" />
+  <text x="32" y="232" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#B45309">HỆ THỐNG</text>
+  <text x="32" y="249" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">Firestore Rules Serverless</text>
 
-  <!-- Decision BR-02 -->
-  <polygon points="252,217 277,237 252,257 227,237" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5" filter="url(#shadow)" />
-  <text x="252" y="240" font-family="Calibri, Arial, sans-serif" font-size="9" font-weight="700" fill="#B45309" text-anchor="middle">BR-02?</text>
+  <!-- Decision BR-02 (Form hợp lệ?) -->
+  <polygon points="226,216 250,236 226,256 202,236" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5" filter="url(#shadow)" />
+  <text x="226" y="239" font-family="Calibri, Arial, sans-serif" font-size="9" font-weight="700" fill="#B45309" text-anchor="middle">BR-02?</text>
 
-  <!-- Decision BR-01 -->
-  <polygon points="345,217 370,237 345,257 320,237" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5" filter="url(#shadow)" />
-  <text x="345" y="240" font-family="Calibri, Arial, sans-serif" font-size="9" font-weight="700" fill="#B45309" text-anchor="middle">BR-01?</text>
+  <!-- Decision BR-01 (Còn chỗ?) -->
+  <polygon points="329,216 353,236 329,256 305,236" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5" filter="url(#shadow)" />
+  <text x="329" y="239" font-family="Calibri, Arial, sans-serif" font-size="9" font-weight="700" fill="#B45309" text-anchor="middle">BR-01?</text>
 
-  <rect x="415" y="215" width="120" height="44" rx="6" fill="#FFF" stroke="#EA580C" stroke-width="1.5" filter="url(#shadow)" />
-  <text x="475" y="233" font-family="Calibri, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#EA580C" text-anchor="middle">Tạo đơn PENDING</text>
-  <text x="475" y="248" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B" text-anchor="middle">activeCount chưa tăng</text>
+  <!-- Tạo PENDING -->
+  <rect x="408" y="214" width="112" height="44" rx="6" fill="#FFF" stroke="#EA580C" stroke-width="1.5" filter="url(#shadow)" />
+  <text x="464" y="232" font-family="Calibri, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#EA580C" text-anchor="middle">Tạo đơn PENDING</text>
+  <text x="464" y="247" font-family="Calibri, Arial, sans-serif" font-size="8.5" fill="#64748B" text-anchor="middle">activeCount chưa tăng</text>
 
-  <rect x="745" y="215" width="120" height="44" rx="6" fill="#FFF" stroke="#059669" stroke-width="1.5" filter="url(#shadow)" />
-  <text x="805" y="233" font-family="Calibri, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#059669" text-anchor="middle">Xác thực SHA-256</text>
-  <text x="805" y="248" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B" text-anchor="middle">Ghi checkInAt (BR-04, 05)</text>
+  <!-- Xác thực SHA-256 -->
+  <rect x="795" y="214" width="96" height="44" rx="6" fill="#FFF" stroke="#059669" stroke-width="1.5" filter="url(#shadow)" />
+  <text x="843" y="232" font-family="Calibri, Arial, sans-serif" font-size="10" font-weight="700" fill="#059669" text-anchor="middle">Xác thực SHA-256</text>
+  <text x="843" y="247" font-family="Calibri, Arial, sans-serif" font-size="8.5" fill="#64748B" text-anchor="middle">Ghi checkInAt (BR-04,05)</text>
 
   <!-- Swimlane 3: Trưởng CLB -->
-  <rect x="20" y="302" width="920" height="118" rx="6" fill="#FFF7ED" stroke="#FED7AA" stroke-width="1" />
-  <rect x="20" y="302" width="130" height="118" rx="6" fill="#EA580C" opacity="0.12" />
-  <text x="35" y="358" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#C2410C">TRƯỞNG CLB</text>
-  <text x="35" y="375" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">Web Admin (Role: staff)</text>
+  <rect x="20" y="302" width="920" height="120" rx="6" fill="#FFF7ED" stroke="#FED7AA" stroke-width="1" />
+  <rect x="20" y="302" width="125" height="120" rx="6" fill="#EA580C" opacity="0.12" />
+  <text x="32" y="358" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#C2410C">TRƯỞNG CLB</text>
+  <text x="32" y="375" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">Web Admin (Role: staff)</text>
 
-  <rect x="415" y="338" width="120" height="46" rx="6" fill="#FFF" stroke="#EA580C" stroke-width="1.5" filter="url(#shadow)" />
-  <text x="475" y="357" font-family="Calibri, Arial, sans-serif" font-size="10" font-weight="700" fill="#EA580C" text-anchor="middle">Review Queue Realtime</text>
-  <text x="475" y="372" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B" text-anchor="middle">Đơn mới tự đẩy qua snapshot</text>
+  <!-- Review Queue -->
+  <rect x="408" y="339" width="112" height="46" rx="6" fill="#FFF" stroke="#EA580C" stroke-width="1.5" filter="url(#shadow)" />
+  <text x="464" y="358" font-family="Calibri, Arial, sans-serif" font-size="10" font-weight="700" fill="#EA580C" text-anchor="middle">Review Queue Realtime</text>
+  <text x="464" y="373" font-family="Calibri, Arial, sans-serif" font-size="8.5" fill="#64748B" text-anchor="middle">Đơn mới đẩy qua snapshot</text>
 
-  <!-- Decision BR-03 -->
-  <polygon points="600,338 625,361 600,384 575,361" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5" filter="url(#shadow)" />
-  <text x="600" y="364" font-family="Calibri, Arial, sans-serif" font-size="9.5" font-weight="700" fill="#B45309" text-anchor="middle">Duyệt?</text>
+  <!-- Decision BR-03 (Duyệt?) -->
+  <polygon points="584,338 608,362 584,386 560,362" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5" filter="url(#shadow)" />
+  <text x="584" y="365" font-family="Calibri, Arial, sans-serif" font-size="9" font-weight="700" fill="#B45309" text-anchor="middle">Duyệt?</text>
 
-  <rect x="745" y="338" width="120" height="46" rx="6" fill="#FFF" stroke="#EA580C" stroke-width="1.5" filter="url(#shadow)" />
-  <text x="805" y="357" font-family="Calibri, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#EA580C" text-anchor="middle">Mở Phiên QR Hội trường</text>
-  <text x="805" y="372" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B" text-anchor="middle">Ghi qrCredentials/{hash}</text>
+  <!-- Mở phiên QR -->
+  <rect x="795" y="339" width="96" height="46" rx="6" fill="#FFF" stroke="#EA580C" stroke-width="1.5" filter="url(#shadow)" />
+  <text x="843" y="358" font-family="Calibri, Arial, sans-serif" font-size="10" font-weight="700" fill="#EA580C" text-anchor="middle">Mở Phiên QR</text>
+  <text x="843" y="373" font-family="Calibri, Arial, sans-serif" font-size="8.5" fill="#64748B" text-anchor="middle">Ghi qrCredentials/{hash}</text>
 
-  <!-- Connectors -->
-  <!-- SV Start -> Điền form A05 -->
-  <line x1="182" y1="115" x2="198" y2="115" stroke="#64748B" stroke-width="1.5" marker-end="url(#arrow)" />
-  <!-- Điền form A05 -> BR-02 -->
-  <line x1="252" y1="137" x2="252" y2="215" stroke="#64748B" stroke-width="1.5" marker-end="url(#arrow)" />
+  <!-- CONNECTORS -->
+  <!-- 1. Start -> Điền form -->
+  <line x1="165" y1="114" x2="178" y2="114" stroke="#64748B" stroke-width="1.5" marker-end="url(#arrow)" />
 
-  <!-- BR-02 Yes -> BR-01 (43px gap: x=277 to 320) -->
-  <line x1="277" y1="237" x2="318" y2="237" stroke="#64748B" stroke-width="1.5" marker-end="url(#arrow)" />
-  <text x="298" y="229" font-family="Calibri, Arial, sans-serif" font-size="8.5" fill="#16A34A" font-weight="700" text-anchor="middle">Hợp lệ</text>
+  <!-- 2. Điền form -> BR-02 -->
+  <line x1="226" y1="136" x2="226" y2="214" stroke="#64748B" stroke-width="1.5" marker-end="url(#arrow)" />
 
-  <!-- BR-02 No -> Back to SV -->
-  <path d="M 252 257 L 252 278 L 180 278 L 180 128 L 198 128" fill="none" stroke="#DC2626" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#arrow-red)" />
-  <text x="216" y="273" font-family="Calibri, Arial, sans-serif" font-size="8" fill="#DC2626" font-weight="700" text-anchor="middle">Báo lỗi form A05</text>
+  <!-- 3. BR-02 Succeed ("Hợp lệ") -> BR-01 (Khoảng cách 55px) -->
+  <line x1="250" y1="236" x2="303" y2="236" stroke="#64748B" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="277" y="228" class="lbl lbl-green" text-anchor="middle">Hợp lệ</text>
 
-  <!-- BR-01 Yes -> Create PENDING (45px gap: x=370 to 415) -->
-  <line x1="370" y1="237" x2="413" y2="237" stroke="#64748B" stroke-width="1.5" marker-end="url(#arrow)" />
-  <text x="392" y="229" font-family="Calibri, Arial, sans-serif" font-size="8.5" fill="#16A34A" font-weight="700" text-anchor="middle">Còn chỗ</text>
+  <!-- 4. BR-02 Fail ("Sai form") -> Vòng về A05 -->
+  <path d="M 226 256 L 226 276 L 168 276 L 168 126 L 178 126" fill="none" stroke="#DC2626" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#arrow-red)" />
+  <text x="197" y="271" class="lbl lbl-red" text-anchor="middle">Báo lỗi form A05</text>
 
-  <!-- PENDING -> Web Queue -->
-  <line x1="475" y1="259" x2="475" y2="336" stroke="#EA580C" stroke-width="1.5" marker-end="url(#arrow-orange)" />
-  <text x="483" y="300" font-family="Calibri, Arial, sans-serif" font-size="8.5" fill="#EA580C" font-weight="700">Realtime sync</text>
+  <!-- 5. BR-01 Succeed ("Còn chỗ") -> Tạo PENDING (Khoảng cách 55px) -->
+  <line x1="353" y1="236" x2="406" y2="236" stroke="#64748B" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="380" y="228" class="lbl lbl-green" text-anchor="middle">Còn chỗ</text>
 
-  <!-- Web Queue -> Decision BR-03 (40px gap: x=535 to 575) -->
-  <line x1="535" y1="361" x2="573" y2="361" stroke="#64748B" stroke-width="1.5" marker-end="url(#arrow)" />
+  <!-- 6. BR-01 Fail ("Hết chỗ") -> Lên thẳng node Hết chỗ ở SV -->
+  <line x1="329" y1="216" x2="329" y2="138" stroke="#DC2626" stroke-width="1.3" stroke-dasharray="3,2" marker-end="url(#arrow-red)" />
+  <text x="338" y="177" class="lbl lbl-red">Hết chỗ</text>
 
-  <!-- BR-03 Approve -> SV Nhận thông báo duyệt -->
-  <path d="M 600 338 L 600 139" fill="none" stroke="#DB2777" stroke-width="1.5" marker-end="url(#arrow-pink)" />
-  <text x="608" y="240" font-family="Calibri, Arial, sans-serif" font-size="8.5" fill="#16A34A" font-weight="700">Duyệt (activeCount+1)</text>
+  <!-- 7. PENDING -> Review Queue CLB -->
+  <line x1="464" y1="258" x2="464" y2="337" stroke="#EA580C" stroke-width="1.5" marker-end="url(#arrow-orange)" />
+  <text x="473" y="295" class="lbl lbl-orange">Realtime sync</text>
 
-  <!-- SV Nhận thông báo -> Quét QR (80px gap: x=665 to 745) -->
-  <line x1="665" y1="115" x2="743" y2="115" stroke="#64748B" stroke-width="1.5" marker-end="url(#arrow)" />
-  <text x="705" y="107" font-family="Calibri, Arial, sans-serif" font-size="8.5" fill="#64748B" font-weight="700" text-anchor="middle">Đến sự kiện</text>
+  <!-- 8. Review Queue -> Decision BR-03 (Khoảng cách 40px) -->
+  <line x1="520" y1="362" x2="558" y2="362" stroke="#64748B" stroke-width="1.5" marker-end="url(#arrow)" />
 
-  <!-- Web Open QR -> System Validate -->
-  <line x1="805" y1="338" x2="805" y2="261" stroke="#EA580C" stroke-width="1.5" marker-end="url(#arrow-orange)" />
-  <text x="813" y="302" font-family="Calibri, Arial, sans-serif" font-size="8.5" fill="#EA580C" font-weight="700">Mở session</text>
+  <!-- 9. BR-03 Fail ("Từ chối") -> Đi thẳng lên từ ĐỈNH của diamond BR-03 (x=584), cách ô PENDING 64px không đè -->
+  <line x1="584" y1="338" x2="584" y2="138" stroke="#DC2626" stroke-width="1.3" stroke-dasharray="3,2" marker-end="url(#arrow-red)" />
+  <text x="593" y="236" class="lbl lbl-red">Từ chối (kèm lý do)</text>
 
-  <!-- SV Scan -> System Validate -->
-  <line x1="805" y1="137" x2="805" y2="213" stroke="#DB2777" stroke-width="1.5" marker-end="url(#arrow-pink)" />
-  <text x="813" y="177" font-family="Calibri, Arial, sans-serif" font-size="8.5" fill="#DB2777" font-weight="700">Gửi mã quét</text>
+  <!-- 10. BR-03 Succeed ("Duyệt") -> Đi ra từ GÓC BÊN PHẢI (608, 362), rẽ vuông góc đi lên Thông báo Duyệt (698, 138) -->
+  <path d="M 608 362 L 698 362 L 698 138" fill="none" stroke="#DB2777" stroke-width="1.5" marker-end="url(#arrow-pink)" />
+  <text x="706" y="236" class="lbl lbl-green">Duyệt (activeCount+1)</text>
 
-  <!-- End Node (Placing inside Swimlane 2: x=865 to 940, center at x=905, well inside 940) -->
-  <line x1="865" y1="237" x2="891" y2="237" stroke="#059669" stroke-width="1.5" marker-end="url(#arrow)" />
-  <circle cx="905" cy="237" r="13" fill="#059669" />
-  <circle cx="905" cy="237" r="9" fill="#FFF" />
-  <circle cx="905" cy="237" r="6" fill="#059669" />
-  <text x="905" y="262" font-family="Calibri, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#059669" text-anchor="middle">HOÀN TẤT</text>
+  <!-- 11. Thông báo Duyệt -> Quét QR Hội trường (Khoảng cách 47px thoáng đãng) -->
+  <line x1="748" y1="114" x2="793" y2="114" stroke="#64748B" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="771" y="106" class="lbl lbl-gray" text-anchor="middle">Đến sự kiện</text>
+
+  <!-- 12. Mở Phiên QR -> Xác thực SHA-256 -->
+  <line x1="843" y1="339" x2="843" y2="260" stroke="#EA580C" stroke-width="1.5" marker-end="url(#arrow-orange)" />
+  <text x="851" y="300" class="lbl lbl-orange">Mở session</text>
+
+  <!-- 13. SV Quét QR -> Xác thực SHA-256 -->
+  <line x1="843" y1="136" x2="843" y2="212" stroke="#DB2777" stroke-width="1.5" marker-end="url(#arrow-pink)" />
+  <text x="851" y="175" class="lbl lbl-pink">Gửi mã quét</text>
+
+  <!-- 14. Xác thực SHA-256 -> HOÀN TẤT (Cách biên phải 22px, cách biên dưới 38px) -->
+  <line x1="891" y1="236" x2="906" y2="236" stroke="#059669" stroke-width="1.5" marker-end="url(#arrow)" />
+  <circle cx="918" cy="236" r="11" fill="#059669" />
+  <circle cx="918" cy="236" r="8" fill="#FFF" />
+  <circle cx="918" cy="236" r="5" fill="#059669" />
+  <text x="918" y="258" font-family="Calibri, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#059669" text-anchor="middle">HOÀN TẤT</text>
 </svg>
 """
 

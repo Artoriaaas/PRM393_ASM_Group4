@@ -36,7 +36,7 @@ def get_p2_slides():
         "panel_content_html": """
           <div style="width: 100%; height: 100%; position: relative;">
             <!-- Optional User Image (priority if provided in evidence/diagrams/07-business-flow.png) -->
-            <img src="../evidence/diagrams/07-business-flow.svg?v=3lane2" alt="Business Flow Diagram" 
+            <img src="../evidence/diagrams/07-business-flow.svg?v=3lane_bpmn_clean2" alt="Business Flow Diagram" 
                  style="width: 100%; height: 100%; object-fit: contain; display: block;" 
                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
             
