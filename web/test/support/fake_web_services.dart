@@ -206,6 +206,7 @@ class FakeClubService implements IClubService {
       deadline: event.deadline,
       description: event.description,
       coverKey: event.coverKey,
+      coverUrl: event.coverUrl,
       topic: event.topic,
       audience: event.audience,
       preparation: event.preparation,

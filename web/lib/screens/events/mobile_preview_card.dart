@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:eventhub_core/eventhub_core.dart';
 
@@ -17,6 +19,8 @@ class MobilePreviewCard extends StatelessWidget {
     required this.audience,
     required this.preparation,
     required this.activities,
+    this.coverKey = '',
+    this.coverUrl = '',
   });
 
   final String title;
@@ -32,6 +36,8 @@ class MobilePreviewCard extends StatelessWidget {
   final String audience;
   final String preparation;
   final List<String> activities;
+  final String coverKey;
+  final String coverUrl;
 
   String _formatDateTime(DateTime dt) {
     final dd = dt.day.toString().padLeft(2, '0');
@@ -84,12 +90,11 @@ class MobilePreviewCard extends StatelessWidget {
             Container(
               height: 140,
               padding: const EdgeInsets.all(AppSpacing.s16),
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [AppColors.coverStart, AppColors.coverEnd],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+              decoration: BoxDecoration(
+                image: _buildCoverDecoration(coverUrl),
+                gradient: _buildCoverDecoration(coverUrl) != null
+                    ? null
+                    : _gradientForCoverKey(coverKey),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -301,5 +306,71 @@ class MobilePreviewCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  LinearGradient _gradientForCoverKey(String key) {
+    return switch (key) {
+      'ux-design' => const LinearGradient(
+          colors: [Color(0xFF4F46E5), Color(0xFF7C3AED)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      'acoustic-live' => const LinearGradient(
+          colors: [Color(0xFFEA580C), Color(0xFFF59E0B)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      'badminton' => const LinearGradient(
+          colors: [Color(0xFF0D9488), Color(0xFF06B6D4)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      'green-campus' => const LinearGradient(
+          colors: [Color(0xFF059669), Color(0xFF10B981)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      'career-connect' => const LinearGradient(
+          colors: [Color(0xFF2563EB), Color(0xFF3B82F6)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      _ => const LinearGradient(
+          colors: [AppColors.coverStart, AppColors.coverEnd],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+    };
+  }
+
+  DecorationImage? _buildCoverDecoration(String coverUrl) {
+    final url = coverUrl.trim();
+    if (url.startsWith('data:image')) {
+      try {
+        final base64Str = url.substring(url.indexOf(',') + 1);
+        final bytes = base64Decode(base64Str);
+        return DecorationImage(
+          image: MemoryImage(bytes),
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(
+            Colors.black.withValues(alpha: 0.38),
+            BlendMode.darken,
+          ),
+        );
+      } catch (_) {
+        return null;
+      }
+    } else if (kIsWeb &&
+        (url.startsWith('http://') || url.startsWith('https://'))) {
+      return DecorationImage(
+        image: NetworkImage(url),
+        fit: BoxFit.cover,
+        colorFilter: ColorFilter.mode(
+          Colors.black.withValues(alpha: 0.38),
+          BlendMode.darken,
+        ),
+      );
+    }
+    return null;
   }
 }
