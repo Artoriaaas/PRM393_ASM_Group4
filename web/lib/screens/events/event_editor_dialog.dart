@@ -105,8 +105,6 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
     required DateTime current,
     required ValueChanged<DateTime> onPicked,
   }) async {
-    final user = ref.read(currentStaffProfileProvider);
-    if (user?.isAdmin ?? false) return;
     final now = DateTime.now();
     final firstDate = current.isBefore(now)
         ? DateTime(current.year, 1, 1)
@@ -157,12 +155,21 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
     }
 
     final user = ref.read(currentStaffProfileProvider);
-    final clubId = ref.read(currentClubIdProvider);
-    final clubName =
-        ref.read(activeClubProvider(clubId)).asData?.value?.name ??
-        user?.clubName ??
-        'Câu lạc bộ';
-
+    String clubId = (widget.initialEvent?.clubId.isNotEmpty == true)
+        ? widget.initialEvent!.clubId
+        : ref.read(currentClubIdProvider);
+    if (clubId.isEmpty) {
+      final clubs = ref.read(allClubsStreamProvider).asData?.value ?? [];
+      if (clubs.isNotEmpty) {
+        clubId = clubs.first.id;
+      }
+    }
+    final String clubName = (widget.initialEvent?.clubName.isNotEmpty == true)
+        ? widget.initialEvent!.clubName
+        : (ref.read(activeClubProvider(clubId)).asData?.value?.name ??
+            ref.read(allClubsStreamProvider).asData?.value.where((c) => c.id == clubId).firstOrNull?.name ??
+            user?.clubName ??
+            'Câu lạc bộ');
     final capacity = int.tryParse(_capacityController.text.trim()) ?? 0;
     final isEdit = widget.initialEvent != null;
 
@@ -629,54 +636,44 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                 spacing: AppSpacing.s12,
                 runSpacing: AppSpacing.s8,
                 children: [
-                  if (isAdmin) ...[
-                    ConstrainedBox(
-                      constraints: AppTouchTargets.minConstraints,
-                      child: TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: const Text('Đóng'),
-                      ),
+                  ConstrainedBox(
+                    constraints: AppTouchTargets.minConstraints,
+                    child: TextButton(
+                      onPressed: _isSaving
+                          ? null
+                          : () => Navigator.of(context).pop(),
+                      child: Text(isAdmin && widget.initialEvent != null ? 'Đóng' : 'Hủy'),
                     ),
-                    if (existingStatus == 'pending_approval' &&
-                        widget.initialEvent != null) ...[
-                      OutlinedButton.icon(
-                        icon: const Icon(Icons.cancel_outlined, size: 16),
-                        label: const Text('Từ chối đề xuất'),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.error,
-                          side: const BorderSide(color: AppColors.error),
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          _showRejectDialog(context, widget.initialEvent!);
-                        },
+                  ),
+                  if (isAdmin && existingStatus == 'pending_approval' && widget.initialEvent != null) ...[
+                    OutlinedButton.icon(
+                      icon: const Icon(Icons.cancel_outlined, size: 16),
+                      label: const Text('Từ chối đề xuất'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.error,
+                        side: const BorderSide(color: AppColors.error),
                       ),
-                      ElevatedButton.icon(
-                        icon: const Icon(Icons.check_circle_outline, size: 16),
-                        label: const Text('Phê duyệt sự kiện'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.success,
-                          foregroundColor: AppColors.onSuccess,
-                          elevation: 0,
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          ref
-                              .read(clubEventsViewModelProvider.notifier)
-                              .approveEvent(widget.initialEvent!.id);
-                        },
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        _showRejectDialog(context, widget.initialEvent!);
+                      },
+                    ),
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.check_circle_outline, size: 16),
+                      label: const Text('Phê duyệt sự kiện'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.success,
+                        foregroundColor: AppColors.onSuccess,
+                        elevation: 0,
                       ),
-                    ],
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        ref
+                            .read(clubEventsViewModelProvider.notifier)
+                            .approveEvent(widget.initialEvent!.id);
+                      },
+                    ),
                   ] else ...[
-                    ConstrainedBox(
-                      constraints: AppTouchTargets.minConstraints,
-                      child: TextButton(
-                        onPressed: _isSaving
-                            ? null
-                            : () => Navigator.of(context).pop(),
-                        child: const Text('Hủy'),
-                      ),
-                    ),
                     if (!isEditingNonDraft)
                       AppButton(
                         label: 'Lưu bản nháp',
@@ -696,14 +693,16 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                     AppButton(
                       label: existingStatus == 'published'
                           ? 'Cập nhật sự kiện'
-                          : (existingStatus == 'pending_approval'
-                              ? 'Cập nhật đề xuất'
-                              : 'Gửi Admin phê duyệt'),
+                          : (isAdmin
+                              ? 'Công bố sự kiện'
+                              : (existingStatus == 'pending_approval'
+                                  ? 'Cập nhật đề xuất'
+                                  : 'Gửi Admin phê duyệt')),
                       variant: AppButtonVariant.primary,
                       isLoading: _isSaving,
                       onPressed: _isSaving
                           ? null
-                          : () => _submit(existingStatus == 'published'
+                          : () => _submit(existingStatus == 'published' || isAdmin
                               ? 'published'
                               : 'pending_approval'),
                     ),

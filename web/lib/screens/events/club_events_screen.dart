@@ -172,13 +172,12 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
                     ),
                   ],
                 ),
-                if (!isAdmin)
-                  AppButton(
-                    label: 'Tạo sự kiện mới',
-                    semanticsLabel: 'Mở biểu mẫu tạo sự kiện mới cho câu lạc bộ',
-                    icon: const Icon(Icons.add, size: 18),
-                    onPressed: () => _openEventEditor(context),
-                  ),
+                AppButton(
+                  label: 'Tạo sự kiện mới',
+                  semanticsLabel: 'Mở biểu mẫu tạo sự kiện mới cho câu lạc bộ',
+                  icon: const Icon(Icons.add, size: 18),
+                  onPressed: () => _openEventEditor(context),
+                ),
               ],
             ),
             const SizedBox(height: AppSpacing.s20),
@@ -491,6 +490,20 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
                     runSpacing: AppSpacing.s8,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
+                      if (event.status == 'draft') ...[
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.publish, size: 16),
+                          label: const Text('Công bố sự kiện'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: AppColors.onPrimary,
+                            elevation: 0,
+                          ),
+                          onPressed: () => ref
+                              .read(clubEventsViewModelProvider.notifier)
+                              .approveEvent(event.id),
+                        ),
+                      ],
                       if (isAdmin && event.status == 'pending_approval') ...[
                         ElevatedButton.icon(
                           icon: const Icon(Icons.check_circle_outline, size: 16),
@@ -512,7 +525,7 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
                           onPressed: () => _confirmReject(context, event),
                         ),
                       ],
-                      if (!isAdmin)
+                      if (canCheckIn)
                         ConstrainedBox(
                           constraints: const BoxConstraints(
                             minHeight: AppTouchTargets.min,
@@ -521,17 +534,12 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
                             icon: const Icon(Icons.qr_code, size: 16),
                             label: const Text('Điểm danh QR'),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: canCheckIn
-                                  ? AppColors.primary
-                                  : AppColors.surfaceSubtle,
-                              foregroundColor: canCheckIn
-                                  ? AppColors.onPrimary
-                                  : AppColors.textDisabled,
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: AppColors.onPrimary,
                               elevation: 0,
                             ),
-                            onPressed: canCheckIn
-                                ? () => context.go('/events/${event.id}/checkin')
-                                : null,
+                            onPressed: () =>
+                                context.go('/events/${event.id}/checkin'),
                           ),
                         ),
                       ConstrainedBox(
