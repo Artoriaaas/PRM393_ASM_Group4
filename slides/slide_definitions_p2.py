@@ -727,7 +727,7 @@ def get_p2_slides():
         "panel_label": "MẪU BỐ CỤC",
         "panel_content_html": """
           <div style="width: 100%; height: 100%; position: relative;">
-            <img src="../evidence/diagrams/14-conceptual-erd.svg" alt="Conceptual ERD" 
+            <img src="../evidence/diagrams/14-conceptual-erd.svg?v=clean_rel" alt="Conceptual ERD" 
                  style="width: 100%; height: 100%; object-fit: contain; display: block;" 
                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
             

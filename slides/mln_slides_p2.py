@@ -540,14 +540,14 @@ def get_p2_slides():
       <div class="s-body">
         <!-- Khung sơ đồ Conceptual ERD Vector (ĐÃ BỎ CHỮ PK!) -->
         <div class="panel" style="flex: 1.35; padding: 12px; background: var(--cham-deep); justify-content: center; align-items: center; position: relative;">
-          <img src="../evidence/diagrams/14-conceptual-erd.svg" alt="Conceptual ERD" 
+          <img src="../evidence/diagrams/14-conceptual-erd.svg?v=clean_rel" alt="Conceptual ERD" 
                style="width: 100%; height: 100%; object-fit: contain;">
         </div>
 
         <!-- Cột phải: Diễn giải ngữ nghĩa quan hệ và Ràng buộc IC-01..IC-03 -->
         <div style="flex: 0.65; display: flex; flex-direction: column; gap: 12px;">
           <div class="panel accent-son" style="padding: 14px;">
-            <div style="font: 800 15px var(--display); color: var(--son); margin-bottom: 6px;">BẢN SỐ QUAN HỆ (CARDINALITY):</div>
+            <div style="font: 800 15px var(--body); color: var(--son); margin-bottom: 6px;">BẢN SỐ QUAN HỆ (CARDINALITY):</div>
             <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13.5px; color: var(--vai);">
               <div>• <strong>CLUB 1 : 0..* EVENT:</strong> Một CLB có thể tổ chức nhiều sự kiện; mỗi sự kiện thuộc sở hữu của đúng 1 CLB.</div>
               <div>• <strong>USER 1 : 0..* REGISTRATION:</strong> Một sinh viên có thể đăng ký nhiều sự kiện khác nhau.</div>
@@ -557,7 +557,7 @@ def get_p2_slides():
           </div>
 
           <div class="panel accent-nghe" style="padding: 14px;">
-            <div style="font: 800 15px var(--display); color: var(--nghe); margin-bottom: 6px;">RÀNG BUỘC TOÀN VẸN NGỮ NGHĨA (IC-01..IC-03):</div>
+            <div style="font: 800 15px var(--body); color: var(--nghe); margin-bottom: 6px;">RÀNG BUỘC TOÀN VẸN NGỮ NGHĨA (IC-01..IC-03):</div>
             <div style="font-size: 13px; color: var(--vai-2); line-height: 1.4;">
               • <strong>IC-01:</strong> Mỗi Sinh viên chỉ có tối đa 1 Registration đang hoạt động cho 1 Event (định danh: <code>{uid}_{eventId}</code>).<br>
               • <strong>IC-02:</strong> Chỉ Trưởng CLB sở hữu sự kiện (hoặc Admin) mới có quyền duyệt đơn và mở phiên điểm danh.<br>
