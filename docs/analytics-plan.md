@@ -1,6 +1,4 @@
-> Final: thay export_upload bằng export_share (row_count); export_generate giữ row_count. Metadata không chứa PII/URL. Cloudinary không còn trong app Final. Event AI chưa triển khai; ARTEMIS chưa chạy lại.
-
-# Analytics plan — EventHub Lab 3
+# Analytics plan — EventHub Final
 
 Lập trước khi thêm tracking (31/10/2026). Analytics không được làm thất bại nghiệp vụ; dùng adapter inject. Không gửi email, tên, điện thoại, QR token, URL download, nội dung tìm kiếm hoặc registration ID. Firebase user ID là UID giả danh sau đăng nhập và được xóa khi đăng xuất. `result`/`action`/`screen_code` là enum kiểm soát; số là int.
 
@@ -16,7 +14,7 @@ Lập trước khi thêm tracking (31/10/2026). Analytics không được làm t
 | booking_result | Backend confirmed/rejected/unknown | action:string, result:string | Flow nào có lỗi/phục hồi? | DebugView |
 | booking_recover | Người dùng kiểm tra kết quả | action:string | Mức độ cần phục hồi mạng? | DebugView |
 | export_generate | Tạo PDF thành công | row_count:int | Báo cáo có được dùng? | DebugView |
-| export_upload | Upload hoàn tất | byte_count:int | Upload thành công bao nhiêu? | DebugView |
+| export_share | Mở chia sẻ PDF theo thao tác người dùng | row_count:int | Người dùng có sử dụng chia sẻ báo cáo? | DebugView; không khẳng định đã gửi tới app nhận |
 | notification_open | Chạm notification | source:string in_app/push | Thông báo dẫn tới hành động? | DebugView |
 | remote_config_fetch | Fetch/activate cấu hình | result:string success/error | App có nhận config mới? | DebugView |
 | view_screen | Thay route chính | screen_code:string | Đường đi qua các màn? | DebugView |
@@ -25,6 +23,6 @@ Có thể bổ sung event sau nhưng phải cập nhật bảng trước khi ins
 
 Enable DebugView trên máy thử: `adb shell setprop debug.firebase.analytics.app com.eventhub.app`; mở Analytics → DebugView và chạy từng trigger. Chụp từng event + params vào `evidence/instrumentation/analytics/`. Tắt bằng `adb shell setprop debug.firebase.analytics.app .none.`. Đã có ảnh cho 8 tên event, 7 event có tham số riêng; xem [trạng thái bằng chứng](../evidence/instrumentation/status.md). Không coi đủ 7 là đủ mọi event trong plan.
 
-Screen identity được quản lý tại `lib/utils/screen_identity.dart`: A01a–d riêng biệt; A11 quét QR; LAB3_EXPORT và LAB3_FIREBASE riêng khu demo. Route khởi tạo/development/không tồn tại không phát view_screen. Không đưa ID hoặc query vào screen_code.
+Screen identity được quản lý tại `packages/core/lib/utils/screen_identity.dart`: A01a–d riêng biệt; A11 quét QR; LAB3_EXPORT và LAB3_FIREBASE riêng khu demo. Route khởi tạo/development/không tồn tại không phát view_screen. Không đưa ID hoặc query vào screen_code.
 
 Sửa source sau audit: notification_open phát source=push khi onMessageOpenedApp/getInitialMessage được xử lý với UID hợp lệ, source=in_app khi chạm một tin trong inbox. Receipt foreground không tự phát open. Cần chụp DebugView source=push sau cài bản mới. Lỗi lưu inbox có thông báo rõ và báo non-fatal notification_history_save_failed (không chứa nội dung tin/UID/token trong exception).

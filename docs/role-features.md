@@ -1,3 +1,5 @@
+> Phạm vi hiện hành theo Final: đây là mô tả role/chức năng của source, không phải bằng chứng đã kiểm thử cloud hoặc yêu cầu mở rộng ngoài đề. Quyền chính xác ở firebase/firestore.rules; tiến độ ở docs/test-report.md. Inbox approval là Firestore realtime, không có push FCM tự động từ web/server.
+
 # Đặc tả Vai trò và Tính năng Hệ thống EventHub
 
 Tài liệu này tổng hợp đầy đủ các vai trò (`roles`), ranh giới quyền hạn, và danh mục tính năng của hệ thống **EventHub** khi hoàn thiện thành một hệ thống thống nhất trên Firebase (gồm **Flutter Mobile App** cho người tham gia và **Flutter Web Admin** cho Trưởng CLB & Quản trị viên).

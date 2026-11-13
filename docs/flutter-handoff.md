@@ -1,4 +1,6 @@
-# Flutter handoff — ánh xạ triển khai mobile Lab 3
+> Final: các path lib/... trong mapping kế thừa tương ứng mobile/lib/...; tokens/components chuyển packages/core. PDF hiện là local/native share + metadata Firestore; registrations là pending/approved/rejected. Xem design-traceability.md và gap-review.md, không dùng nội dung bàn giao cũ để thay yêu cầu Final.
+
+# Flutter handoff — ánh xạ kế thừa Lab 2 cho mobile Final
 
 Nguồn đã mở: handoff/flutter-handoff.md trong repo Lab2 prm323-lab2-group2, revision 31cd447, ngày 07/11/2026. Bản nguồn tự ghi là đặc tả trước khi dựng Figma, nên không dùng nó để khẳng định Final UI giống pixel 1:1. File này ghi tên triển khai thực tế để người chấm không cần đường dẫn máy cá nhân.
 

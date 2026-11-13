@@ -1,3 +1,11 @@
+# Evidence — Final và hồ sơ kế thừa
+
+**Phân loại hiện hành:** `mobile-final/` là kết quả local Final. `web-admin/` hiện là checklist/validation, chưa có đủ ảnh deployment. `instrumentation/`, `step4/`, `task3/`, `backend/`, `ui-prototype/`, ảnh component và các trace ARTEMIS cũ là hồ sơ Lab 3 hoặc phát triển; giữ đường dẫn để không làm hỏng slide nhóm, không coi là Final đã pass. `design-changes/` dùng đối chiếu thiết kế, không chứng minh nghiệp vụ cloud. `diagrams/` là tài liệu hình minh họa.
+
+Cross-role 3 lượt, AI, ARTEMIS Final và Console App Check chưa có bộ proof hoàn chỉnh. Nguồn trạng thái duy nhất: [test report](../docs/test-report.md), [gap review](../docs/gap-review.md). Nội dung hướng dẫn/ảnh dự kiến bên dưới không phải danh sách file đã chụp.
+
+---
+
 # Danh Mục & Quy Chuẩn Thu Thập Bằng Chứng (`evidence/`)
 
 > **Nguyên tắc chấm điểm của môn PRM393 (Lab 3 & Final Assignment)**:
@@ -8,7 +16,7 @@
 
 ## 1. Năm Quy tắc Bắt buộc trước khi Lưu Ảnh / Log vào `evidence/`
 
-1. **Khớp `project_id` trên Firebase Console**: Mọi ảnh chụp trên Firebase Console phải thấy rõ tên/mã dự án **`eventhub-group4`** ở góc trên, khớp với `android/app/google-services.json`.
+1. **Khớp `project_id` trên Firebase Console**: Mọi ảnh chụp trên Firebase Console phải thấy rõ tên/mã dự án **`eventhub-group4`** ở góc trên, khớp với `mobile/android/app/google-services.json`.
 2. **Không lấy ảnh Prototype / Fixture làm bằng chứng Cloud**:
    - Các ảnh hiện có ở `ui-prototype/`, `component_preview*.png`, hoặc ảnh gắn hậu tố `*-ui-fixture.png` chỉ dùng để đối chiếu bố cục giao diện (UI/Theme).
    - Bằng chứng nghiệp vụ Firebase, Cross-role và ARTEMIS **bắt buộc chụp từ bản chạy thật** (`flutter run -t lib/main.dart` trên Android và Live URL Firebase Hosting trên Web).

@@ -1,42 +1,81 @@
-# Một lượt kiểm thử Lab 3 trên Android
+# Chạy thật toàn hệ thống Final — danh sách chốt sau main e5b15a4
 
-Chỉ bắt đầu sau khi có Cloudinary preset, tài khoản Firebase test đã xác nhận email, sự kiện còn hạn/chỗ và QR/phiên fixture do người quản lý chuẩn bị qua Firebase Console. Test trên `lib/main.dart`, không dùng prototype offline. Ghi ảnh và thời điểm từng bước; test nào chưa chạy ghi **chưa kiểm thử**.
+Đây là kế hoạch xác nhận, không phải kết quả đã pass. Các lỗi source đã xác định đã được sửa; tiếp tục xác nhận trên cloud. Không thêm chức năng ngoài đề. Chủ dự án tự chạy app; agent đọc ảnh/log và sửa.
 
-## Chuẩn bị
+## 1. Cấu trúc
 
-1. Chạy `flutter devices` và chọn Android emulator/máy thật. Với emulator thường là `emulator-5554`.
-2. Chạy:
+Đã có mobile/, web/, packages/core/, firebase/, e2e_test/, docs/, evidence/, report/, slides/. Hai client có main.dart Firebase; test doubles chỉ trong test/. Không custom server/Functions/Storage. Root firebase.json là config CLI, Rules/indexes ở firebase/; không cần di chuyển chỉ để đổi hình thức folder.
 
-   ```powershell
-   flutter run -d emulator-5554 -t lib/main.dart --dart-define=CLOUDINARY_CLOUD_NAME=<cloud-name> --dart-define=CLOUDINARY_UPLOAD_PRESET=<preset-name>
-   ```
+Giữ instrumentation Lab 3 vì Final kế thừa. PDF Final là local/native share + metadata Firestore. Giữ slide nhóm; report/slides/video phải chốt riêng theo đề. Cache/build gitignored không phải source.
 
-   Mở **Tài khoản → Dịch vụ Firebase** để xem Remote Config, bật thông báo, vào trung tâm thông báo/xuất file và thử Crashlytics. Nút test crash chỉ hiện trong bản debug và cần xác nhận trước khi app đóng.
-3. Mở Firebase Console cho đúng project `eventhub-group4`, Cloudinary Media Library và bảng [test-plan.md](test-plan.md). Bật Firebase Analytics DebugView cho Android test theo hướng dẫn Firebase. Không đưa token QR, mật khẩu, email cá nhân hoặc URL PDF vào log công khai.
+## 2. Các lỗi source đã sửa — 13/11/2026
 
-## Thứ tự đi qua app
+- S01: User chỉ xem published/public. Draft/pending/rejected giới hạn staff đúng CLB và Admin; staff không tự publish draft.
+- W01–W03: Admin không tạo sự kiện. CLB chỉ tạo trong clubId phân công, gửi Admin duyệt. Bỏ fallback CLB đầu danh sách.
+- W04: Sửa và gửi duyệt giữ coverKey/coverUrl.
+- W05: Dashboard dùng Remote Config `web_dashboard_recent_limit` (4) và `web_dashboard_chart_limit` (5). Chỉ điều khiển trình bày, không điều khiển quyền.
+- M01: Lịch/chi tiết/PDF chọn đăng ký canonical; fallback theo generation/thời gian, không ưu tiên approved cũ.
+- M02: Tab lịch có vùng bấm >=48dp và tăng chiều cao theo cỡ chữ.
 
-| Bước | Persona / flow | Thao tác chính | Kiểm tra và bằng chứng |
-|---|---|---|---|
-| 1 | P01/P02/P03, Auth | Đăng nhập Google hoặc email/password; thử sai/hủy; email chưa xác minh | Vào Khám phá sau thành công; Auth Users và state lỗi đúng |
-| 2 | P01 sinh viên, F1 | Tìm workshop → chi tiết → form; bỏ trống K rồi sửa → xác nhận | Lỗi tại K; A06; Firestore đăng ký + activeCount tăng, số chỗ trống giảm cùng nhau |
-| 3 | P02 khách, F1 | Tài khoản test khác → đăng ký workshop khác/còn chỗ; chọn Khách ngoài trường | Không hỏi K; A06 và dữ liệu snapshot đúng |
-| 4 | P03 xem tự do, F1 | Mở sự kiện `registrationMode=free` | Chỉ xem giờ/địa điểm; không có đăng ký/QR/lịch |
-| 5 | P01/P02, F2 | Lịch → chi tiết → dialog hủy → Giữ; mở lại → Xác nhận hủy | Giữ không thay dữ liệu; hủy chuyển lịch sử và số chỗ giảm một lần |
-| 6 | P01/P02, F4A | Đăng ký đang active; Dùng QR/phiên fixture được chuẩn bị trước; thử QR sai/đóng phiên rồi QR đúng | QR sai không ghi; QR đúng ghi một `checkInAt`; quét lại giữ giờ gốc; A12 không lộ email/số điện thoại |
-| 7 | Mọi persona | Tài khoản → Xuất lịch → Tạo PDF và tải lên | PDF đúng lịch; Cloudinary Media Library có file; link mở được; thử offline để thấy lỗi |
-| 8 | FCM | Gửi test message qua Firebase Console đến Android | Nhận khi app foreground/background/terminated, tap đi đúng màn; ghi trường hợp OS chặn quyền |
-| 9 | Remote Config | Đổi hai tham số trên Console, publish, bấm fetch trong Dịch vụ Firebase | Ảnh trước/sau của số gợi ý hoặc khối gợi ý |
-| 10 | Analytics/Crashlytics | Đi qua các thao tác trên; mở DebugView; thử nonfatal và test crash có xác nhận trong Dịch vụ Firebase | ≥7 event đúng tên, không PII; Crashlytics dashboard có nonfatal/fatal sau khi xử lý |
+Analyze mobile/web sạch. Mobile 86/86; web 28/28; core 6/6; Rules emulator 12/12 nhóm đạt. Đây chưa phải bằng chứng chạy cloud liên ứng dụng.
 
-Sau mỗi flow, đăng xuất trước khi đổi tài khoản. Không dùng cùng một event hết chỗ/hết hạn để kiểm tra nhánh thành công. Đối với test offline/mất mạng, không bấm gửi lặp trước khi app kiểm tra trạng thái; ghi rõ nếu kết quả vẫn chưa xác định.
+## 3. Thiết lập trước chạy thật
 
-## Sau lượt thủ công
+- Một project eventhub-group4, ba tài khoản test: user mobile; staff có clubId trên web; admin web. Admin đầu tiên và danh sách demo cần chủ project xác nhận để ghi README; không gửi mật khẩu.
+- Android config đã có local tại mobile/android/app/google-services.json; SHA/OAuth/Google provider phải đúng máy.
+- **web/web_env.json đã có trên máy này**, lấy từ app EventHub Web của project qua Firebase CLI. File được Git bỏ qua; teammate lấy cấu hình riêng theo docs/firebase-setup.md. reCAPTCHA site key/App Check Console vẫn cần xác nhận.
+- App Check Android debug token/Play Integrity và web reCAPTCHA site key/authorized domains cần xác nhận Console. Không bật enforcement khi một client chưa sẵn sàng.
+- Rules/indexes đã deploy lên eventhub-group4 ngày 13/11/2026 sau kiểm thử emulator. Khi sửa tiếp, deploy từ ASM bằng tool/deploy-cloud.ps1. Không deploy Rules Lab 3 đè lên.
+- Chuẩn bị ít nhất hai CLB để test chéo quyền; sự kiện mới do web tạo, published/public còn hạn và chỗ, clubId đúng. Không tự sửa activeCount/role từ mobile.
 
-Chạy ARTEMIS ít nhất 10 ca, mỗi ca 3 lần độc lập và một phiên Pro exploration 15–30 phút theo [e2e_test/README.md](../e2e_test/README.md). Lưu trace và pass rate thật. Mở PR để AI review, tổng hợp ít nhất 5 findings và ít nhất 3 fix commits theo findings. Cuối cùng mới điền report 8–12 trang, slides 12–15 và video 5–10 phút từ bằng chứng thật. Xem [lab3-readiness.md](lab3-readiness.md) để biết mục nào còn thiếu.
+## 4. Mở app — chủ dự án chạy
 
-## Những việc không thể chốt bằng thao tác test
+Hai terminal riêng tại gốc ASM:
 
-- **Cloudinary riêng tư:** preset public hiện tại chưa đáp ứng trang 6: “security rules allow each user to read and write only their own folder”. Đổi folder hoặc giấu URL không tạo phân quyền. Nhóm đang hoãn dịch vụ kiểm tra Firebase UID trước khi cấp quyền file; không đánh dấu mục này đạt.
-- **PR AI review:** theo trang 10, cần đầu ra review trên PR, ≥5 findings/≥2 nhóm, quyết định cho từng finding và ≥3 commit fix gắn ID. Các commit sửa source local chưa tự động thay thế bằng chứng PR.
-- **Figma và bài nộp:** cập nhật thay đổi đã ghi trong design-traceability; dùng ảnh/trace thực tế để hoàn thiện report 8–12 trang, slides 12–15 trang và video 5–10 phút. Khung tài liệu chưa phải bản nộp.
+```powershell
+cd mobile
+flutter pub get --enforce-lockfile
+flutter devices
+flutter run -d emulator-5554 -t lib/main.dart
+```
+
+Thay emulator-5554 bằng thiết bị Android thật đang kết nối. Terminal web sau khi có config:
+
+```powershell
+cd web
+flutter pub get --enforce-lockfile
+flutter run -d chrome -t lib/main.dart --dart-define-from-file=web_env.json
+```
+
+Đây là hai client local dùng Firebase thật, chưa phải bằng chứng web deployment. Trước đo cross-role chính thức phải build/deploy Hosting và mở private window. Giữ terminal để gửi log lỗi, không đóng trong lúc test.
+
+## 5. Thứ tự chạy một đợt
+
+| Bước | Thao tác | Mong đợi / bằng chứng |
+|---|---|---|
+| 1 Auth/role | Login Google user mobile; user thử web; staff/admin thử mobile; cancel/login/logout/Back | Đúng role gate, lỗi có phản hồi; không mở dữ liệu private sai role |
+| 2 Admin/staff web | Admin phân staff+CLB; staff tạo/sửa/gửi đề xuất; Admin duyệt hoặc từ chối, tìm kiếm và archive | Dữ liệu Firestore thật; sửa không mất cover; CLB khác bị chặn |
+| 3 Mobile khám phá | Tìm sự kiện vừa publish, detail, search empty, Back/4tabs | Mới nhất và đúng nội dung; loading/empty/error/retry |
+| 4 Pending | User gửi form guest/student | Pending, chưa QR/chưa giảm count; web queue nhận |
+| 5 Review | Staff reject có lý do, user xem; gửi lại rồi approve | Mobile realtime/lý do/inbox; approved chiếm1 chỗ; không tự approve từ mobile |
+| 6 Hủy/recovery | Hủy pending rồi approved theo điều kiện; ngắt mạng khi gửi và kiểm tra trạng thái | Count đúng, không trùng thao tác, lịch không chọn record cũ |
+| 7 QR | Web mở/đóng/xoay QR; user approved quét; thử sai mã/chưa approved/quét lặp | Camera permission đúng; checkInAt server giữ gốc; web count cập nhật |
+| 8 Announcements | Staff đăng club/event; admin global; đọc và đổi UID | Mobile inbox đúng scope, read receipt riêng, không lộ tin UID khác |
+| 9 Dashboard | Xem ≥3 aggregation figures+chart; thay dữ liệu rồi refresh | Số liệu đối chiếu Firestore; loading/empty/error rõ |
+| 10 PDF | Tạo và lưu, chia sẻ Android, thử mất mạng metadata rồi retry | PDF khớp preview; metadata UID-only; không upload/public URL; file giữ khi metadata lỗi |
+| 11 Instrumentation | RC hai tham số mobile và web; Analytics trigger; FCM foreground/background/terminated; lỗi thật + test crash | Console/event params/keys/UID và ảnh trước-sau thật. Test crash chỉ trên thiết bị test |
+| 12 Privacy/UI | Logout, UID khác; role đổi;360/412dp và chữ lớn | Không lộ lịch/inbox/file phiên trước; UI không tràn/cắt; traceability/Figma ghi đúng thay đổi |
+
+Mỗi lỗi gửi: bước/role/màn, thao tác, ảnh hoặc log và kết quả mong đợi. Không cần gửi key/token. Sửa xong chạy lại bước lỗi và bước phụ thuộc, không phải làm lại mọi thứ vô điều kiện.
+
+## 6. Còn thiếu để nộp, không thể giải quyết chỉ bằng test thủ công
+
+- AI Gemini qua Firebase AI Logic chưa có; đề cho phép ở web hoặc mobile. Cần RC model/prompt/flag, App Check, no PII, JSON/Dart+confirm để đạt full,3 input/output thật+1 failure,3 events và demo RC off. Không thêm server.
+- ARTEMIS mới:25ca×3 đều skipped do thiếu ARTEMIS_BASE_URL và ARTEMIS_TEST_ACCOUNT_EMAIL; có client_error NetworkError. Chưa có Final pass; cần cross-role/AI coverage và3 lượt thực mỗi ca.
+- Cross-role trên deployment3 lần và measured latency; web checklist ảnh từng main action/error/empty; Console App Check/instrumentation Final.
+- Matrix Rules allowed/denied từng role/collection còn phải chốt;11 nhóm test không đồng nghĩa đủ matrix. Bổ sung test cho các lỗi vừa tìm thấy.
+- Code review mới cần đóng findings và có fix commits/bằng chứng; phần sửa local hiện chưa commit/push.
+- README còn thiếu Admin đầu tiên/demo accounts/URL verified/video/ID theo mẫu đề; kiểm tra lịch sử Git tiếp nối Lab3 và đóng góp nhóm.
+- Report Final10–15 trang, slides12–15, video live8–12 phút chưa chốt. Slide nhóm giữ nguyên, phải đối chiếu riêng độ dài/số liệu thực. Figma chưa xác nhận đồng bộ hết.
+
+Chi tiết nguồn: docs/final-requirements.md, docs/test-report.md; đề PDF Final ở gốc repo. Không đánh dấu hoàn thành vì build/unit pass hoặc có tài liệu placeholder.

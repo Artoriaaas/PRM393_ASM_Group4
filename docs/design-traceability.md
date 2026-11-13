@@ -2,25 +2,27 @@
 
 > ASM 13/11/2026: A05 gửi yêu cầu chờ duyệt; A06 là kết quả gửi yêu cầu, không phải tự động được duyệt. A07/A08 bổ sung pending/approved/rejected và lý do từ chối; nhóm lịch cuối là “Đã hủy / Từ chối”. A11/A12 chỉ ghi điểm danh sau khi approved. Đây là thay đổi để khớp web CLB theo quyết định của nhóm. Chưa cập nhật Figma trong lần này. Xem [mobile setup](mobile-setup.md).
 
-# Đối chiếu thiết kế Lab 2 → triển khai Lab 3
+# Đối chiếu thiết kế Lab 2 → mobile Final (kế thừa Lab 3)
 
-Ngày lập: 30/10/2026. Cập nhật 04/11/2026: đã có auth, code nghiệp vụ Firestore trực tiếp và test local; cloud/Figma còn các việc chưa hoàn tất. Lab 2 đã được chủ dự án xác nhận chốt. Bảng màn bên dưới là ánh xạ thiết kế, không phải bằng chứng E2E; trạng thái hiện hành ở [lab3-readiness.md](lab3-readiness.md).
+Hồ sơ bắt đầu 30/10/2026; nội dung lịch sử phải đọc cùng các thay đổi Final ở đầu file. Cập nhật cũ 04/11/2026: đã có auth, code nghiệp vụ Firestore trực tiếp và test local; cloud/Figma còn các việc chưa hoàn tất. Lab 2 đã được chủ dự án xác nhận chốt. Bảng màn bên dưới là ánh xạ thiết kế, không phải bằng chứng E2E; trạng thái hiện hành ở [gap-review.md](gap-review.md).
 
-## Quyết định triển khai mới 04/11/2026
+## Quyết định triển khai (nội dung hiện hành đã đổi theo Final)
 
 | Màn/phạm vi | Thay đổi so với bản thiết kế trước | Vì sao |
 |---|---|---|
 | A05/A08/A11 | App ghi Firestore qua transaction, Rules bảo vệ số chỗ và QR; không gọi Cloud Functions | Hướng phát triển lên Final không dùng Functions. UI vẫn giữ cùng luồng; cần test cloud và cập nhật Figma nếu thông báo lỗi thay đổi |
-| L3-02 Xuất lịch | Upload PDF qua Cloudinary Free, không qua Firebase Storage; thêm cảnh báo liên kết có thể chia sẻ | Nhóm chọn phương án miễn phí thay Storage theo trao đổi với giảng viên. Chỉ upload PDF không có email/số điện thoại; cần ảnh trước/sau và bằng chứng giảng viên chấp nhận thay thế |
+| Export Final | Tạo/lưu PDF local → native share; metadata Firestore theo UID | Final trang 3 thay yêu cầu upload Lab 3; không public URL hoặc cloud file |
 | A09 Thông báo | FCM test bằng Console; không có push tự động theo đăng ký/hủy khi chưa có web/admin phát tin | Không có server hoặc Functions. Inbox Firestore do vai trò web/admin tạo, mobile chỉ đọc |
 
 ## 1. Nguồn và thứ tự đối chiếu
+
+- Đề Final trong gốc repo: mục 3/4/6/9/10 là yêu cầu hiện hành. Giữ bảng mapping Lab 2 bên dưới để không bỏ màn/component; không coi ghi chú triển khai cũ là proof Final.
 
 - Đề Lab 3: `C:/Users/ThinhCri/Downloads/PRM393 - Lab 3 Cloud-Enabled Mobile App (Firebase, Patrol, AI Code Review).pdf`, mục 3–6: mọi màn Final UI, mọi flow, MVVM, sáu dịch vụ Firebase, dữ liệu thật, xuất/upload file.
 - [Figma Final UI](https://www.figma.com/design/WC21Na9ZDS8jjM2LzPKeXa/PRM393?node-id=153-2), [Components](https://www.figma.com/design/WC21Na9ZDS8jjM2LzPKeXa/PRM393?node-id=23-2), [Prototype](https://www.figma.com/design/WC21Na9ZDS8jjM2LzPKeXa/PRM393?node-id=199-1681).
 - Đã đọc trực tiếp danh sách node page 03/05 ngày 30/10/2026. Page 03 còn cả bản 156/157 cũ và các màn redesign; ưu tiên các node được chỉ rõ trong bảng dưới. Đây là kiểm kê cấu trúc, không phải kết quả chạy Present hay kiểm tra pixel.
 - Tài liệu local đã đọc: `D:/Ky8/prm323-lab2-group2/ux/persona.md`, `ux/user-flow.md`, `design/screen-spec.md`, `handoff/flutter-handoff.md`, `project/design/design-system.md` (các đường dẫn sau cùng thuộc cùng repo Lab 2).
-- Khi Markdown cũ mâu thuẫn: áp dụng đề Lab 3 cho yêu cầu mới; giữ quy tắc sản phẩm và flow đã chốt cho nghiệp vụ. Ghi quyết định tại mục 6, không âm thầm triển khai theo dòng lỗi.
+- Khi tài liệu mâu thuẫn: đề **Final ASM** là ưu tiên hiện hành; kế thừa Lab 2/Lab 3 ở phần Final yêu cầu giữ, và ghi nhận mọi thay đổi. PDF local/share + metadata thay upload cloud; pending/approved thay đăng ký trực tiếp.
 
 Các route/widget/ViewModel dưới đây đã được đối chiếu với source mobile ngày 07/11/2026. Đây là ánh xạ triển khai, không thay thế bằng chứng E2E hoặc khẳng định pixel 1:1. ID Figma là node thật đã đọc; mở bằng URL file với `?node-id=ID` (đổi dấu `:` thành `-`).
 
@@ -44,7 +46,7 @@ Các route/widget/ViewModel dưới đây đã được đối chiếu với sou
 | A11 Quét `182:1804` | `/registrations/:registrationId/scan` | ScannerScreen / BookingViewModel + QrCameraService | QrCameraService + EventService | Chưa quyền `182:1822`, xử lý `182:1843`, sai sự kiện `182:1866`, phiên đóng `182:1887`, không đăng ký `182:1908`, chưa rõ `182:1930`, tra trạng thái `182:1951`, hủy `182:1974`; QR không hợp lệ |
 | A12 Kết quả `182:1995` | `/registrations/:registrationId/check-in` | RegistrationDetailScreen(checkInResult: true) / registrationProvider | EventService | Mới, đã ghi nhận `182:2036`, xem lại khi phiên đóng, CLB hủy `182:2074`, lỗi tải; giữ giờ gốc; không email/điện thoại |
 | L3-01 Khu demo Firebase — mới, chưa có node | `/account/firebase-demo` | CloudToolsScreen / CloudToolsViewModel | CloudServices + NotificationService | Xem config, refresh, lỗi; mở A09/export, test crash có xác nhận rõ |
-| L3-02 Xuất và upload — mới, chưa có node | `/account/export` | ExportScreen / ExportViewModel | EventService + ReportService + ReportStorageService | Tạo PDF từ lịch, upload Cloudinary, URL, empty/error/retry; cảnh báo URL chia sẻ được |
+| Export local/share — chưa có node Final | `/account/export` | ExportScreen / ExportViewModel | EventService + ReportService + ReportFileService + ReportMetadataService | Tạo PDF khớp lịch, lưu private local, metadata Firestore, native share, empty/error/retry |
 
 Các state dùng cùng route và model, không tạo route riêng cho mọi spinner hoặc dialog. A01a–d vẫn được triển khai, không bị xóa vì bổ sung Google. Lỗi tải A06/A12 là lỗi lấy lại dữ liệu, không đảo ngược kết quả nghiệp vụ đã ghi nhận.
 
@@ -56,7 +58,7 @@ Các state dùng cùng route và model, không tạo route riêng cho mọi spin
 | F1 tự do — P03 | Login theo yêu cầu Lab 3 → Discover/Search hoặc deep link → EventDetail tự do → Back | Không tạo đăng ký, không thêm lịch, không QR. Hạn chế mới về đăng nhập ghi tại D02 | EventService; EventCardFree, EventPanel + Text |
 | F2 — P01/P02 | Schedule → RegistrationDetail → ConfirmCancelDialog → đang xử lý → Schedule cập nhật | Giữ đăng ký; quá giờ/đã điểm danh không hủy; CLB hủy khác tự hủy; mạng lỗi tra kết quả; nhánh Notifications → A04/A08; Account → Schedule | Registration/Event/Notification/ProfileService; Tabs, Summary, Dialog, Banner |
 | F4A — P01/P02 | RegistrationDetail → Scanner → server xác nhận → CheckInResult → Schedule | Camera bị từ chối; sai QR/event; chưa đăng ký về A04; phiên đóng/hủy; đã điểm danh xem giờ cũ; chưa rõ thì tra trạng thái | Camera/CheckIn/EventService; CameraViewport, ErrorState, EventPanel trong RegistrationDetailScreen |
-| Bổ sung Lab 3 | Account → export/upload; Account → FirebaseDemo; push → A04/A08 | Quyền notification bị từ chối; file rỗng, mất mạng; config dùng mặc định; auth hết hạn | Report/Cloudinary/Config/Diagnostics/NotificationService |
+| Bổ sung Lab 3 | Account → local PDF/share; Account → FirebaseDemo; push → A04/A08 | Quyền notification bị từ chối; file rỗng, mất mạng; config dùng mặc định; auth hết hạn | Report/local file/metadata/Config/Diagnostics/NotificationService |
 
 P01: giữ mục tiêu đo từ A02 đến đăng ký ≤90 giây, QR ≤30 giây với mạng ổn định. P02: không yêu cầu email FPTU/khóa K. P03: đo đọc giờ/địa điểm ≤60 giây sau khi vào màn nội dung; yêu cầu không tạo tài khoản của persona gốc bị ảnh hưởng bởi D02, phải nêu trong báo cáo. Các mốc là mục tiêu, chưa phải kết quả test.
 
@@ -116,7 +118,7 @@ ErrorState được compose từ EventPanel + BookingFeedback/AppErrorState + n�
 
 Cập nhật triển khai 31/10/2026: A01a–d đã có Flutter screen và Firebase Auth adapter; Google button đã thêm. Tham chiếu [firebase-setup.md](firebase-setup.md) cho khác biệt UI: summary chỉ hiển thị khi có dữ liệu thật ở bước F1, đổi email dùng xác thực lại/link mới thay vì tạo account lần hai. Chưa đồng bộ Figma. Đã cấu hình project `eventhub-group4`; chủ dự án xác nhận Google Sign-In thành công, chưa kiểm thử toàn bộ cloud. Không thay trạng thái toàn bộ ma trận thành hoàn thành chỉ dựa trên việc viết auth.
 
-Đã có ánh xạ A01a–d/A02–A12, state/flow, component và thay đổi Lab 3; đã có route/widget và bằng chứng local được ghi ở phần trạng thái code. **Còn thao tác đồng bộ Figma cho D01/D02/D03/D07 trước khi coi bước 1 hoàn tất toàn bộ theo kế hoạch.** Lần này người dùng yêu cầu tài liệu bước 1–2; chưa chỉnh file Figma đã chốt của Lab 2. Tiếp tục bằng bản thiết kế Lab 3 có truy vết các thay đổi này, sau đó bước 3.
+Đã có ánh xạ A01a–d/A02–A12, state/flow, component và thay đổi Lab 3; đã có route/widget và bằng chứng local được ghi ở phần trạng thái code. **Còn thao tác đồng bộ Figma cho D01/D02/D03/D07 trước khi coi bước 1 hoàn tất toàn bộ theo kế hoạch.** Lần này người dùng yêu cầu tài liệu bước 1–2; chưa chỉnh file Figma đã chốt của Lab 2. Đây là trạng thái lịch sử; Final hiện theo docs/gap-review.md, không dùng kế hoạch bước 1–3 cũ để bàn giao.
 
 
 ## Quy trình ghi nhận thay đổi UI khi triển khai
@@ -143,7 +145,7 @@ Chưa tạo bản ghi mới chỉ từ mẫu: cần ảnh thực, thay đổi c�
 | A09 | NotificationsTabScreen / NotificationsViewModel | owner Firestore notifications | Đã nối in-app feed/read/navigation; FCM tự động theo event chưa có, chưa test ba trạng thái |
 | A11 | ScannerScreen / BookingViewModel + QrCameraService | native camera + Firestore Rules | Đã code; QR hợp lệ/sai test emulator, chưa test camera với QR web CLB thật |
 | A12 | RegistrationDetailScreen(checkInResult) | confirmed server checkInAt | Đã code/test privacy; chưa cloud |
-| A10/edit, L3-01/02 | ProfileEditScreen, CloudToolsScreen, ExportScreen và ViewModel | Firebase Auth, CloudServices, ReportStorage | Đã code/test local; cloud/Figma còn cần xác minh |
+| A10/edit, L3-01/02 | ProfileEditScreen, CloudToolsScreen, ExportScreen và ViewModel | Firebase Auth, CloudServices, ReportFileService/ReportMetadataService | Đã code/test local; cloud/Figma còn cần xác minh |
 
 Artwork Lab 2 dùng lại từ prototype đã dựng và SVG đã tải; dữ liệu nội dung sự kiện đọc từ Firestore, cover fallback cho nội dung khác cần review và ghi bằng chứng nếu khác thiết kế đã chốt. Chưa tuyên bố Figma đã đồng bộ hoặc mọi màn pixel-perfect.
 
@@ -162,7 +164,7 @@ A05/A08/A11 bổ sung nhãn sự kiện của thao tác đang chờ và nút “
 Ảnh Flutter UI fixture chỉ chứng minh bố cục; không dùng làm bằng chứng nghiệp vụ cloud hoặc xác nhận thầy đã duyệt.
 
 
-### D11 — Khám phá: bộ lọc và dữ liệu mẫu
+### D11 — Khám phá: bộ lọc và nội dung lịch sử thử giao diện
 
 Tách nhãn CLB, sửa khoảng cách và empty state, chỉ hiện reset khi cần. Thêm hai event demo có nhãn rõ để xem giao diện theo yêu cầu chủ dự án; không dùng chúng làm bằng chứng sự kiện CLB thật. Xem [ảnh trước/sau và lý do](../evidence/design-changes/D11-discover-filters/README.md). Chưa cập nhật Figma.
 
@@ -178,13 +180,13 @@ Tách nhãn CLB, sửa khoảng cách và empty state, chỉ hiện reset khi c�
 
 04/11/2026: bỏ nhãn “Email đã xác nhận”, đoạn giải thích FPTU và nút xem thử component khỏi A10 theo yêu cầu người dùng. Auth verification vẫn được giữ trong nghiệp vụ. Khi đăng nhập từ đích Account chuyển về Khám phá, tránh quay lại Account sau logout/login; đích đăng ký sự kiện vẫn được giữ. Chưa cập nhật Figma.
 
-04/11/2026: bỏ nút “Tiện ích Firebase” khỏi A10 theo yêu cầu người dùng. 05/11/2026: thêm lại lối vào **Dịch vụ Firebase** vì mục 3 của đề Lab 3 yêu cầu khu demo truy cập được trên Profile; màn gồm thông báo, xuất/upload, giá trị Remote Config và Crashlytics test. Không đưa nút xem thử component trở lại. Cần cập nhật Figma và lưu ảnh trước/sau của thay đổi này.
+04/11/2026: bỏ nút “Tiện ích Firebase” khỏi A10 theo yêu cầu người dùng. 05/11/2026: thêm lại lối vào **Dịch vụ Firebase** vì mục 3 của đề Lab 3 yêu cầu khu demo truy cập được trên Profile; màn gồm thông báo, PDF local/share, giá trị Remote Config và Crashlytics test. Không đưa nút xem thử component trở lại. Cần cập nhật Figma và lưu ảnh trước/sau của thay đổi này.
 
 04/11/2026: căn giữa địa chỉ email trên A01c “Kiểm tra email” để khớp trục của tiêu đề và các thao tác; trước đó email bị lệch trái. Cần đồng bộ Figma nếu bản thiết kế hiện dùng căn trái.
 
 ### D14 — Ảnh bìa theo sự kiện
 
-07/11/2026: thay cover cam trên 5 sự kiện bằng ảnh minh họa AI riêng (thiết kế, acoustic, cầu lông, trồng cây, nghề nghiệp). Firestore chọn ảnh qua coverKey; hỗ trợ coverUrl HTTPS cho nội dung sau này. Ảnh bundled để không thay đổi preset Cloudinary PDF. Lý do: phân biệt sự kiện theo yêu cầu chủ dự án; cần đồng bộ Figma. Danh sách sự kiện vẫn lấy từ Firestore, không có seed tự chạy trong app.
+07/11/2026: thay cover cam trên 5 sự kiện bằng ảnh minh họa AI riêng (thiết kế, acoustic, cầu lông, trồng cây, nghề nghiệp). Firestore chọn ảnh qua coverKey; hỗ trợ coverUrl HTTPS cho nội dung sau này. Ảnh bundled theo coverKey; PDF Final không dùng cloud upload. Lý do: phân biệt sự kiện theo yêu cầu chủ dự án; cần đồng bộ Figma. Danh sách sự kiện vẫn lấy từ Firestore, không có seed tự chạy trong app.
 
 ## Bàn giao mục 3 — 07/11/2026
 
@@ -195,3 +197,14 @@ Figma giữ nguyên theo quyết định của chủ dự án; đây chưa phả
 ### D15 — Chuẩn hóa component và accessibility sau audit Lab3
 
 07/11/2026: màn production dùng AppTopBar, AppButton text variant, AppConfirmationDialog/AppInfoDialog và AppChoiceChip dùng lại. Placeholder input đổi về #5F6B7A theo token Lab2 (contrast trên trắng khoảng5.43:1), input border về #CBD2DC; bodySmall nâng14sp, subtitle appbar dùng bodyMedium. Không đổi route/tab hay nghiệp vụ; glyph Back được thống nhất theo AppTopBar. Camera UI chỉ render, lifecycle và error state chuyển sang ScannerViewModel. Bằng chứng trước sửa trong evidence/instrumentation; chưa có ảnh mọi màn sau sửa, chưa đồng bộ Figma. Không coi ghi log là thay thế cập nhật Figma theo đề.
+
+## Điều chỉnh sau audit Final — 13/11/2026
+
+| Vị trí | Điều chỉnh | Lý do |
+|---|---|---|
+| Web Admin / CLB sự kiện | Admin chỉ duyệt/từ chối; CLB tạo và gửi duyệt trong clubId được phân công | Thống nhất phân vai của nhóm; bỏ action tạo không dùng được và gán nhầm CLB |
+| Web Dashboard | Giới hạn mục gần đây/biểu đồ qua Remote Config (mặc định 4/5) | Có hành vi cấu hình thật trên web theo đề |
+| Mobile A07 | Tab Đã hủy / Từ chối, vùng bấm >=48dp, co giãn text lớn | Phản ánh trạng thái chờ duyệt và accessibility |
+| Mobile A07/A08/export | Dùng đăng ký canonical/generation mới nhất | Không hiển thị approved cũ sau hủy/gửi lại |
+
+Figma chưa chỉnh trong lượt này; giữ bản hiện tại để nhóm đối chiếu và cập nhật theo yêu cầu nộp. Không ghi nhận đã đồng bộ hình ảnh 1:1 khi chưa kiểm tra trực tiếp.

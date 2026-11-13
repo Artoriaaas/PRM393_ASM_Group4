@@ -1,3 +1,5 @@
+> Hồ sơ instrumentation Lab 3 kế thừa. Export/upload Cloudinary trong ảnh không áp dụng Final. Cần xác nhận bản Final và export_share/local metadata; không dùng ảnh cũ để tuyên bố cloud/native Final đã đạt. Xem docs/test-report.md.
+
 # Instrumentation evidence — 07/11/2026
 
 Trạng thái hiện tại sau kiểm thử Android do người dùng thao tác và agent lưu ảnh. Ảnh gốc nằm trong các thư mục dưới đây; không tạo kết quả Console giả. Các kết quả trước khi khôi phục Console không còn là trạng thái hiện tại.

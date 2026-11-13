@@ -14,7 +14,7 @@ Tài liệu và test Lab 3 lịch sử bên dưới không được dùng để 
 
 ---
 
-# AI-assisted code review — trạng thái hiện hành
+# AI-assisted code review — hồ sơ Lab 3 kế thừa
 
 Đã dùng Codex assistant (GPT-6.1) review diff PR [#3](https://github.com/ThinhCri/PRM393_Lab03_Group4/pull/3), source fb2d2ee. Output và file:dòng tại [review-pr-findings.md](review-pr-findings.md); metadata phạm vi tại evidence/code-review/pr-3-scope.json. Không giả danh output Copilot/CodeRabbit. Đề nêu ví dụ công cụ, không bắt buộc bot ngoài cụ thể. Trạng thái PR hiện tại chưa được kiểm tra lại qua GitHub trong lượt sửa source này.
 
@@ -85,3 +85,21 @@ Dòng tham chiếu có thể thay đổi khi formatter chạy; dùng ID + file v
 - AUD04: 599b4c4 — push-open analytics và feedback lưu inbox.
 
 Mỗi commit mới có một audit ID. Đây không sửa lại lịch sử PR #3; các commits này xuất phát từ audit workspace, chưa tự biến thành bằng chứng AI review trên PR mới.
+
+## FM06 — Export không được âm thầm thiếu sự kiện
+
+- File: mobile/lib/viewmodels/export_viewmodel.dart, reportRowsProvider.
+- Finding: khi registration tồn tại nhưng event không tải được/null, code cũ bỏ qua dòng; PDF vẫn báo tạo thành công dù không khớp toàn bộ lịch.
+- Quyết định: accept. Final kế thừa yêu cầu dữ liệu/file đúng nội dung; không giả vờ xuất đầy đủ.
+- Fix: phát error để màn xuất hiển thị retry, không tạo báo cáo thiếu dòng.
+- Kiểm tra: final_mobile_requirements_test — export refuses a partial schedule when a registered event is missing; suite 84/84 đạt. Không thay bằng bằng chứng native share/cloud.
+
+## Findings đã sửa — 13/11/2026
+
+- S01: public draft bị đọc và staff có thể vượt phê duyệt. Sửa Rules read/status transition; test deny/allow với user, staff, Admin. Rules/indexes deploy thành công.
+- W01–W03: action Admin tạo không dùng được và fallback CLB đầu tiên. Bỏ action Admin, kiểm tra staff/clubId cả ViewModel/Rules; CLB gửi đề xuất pending_approval.
+- W04: dựng lại Event làm mất ảnh. Giữ cả coverKey/coverUrl và thêm regression chỉnh sửa/gửi duyệt.
+- W05: RC web fetch nhưng không dùng. Dashboard đọc giới hạn recent/chart, có test tác động đầu ra; không dùng RC quyết định quyền.
+- M01–M02: đăng ký cũ thắng bản hủy mới và vùng bấm tab nhỏ. Dùng canonical/generation/time chung lịch/detail/PDF; tăng vùng bấm và test text lớn.
+
+Kết quả: mobile86, web28, core6, Rules12 nhóm đạt. Đây là review source và fix local, chưa thay thế bộ bằng chứng review trên PR. Fix commit: `0e9854f`; cleanup runtime: `261d191`. AI/ARTEMIS chưa thực hiện trong đợt này.

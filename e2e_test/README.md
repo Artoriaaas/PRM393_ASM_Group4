@@ -1,3 +1,9 @@
+# ARTEMIS — Final, chưa có kết quả chạy hoàn chỉnh
+
+Kịch bản hiện dùng pending approval và PDF local/metadata. Không chạy mock/custom server, không Cloudinary. Tên màn LAB3_EXPORT/LAB3_FIREBASE giữ ổn định theo screenIdentity, không phải luồng upload Lab 3.
+
+Cần chuẩn bị registration approved và phiên QR từ **web staff**, không để agent mobile tự duyệt. Cross-role 3 lần và AI coverage còn thiếu; chưa coi 25 kịch bản là đủ Final. Các kết quả/quota và hướng dẫn host bên dưới là hồ sơ thiết lập kế thừa, không phải suite Final đã pass.
+
 # ARTEMIS E2E — cần host thật trước khi chạy
 
 SDK được pin commit `351ca8422f7b5b54e80a9c1ce03a222e02415b6b` từ google/artemis. Đã đối chiếu API `ArtemisClient.run`, TaskResult.output/trace_id/succeeded trên source của commit này. Client hiện là remote SDK; daemon/model/device nằm trên host, không tự khởi chạy agent chỉ vì cài client.

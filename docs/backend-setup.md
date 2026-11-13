@@ -1,26 +1,14 @@
-> Final hiện hành: client ở mobile/ và web/, implementation Firestore ở packages/core/. Deploy từ gốc với project eventhub-group4; không Functions/Storage/custom server. Rules mới có users/{uid}/reports và announcementReads; registration mới chỉ pending, không direct active. App Check enforcement cần xác nhận cả Android lẫn web trên Console, không được suy từ việc deploy Rules. Các hướng dẫn Lab 3 cũ phía dưới chỉ là lịch sử khi mâu thuẫn.
+# Backend dùng chung — Final
 
-# Firebase project `eventhub-group4` — thiết lập và kiểm thử
+Một project eventhub-group4, Firestore và Security Rules; không custom server, Cloud Functions hay Cloud Storage. Mobile và web dùng models/services tại packages/core.
 
-Cập nhật 04/11/2026. Backend app Lab 3 dùng Firebase Auth và Firestore trực tiếp; không deploy Cloud Functions hay Firebase Storage. File PDF minh họa dùng Cloudinary Free theo [cloudinary-setup.md](cloudinary-setup.md).
+- Schema, vai trò và chuyển trạng thái: [data model](data-model.md).
+- Cấu hình teammate/Android/App Check: [mobile setup](mobile-setup.md).
+- Test Rules emulator: firebase/tests/README.md. Deploy Rules/indexes bằng tool/deploy-cloud.ps1 sau khi test đạt.
+- Event test tạo bằng web staff của đúng clubId; published/public, còn hạn và sức chứa. Không tự gán clubId cho dữ liệu lịch sử hoặc tự chỉnh count để ép pass.
+- Mobile tạo pending; web duyệt approved hoặc rejected kèm lý do. Chỉ approved mới quét QR khi web mở phiên.
+- Web tạo announcements; mobile inbox cập nhật đúng scope. Thông báo inbox không đồng nghĩa tự động gửi FCM: FCM vẫn kiểm thử riêng bằng Console.
+- PDF local/private, chia sẻ theo thao tác, metadata users/{uid}/reports. Không cấu hình Cloudinary.
+- Luồng cloud và đo realtime: [cross-role flow](cross-role-flow.md). App Check phải phối hợp cả web và Android trước enforcement.
 
-## Đã có trong project
-
-- Google Sign-In và email/password đã cấu hình; Google login được người dùng xác nhận trên Android.
-- Firestore database, Rules và indexes đã triển khai. Lệnh triển khai hiện tại: `./tool/deploy-cloud.ps1` (chỉ Firestore Rules/indexes, project ID cố định). Rules được kiểm thử bằng emulator trước khi deploy.
-- Remote Config hai tham số mặc định `discover_featured_limit=10`, `discover_recommendations_enabled=true` đã được publish trước đó.
-- Có 5 sự kiện do nhóm biên soạn trên Firestore, xem `event-catalog.json`. Không tuyên bố đây là thông báo CLB đã xác nhận. Trước kiểm thử, kiểm tra hạn/chỗ; hai document demo cũ đã chuyển visibility=archived, giữ tham chiếu lịch sử.
-
-## Cần chuẩn bị để test nghiệp vụ thật
-
-1. Dùng Android emulator hoặc máy thật, `flutter run -d <device> -t lib/main.dart` với `--dart-define` Cloudinary nếu test PDF.
-2. Chọn tài khoản Firebase Auth có email đã xác nhận. Nếu dùng email/password, mở link verify trước khi vào app. Không nhập API key hoặc service account vào repo.
-3. Tạo hoặc chỉnh **sự kiện test mới** qua Firebase Console/Admin SDK có `visibility=public`, `status=published`, `registrationMode=required`, `startsAt` và `deadline` trong tương lai, `capacity>0`, `activeCount=0`. Với demo cũ ngày 08/11/2026, chỉ test khi còn hạn. Không thay số chỗ thủ công sau khi có đăng ký.
-4. Test trên app: A02→A04→A05→A06, A07/A08 hủy, re-register. Mở Firestore Console xác nhận `registrations/{uid}_{eventId}` và `events/{eventId}.activeCount` cùng thay đổi. Thử tài khoản thứ hai khi chỉ còn một chỗ.
-5. Để test QR, **web CLB** phải tạo token ngẫu nhiên dài tối thiểu 32 ký tự, lưu `sha256(token)` làm ID của `qrCredentials/{hash}` với `{eventId, enabled:true}`, đồng thời tạo `checkinSessions/{eventId}` với `{open:true}`. Web hiển thị token dưới dạng QR. App mobile chỉ quét; không có quyền tạo/mở các tài liệu này. Test QR sai, phiên đóng, quét đúng và quét trùng. Không đưa token hoặc hash vào log/báo cáo.
-6. FCM Lab 3 có thể gửi test message từ Firebase Console đến thiết bị; push tự động theo nghiệp vụ chưa có khi không dùng server/Functions. Inbox Firestore do web/admin tạo. Kiểm tra foreground, background và terminated cùng quyền thông báo.
-7. Thu bằng chứng Auth Users, Firestore, Remote Config, Analytics DebugView, Crashlytics, FCM và Cloudinary. ARTEMIS cần host/model/tài khoản test riêng; unit/emulator pass không thay cho E2E.
-
-## Giới hạn hiện tại
-
-`lastOperationId` nằm trên đăng ký hiện hành, chưa có ledger lịch sử độc lập. Nếu một thiết bị khác thay đổi cùng đăng ký trước khi thiết bị đầu khôi phục lệnh chưa rõ, app không thể tự suy ra kết quả cũ; phải giữ trạng thái chưa xác định. Notifications tự động theo thay đổi Firestore và web CLB/admin chưa được triển khai ở Lab 3. Các điểm này được ghi trong [lab3-readiness.md](lab3-readiness.md), không tính là chức năng cloud đã kiểm thử.
+Không thay kết quả emulator bằng tuyên bố đã kiểm thử production. Chưa chạy cloud thì ghi chưa xác nhận.

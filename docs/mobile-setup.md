@@ -13,7 +13,7 @@ flutter devices
 flutter run -d emulator-5554 -t lib/main.dart
 ```
 
-Thay ID bằng thiết bị thật nếu cần. VS Code chọn **EventHub Mobile — Firebase (Android)**. Mobile không chạy bằng Chrome; web chạy trong thư mục `web/` với cấu hình web hiện có.
+Thay ID bằng thiết bị thật nếu cần. VS Code chọn **EventHub Mobile — Firebase (Android)**. Mobile không chạy bằng Chrome; web chạy trong thư mục `web/` với cấu hình Firebase theo docs/firebase-setup.md.
 
 Firebase dùng chung **eventhub-group4**, Android package **com.eventhub.app**. Tải `google-services.json` của app Android vào `mobile/android/app/`; file này không đưa lên Git. Thêm SHA-1/SHA-256 debug của từng máy vào Firebase Authentication theo `docs/firebase-setup.md`. Không tạo project riêng cho mỗi người, không gửi mật khẩu/key vào chat.
 
@@ -96,4 +96,4 @@ Rules của repo ASM đã deploy vào eventhub-group4 ngày 13/11/2026 trong đ�
 
 ## Kết quả tự động đã chạy
 
-Xem evidence/mobile-final/validation.md: mobile 83 tests, core 3 tests, web 23 tests, Rules 11 tests đạt; analyze sạch và APK/web build thành công. Rules đã deploy eventhub-group4. Các bước App Check Console, native share và flow mobile–web cloud ở trên chưa được xác nhận bằng thao tác thật trong đợt này.
+Xem evidence/mobile-final/validation.md: mobile 84 tests, core 3 tests, web 23 tests, Rules 11 tests đạt; analyze sạch và APK/web build thành công. Rules đã deploy eventhub-group4. Các bước App Check Console, native share và flow mobile–web cloud ở trên chưa được xác nhận bằng thao tác thật trong đợt này.

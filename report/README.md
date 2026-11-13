@@ -1,21 +1,11 @@
-# Báo Cáo Tổng Kết Đồ Án Lab 3 — EventHub
+# Báo cáo Final
 
-Báo cáo chi tiết của đồ án đã được biên soạn đầy đủ tại:
-👉 **[Lab03_Group4_Report.md](Lab03_Group4_Report.md)**
+Đề Final mục 10 yêu cầu `report/Final_<ID>.pdf`, **10–15 trang**. `<ID>` cần nhóm xác nhận; không tự suy ra từ tên folder.
 
----
+Báo cáo phải có: thay đổi từ Lab 3; kiến trúc; data model và Rules; web admin; cross-role; AI; kiểm thử; code review; bài học. Mọi khẳng định hoạt động cần liên kết bằng chứng thật.
 
-## Cách Xuất Ra File PDF Nộp Bài (`Lab03_Group4.pdf`)
+Bản báo cáo Lab03 đã gỡ khỏi cây hiện hành; bài Lab 3 giữ ở repo riêng và lịch sử Git. Không đổi tên báo cáo Lab03 rồi tính là báo cáo Final.
 
-Đề bài yêu cầu nộp file báo cáo định dạng **PDF từ 8 đến 12 trang**. Bạn có thể xuất file PDF theo 2 cách đơn giản sau:
+Chưa có PDF Final được xác nhận. Xem [gap review](../docs/gap-review.md), [test report](../docs/test-report.md), [danh mục bằng chứng](../evidence/README.md).
 
-### Cách 1: Dùng tiện ích mở rộng Markdown PDF trong VS Code (Khuyên dùng)
-1. Cài đặt extension **Markdown PDF** (`yzane.markdown-pdf`) trong VS Code / IDE.
-2. Mở file `report/Lab03_Group4_Report.md`.
-3. Nhấp chuột phải vào vùng soạn thảo, chọn **`Markdown PDF: Export (pdf)`**.
-4. Đổi tên file xuất ra thành `report/Lab03_Group4.pdf`.
-
-### Cách 2: In trực tiếp từ Trình duyệt Chrome / Edge
-1. Mở file `report/Lab03_Group4_Report.md` qua trình xem Markdown (hoặc Preview trên GitHub).
-2. Nhấn **`Ctrl + P`** $\rightarrow$ chọn **`Save as PDF`**.
-3. Lưu file với tên `report/Lab03_Group4.pdf`.
+Slide của nhóm tại `slides/` giữ nguyên theo yêu cầu, rà nội dung riêng. Video Final cần 8–12 phút theo [kịch bản](../docs/demo-video-script.md).

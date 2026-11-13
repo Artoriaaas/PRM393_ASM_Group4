@@ -1,14 +1,30 @@
 # EventHub — PRM393 Final Assignment / Group 4
 
-Một Firebase project **eventhub-group4** cho mobile người tham gia và web CLB/admin. Mobile dùng đăng ký **Chờ duyệt → CLB duyệt/từ chối → điểm danh QR**. Không dùng Cloud Functions, Cloud Storage hoặc custom server. PDF lưu/chia sẻ trên thiết bị, chỉ metadata lưu Firestore theo đề Final.
+Một hệ thống gồm Flutter Mobile cho người tham gia, Flutter Web cho staff/admin và Firebase project **eventhub-group4**. Chủ đề kế thừa Lab 2/3; repo này dùng để nộp Final, không dùng bộ bàn giao Lab03.
 
-## Bắt đầu
+## Phạm vi theo đề Final
 
-- [Chạy mobile và kiểm tra từng chức năng](docs/mobile-setup.md), gồm cấu hình App Check bắt buộc ở Console.
-- `mobile/`: Flutter Android, entrypoint `lib/main.dart`, Firebase app `com.eventhub.app`.
-- `web/`: Flutter Web CLB/admin; giữ cách chạy web hiện có trong VS Code.
-- `packages/core/`: model, Firestore services của hai client, contracts, theme, component và font/icon dùng chung.
-- `firebase/`: Rules/indexes/Remote Config/tests, cấu hình Hosting ở firebase.json.
+- Mobile: mọi flow/state Lab 2 và yêu cầu Lab 3 còn áp dụng; dữ liệu Firestore; đăng ký chờ staff duyệt; inbox announcements.
+- Web: Google Sign-In/chặn sai role, management, review queue, dashboard aggregation/chart và announcement form.
+- Chung: MVVM, models/Firestore services/tokens/components tại packages/core; Rules phân vai; App Check.
+- PDF **lưu/chia sẻ trên thiết bị**, chỉ metadata lưu Firestore. Không Cloud Functions, Cloud Storage, App Hosting, Cloudinary hoặc custom server.
+- Gemini qua Firebase AI Logic là yêu cầu Final còn thiếu; không coi AI code review là tính năng AI cho người dùng.
+
+## Bắt đầu và cấu trúc
+
+| Thư mục | Dùng cho |
+|---|---|
+| mobile/ | Android participant app, lib/main.dart |
+| web/ | Flutter Web staff/admin, lib/main.dart |
+| packages/core/ | Models, contracts, Firebase services, tokens/components/font/icon dùng chung |
+| firebase/ | Rules, indexes, Remote Config, emulator tests |
+| e2e_test/ | ARTEMIS, 3 lượt/ca, chỉ tính kết quả có trace/assertion |
+| docs/ | Yêu cầu, kiến trúc, hướng dẫn và đối chiếu Final |
+| evidence/ | Bằng chứng thật; hồ sơ kế thừa được phân biệt với Final |
+| report/ | Hướng dẫn report Final; PDF chưa hoàn tất |
+| slides/ | Bộ slide nhóm được giữ nguyên; nội dung kiểm tra riêng |
+
+Mobile:
 
 ```powershell
 cd mobile
@@ -16,51 +32,58 @@ flutter pub get --enforce-lockfile
 flutter run -d emulator-5554 -t lib/main.dart
 ```
 
-Máy mới cần `mobile/android/app/google-services.json`, SHA Google Sign-In và App Check debug token riêng. Không commit các file cấu hình local, keystore, secret hay token. Phiên bản kiểm tra: Flutter 3.47.4 / Dart 3.13.3; dependencies cố định trong pubspec và lockfile của từng package. Không dùng lệnh flutter ở gốc repo vì gốc là hệ thống, không còn là package mobile.
+Cần config `mobile/android/app/google-services.json`, SHA và App Check debug token của từng máy. Không commit token, keystore, service-account hay config local. Chi tiết [mobile setup](docs/mobile-setup.md).
 
-## Trạng thái trung thực
+Web:
 
-Phần mobile được hoàn thiện theo Final; kết quả kiểm tra mới ghi tại [mobile validation](evidence/mobile-final/validation.md). App Check Console/enforcement và test xuyên mobile–web trên cloud cần xác nhận thực tế. AI và ARTEMIS hoãn theo yêu cầu, không tính đã hoàn tất Assignment. Tài liệu Lab 3 cũ là hồ sơ lịch sử; luồng upload Cloudinary và đăng ký trực tiếp trong đó không áp dụng cho Final.
-
-| Nội dung | Tài liệu hiện hành |
-|---|---|
-| Mobile: cài đặt, Console, test từng bước | [mobile setup](docs/mobile-setup.md) |
-| Kiến trúc dùng chung | [architecture](docs/architecture.md) |
-| Schema và Rules | [data model](docs/data-model.md), [backend setup](docs/backend-setup.md) |
-| Thiết kế thay đổi | [design traceability](docs/design-traceability.md) |
-| Khoảng cách còn lại | [gap review](docs/gap-review.md) |
-| Luồng mobile–web | [cross-role flow](docs/cross-role-flow.md) |
-| Kết quả và bằng chứng | [test report](docs/test-report.md) |
-
-## Hồ sơ slide và báo cáo Lab 3 (chưa phải bài nộp Final)
-
-- 📊 **Slide Thuyết trình Online (34 Slide Trực Quan & Evidence Thực Tế)**: [https://artoriaaas.github.io/PRM393_ASM_Group4/slides/](https://artoriaaas.github.io/PRM393_ASM_Group4/slides/)  
-  *(Link fork cá nhân: [https://kietntse.github.io/PRM393_Lab03_Group4_pre/slides/](https://kietntse.github.io/PRM393_Lab03_Group4_pre/slides/))*
-- 📑 **Hướng dẫn xem Slide & Xuất PDF chuẩn (34 Slide)**: [slides/README.md](slides/README.md) (xuất ra `slides/Lab03_Group4_slides.pdf`)
-- 📄 **Báo cáo tổng kết đồ án (8–12 trang)**: [report/Lab03_Group4_Report.md](report/Lab03_Group4_Report.md) (hướng dẫn xuất PDF tại [report/README.md](report/README.md))
-
-
-## Kiểm tra trước khi gửi thay đổi
-
-```sh
-cd mobile
-flutter analyze --no-pub lib test
-flutter test --no-pub
-flutter build apk --debug -t lib/main.dart
+```powershell
+cd web
+flutter pub get --enforce-lockfile
+flutter run -d chrome -t lib/main.dart --dart-define-from-file=web_env.json
 ```
 
-Kiểm thử Rules: xem `firebase/tests/README.md`. Chỉ chạy với emulator, không tác động dữ liệu cloud.
+Tạo web_env.json local từ cấu hình Web app cùng project theo [Firebase setup](docs/firebase-setup.md). VS Code chỉ có cấu hình chạy Firebase, không có mock/server mô phỏng.
 
-Mỗi teammate làm nhánh riêng, review trước khi merge. Thay đổi UI cần lưu ảnh trước/sau và lý do theo [quy ước](evidence/design-changes/README.md), rồi cập nhật Figma.
+Emulator Rules tại gốc:
 
-[Figma Lab 2](https://www.figma.com/design/WC21Na9ZDS8jjM2LzPKeXa/PRM393). Lab 2 đã chốt; phần bổ sung Lab 3 chưa đồng bộ Figma đầy đủ. Đề gốc yêu cầu ARTEMIS dù tên PDF còn nhắc Patrol.
+```powershell
+npm ci --prefix firebase/tests
+.irebase	ests
+ode_modules\.binirebase.cmd emulators:exec --only firestore --project demo-direct-booking "npm test --prefix firebase/tests"
+```
 
-Kiểm kê chi tiết trang 5–10: [requirements audit](docs/lab3-requirements-audit.md). Ánh xạ token/component: [Flutter handoff](docs/flutter-handoff.md).
+Không chạy lệnh Flutter ở gốc hệ thống. Test doubles nằm trong test/, không phải entrypoint bản nộp. Không seed dữ liệu tự động khi mở app. Firebase Hosting lấy web/build/web theo firebase.json.
 
-## Phiên bản và AI disclosure
+## Vai trò và tài khoản bàn giao
 
-Flutter **3.47.4**, Dart **3.13.3**. Các dependency và lockfile nằm riêng ở mobile/, web/ và packages/core/. Mobile dùng firebase_app_check **0.5.1**, share_plus **13.3.1**. ARTEMIS pin **351ca8422f7b5b54e80a9c1ce03a222e02415b6b**; chưa chạy lại cho Final. Xem [validation](evidence/mobile-final/validation.md) để biết kết quả đúng với code mới.
+| Nội dung | Trạng thái |
+|---|---|
+| user | Mobile; guest/student là nhóm tự khai, không phải role quản trị |
+| staff | Web; chỉ CLB được admin gán clubId |
+| admin | Web; phân vai người khác; không tự đổi role |
+| Admin đầu tiên | Chưa xác nhận danh tính để ghi README; chủ project cần cung cấp tài khoản demo được phép công bố |
+| Demo user/staff/admin | Chưa có danh sách bàn giao đã xác nhận; không công bố mật khẩu |
+| Web URL | Chưa có URL deployment được xác minh trong cửa sổ ẩn danh ở đợt này |
+| Video Final | Chưa có link |
+| ID đặt tên bài | Cần nhóm xác nhận theo lớp; đề dùng PRM393_Final_<ID>, Final_<ID>.pdf và Final_<ID>_slides.pdf |
 
-AI sử dụng theo lịch sử nhóm: Stitch hỗ trợ thiết kế, Antigravity hỗ trợ code, Codex hỗ trợ triển khai/review/tài liệu và ARTEMIS/Groq hỗ trợ thử E2E. **Tính năng Gemini cho người dùng chưa được triển khai**. [Code review](docs/code-review.md) ghi các finding/decision; không dùng việc có code review thay thế AI feature theo đề.
+Đề yêu cầu Git tiếp nối Lab 3 và thấy đóng góp thành viên. Không xóa/viết lại lịch sử để giả tiến trình. Nhóm cần xác nhận repo hiện tại đáp ứng lịch sử này trước nộp; không tự đổi tên remote.
 
-Video Final, report Final và slides Final chưa hoàn tất trong hạng mục mobile này. Các báo cáo/slide Lab 3 ở trên không được tính là sản phẩm Final đã đạt.
+## Theo dõi hoàn thành
+
+- [Đối chiếu từng mục đề Final](docs/final-requirements.md)
+- [Gap review toàn hệ thống](docs/gap-review.md)
+- [Checklist mobile](docs/mobile-final-checklist.md) và [test một lượt](docs/one-pass-test.md)
+- [Kiến trúc](docs/architecture.md), [data model](docs/data-model.md), [cross-role](docs/cross-role-flow.md)
+- [Test report](docs/test-report.md), [AI requirements/status](docs/ai-feature.md), [code review](docs/code-review.md)
+- [Traceability](docs/design-traceability.md), [Flutter handoff](docs/flutter-handoff.md)
+- [Report](report/README.md), [video script](docs/demo-video-script.md), [evidence index](evidence/README.md)
+- [Figma Lab 2](https://www.figma.com/design/WC21Na9ZDS8jjM2LzPKeXa/PRM393): chưa xác nhận đồng bộ mọi thay đổi Final.
+
+Code/build/unit test không thay thế cloud/native/cross-role proof. AI và ARTEMIS hoãn theo yêu cầu hiện tại, vẫn bắt buộc trước nộp. Bộ slide của nhóm không bị sửa trong đợt dọn repo này và chưa được coi là bộ nộp đã xác nhận.
+
+## Phiên bản và công cụ AI
+
+Flutter **3.47.4**, Dart **3.13.3**; dependencies/lockfile theo từng package, không tự nâng phiên bản. ARTEMIS pin **351ca8422f7b5b54e80a9c1ce03a222e02415b6b**. Tham khảo kết quả đã chạy ở docs/test-report.md, không lấy số liệu slide thay log thực thi.
+
+AI đã dùng theo lịch sử nhóm: Stitch hỗ trợ thiết kế; Antigravity hỗ trợ code/tài liệu; Codex hỗ trợ triển khai, review và kiểm thử; ARTEMIS/Groq thử E2E. Kết quả thử cũ không chứng minh suite Final đã pass. Gemini Firebase AI Logic cho người dùng chưa triển khai.
