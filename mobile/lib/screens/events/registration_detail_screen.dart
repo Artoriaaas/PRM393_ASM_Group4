@@ -39,6 +39,13 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
     return Scaffold(
       appBar: AppTopBar(
         showBackButton: true,
+        onBack: () {
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            context.go(widget.success ? '/discover' : '/schedule');
+          }
+        },
         title: (widget.checkInResult
             ? 'Kết quả điểm danh'
             : widget.success

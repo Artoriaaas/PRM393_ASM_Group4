@@ -146,15 +146,15 @@ def get_p3_p4_slides():
 
           <div style="flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; align-items: center;">
             <div style="height: 480px; background: #000; border-radius: 20px; padding: 6px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.15);">
-              <img src="../evidence/instrumentation/analytics/view-event-detail-A04.png" alt="A04 Event Detail" 
+              <img src="../evidence/instrumentation/analytics/view-event-detail-A04.png?v=mobile_final" alt="A04 Event Detail" 
                    style="width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 14px;">
             </div>
             <div style="height: 480px; background: #000; border-radius: 20px; padding: 6px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.15);">
-              <img src="../evidence/instrumentation/analytics/booking-submit-register.png" alt="A05 Form" 
+              <img src="../evidence/instrumentation/analytics/booking-submit-register.png?v=mobile_final" alt="A05 Form" 
                    style="width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 14px;">
             </div>
             <div style="height: 480px; background: #000; border-radius: 20px; padding: 6px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.15);">
-              <img src="../evidence/instrumentation/analytics/booking-result-register.png" alt="A06 Result" 
+              <img src="../evidence/instrumentation/analytics/booking-result-register.png?v=mobile_final" alt="A06 Result" 
                    style="width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 14px;">
             </div>
           </div>
