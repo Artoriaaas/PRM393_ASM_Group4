@@ -14,7 +14,7 @@ Bộ slide này được xây dựng và thiết kế lại hoàn toàn dựa tr
 |:---:|:---:|:---|:---|
 | **01** | `G1` | **Bìa chính** | EventHub — Nền tảng quản lý sự kiện và điểm danh QR thời gian thực |
 | **02** | `G4` | **Lộ trình thuyết trình** | Cấu trúc 4 phần tập trung vào giá trị kỹ thuật & minh chứng thực tế (18–20') |
-| **03** | `01` | `P1 · PROBLEM` | **Overview**: Giới thiệu giải pháp EventHub trong 30 giây (Mobile + Web Admin) |
+| **03** | `01` | `P1 · PROBLEM` | **Overview**: Giới thiệu giải pháp EventHub trong 30 giây (Mobile + Web) |
 | **04** | `02` | `P1 · PROBLEM` | **Context**: Hiện trạng tổ chức sự kiện tại ĐH FPT (Quy trình 4 bước giấy/Excel) |
 | **05** | `03` | `P1 · PROBLEM` | **Problem**: 3 Pain points (Ùn tắc đón tiếp, Vượt sức chứa, Mù xét duyệt) |
 | **06** | `04` | `P1 · PROBLEM` | **Proposed Solution**: Kiến trúc Serverless Realtime, QR SHA-256 & Phạm vi MVP |
@@ -33,7 +33,7 @@ Bộ slide này được xây dựng và thiết kế lại hoàn toàn dựa tr
 | **19** | `16` | `P2 · DESIGN` | **Traceability**: Ma trận truy vết khép kín 100% Feature ↔ Screen ↔ Class ↔ DB ↔ Test |
 | **20** | `17` | `P3 · DEMO` | **Demo Plan**: Storyboard 3 bước demo liên vai trò (Đăng ký → Duyệt → Điểm danh) |
 | **21** | `18` | `P3 · DEMO` | **Demo WF-01**: Sinh viên nộp đơn đăng ký trên Mobile App (Đơn PENDING, A04..A06) |
-| **22** | `19` | `P3 · DEMO` | **Demo WF-02**: Trưởng CLB duyệt đơn trên Web Admin Review Queue (APPROVED + FCM) |
+| **22** | `19` | `P3 · DEMO` | **Demo WF-02**: Trưởng CLB duyệt đơn trên Web Review Queue (APPROVED + FCM) |
 | **23** | `20` | `P3 · DEMO` | **Demo WF-03**: Mở phiên phát QR & Sinh viên quét check-in (Biên nhận A12 realtime) |
 | **24** | `21` | `P4 · PROOF` | **Testing**: 132 Tests tự động Pass 100%, 0 Crashlytics sessions, 12 nhóm Rules |
 | **25** | `22` | `P4 · PROOF` | **Achievements**: Đối chiếu cam kết: Giảm 90% thời gian check-in (<3s), 0 lỗi quá tải |

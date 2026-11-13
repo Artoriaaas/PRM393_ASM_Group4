@@ -28,7 +28,7 @@ def get_p1_slides():
             <span style="color: var(--son);">VÀ ĐIỂM DANH QR THỜI GIAN THỰC</span>
           </h1>
           <p style="font-size: 22px; color: var(--vai-2); line-height: 1.4; margin-top: 14px; max-width: 1200px;">
-            Giải pháp số hóa toàn diện: Flutter Android App cho Sinh viên · Flutter Web Admin cho Trưởng CLB &amp; Ban Quản trị · 100% Phân quyền &amp; Atomic Invariants qua Cloud Firestore Security Rules.
+            Giải pháp số hóa toàn diện: Flutter Android App cho Sinh viên · Flutter Web cho Trưởng CLB &amp; Ban Quản trị · 100% Phân quyền &amp; Atomic Invariants qua Cloud Firestore Security Rules.
           </p>
         </div>
 
@@ -84,7 +84,7 @@ def get_p1_slides():
           <span style="font: 600 14px var(--mono); color: var(--vai-3); text-transform: uppercase;">WORKFLOWS DEMO:</span>
           <span class="tag pink" style="font-size: 14px;">WF-01 · ĐĂNG KÝ SỰ KIỆN (MOBILE)</span>
           <span style="color: var(--vai-3); font-weight: 700;">→</span>
-          <span class="tag nghe" style="font-size: 14px;">WF-02 · DUYỆT ĐƠN &amp; KHÓA CHỖ (WEB ADMIN)</span>
+          <span class="tag nghe" style="font-size: 14px;">WF-02 · DUYỆT ĐƠN &amp; KHÓA CHỖ (WEB)</span>
           <span style="color: var(--vai-3); font-weight: 700;">→</span>
           <span class="tag son" style="font-size: 14px;">WF-03 · ĐIỂM DANH QR SHA-256 (WEB &amp; MOBILE)</span>
         </div>
@@ -164,7 +164,7 @@ def get_p1_slides():
               <div><strong>19</strong> Demo WF-02: Duyệt &amp; FCM</div>
               <div><strong>20</strong> Demo WF-03: Điểm danh QR</div>
               <div style="background: rgba(29,78,216,0.08); padding: 8px 10px; border-radius: 4px; font-size: 13px; color: var(--son); font-weight: 700; margin-top: 6px;">
-                ★ Chạy trực tiếp liên vai trò: Mobile Android ↔ Web Admin
+                ★ Chạy trực tiếp liên vai trò: Mobile Android ↔ Web
               </div>
             </div>
           </div>
@@ -239,7 +239,7 @@ def get_p1_slides():
               <span class="tag si">MÔI TRƯỜNG TRIỂN KHAI</span>
               <span style="font: 600 13px var(--mono); color: var(--vai-3);">MULTI-PLATFORM</span>
             </div>
-            <div style="font-size: 20px; font-weight: 800; color: var(--vai);">Flutter Mobile (Android) &amp; Flutter Web Admin (Hosting)</div>
+            <div style="font-size: 20px; font-weight: 800; color: var(--vai);">Flutter Mobile (Android) &amp; Flutter Web (Hosting)</div>
             <div style="font-size: 15px; color: var(--vai-2); margin-top: 6px; line-height: 1.4;">
               Dùng chung 100% mã nguồn Core Model &amp; Service Contracts qua `packages/core`, bảo đảm tính nhất quán tuyệt đối về logic nghiệp vụ.
             </div>
@@ -262,7 +262,7 @@ def get_p1_slides():
       </div>
 
       <div class="s-foot">
-        <div class="foot-left"><span class="mono-meta">DELIVERABLE: FLUTTER MOBILE APP + FLUTTER WEB ADMIN + CLOUD FIRESTORE</span></div>
+        <div class="foot-left"><span class="mono-meta">DELIVERABLE: FLUTTER MOBILE APP + FLUTTER WEB + CLOUD FIRESTORE</span></div>
         <div class="foot-right"><span class="mono-meta">01 / 24</span></div>
       </div>
     </section>
@@ -511,7 +511,7 @@ def get_p1_slides():
                 </tr>
                 <tr>
                   <td style="font-weight: 700; color: var(--son);">3. Mù thông tin xét duyệt</td>
-                  <td>Review Queue Web Admin + Firebase Cloud Messaging (FCM) &amp; Stream realtime.</td>
+                  <td>Review Queue Web + Firebase Cloud Messaging (FCM) &amp; Stream realtime.</td>
                   <td><span class="tag si">Tức thì</span> (Minh bạch lý do)</td>
                 </tr>
               </tbody>
@@ -535,7 +535,7 @@ def get_p1_slides():
             </div>
             <div style="display: flex; flex-direction: column; gap: 6px; font-size: 14.5px; color: var(--vai);">
               <div>✓ Flutter Mobile App (Android 10+) cho Sinh viên</div>
-              <div>✓ Flutter Web Admin (Hosting) cho Trưởng CLB &amp; Admin</div>
+              <div>✓ Flutter Web (Hosting) cho Trưởng CLB &amp; Admin</div>
               <div>✓ Khám phá sự kiện, bộ lọc CLB, đăng ký nộp đơn</div>
               <div>✓ Review Queue duyệt/từ chối kèm lý do bắt buộc</div>
               <div>✓ Mở phiên phát QR &amp; Quét mã điểm danh realtime</div>
@@ -556,7 +556,7 @@ def get_p1_slides():
       </div>
 
       <div class="s-foot">
-        <div class="foot-left"><span class="mono-meta">PHẠM VI ĐỒ ÁN: ĐÃ HOÀN TẤT TRỌN VẸN CẢ MOBILE ANDROID + FLUTTER WEB ADMIN</span></div>
+        <div class="foot-left"><span class="mono-meta">PHẠM VI ĐỒ ÁN: ĐÃ HOÀN TẤT TRỌN VẸN CẢ MOBILE ANDROID + FLUTTER WEB</span></div>
         <div class="foot-right"><span class="mono-meta">04 / 24</span></div>
       </div>
     </section>
@@ -597,7 +597,7 @@ def get_p1_slides():
               <div>• Nhận thông báo FCM &amp; Xuất lịch PDF</div>
             </div>
             <div style="background: rgba(219,39,119,0.08); padding: 8px 10px; border-radius: 4px; font: 600 12.5px var(--mono); color: var(--pink); margin-top: 10px;">
-              BẢO MẬT: Bị chặn không cho đăng nhập Web Admin
+              BẢO MẬT: Bị chặn không cho đăng nhập Web
             </div>
           </div>
 
@@ -605,7 +605,7 @@ def get_p1_slides():
           <div class="panel accent-nghe">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
               <span class="tag nghe">staff</span>
-              <span style="font: 600 13px var(--mono); color: var(--vai-3);">WEB ADMIN</span>
+              <span style="font: 600 13px var(--mono); color: var(--vai-3);">WEB</span>
             </div>
             <h3 style="font-size: 22px; color: var(--vai);">Trưởng Câu lạc bộ</h3>
             <div style="font-size: 14.5px; color: var(--vai-2); margin-top: 10px; line-height: 1.45; flex: 1;">
@@ -626,7 +626,7 @@ def get_p1_slides():
           <div class="panel accent-son">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
               <span class="tag son">admin</span>
-              <span style="font: 600 13px var(--mono); color: var(--vai-3);">WEB ADMIN</span>
+              <span style="font: 600 13px var(--mono); color: var(--vai-3);">WEB</span>
             </div>
             <h3 style="font-size: 22px; color: var(--vai);">Quản trị viên</h3>
             <div style="font-size: 14.5px; color: var(--vai-2); margin-top: 10px; line-height: 1.45; flex: 1;">
@@ -686,7 +686,7 @@ def get_p1_slides():
 
       <div class="s-head">
         <h2>4 Nhóm tính năng: <em>Bao phủ trọn vẹn vòng đời sự kiện CLB</em></h2>
-        <p class="sub">Hệ thống phân rã theo giá trị nghiệp vụ thay vì các thao tác CRUD đơn lẻ; phân định rõ ranh giới giữa Mobile App (Sinh viên) và Web Admin (Cán bộ CLB &amp; Nhà trường).</p>
+        <p class="sub">Hệ thống phân rã theo giá trị nghiệp vụ thay vì các thao tác CRUD đơn lẻ; phân định rõ ranh giới giữa Mobile App (Sinh viên) và Web (Cán bộ CLB &amp; Nhà trường).</p>
       </div>
 
       <div class="s-body" style="flex-direction: column; gap: 16px;">
@@ -718,7 +718,7 @@ def get_p1_slides():
           <div class="panel accent-nghe" style="display: flex; flex-direction: column; justify-content: space-between; padding: 20px;">
             <div>
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <span class="tag nghe">F2 · WEB ADMIN</span>
+                <span class="tag nghe">F2 · WEB</span>
                 <span style="font: 600 12px var(--mono); color: var(--nghe);">ROLE: STAFF / ADMIN</span>
               </div>
               <h3 style="font-size: 20px; color: var(--vai);">Quản trị &amp; Xét duyệt</h3>
@@ -810,7 +810,7 @@ def get_p1_slides():
 
       <div class="s-head">
         <h2>3 Workflow chính liên thiết bị: <em>Sợi chỉ xuyên suốt toàn bộ đồ án</em></h2>
-        <p class="sub">Đạt chuẩn 5/5 tiêu chí nghiệp vụ (W05); kết nối liền mạch từ Sinh viên (Mobile) → Trưởng CLB (Web Admin) → Điểm danh tại hội trường.</p>
+        <p class="sub">Đạt chuẩn 5/5 tiêu chí nghiệp vụ (W05); kết nối liền mạch từ Sinh viên (Mobile) → Trưởng CLB (Web) → Điểm danh tại hội trường.</p>
       </div>
 
       <div class="s-body" style="flex-direction: column; gap: 16px;">
@@ -849,7 +849,7 @@ def get_p1_slides():
             <div>
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <span class="tag nghe">WF-02 · XÉT DUYỆT</span>
-                <span style="font: 600 12px var(--mono); color: var(--nghe);">FLUTTER WEB ADMIN</span>
+                <span style="font: 600 12px var(--mono); color: var(--nghe);">FLUTTER WEB</span>
               </div>
               <h3 style="font-size: 21px; color: var(--vai);">Xét duyệt đơn &amp; Khóa chỗ</h3>
               <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px; font-size: 13.5px; color: var(--vai-2); line-height: 1.4;">
