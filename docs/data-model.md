@@ -1,3 +1,5 @@
+> Bổ sung Final 13/11/2026: users/{uid}/reports/{id} có fileName(string), mimeType='application/pdf', byteCount(int 1..20MB), rowCount(int 1..10000), createdAt(server timestamp). User chỉ tạo/đọc của mình; staff/admin không đọc/ghi file metadata người khác; không update/delete. Không lưu URL/path/file bytes. users/{uid}/announcementReads/{announcementId}: readAt(server timestamp), user đọc/tạo/cập nhật của mình khi announcement tồn tại; không delete. Hai collection dùng ExportScreen và NotificationsTabScreen. New registrations chỉ tạo pending; active cũ được giữ lịch sử/hủy/check-in có điều kiện, không tạo active mới.
+
 # Mô hình Dữ liệu Cloud Firestore (`docs/data-model.md`)
 
 > **Căn cứ yêu cầu**: Đề Final Assignment — Mục 6 (Backend requirements) & Phụ lục A (Appendix A — Data model template).  

@@ -1,3 +1,5 @@
+> Final hiện hành: client ở mobile/ và web/, implementation Firestore ở packages/core/. Deploy từ gốc với project eventhub-group4; không Functions/Storage/custom server. Rules mới có users/{uid}/reports và announcementReads; registration mới chỉ pending, không direct active. App Check enforcement cần xác nhận cả Android lẫn web trên Console, không được suy từ việc deploy Rules. Các hướng dẫn Lab 3 cũ phía dưới chỉ là lịch sử khi mâu thuẫn.
+
 # Firebase project `eventhub-group4` — thiết lập và kiểm thử
 
 Cập nhật 04/11/2026. Backend app Lab 3 dùng Firebase Auth và Firestore trực tiếp; không deploy Cloud Functions hay Firebase Storage. File PDF minh họa dùng Cloudinary Free theo [cloudinary-setup.md](cloudinary-setup.md).

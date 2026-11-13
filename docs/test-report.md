@@ -1,3 +1,5 @@
+> Trạng thái Final cập nhật: xem evidence/mobile-final/validation.md. Các bảng dưới là hồ sơ lịch sử, không chứng minh bản mobile sau refactor hoặc App Check đã chạy trên cloud. Cross-role 3 lần, AI và ARTEMIS chưa hoàn tất. Không dùng tên ảnh dự kiến làm bằng chứng nếu file chưa tồn tại.
+
 # Báo cáo Kiểm thử Hệ thống & Rà soát Mã nguồn (`docs/test-report.md`)
 
 > **Căn cứ yêu cầu**: Đề Final Assignment — Mục 9 (Testing requirements), Mục 10 (Deliverables: `docs/test-report.md`), Mục 11 (Grading rubric) & Phụ lục B (Appendix B — Rules test template).  

@@ -1,3 +1,19 @@
+# Review mobile Final — 13/11/2026
+
+Review thực hiện trên source mới bởi Codex, trước commit phần hoàn thiện mobile. Đây là review code với finding/decision, không phải AI feature Gemini của đề.
+
+| ID | Finding | Quyết định và sửa | Xác minh |
+|---|---|---|---|
+| FM-01 | Auth map mặc định role user khiến staff/admin vào mobile; role lỗi đọc không được cấp quyền mặc định | Accepted: đọc role stream Firestore, router reject và UID providers chỉ mở với user; logout/account change xóa state ngay, refresh tên cùng UID không đưa Profile về startup | final_mobile_requirements_test.dart + auth redirect tests; chưa xác nhận role change trên Android cloud |
+| FM-02 | Inbox chỉ đọc tin riêng nên announcement web không đến mobile; đánh dấu đọc không được sửa thông báo gốc | Accepted: hợp nhất stream personal/announcements/registrations/receipts; scope global/club/event và receipt owner-only | test scope và Rules receipt allowed/denied |
+| FM-03 | Luồng Cloudinary cũ sai Final; hoàn thành tác vụ muộn có thể giữ file của phiên cũ | Accepted: file local theo UID hash, chia sẻ native chủ động, metadata-only Firestore; epoch guard và xóa file trả về muộn | test file namespace, explicit share, stale UID completion, metadata retry |
+| FM-04 | Retry metadata server timestamp có thể ghi đè lịch sử hoặc tạo bản ghi/file trùng | Accepted: dùng cùng fileId, transaction đọc trước, giữ createdAt và Rules cấm update/delete | Rules immutable test + retry test không tạo lại PDF |
+| FM-05 | Rules tương thích Lab 3 vẫn cho tạo active mới ở sự kiện thiếu clubId | Accepted: bỏ nhánh tạo trực tiếp active/seat increment; giữ dữ liệu cũ chỉ đọc/hủy/điểm danh đủ điều kiện | Rules test legacy ownerless new create denied, pending/approved flows vẫn đạt |
+
+Tài liệu và test Lab 3 lịch sử bên dưới không được dùng để khẳng định App Check Console hay cross-role Final đã được kiểm thử thật.
+
+---
+
 # AI-assisted code review — trạng thái hiện hành
 
 Đã dùng Codex assistant (GPT-6.1) review diff PR [#3](https://github.com/ThinhCri/PRM393_Lab03_Group4/pull/3), source fb2d2ee. Output và file:dòng tại [review-pr-findings.md](review-pr-findings.md); metadata phạm vi tại evidence/code-review/pr-3-scope.json. Không giả danh output Copilot/CodeRabbit. Đề nêu ví dụ công cụ, không bắt buộc bot ngoài cụ thể. Trạng thái PR hiện tại chưa được kiểm tra lại qua GitHub trong lượt sửa source này.

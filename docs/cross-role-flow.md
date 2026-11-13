@@ -1,3 +1,5 @@
+> Cập nhật đường dẫn Final: mobile/lib và packages/core/lib/services/firebase. Code và test local không thay cho bảng đo 3 lần trên hệ thống đã deploy. Rule isStaffOf hiện cho admin hoặc staff đúng CLB; UI web vẫn giữ ranh giới admin/CLB hiện có. Các mô tả “admin tuyệt đối không có quyền trong Rules” bên dưới không được dùng làm khẳng định bảo mật; xem firestore.rules hiện hành.
+
 # Đặc tả Luồng Liên Vai Trò & Liên Thiết Bị (`Cross-Role Flows`)
 
 Tài liệu này mô tả chi tiết các luồng nghiệp vụ liên vai trò và liên thiết bị (`cross-role flows`) của hệ thống **EventHub**:

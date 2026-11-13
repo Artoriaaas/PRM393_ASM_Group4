@@ -1,3 +1,5 @@
+> Final 13/11/2026: Bổ sung role-rejection (/auth/role-rejected) để chặn tài khoản web theo đề; A09 gộp announcements và tin cá nhân, dấu đọc riêng theo UID; màn Export đổi upload Cloudinary thành Tạo/lưu PDF local → Chia sẻ Android + metadata Firestore vì Final trang 3 quy định như vậy. Theme/component/icon/font chuyển package core, giữ mobile navigation bốn tab. Code paths cũ lib/... hiện là mobile/lib/...; Firestore implementation ở packages/core/lib/services/firebase. Chưa chỉnh Figma trong lần này, không tuyên bố Figma đã đồng bộ.
+
 > ASM 13/11/2026: A05 gửi yêu cầu chờ duyệt; A06 là kết quả gửi yêu cầu, không phải tự động được duyệt. A07/A08 bổ sung pending/approved/rejected và lý do từ chối; nhóm lịch cuối là “Đã hủy / Từ chối”. A11/A12 chỉ ghi điểm danh sau khi approved. Đây là thay đổi để khớp web CLB theo quyết định của nhóm. Chưa cập nhật Figma trong lần này. Xem [mobile setup](mobile-setup.md).
 
 # Đối chiếu thiết kế Lab 2 → triển khai Lab 3

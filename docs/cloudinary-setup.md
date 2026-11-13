@@ -1,3 +1,5 @@
+> Hồ sơ Lab 3, không áp dụng cho app Final. Final trang 3 yêu cầu PDF lưu/chia sẻ trên thiết bị và metadata Firestore; code Cloudinary đã được bỏ khỏi mobile. Không cần tạo preset/key Cloudinary để chạy Final. Xem mobile-setup.md.
+
 # Cloudinary Free cho PDF Lab 3
 
 Cloudinary là phương án thay Firebase Storage theo quyết định của nhóm. **Đây là upload unsigned; URL của file có thể chia sẻ và preset công khai.** Chỉ dùng PDF lịch không chứa email/số điện thoại. Không dùng cho giấy tờ hay dữ liệu cá nhân nhạy cảm.

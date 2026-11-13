@@ -1,3 +1,5 @@
+> Final: thay export_upload bằng export_share (row_count); export_generate giữ row_count. Metadata không chứa PII/URL. Cloudinary không còn trong app Final. Event AI chưa triển khai; ARTEMIS chưa chạy lại.
+
 # Analytics plan — EventHub Lab 3
 
 Lập trước khi thêm tracking (31/10/2026). Analytics không được làm thất bại nghiệp vụ; dùng adapter inject. Không gửi email, tên, điện thoại, QR token, URL download, nội dung tìm kiếm hoặc registration ID. Firebase user ID là UID giả danh sau đăng nhập và được xóa khi đăng xuất. `result`/`action`/`screen_code` là enum kiểm soát; số là int.

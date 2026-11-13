@@ -1,3 +1,17 @@
+# Kiến trúc Final — cập nhật 13/11/2026
+
+- mobile/lib: Views → Riverpod ViewModels → contracts/services của packages/core. Camera, file PDF và native share là adapter riêng Android.
+- web/lib: Views → web ViewModels → cùng packagecore; FirebaseWebAuthService/FirestoreClubService/FirestoreAdminService implementation nằm trong packages/core/lib/services/firebase.
+- packages/core/lib: model/status/validation, hợp đồng, services Firestore/Auth, theme, component, font/icon dùng chung. File export tương thích trong mobile và web giữ import cũ mà không sao chép implementation.
+- Không custom server, Functions hoặc Storage. Mọi nghiệp vụ ghi Firestore được Security Rules kiểm tra. App Check attestation là cấu hình Console bổ sung, không thay thế Auth/Rules.
+- Mobile chỉ mở UID-scoped providers khi role user được xác minh bằng stream Firestore. Role đổi hoặc logout làm reset private state; camera chỉ chạy cho đăng ký được duyệt.
+- Inbox kết hợp thông báo riêng, announcements và receipts; lọc scope theo current registrations; stream errors hiển thị retry.
+- PDF: ReportService → LocalReportFileService → vùng riêng của app; ReportMetadataService → users/{uid}/reports. Chia sẻ file do người dùng chọn qua Android, không upload Cloudinary. Logout dọn file local chưa chia sẻ; metadata vẫn là lịch sử riêng của chủ tài khoản.
+
+Hồ sơ kiến trúc Lab 3 bên dưới chỉ mô tả nền cũ; khi mâu thuẫn, phần Final trên và mobile-setup.md là hiện hành.
+
+---
+
 # Kiến trúc EventHub — Lab 3
 
 Cập nhật 07/11/2026. Mobile là Flutter Android theo MVVM với Riverpod. CLB và admin dùng web riêng; app mobile không có quyền điều khiển web CLB.
