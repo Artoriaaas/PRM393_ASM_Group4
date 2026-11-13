@@ -292,14 +292,15 @@ def get_p3_p4_slides():
 
       <div class="s-body">
         <!-- Cột trái: Kịch bản và Logic Check-in -->
-        <div style="flex: 0.9; display: flex; flex-direction: column; gap: 14px;">
+        <div style="flex: 0.85; display: flex; flex-direction: column; gap: 14px;">
           <div class="panel accent-son" style="padding: 16px;">
             <div style="font: 800 15px var(--display); color: var(--son); margin-bottom: 6px;">KỊCH BẢN THAO TÁC TRỰC TIẾP:</div>
-            <div style="font-size: 14.5px; color: var(--vai); line-height: 1.45;">
-              1. Cán bộ CLB mở màn hình <strong>Live QR Panel</strong> trên Web hội trường.<br>
-              2. Hệ thống sinh mã QR băm SHA-256 đối chiếu `checkinSessions`.<br>
-              3. Sinh viên mở camera quét mã QR (A11) trên màn hình máy chiếu.<br>
-              4. Xác thực thành công trong <strong>&lt;1 giây</strong> → Điện thoại nhận biên nhận A12 và Web nhảy số có mặt.
+            <div style="font-size: 14px; color: var(--vai); line-height: 1.45;">
+              1. Cán bộ mở màn hình <strong>Điểm danh QR Trực tiếp</strong> trên Web hội trường.<br>
+              2. Hệ thống sinh mã QR băm SHA-256 kèm bảng theo dõi realtime (0/1 đã đến).<br>
+              3. Sinh viên <strong>Huy PhamGia</strong> mở camera quét mã QR (A11) tại bàn đón tiếp.<br>
+              4. Xác thực thành công trong <strong>&lt;1 giây</strong> → Điện thoại hiện màn hình <strong>Điểm danh thành công (A12)</strong>.<br>
+              5. Bảng theo dõi trên Web nhảy số tức thời từ 0/1 sang <strong>1/1 Đã đến</strong> (01:04:42).
             </div>
           </div>
 
@@ -307,59 +308,75 @@ def get_p3_p4_slides():
             <div style="font: 800 14px var(--display); color: var(--red); margin-bottom: 4px;">NGOẠI LỆ ĐÃ XỬ LÝ (EXCEPTION PATHS):</div>
             <div style="font-size: 13.5px; color: var(--vai-2); line-height: 1.4;">
               • <strong>Quét khi phiên chưa mở:</strong> Báo lỗi 'Phiên điểm danh chưa kích hoạt'.<br>
-              • <strong>Quét lần 2 (BR-05):</strong> Chặn ghi trùng; báo 'Đã điểm danh lúc 08:30'.<br>
+              • <strong>Quét lần 2 (BR-05):</strong> Chặn ghi trùng; báo 'Đã điểm danh lúc 01:04'.<br>
               • <strong>Quét mã sai sự kiện:</strong> Báo lỗi mã không hợp lệ.
             </div>
           </div>
 
           <div class="panel" style="padding: 12px 16px; background: rgba(11,122,110,0.06);">
-            <div style="font: 600 13px var(--mono); color: var(--si);">KẾT QUẢ ĐỒNG BỘ:</div>
+            <div style="font: 600 13px var(--mono); color: var(--si);">KẾT QUẢ ĐỒNG BỘ HAI CHIỀU:</div>
             <div style="font-size: 13.5px; color: var(--vai); margin-top: 4px;">
-              Bản ghi Registration lưu <code>checkInAt = serverTimestamp()</code>; bảo vệ quyền riêng tư PII theo yêu cầu đề bài.
+              Bản ghi Registration lưu <code>checkInAt = serverTimestamp()</code>; Web cập nhật số liệu có mặt tức thời; bảo vệ PII theo đề bài.
             </div>
           </div>
         </div>
 
-        <!-- Cột phải: 2 Khối minh chứng (Màn hình chiếu Web Live QR + Biên nhận A12) -->
-        <div style="flex: 1.1; display: flex; flex-direction: column; gap: 14px;">
-          <!-- Khung Web Live QR Panel Mockup -->
-          <div class="panel" style="flex: 1; padding: 16px; background: #FFFFFF; border: 1.5px solid var(--cham-3);">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--cham-3); padding-bottom: 8px; margin-bottom: 10px;">
-              <span style="font: 700 14px var(--mono); color: var(--son);">WEB: PHIÊN ĐIỂM DANH LIVE (/checkin)</span>
-              <span class="tag si">● SESSION ACTIVE</span>
+        <!-- Cột phải: 2 Khối minh chứng (Web Live QR Session + Evidence: Mobile A12 & Web Updated) -->
+        <div style="flex: 1.15; display: flex; flex-direction: column; gap: 12px;">
+          <!-- Khung trên: Phiên điểm danh QR trực tiếp trên Web (Ảnh 1) -->
+          <div class="panel" style="flex: 1; padding: 12px 16px; background: #FFFFFF; border: 1.5px solid var(--cham-3); display: flex; flex-direction: column; justify-content: space-between;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--cham-3); padding-bottom: 6px; margin-bottom: 6px;">
+              <span style="font: 700 13px var(--mono); color: var(--son);">FLUTTER WEB: PHIÊN ĐIỂM DANH QR TRỰC TIẾP (/checkin)</span>
+              <span class="tag si">● PHIÊN ĐANG MỞ</span>
             </div>
 
-            <div style="display: flex; align-items: center; justify-content: space-around; padding: 10px 0;">
-              <!-- Simulated High-Res QR Block -->
-              <div style="width: 110px; height: 110px; background: #0F172A; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #FFF; font: 700 12px var(--mono); text-align: center; padding: 8px;">
-                <span>[QR CODE]</span>
-                <span style="font-size: 9px; color: #94A3B8; margin-top: 4px;">SHA-256 ENCRYPTED</span>
-              </div>
-
-              <div style="text-align: left;">
-                <div style="font: 600 13px var(--mono); color: var(--vai-3);">SỐ LƯỢNG ĐÃ CÓ MẶT:</div>
-                <div style="font: 800 44px/1 var(--display); color: var(--si); margin: 6px 0;">15 / 15</div>
-                <span class="tag si">TỶ LỆ THAM DỰ: 100%</span>
-              </div>
+            <div style="height: 185px; overflow: hidden; border-radius: 6px; border: 1px solid var(--cham-3); background: #FFF; display: flex; align-items: center; justify-content: center;">
+              <img src="../evidence/web_live_qr_session.png" alt="Web Live QR Session" 
+                   style="width: 100%; height: 100%; object-fit: contain; object-position: center;">
+            </div>
+            <div style="font: 600 11.5px var(--mono); color: var(--vai-3); margin-top: 4px; text-align: center;">
+              Màn hình Web phát mã QR động &amp; Bảng theo dõi điểm danh realtime sự kiện Giao lưu cầu lông FPT
             </div>
           </div>
 
-          <!-- Ảnh chụp thật biên nhận điểm danh A12 trên Android -->
-          <div class="panel accent-si" style="padding: 12px 16px; background: #FFFFFF;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-              <span style="font: 700 13px var(--mono); color: var(--si);">MINH CHỨNG THẬT: BIÊN NHẬN ĐIỂM DANH THÀNH CÔNG A12</span>
+          <!-- Khung dưới: EVIDENCE (Ảnh 2 + Ảnh 3) -->
+          <div class="panel accent-si" style="flex: 1.05; padding: 12px 16px; background: #FFFFFF; display: flex; flex-direction: column; justify-content: space-between;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--cham-3); padding-bottom: 6px; margin-bottom: 6px;">
+              <span style="font: 700 13px var(--mono); color: var(--si);">MINH CHỨNG THẬT: BIÊN NHẬN A12 (MOBILE) &amp; WEB NHẢY SỐ REALTIME (1/1 ĐÃ ĐẾN)</span>
               <span class="tag si">EVIDENCE</span>
             </div>
-            <div style="height: 120px; overflow: hidden; border-radius: 6px; border: 1px solid var(--cham-3);">
-              <img src="../evidence/instrumentation/analytics/booking-result-confirmed.png" alt="A12 Confirmed Receipt" 
-                   style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
+
+            <div style="display: flex; gap: 14px; align-items: stretch; height: 195px;">
+              <!-- Ảnh 2: Mobile A12 Biên nhận điểm danh thành công -->
+              <div style="width: 155px; height: 100%; display: flex; flex-direction: column; align-items: center; background: var(--cham-2); border-radius: 6px; padding: 4px; border: 1px solid var(--cham-3);">
+                <div style="font: 700 11px var(--mono); color: var(--si); margin-bottom: 2px;">1. BIÊN NHẬN A12</div>
+                <div style="flex: 1; width: 100%; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+                  <img src="../evidence/mobile_checkin_success_a12.png" alt="A12 Check-in Success" 
+                       style="height: 100%; max-width: 100%; object-fit: contain; border-radius: 4px;">
+                </div>
+              </div>
+
+              <!-- Ảnh 3: Web theo dõi điểm danh nhảy 1/1 Đã đến realtime -->
+              <div style="flex: 1; height: 100%; display: flex; flex-direction: column; align-items: center; background: #FFFFFF; border-radius: 6px; padding: 4px 8px; border: 1px solid var(--cham-3);">
+                <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                  <span style="font: 700 11px var(--mono); color: var(--son);">2. WEB ĐỒNG BỘ REALTIME</span>
+                  <span class="tag si" style="font-size: 10px; padding: 2px 6px;">1 / 1 ĐÃ ĐẾN (100%)</span>
+                </div>
+                <div style="flex: 1; width: 100%; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+                  <img src="../evidence/web_live_checkin_updated.png" alt="Web Live Attendance Tracker Updated" 
+                       style="width: 100%; height: 100%; object-fit: contain; object-position: center;">
+                </div>
+              </div>
+            </div>
+            <div style="font: 600 11.5px var(--mono); color: var(--vai-3); margin-top: 4px; text-align: center;">
+              Sinh viên Huy PhamGia quét QR lúc 01:04 → Web tức thì ghi nhận "Đã điểm danh 01:04:42" và thanh tiến độ đạt 100%
             </div>
           </div>
         </div>
       </div>
 
       <div class="s-foot">
-        <div class="foot-left"><span class="mono-meta">WF-03 COMPLETED: ATTENDED VERIFIED · checkInAt RECORDED IN FIRESTORE</span></div>
+        <div class="foot-left"><span class="mono-meta">WF-03 COMPLETED: ATTENDED VERIFIED · checkInAt RECORDED (01:04:42) · 1/1 ĐÃ ĐẾN</span></div>
         <div class="foot-right"><span class="mono-meta">20 / 24</span></div>
       </div>
     </section>

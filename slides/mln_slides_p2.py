@@ -21,7 +21,7 @@ def get_p2_slides():
       </div>
 
       <div class="s-head">
-        <h2>Luồng nghiệp vụ tổng thể: <em>3 Làn phối hợp &amp; Điểm rẽ theo Business Rule</em></h2>
+        <h2>Business Flow — <em>Luồng nghiệp vụ tổng thể</em></h2>
         <p class="sub">Sơ đồ Activity phân làn (Swimlane) thể hiện sự phối hợp liên ứng dụng giữa Sinh viên (Mobile App), Hệ thống (Firestore Rules) và Trưởng CLB (Web).</p>
       </div>
 
