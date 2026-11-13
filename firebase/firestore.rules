@@ -99,7 +99,7 @@ service cloud.firestore {
       return isStaffOf(resource.data.clubId)
         && request.resource.data.get('clubId', '') == resource.data.get('clubId', '')
         && request.resource.data.activeCount == resource.data.activeCount
-        && request.resource.data.status in ['draft', 'published', 'cancelled', 'archived']
+        && request.resource.data.status in ['draft', 'published', 'pending_approval', 'rejected', 'cancelled', 'archived']
         && request.resource.data.registrationMode in ['required', 'free']
         && request.resource.data.title is string
         && request.resource.data.title.size() > 0
@@ -238,7 +238,7 @@ service cloud.firestore {
         && request.resource.data.title.size() <= 120
         && request.resource.data.registrationMode in ['required', 'free']
         && request.resource.data.visibility == 'public'
-        && request.resource.data.status in ['draft', 'published']
+        && request.resource.data.status in ['draft', 'published', 'pending_approval']
         && request.resource.data.capacity is int
         && request.resource.data.capacity >= 0
         && request.resource.data.activeCount == 0
