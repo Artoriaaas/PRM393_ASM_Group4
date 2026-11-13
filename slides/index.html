@@ -1488,6 +1488,7 @@
       <div class="s-head">
         <h2>Kiến trúc C4 Container: <em>Serverless Realtime &amp; 0 Máy chủ trung gian</em></h2>
         <p class="sub">Flutter Mobile và Flutter Web giao tiếp trực tiếp với Cloud Firestore qua kết nối gRPC/HTTPS; toàn bộ ranh giới nghiệp vụ do Security Rules kiểm soát.</p>
+      </div>
 
       <div class="s-body">
         <!-- Khung sơ đồ C4 Container Vector -->
@@ -1497,24 +1498,24 @@
         </div>
 
         <!-- Cột phải: 3 Quyết định kiến trúc then chốt -->
-        <div style="flex: 0.65; display: flex; flex-direction: column; gap: 12px;">
-          <div class="panel accent-son" style="padding: 14px;">
-            <div style="font: 800 15px var(--display); color: var(--son);">QUYẾT ĐỊNH 1: ZERO-SERVER (KHÔNG CUSTOM SERVER)</div>
-            <div style="font-size: 13.5px; color: var(--vai-2); margin-top: 4px; line-height: 1.4;">
+        <div style="flex: 0.65; display: flex; flex-direction: column; gap: 10px;">
+          <div class="panel accent-son" style="padding: 12px 14px;">
+            <div style="font: 800 14px var(--display); color: var(--son);">QUYẾT ĐỊNH 1: ZERO-SERVER (KHÔNG CUSTOM SERVER)</div>
+            <div style="font-size: 13px; color: var(--vai-2); margin-top: 3px; line-height: 1.35;">
               Loại bỏ hoàn toàn chi phí bảo trì backend, không cần Cloud Functions. Đạt độ trễ tối thiểu khi đồng bộ trạng thái trực tiếp giữa các thiết bị.
             </div>
           </div>
 
-          <div class="panel accent-nghe" style="padding: 14px;">
-            <div style="font: 800 15px var(--display); color: var(--nghe);">QUYẾT ĐỊNH 2: CLOUD FIRESTORE SECURITY RULES</div>
-            <div style="font-size: 13.5px; color: var(--vai-2); margin-top: 4px; line-height: 1.4;">
+          <div class="panel accent-nghe" style="padding: 12px 14px;">
+            <div style="font: 800 14px var(--display); color: var(--nghe);">QUYẾT ĐỊNH 2: CLOUD FIRESTORE SECURITY RULES</div>
+            <div style="font-size: 13px; color: var(--vai-2); margin-top: 3px; line-height: 1.35;">
               Sử dụng <code>getAfter()</code> để bảo đảm Atomic Transactions: nếu <code>activeCount &gt; capacity</code> thì toàn bộ transaction tự động rollback.
             </div>
           </div>
 
-          <div class="panel accent-si" style="padding: 14px;">
-            <div style="font: 800 15px var(--display); color: var(--si);">QUYẾT ĐỊNH 3: MONOREPO &amp; SHARED PACKAGES/CORE</div>
-            <div style="font-size: 13.5px; color: var(--vai-2); margin-top: 4px; line-height: 1.4;">
+          <div class="panel accent-si" style="padding: 12px 14px;">
+            <div style="font: 800 14px var(--display); color: var(--si);">QUYẾT ĐỊNH 3: MONOREPO &amp; SHARED PACKAGES/CORE</div>
+            <div style="font-size: 13px; color: var(--vai-2); margin-top: 3px; line-height: 1.35;">
               Tách toàn bộ Data Models, Service Contracts và Design Tokens dùng chung ra thư mục `packages/core`, bảo đảm Web và Mobile không bị lệch logic.
             </div>
           </div>
