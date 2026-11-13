@@ -42,7 +42,7 @@ svg_07 = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width=
   <rect width="960" height="440" rx="8" fill="#FFFFFF" />
 
   <!-- Title & Legend -->
-  <text x="24" y="30" font-family="Calibri, Arial, sans-serif" font-size="16" font-weight="700" fill="#1E293B">SƠ ĐỒ NGHIỆP VỤ LIÊN VAI TRÒ (CROSS-ROLE ACTIVITY &amp; BUSINESS FLOW)</text>
+  <text x="24" y="30" font-family="Calibri, Arial, sans-serif" font-size="16" font-weight="700" fill="#1E293B">BUSINESS FLOW (CROSS-ROLE ACTIVITY DIAGRAM)</text>
   <text x="24" y="46" font-family="Calibri, Arial, sans-serif" font-size="11.5" fill="#64748B">EventHub PRM393 ASM · 3 Làn phối hợp: Sinh viên (Mobile App), Hệ thống (Firestore Rules), Trưởng CLB (Web)</text>
 
   <!-- Swimlane 1: Sinh viên -->
@@ -208,7 +208,7 @@ svg_08 = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 440" width
   <rect width="1020" height="440" rx="8" fill="#FFFFFF" />
 
   <!-- Title Block -->
-  <text x="28" y="32" font-family="Calibri, Arial, sans-serif" font-size="16" font-weight="700" fill="#1E293B">SƠ ĐỒ TRẠNG THÁI (STATE MACHINE) — REGISTRATION ENTITY</text>
+  <text x="28" y="32" font-family="Calibri, Arial, sans-serif" font-size="16" font-weight="700" fill="#1E293B">STATE MACHINE DIAGRAM — REGISTRATION ENTITY</text>
   <text x="28" y="50" font-family="Calibri, Arial, sans-serif" font-size="11.5" fill="#64748B">EventHub PRM393 · Đặc tả 5 trạng thái hợp lệ, guard conditions và các bước chuyển nguyên tử (Atomic Invariants)</text>
 
   <!-- Initial State Circle -->
@@ -304,7 +304,7 @@ svg_09 = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 485" width=
   <rect width="960" height="485" rx="8" fill="#FFFFFF" />
 
   <!-- Title & Subtitle -->
-  <text x="24" y="26" font-family="Calibri, Arial, sans-serif" font-size="15" font-weight="700" fill="#1E293B">SƠ ĐỒ KIẾN TRÚC HỆ THỐNG (C4 CONTAINER SYSTEM ARCHITECTURE)</text>
+  <text x="24" y="26" font-family="Calibri, Arial, sans-serif" font-size="15" font-weight="700" fill="#1E293B">SYSTEM ARCHITECTURE (C4 CONTAINER DIAGRAM)</text>
   <text x="24" y="42" font-family="Calibri, Arial, sans-serif" font-size="11" fill="#64748B">EventHub PRM393 · Kiến trúc Serverless 100% · Phân tầng Client, Firestore &amp; Dịch vụ Cloud</text>
 
   <!-- Top Corridor: Orthogonal Connector Client -> Cloud Services (y=58, perfectly clears subtitle at y=42 and containers at y=80) -->
@@ -428,7 +428,7 @@ svg_12 = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width=
   <rect width="960" height="440" rx="8" fill="#FFFFFF" />
 
   <!-- Title -->
-  <text x="24" y="32" font-family="Calibri, Arial, sans-serif" font-size="16" font-weight="700" fill="#1E293B">SƠ ĐỒ TUẦN TỰ (SEQUENCE DIAGRAM) — PHÊ DUYỆT ĐƠN ĐĂNG KÝ (WF-02)</text>
+  <text x="24" y="32" font-family="Calibri, Arial, sans-serif" font-size="16" font-weight="700" fill="#1E293B">SEQUENCE DIAGRAM — REGISTRATION APPROVAL (WF-02)</text>
   <text x="24" y="48" font-family="Calibri, Arial, sans-serif" font-size="11.5" fill="#64748B">EventHub PRM393 · Trưởng CLB (Web) thao tác duyệt → Firestore Atomic Transaction → Mobile cập nhật realtime</text>
 
   <!-- Lifeline Headers -->
@@ -509,7 +509,7 @@ svg_13 = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width=
   <rect width="960" height="440" rx="8" fill="#FFFFFF" />
 
   <!-- Title -->
-  <text x="24" y="32" font-family="Calibri, Arial, sans-serif" font-size="16" font-weight="700" fill="#1E293B">SƠ ĐỒ THIẾT KẾ LỚP (CLASS DESIGN &amp; LAYERED ARCHITECTURE)</text>
+  <text x="24" y="32" font-family="Calibri, Arial, sans-serif" font-size="16" font-weight="700" fill="#1E293B">CLASS DESIGN &amp; LAYERED ARCHITECTURE</text>
   <text x="24" y="48" font-family="Calibri, Arial, sans-serif" font-size="11.5" fill="#64748B">EventHub PRM393 · Clean MVVM: Tách biệt rõ View (UI), ViewModel (Riverpod), Service Contracts và Domain Models</text>
 
   <!-- 3 Main Columns: View -> ViewModel -> Service Contract -->
@@ -614,7 +614,7 @@ svg_14 = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width=
   <rect width="960" height="440" rx="8" fill="#FFFFFF" />
 
   <!-- Title -->
-  <text x="24" y="32" font-family="Calibri, Arial, sans-serif" font-size="16" font-weight="700" fill="#1E293B">SƠ ĐỒ THỰC THỂ KHÁI NIỆM (CONCEPTUAL ERD — NGỮ NGHĨA NGHIỆP VỤ)</text>
+  <text x="24" y="32" font-family="Calibri, Arial, sans-serif" font-size="16" font-weight="700" fill="#1E293B">CONCEPTUAL ERD (ENTITY RELATIONSHIP DIAGRAM)</text>
   <text x="24" y="48" font-family="Calibri, Arial, sans-serif" font-size="11.5" fill="#64748B">EventHub PRM393 · 5 Thực thể cốt lõi, quan hệ bản số (cardinality) và quy tắc toàn vẹn nghiệp vụ chi phối</text>
 
   <!-- Entity 1: CLUB -->

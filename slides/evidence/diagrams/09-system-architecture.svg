@@ -18,7 +18,7 @@
   <rect width="960" height="485" rx="8" fill="#FFFFFF" />
 
   <!-- Title & Subtitle -->
-  <text x="24" y="26" font-family="Calibri, Arial, sans-serif" font-size="15" font-weight="700" fill="#1E293B">SƠ ĐỒ KIẾN TRÚC HỆ THỐNG (C4 CONTAINER SYSTEM ARCHITECTURE)</text>
+  <text x="24" y="26" font-family="Calibri, Arial, sans-serif" font-size="15" font-weight="700" fill="#1E293B">SYSTEM ARCHITECTURE (C4 CONTAINER DIAGRAM)</text>
   <text x="24" y="42" font-family="Calibri, Arial, sans-serif" font-size="11" fill="#64748B">EventHub PRM393 · Kiến trúc Serverless 100% · Phân tầng Client, Firestore &amp; Dịch vụ Cloud</text>
 
   <!-- Top Corridor: Orthogonal Connector Client -> Cloud Services (y=58, perfectly clears subtitle at y=42 and containers at y=80) -->

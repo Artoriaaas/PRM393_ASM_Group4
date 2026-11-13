@@ -28,7 +28,7 @@
   <rect width="960" height="440" rx="8" fill="#FFFFFF" />
 
   <!-- Title & Legend -->
-  <text x="24" y="30" font-family="Calibri, Arial, sans-serif" font-size="16" font-weight="700" fill="#1E293B">SƠ ĐỒ NGHIỆP VỤ LIÊN VAI TRÒ (CROSS-ROLE ACTIVITY &amp; BUSINESS FLOW)</text>
+  <text x="24" y="30" font-family="Calibri, Arial, sans-serif" font-size="16" font-weight="700" fill="#1E293B">BUSINESS FLOW (CROSS-ROLE ACTIVITY DIAGRAM)</text>
   <text x="24" y="46" font-family="Calibri, Arial, sans-serif" font-size="11.5" fill="#64748B">EventHub PRM393 ASM · 3 Làn phối hợp: Sinh viên (Mobile App), Hệ thống (Firestore Rules), Trưởng CLB (Web)</text>
 
   <!-- Swimlane 1: Sinh viên -->
