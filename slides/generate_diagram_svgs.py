@@ -284,109 +284,125 @@ svg_08 = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 440" width
 # -----------------------------------------------------------------------------
 # 3. 09-system-architecture.svg (C4 Container Architecture)
 # -----------------------------------------------------------------------------
-svg_09 = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" width="100%" height="100%">
+svg_09 = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 485" width="100%" height="100%">
   <defs>
-    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M 0 1 L 8 5 L 0 9 z" fill="#64748B" />
+    <style>
+      .lbl-pill { font-family: Calibri, Arial, sans-serif; font-size: 8.5px; font-weight: 700; fill: #EA580C; text-anchor: middle; }
+      .lbl-amber { font-family: Calibri, Arial, sans-serif; font-size: 8.5px; font-weight: 700; fill: #D97706; text-anchor: middle; }
+    </style>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#EA580C" />
+    </marker>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#D97706" />
     </marker>
     <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
       <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.08" />
     </filter>
   </defs>
 
-  <rect width="960" height="480" rx="8" fill="#FFFFFF" />
+  <rect width="960" height="485" rx="8" fill="#FFFFFF" />
 
-  <!-- Title -->
-  <text x="24" y="32" font-family="Calibri, Arial, sans-serif" font-size="16" font-weight="700" fill="#1E293B">SƠ ĐỒ KIẾN TRÚC HỆ THỐNG (C4 CONTAINER SYSTEM ARCHITECTURE)</text>
-  <text x="24" y="48" font-family="Calibri, Arial, sans-serif" font-size="11.5" fill="#64748B">EventHub PRM393 · Kiến trúc Serverless 100% (0 máy chủ tùy biến, 0 Cloud Functions), giao tiếp qua Cloud Firestore Security Rules</text>
+  <!-- Title & Subtitle -->
+  <text x="24" y="26" font-family="Calibri, Arial, sans-serif" font-size="15" font-weight="700" fill="#1E293B">SƠ ĐỒ KIẾN TRÚC HỆ THỐNG (C4 CONTAINER SYSTEM ARCHITECTURE)</text>
+  <text x="24" y="42" font-family="Calibri, Arial, sans-serif" font-size="11" fill="#64748B">EventHub PRM393 · Kiến trúc Serverless 100% · Phân tầng Client, Firestore &amp; Dịch vụ Cloud</text>
 
-  <!-- Left: Client Layer -->
-  <rect x="25" y="70" width="260" height="380" rx="8" fill="#FDF2F8" stroke="#DB2777" stroke-width="1.5" filter="url(#shadow)" />
-  <rect x="25" y="70" width="260" height="35" rx="8" fill="#DB2777" />
-  <text x="155" y="93" font-family="Calibri, Arial, sans-serif" font-size="13" font-weight="700" fill="#FFF" text-anchor="middle">CLIENT APPLICATIONS (TẦNG CLIENT)</text>
+  <!-- Top Corridor: Orthogonal Connector Client -> Cloud Services (y=58, perfectly clears subtitle at y=42 and containers at y=80) -->
+  <path d="M 147 80 L 147 58 L 840 58 L 840 73" fill="none" stroke="#D97706" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-amber)" />
+  <rect x="408" y="49" width="204" height="18" rx="4" fill="#FFFFFF" stroke="#D97706" stroke-width="1.2" />
+  <text x="510" y="61.5" class="lbl-amber">HTTPS SDK (Auth / FCM / Remote Config)</text>
+
+  <!-- Left: Client Layer (x=24..270, width=246, y=80..470) -->
+  <rect x="24" y="80" width="246" height="390" rx="8" fill="#FDF2F8" stroke="#DB2777" stroke-width="1.5" filter="url(#shadow)" />
+  <rect x="24" y="80" width="246" height="34" rx="8" fill="#DB2777" />
+  <text x="147" y="102" font-family="Calibri, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#FFF" text-anchor="middle">CLIENT APPLICATIONS (TẦNG CLIENT)</text>
 
   <!-- Mobile App Box -->
-  <rect x="40" y="120" width="230" height="135" rx="6" fill="#FFF" stroke="#F472B6" stroke-width="1.2" filter="url(#shadow)" />
-  <text x="55" y="142" font-family="Calibri, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#DB2777">Flutter Mobile (Android)</text>
-  <text x="55" y="160" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#64748B">• Dành cho Sinh viên (role: user)</text>
-  <text x="55" y="176" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#64748B">• 12 Màn hình hoàn chỉnh A01..A12</text>
-  <text x="55" y="192" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#64748B">• Riverpod MVVM Architecture</text>
-  <text x="55" y="208" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#64748B">• MobileScanner quét QR Token</text>
-  <text x="55" y="235" font-family="Calibri, Arial, sans-serif" font-size="9.5" font-weight="700" fill="#DB2777">Platform: Android 10+ (API 29+)</text>
+  <rect x="36" y="125" width="222" height="135" rx="6" fill="#FFF" stroke="#F472B6" stroke-width="1.2" filter="url(#shadow)" />
+  <text x="48" y="147" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#DB2777">Flutter Mobile (Android)</text>
+  <text x="48" y="165" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">• Dành cho Sinh viên (role: user)</text>
+  <text x="48" y="181" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">• 12 Màn hình hoàn chỉnh A01..A12</text>
+  <text x="48" y="197" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">• Riverpod MVVM Architecture</text>
+  <text x="48" y="213" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">• MobileScanner quét QR Token</text>
+  <text x="48" y="242" font-family="Calibri, Arial, sans-serif" font-size="9" font-weight="700" fill="#DB2777">Platform: Android 10+ (API 29+)</text>
 
   <!-- Web Box -->
-  <rect x="40" y="270" width="230" height="120" rx="6" fill="#FFF" stroke="#F472B6" stroke-width="1.2" filter="url(#shadow)" />
-  <text x="55" y="292" font-family="Calibri, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#DB2777">Flutter Web</text>
-  <text x="55" y="310" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#64748B">• Dành cho Trưởng CLB (staff) &amp; Admin</text>
-  <text x="55" y="326" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#64748B">• 5 Màn hình: Dashboard, Reviews, QR...</text>
-  <text x="55" y="342" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#64748B">• GoRouter 14.8 responsive web</text>
-  <text x="55" y="370" font-family="Calibri, Arial, sans-serif" font-size="9.5" font-weight="700" fill="#DB2777">Host: Firebase Hosting (SSL CDN)</text>
+  <rect x="36" y="272" width="222" height="120" rx="6" fill="#FFF" stroke="#F472B6" stroke-width="1.2" filter="url(#shadow)" />
+  <text x="48" y="294" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#DB2777">Flutter Web</text>
+  <text x="48" y="312" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">• Dành cho Trưởng CLB (staff) &amp; Admin</text>
+  <text x="48" y="328" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">• 5 Màn hình: Dashboard, Reviews, QR...</text>
+  <text x="48" y="344" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">• GoRouter 14.8 responsive web</text>
+  <text x="48" y="372" font-family="Calibri, Arial, sans-serif" font-size="9" font-weight="700" fill="#DB2777">Host: Firebase Hosting (SSL CDN)</text>
 
   <!-- Shared Core Library -->
-  <rect x="40" y="400" width="230" height="38" rx="5" fill="#FFF" stroke="#F472B6" stroke-width="1" />
-  <text x="155" y="424" font-family="Calibri, Arial, sans-serif" font-size="11" font-weight="700" fill="#9D174D" text-anchor="middle">packages/core (100% Models &amp; Contracts)</text>
+  <rect x="36" y="405" width="222" height="45" rx="5" fill="#FFF" stroke="#F472B6" stroke-width="1" />
+  <text x="147" y="432" font-family="Calibri, Arial, sans-serif" font-size="10" font-weight="700" fill="#9D174D" text-anchor="middle">packages/core (100% Models &amp; Contracts)</text>
 
-  <!-- Middle: Cloud Backend Layer -->
-  <rect x="335" y="70" width="340" height="380" rx="8" fill="#FFF7ED" stroke="#F97316" stroke-width="2" filter="url(#shadow)" />
-  <rect x="335" y="70" width="340" height="35" rx="8" fill="#F97316" />
-  <text x="505" y="93" font-family="Calibri, Arial, sans-serif" font-size="13" font-weight="700" fill="#FFF" text-anchor="middle">BACKEND: CLOUD FIRESTORE &amp; RULES</text>
+  <!-- Middle: Cloud Backend Layer (x=345..675, width=330, Gap 75px) -->
+  <rect x="345" y="80" width="330" height="390" rx="8" fill="#FFF7ED" stroke="#F97316" stroke-width="2" filter="url(#shadow)" />
+  <rect x="345" y="80" width="330" height="34" rx="8" fill="#F97316" />
+  <text x="510" y="102" font-family="Calibri, Arial, sans-serif" font-size="13" font-weight="700" fill="#FFF" text-anchor="middle">BACKEND: CLOUD FIRESTORE &amp; RULES</text>
 
   <!-- Firestore NoSQL Core -->
-  <rect x="355" y="120" width="300" height="150" rx="6" fill="#FFF" stroke="#FB923C" stroke-width="1.5" filter="url(#shadow)" />
-  <text x="370" y="142" font-family="Calibri, Arial, sans-serif" font-size="13" font-weight="700" fill="#EA580C">Cloud Firestore (asia-southeast1)</text>
-  <text x="370" y="162" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#64748B">• NoSQL Document Store với 7 collections</text>
-  <text x="370" y="178" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#64748B">• Realtime Sync qua HTTPS / gRPC Stream</text>
-  <text x="370" y="194" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#64748B">• Atomic Transactions: Khóa sức chứa activeCount</text>
-  <text x="370" y="210" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#64748B">• Composite Indexes: (status, eventId, createdAt)</text>
-  <text x="370" y="240" font-family="Calibri, Arial, sans-serif" font-size="9.5" font-weight="700" fill="#EA580C">SLA Google Cloud 99.99% · Local Emulator Test</text>
+  <rect x="359" y="125" width="302" height="150" rx="6" fill="#FFF" stroke="#FB923C" stroke-width="1.5" filter="url(#shadow)" />
+  <text x="373" y="147" font-family="Calibri, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#EA580C">Cloud Firestore (asia-southeast1)</text>
+  <text x="373" y="167" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">• NoSQL Document Store với 7 collections</text>
+  <text x="373" y="183" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">• Realtime Sync qua HTTPS / gRPC Stream</text>
+  <text x="373" y="199" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">• Atomic Transactions: Khóa sức chứa activeCount</text>
+  <text x="373" y="215" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#64748B">• Composite Indexes: (status, eventId, createdAt)</text>
+  <text x="373" y="248" font-family="Calibri, Arial, sans-serif" font-size="9" font-weight="700" fill="#EA580C">SLA Google Cloud 99.99% · Local Emulator Test</text>
 
   <!-- Security Rules Engine -->
-  <rect x="355" y="290" width="300" height="145" rx="6" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5" filter="url(#shadow)" />
-  <text x="370" y="312" font-family="Calibri, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#B45309">firestore.rules (Serverless Logic)</text>
-  <text x="370" y="330" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#78350F">• Kiểm tra role: request.auth.token.role</text>
-  <text x="370" y="346" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#78350F">• getAfter(event).activeCount == old + 1</text>
-  <text x="370" y="362" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#78350F">• Ràng buộc schema: MSSV, email, sđt</text>
-  <text x="370" y="378" font-family="Calibri, Arial, sans-serif" font-size="10.5" fill="#78350F">• Chặn ghi đè trực tiếp &amp; phân quyền 3 roles</text>
-  <text x="370" y="410" font-family="Calibri, Arial, sans-serif" font-size="9.5" font-weight="700" fill="#B45309">16 ca test Emulator Pass 100%</text>
+  <rect x="359" y="288" width="302" height="162" rx="6" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5" filter="url(#shadow)" />
+  <text x="373" y="310" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#B45309">firestore.rules (Serverless Logic)</text>
+  <text x="373" y="330" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#78350F">• Kiểm tra role: request.auth.token.role</text>
+  <text x="373" y="346" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#78350F">• getAfter(event).activeCount == old + 1</text>
+  <text x="373" y="362" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#78350F">• Ràng buộc schema: MSSV, email, sđt</text>
+  <text x="373" y="378" font-family="Calibri, Arial, sans-serif" font-size="10" fill="#78350F">• Chặn ghi đè trực tiếp &amp; phân quyền 3 roles</text>
+  <text x="373" y="415" font-family="Calibri, Arial, sans-serif" font-size="9" font-weight="700" fill="#B45309">16 ca test Emulator Pass 100%</text>
 
-  <!-- Right: Supporting Cloud Services -->
-  <rect x="715" y="70" width="220" height="380" rx="8" fill="#FFFBEB" stroke="#D97706" stroke-width="1.5" filter="url(#shadow)" />
-  <rect x="715" y="70" width="220" height="35" rx="8" fill="#D97706" />
-  <text x="825" y="93" font-family="Calibri, Arial, sans-serif" font-size="13" font-weight="700" fill="#FFF" text-anchor="middle">CLOUD SERVICES (DỊCH VỤ ĐÁM MÂY)</text>
+  <!-- Right: Supporting Cloud Services (x=745..935, width=190, Gap 70px) -->
+  <rect x="745" y="80" width="190" height="390" rx="8" fill="#FFFBEB" stroke="#D97706" stroke-width="1.5" filter="url(#shadow)" />
+  <rect x="745" y="80" width="190" height="34" rx="8" fill="#D97706" />
+  <text x="840" y="102" font-family="Calibri, Arial, sans-serif" font-size="12" font-weight="700" fill="#FFF" text-anchor="middle">CLOUD SERVICES (ĐÁM MÂY)</text>
 
   <!-- Auth -->
-  <rect x="730" y="115" width="190" height="48" rx="5" fill="#FFF" stroke="#FDE68A" />
-  <text x="742" y="133" font-family="Calibri, Arial, sans-serif" font-size="11" font-weight="700" fill="#1E293B">Firebase Authentication</text>
-  <text x="742" y="148" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B">Email/Pass + Google Sign-In</text>
+  <rect x="755" y="122" width="170" height="48" rx="5" fill="#FFF" stroke="#FDE68A" />
+  <text x="765" y="140" font-family="Calibri, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#1E293B">Firebase Authentication</text>
+  <text x="765" y="155" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B">Email/Pass + Google Sign-In</text>
 
   <!-- FCM -->
-  <rect x="730" y="172" width="190" height="48" rx="5" fill="#FFF" stroke="#FDE68A" />
-  <text x="742" y="190" font-family="Calibri, Arial, sans-serif" font-size="11" font-weight="700" fill="#1E293B">Cloud Messaging (FCM)</text>
-  <text x="742" y="205" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B">Push notifications 3 trạng thái</text>
+  <rect x="755" y="179" width="170" height="48" rx="5" fill="#FFF" stroke="#FDE68A" />
+  <text x="765" y="197" font-family="Calibri, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#1E293B">Cloud Messaging (FCM)</text>
+  <text x="765" y="212" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B">Push notifications 3 trạng thái</text>
 
   <!-- Crashlytics -->
-  <rect x="730" y="229" width="190" height="48" rx="5" fill="#FFF" stroke="#FDE68A" />
-  <text x="742" y="247" font-family="Calibri, Arial, sans-serif" font-size="11" font-weight="700" fill="#1E293B">Firebase Crashlytics</text>
-  <text x="742" y="262" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B">Báo cáo crash &amp; custom keys</text>
+  <rect x="755" y="236" width="170" height="48" rx="5" fill="#FFF" stroke="#FDE68A" />
+  <text x="765" y="254" font-family="Calibri, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#1E293B">Firebase Crashlytics</text>
+  <text x="765" y="269" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B">Báo cáo crash &amp; custom keys</text>
 
   <!-- Remote Config -->
-  <rect x="730" y="286" width="190" height="48" rx="5" fill="#FFF" stroke="#FDE68A" />
-  <text x="742" y="304" font-family="Calibri, Arial, sans-serif" font-size="11" font-weight="700" fill="#1E293B">Remote Config</text>
-  <text x="742" y="319" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B">Feature flags &amp; giới hạn hiển thị</text>
+  <rect x="755" y="293" width="170" height="48" rx="5" fill="#FFF" stroke="#FDE68A" />
+  <text x="765" y="311" font-family="Calibri, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#1E293B">Remote Config</text>
+  <text x="765" y="326" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B">Feature flags &amp; giới hạn hiển thị</text>
 
-  <!-- Cloudinary -->
-  <rect x="730" y="343" width="190" height="48" rx="5" fill="#FFF" stroke="#FDE68A" />
-  <text x="742" y="361" font-family="Calibri, Arial, sans-serif" font-size="11" font-weight="700" fill="#1E293B">Cloudinary Free Tier</text>
-  <text x="742" y="376" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B">Lưu trữ PDF vé minh họa</text>
+  <!-- App Check -->
+  <rect x="755" y="350" width="170" height="48" rx="5" fill="#FFF" stroke="#FDE68A" />
+  <text x="765" y="368" font-family="Calibri, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#1E293B">Firebase App Check</text>
+  <text x="765" y="383" font-family="Calibri, Arial, sans-serif" font-size="9" fill="#64748B">Play Integrity &amp; Debug Token</text>
 
-  <!-- Connectors -->
-  <!-- Client <-> Firestore -->
-  <line x1="285" y1="187" x2="333" y2="187" stroke="#EA580C" stroke-width="2" marker-end="url(#arrow)" />
-  <line x1="335" y1="195" x2="287" y2="195" stroke="#EA580C" stroke-width="2" marker-end="url(#arrow)" />
-  <text x="310" y="177" font-family="Calibri, Arial, sans-serif" font-size="8.5" font-weight="700" fill="#EA580C" text-anchor="middle">gRPC / TLS</text>
+  <!-- CONNECTORS (Khoảng cách rộng, có pill nhãn riêng, cách viền 8px không đè khối) -->
+  <!-- 1. Client <-> Firestore gRPC (Trong khoảng hở 75px: x=270..345) -->
+  <line x1="276" y1="192" x2="337" y2="192" stroke="#EA580C" stroke-width="2" marker-end="url(#arrow-orange)" />
+  <line x1="339" y1="206" x2="278" y2="206" stroke="#EA580C" stroke-width="2" marker-end="url(#arrow-orange)" />
+  <rect x="282" y="178" width="51" height="17" rx="3" fill="#FFFFFF" stroke="#EA580C" stroke-width="1" />
+  <text x="307.5" y="190" class="lbl-pill">gRPC / TLS</text>
 
-  <!-- Client <-> Cloud Services -->
-  <path d="M 270 140 C 270 40, 715 40, 728 120" fill="none" stroke="#D97706" stroke-width="1.2" stroke-dasharray="3,3" marker-end="url(#arrow)" />
+  <!-- 2. Firestore <-> Cloud Services (Trong khoảng hở 70px: x=675..745) -->
+  <line x1="681" y1="144" x2="737" y2="144" stroke="#D97706" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arrow-amber)" />
+  <line x1="739" y1="158" x2="683" y2="158" stroke="#D97706" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arrow-amber)" />
+  <rect x="686" y="132" width="48" height="16" rx="3" fill="#FFFFFF" stroke="#D97706" stroke-width="1" />
+  <text x="710" y="143.5" class="lbl-amber">Identity</text>
 </svg>
 """
 
