@@ -73,9 +73,10 @@ class _ScannerState extends ConsumerState<ScannerScreen>
         data: (r) {
           if (r == null || !r.active) {
             return AppEmptyState(
-              title: r == null ? 'Cần đăng ký hợp lệ' : 'Đăng ký đã hủy',
-              message:
-                  'Tài khoản chưa có đăng ký đang hoạt động cho sự kiện này.',
+              title: r == null ? 'Cần đăng ký hợp lệ' : r.statusLabel,
+              message: r?.pending == true
+                  ? 'Chờ CLB duyệt đăng ký trước khi quét QR.'
+                  : 'Tài khoản chưa có đăng ký được duyệt cho sự kiện này.',
               actionLabel: r == null && widget.eventId == null
                   ? 'Về khám phá'
                   : 'Xem sự kiện',

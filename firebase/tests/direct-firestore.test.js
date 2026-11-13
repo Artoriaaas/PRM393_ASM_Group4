@@ -414,6 +414,10 @@ test('4. Cross-Role Flow 2 (checkinSessions + qrCredentials): staff opens QR ses
     }),
   );
 
+  // Mobile may watch the QR session only after CLB approval.
+  await assertSucceeds(getDoc(doc(aliceDb, 'checkinSessions/ev_qr')));
+  await assertFails(getDoc(doc(bobDb, 'checkinSessions/ev_qr')));
+
   // Exact high-entropy hash lookup is allowed; listing credentials remains denied.
   await assertSucceeds(getDoc(doc(aliceDb, `qrCredentials/${hash1}`)));
   await assertFails(getDocs(collection(aliceDb, "qrCredentials")));
@@ -576,4 +580,21 @@ test('direct Lab 3 event registration stays atomic without bypassing web approva
   b.update(doc(db,'events/direct-lab3'),{activeCount:1});
   await assertSucceeds(b.commit());
   await assertFails(updateDoc(doc(db,'events/direct-lab3'),{activeCount:2}));
+});
+
+
+test('pending withdrawal preserves seats and a new request resets review state', async () => {
+  await seedSystem({ eventId: 'ev_pending_cancel', capacity: 2 });
+  const db = authedDb('alice');
+  const ref = doc(db, 'registrations/alice_ev_pending_cancel');
+  await assertSucceeds(createPendingRegistration(db, 'alice', 'ev_pending_cancel'));
+  await assertSucceeds(updateDoc(ref, { status: 'cancelled', lastOperationId: op2 }));
+  assert.equal((await getDoc(doc(db, 'events/ev_pending_cancel'))).data().activeCount, 0);
+  await assertSucceeds(setDoc(ref, {
+    uid: 'alice', eventId: 'ev_pending_cancel', clubId: 'club_it',
+    status: 'pending', generation: 2, participant, checkInAt: null,
+    reason: null, reviewedBy: null, reviewedAt: null,
+    createdAt: serverTimestamp(), lastOperationId: op3,
+  }));
+  assert.equal((await getDoc(ref)).data().status, 'pending');
 });

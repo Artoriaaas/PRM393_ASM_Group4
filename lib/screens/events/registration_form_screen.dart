@@ -169,7 +169,9 @@ class _RegistrationFormState extends ConsumerState<RegistrationFormScreen> {
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.s16),
             child: AppButton(
-              label: s.unresolved ? 'Kiểm tra trạng thái' : 'Xác nhận đăng ký',
+              label: s.unresolved
+                  ? 'Kiểm tra trạng thái'
+                  : 'Gửi yêu cầu đăng ký',
               isFullWidth: true,
               isLoading: s.busy,
               isDisabled: !s.unresolved && value.asData?.value == null,

@@ -23,13 +23,7 @@ final reportRowsProvider = FutureProvider.autoDispose<List<ReportRow>>((
         club: e.clubName,
         when: eventWhen(e),
         location: e.location,
-        status: !r.active
-            ? 'Đã hủy đăng ký'
-            : e.status == 'cancelled'
-            ? 'Sự kiện đã hủy'
-            : r.checkInAt != null
-            ? 'Đã điểm danh'
-            : 'Đã đăng ký',
+        status: e.status == 'cancelled' ? 'Sự kiện đã hủy' : r.statusLabel,
       ),
     );
   }

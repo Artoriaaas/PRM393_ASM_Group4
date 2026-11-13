@@ -42,7 +42,7 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
         title: (widget.checkInResult
             ? 'Kết quả điểm danh'
             : widget.success
-            ? 'Đăng ký thành công'
+            ? 'Kết quả đăng ký'
             : 'Chi tiết đăng ký'),
       ),
       body: registration.when(
@@ -77,11 +77,29 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
               return ListView(
                 padding: const EdgeInsets.all(AppSpacing.s16),
                 children: [
+                  if (r.pending) ...[
+                    Text(
+                      'Đã gửi đăng ký',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    const EventPanel(
+                      children: [
+                        Text(
+                          'Yêu cầu đang chờ CLB duyệt. Bạn chỉ có thể quét QR sau khi được duyệt.',
+                        ),
+                      ],
+                    ),
+                  ],
+                  if (r.rejected)
+                    EventPanel(
+                      children: [
+                        Text('CLB đã từ chối đăng ký.'),
+                        if (r.reason?.isNotEmpty == true) Text(r.reason!),
+                      ],
+                    ),
                   if (widget.success && r.active)
                     Text(
-                      r.status == 'pending'
-                          ? 'Đã gửi đơn đăng ký'
-                          : 'Đăng ký được xác nhận',
+                      'Đăng ký được xác nhận',
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   if (widget.checkInResult)
@@ -126,24 +144,10 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
                       ),
                   ],
                   AppStatusBadge(
-                    label: r.status == 'pending'
-                        ? 'Chờ CLB duyệt'
-                        : r.status == 'rejected'
-                        ? 'Bị từ chối'
-                        : !r.active
-                        ? 'Đã hủy đăng ký'
-                        : e.status == 'cancelled'
+                    label: e.status == 'cancelled'
                         ? 'Sự kiện đã hủy'
-                        : r.checkInAt != null
-                        ? 'Đã điểm danh'
-                        : 'Đã duyệt',
-                    variant: r.status == 'pending'
-                        ? AppBadgeVariant.warning
-                        : r.status == 'rejected'
-                        ? AppBadgeVariant.error
-                        : !r.active
-                        ? AppBadgeVariant.neutral
-                        : AppBadgeVariant.success,
+                        : r.statusLabel,
+                    variant: AppBadgeVariant.info,
                   ),
                   const SizedBox(height: AppSpacing.s16),
                   EventSummary(e),
@@ -179,7 +183,7 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
                       variant: AppButtonVariant.secondary,
                       onPressed: () => context.push('/events/${e.id}'),
                     ),
-                  if (r.canCheckIn &&
+                  if (r.active &&
                       e.status == 'published' &&
                       !widget.checkInResult) ...[
                     const SizedBox(height: AppSpacing.s12),
@@ -204,24 +208,7 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
                       onPressed: () => _cancel(context, r),
                     ),
                   ],
-                  if (r.status == 'pending')
-                    const EventPanel(
-                      children: [
-                        Text(
-                          'Đơn đăng ký của bạn đang chờ Ban tổ chức CLB xét duyệt. Hãy kiểm tra lại sau hoặc theo dõi thông báo.',
-                        ),
-                      ],
-                    ),
-                  if (r.status == 'rejected')
-                    EventPanel(
-                      children: [
-                        Text(
-                          'Đơn đăng ký đã bị từ chối.${r.reason != null && r.reason!.isNotEmpty ? " Lý do: ${r.reason}" : ""}',
-                        ),
-                      ],
-                    ),
-                  if (r.status == 'cancelled' ||
-                      (!r.active && r.status != 'pending' && r.status != 'rejected'))
+                  if (r.cancelled)
                     const EventPanel(
                       children: [
                         Text(

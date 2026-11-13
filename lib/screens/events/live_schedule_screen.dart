@@ -39,7 +39,11 @@ class _LiveScheduleState extends ConsumerState<LiveScheduleScreen> {
               spacing: AppSpacing.s8,
               runSpacing: AppSpacing.s8,
               children: [
-                for (final item in ['Sắp tới', 'Đã kết thúc', 'Đã hủy'].indexed)
+                for (final item in [
+                  'Sắp tới',
+                  'Đã kết thúc',
+                  'Đã hủy / Từ chối',
+                ].indexed)
                   AppChoiceChip(
                     label: Text(item.$2),
                     selected: tab == item.$1,
@@ -119,13 +123,11 @@ class _ScheduleItem extends ConsumerWidget {
       child: EventPanel(
         children: [
           Text(
-            !r.active
-                ? 'Đã hủy đăng ký'
-                : e.status == 'cancelled'
+            e.status == 'cancelled'
                 ? 'Sự kiện đã hủy'
-                : ended
+                : ended && r.active
                 ? 'Đã kết thúc'
-                : 'Đã đăng ký',
+                : r.statusLabel,
           ),
           Text(e.title, style: Theme.of(context).textTheme.titleMedium),
           Text(eventWhen(e)),

@@ -19,6 +19,7 @@ class FirestoreEventService implements EventService, CheckinSessionService {
       title: d['title'] as String? ?? '',
       coverKey: d['coverKey'] as String? ?? '',
       coverUrl: d['coverUrl'] as String? ?? '',
+      clubId: d['clubId'] as String? ?? '',
       clubName: d['clubName'] as String? ?? '',
       location: d['location'] as String? ?? '',
       startsAt: _date(d['startsAt'])!,
@@ -33,8 +34,6 @@ class FirestoreEventService implements EventService, CheckinSessionService {
       status: d['status'] as String? ?? 'published',
       capacity: (d['capacity'] as num?)?.toInt() ?? 0,
       activeCount: (d['activeCount'] as num?)?.toInt() ?? 0,
-      clubId: d['clubId'] as String? ?? '',
-      visibility: d['visibility'] as String? ?? 'public',
     );
   }
 
@@ -48,21 +47,15 @@ class FirestoreEventService implements EventService, CheckinSessionService {
     final d = doc.data()!;
     return Registration(
       id: doc.id,
-      eventId: d['eventId'] as String? ?? '',
-      status: d['status'] as String? ?? 'pending',
-      generation: (d['generation'] as num?)?.toInt() ?? 1,
+      eventId: d['eventId'] as String,
+      status: d['status'] as String,
+      generation: (d['generation'] as num).toInt(),
       participant: Participant.fromJson(
-        Map<String, dynamic>.from(d['participant'] as Map? ?? {}),
+        Map<String, dynamic>.from(d['participant'] as Map),
       ),
       checkInAt: _date(d['checkInAt']),
       createdAt: _date(d['createdAt']),
-      uid: d['uid'] as String? ?? '',
-      clubId: d['clubId'] as String? ?? '',
       reason: d['reason'] as String?,
-      reviewedBy: d['reviewedBy'] as String?,
-      reviewedAt: _date(d['reviewedAt']),
-      qrHash: d['qrHash'] as String?,
-      lastOperationId: d['lastOperationId'] as String? ?? '',
     );
   }
 
@@ -132,25 +125,20 @@ class FirestoreEventService implements EventService, CheckinSessionService {
           );
         }
         if (registration?['lastOperationId'] == operationId) {
-          return BookingResult(
-            status: switch (action) {
-              'register' => 'confirmed',
-              'cancel' => 'cancelled',
-              'checkin' => 'checked-in',
-              _ => 'unknown',
-            },
-            registrationId: registrationId,
-          );
+          return registrationOutcome(registrationId, registration!);
         }
         final now = DateTime.now().toUtc();
         final startsAt = (event['startsAt'] as Timestamp).toDate().toUtc();
         if (action == 'register') {
-          final currentStatus = registration?['status'] as String?;
-          if (currentStatus == 'active' ||
-              currentStatus == 'pending' ||
-              currentStatus == 'approved') {
+          if ([
+            'pending',
+            'approved',
+            'active',
+          ].contains(registration?['status'])) {
             return BookingResult(
-              status: 'existing',
+              status: registration?['status'] == 'pending'
+                  ? 'pending'
+                  : 'existing',
               registrationId: registrationId,
             );
           }
@@ -186,79 +174,41 @@ class FirestoreEventService implements EventService, CheckinSessionService {
               code: 'invalid-participant',
             );
           }
-
-          final hasClub = event.containsKey('clubId') &&
-              (event['clubId'] as String?)?.isNotEmpty == true;
-
-          if (hasClub) {
-            final clubId = event['clubId'] as String;
-            final oldGen = (registration?['generation'] as num?)?.toInt() ?? 0;
-            if (registrationSnapshot.exists) {
-              transaction.update(registrationRef, {
-                'status': 'pending',
-                'generation': oldGen + 1,
-                'participant': participant.toJson(),
-                'reason': null,
-                'reviewedBy': null,
-                'reviewedAt': null,
-                'checkInAt': null,
-                'createdAt': FieldValue.serverTimestamp(),
-                'lastOperationId': operationId,
-              });
-            } else {
-              final data = <String, dynamic>{
-                'uid': user.uid,
-                'eventId': eventId,
-                'clubId': clubId,
-                'status': 'pending',
-                'generation': 1,
-                'participant': participant.toJson(),
-                'checkInAt': null,
-                'createdAt': FieldValue.serverTimestamp(),
-                'lastOperationId': operationId,
-              };
-              transaction.set(registrationRef, data);
-            }
-            return BookingResult(
-              status: 'confirmed',
-              registrationId: registrationId,
-            );
-          } else {
-            final oldGen = (registration?['generation'] as num?)?.toInt() ?? 0;
-            if (registrationSnapshot.exists) {
-              transaction.update(registrationRef, {
-                'status': 'active',
-                'generation': oldGen + 1,
-                'participant': participant.toJson(),
-                'checkInAt': null,
-                'createdAt': FieldValue.serverTimestamp(),
-                'lastOperationId': operationId,
-              });
-            } else {
-              final data = <String, dynamic>{
-                'uid': user.uid,
-                'eventId': eventId,
-                'status': 'active',
-                'generation': 1,
-                'participant': participant.toJson(),
-                'checkInAt': null,
-                'createdAt': FieldValue.serverTimestamp(),
-                'lastOperationId': operationId,
-              };
-              transaction.set(registrationRef, data);
-            }
-            transaction.update(eventRef, {'activeCount': count + 1});
-            return BookingResult(
-              status: 'confirmed',
-              registrationId: registrationId,
+          final clubId = event['clubId'] as String? ?? '';
+          if (clubId.isEmpty ||
+              (registration != null && registration['clubId'] != clubId)) {
+            return const BookingResult(
+              status: 'rejected',
+              code: 'club-required',
             );
           }
+          final data = {
+            'uid': user.uid,
+            'eventId': eventId,
+            'clubId': clubId,
+            'status': 'pending',
+            'reason': null,
+            'reviewedBy': null,
+            'reviewedAt': null,
+            'generation':
+                ((registration?['generation'] as num?)?.toInt() ?? 0) + 1,
+            'participant': participant.toJson(),
+            'checkInAt': null,
+            'createdAt': FieldValue.serverTimestamp(),
+            'lastOperationId': operationId,
+          };
+          transaction.set(registrationRef, data);
+          return BookingResult(
+            status: 'pending',
+            registrationId: registrationId,
+          );
         }
-        final currentStatus = registration?['status'] as String?;
-        final isCancelable = currentStatus == 'pending' ||
-            currentStatus == 'approved' ||
-            currentStatus == 'active';
-        if (registration == null || !isCancelable) {
+        if (registration == null ||
+            ![
+              'pending',
+              'approved',
+              'active',
+            ].contains(registration['status'])) {
           return const BookingResult(
             status: 'rejected',
             code: 'registration-inactive',
@@ -271,9 +221,10 @@ class FirestoreEventService implements EventService, CheckinSessionService {
           );
         }
         if (action == 'cancel') {
-          if (!now.isBefore(startsAt) ||
-              registration['checkInAt'] != null ||
-              event['status'] != 'published') {
+          if (registration['status'] != 'pending' &&
+              (!now.isBefore(startsAt) ||
+                  registration['checkInAt'] != null ||
+                  event['status'] != 'published')) {
             return const BookingResult(
               status: 'rejected',
               code: 'cannot-cancel',
@@ -283,10 +234,9 @@ class FirestoreEventService implements EventService, CheckinSessionService {
             'status': 'cancelled',
             'lastOperationId': operationId,
           });
-          if (currentStatus == 'approved' || currentStatus == 'active') {
-            final activeCount = (event['activeCount'] as num).toInt();
+          if (registration['status'] != 'pending') {
             transaction.update(eventRef, {
-              'activeCount': (activeCount - 1).clamp(0, 999999),
+              'activeCount': (event['activeCount'] as num).toInt() - 1,
             });
           }
           return BookingResult(
@@ -295,16 +245,16 @@ class FirestoreEventService implements EventService, CheckinSessionService {
           );
         }
         if (action == 'checkin') {
+          if (registration['status'] == 'pending') {
+            return const BookingResult(
+              status: 'rejected',
+              code: 'registration-not-approved',
+            );
+          }
           if (event['status'] != 'published') {
             return const BookingResult(
               status: 'rejected',
               code: 'event-cancelled',
-            );
-          }
-          if (currentStatus != 'approved' && currentStatus != 'active') {
-            return const BookingResult(
-              status: 'rejected',
-              code: 'checkin-rejected',
             );
           }
           if (registration['checkInAt'] != null) {
@@ -373,13 +323,6 @@ class FirestoreEventService implements EventService, CheckinSessionService {
         .get(const GetOptions(source: Source.server));
     if (matches.docs.isEmpty) return const BookingResult(status: 'unknown');
     final data = matches.docs.first.data();
-    return BookingResult(
-      status: data['status'] == 'cancelled'
-          ? 'cancelled'
-          : data['checkInAt'] != null
-          ? 'checked-in'
-          : 'confirmed',
-      registrationId: matches.docs.first.id,
-    );
+    return registrationOutcome(matches.docs.first.id, data);
   }
 }

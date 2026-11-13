@@ -80,6 +80,56 @@ void main() {
     }
   }
 
+  for (final status in ['pending', 'approved', 'rejected']) {
+    testWidgets('registration detail reflects web review: $status', (
+      tester,
+    ) async {
+      final reviewed = Registration(
+        id: 'r1',
+        eventId: 'e1',
+        status: status,
+        generation: 1,
+        participant: r.participant,
+        reason: status == 'rejected' ? 'Đã đủ số lượng tham gia.' : null,
+      );
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sessionViewModelProvider.overrideWith(_Session.new),
+            eventServiceProvider.overrideWithValue(
+              FakeEventService(events: [e], registrations: [reviewed]),
+            ),
+            pendingBookingStoreProvider.overrideWithValue(MemoryPendingStore()),
+          ],
+          child: MaterialApp(
+            theme: EventHubTheme.lightTheme,
+            home: const RegistrationDetailScreen(id: 'r1', success: true),
+          ),
+        ),
+      );
+      for (var i = 0; i < 5; i++) {
+        await tester.pump(const Duration(milliseconds: 200));
+      }
+      expect(find.text(reviewed.statusLabel), findsOneWidget);
+      expect(find.text('Đã hủy đăng ký'), findsNothing);
+      if (status == 'pending') {
+        expect(find.text('Đã gửi đăng ký'), findsOneWidget);
+        expect(find.text('Đăng ký được xác nhận'), findsNothing);
+        expect(find.text('Quét QR'), findsNothing);
+      } else if (status == 'approved') {
+        expect(find.text('Đăng ký được xác nhận'), findsOneWidget);
+        await tester.drag(find.byType(Scrollable).first, const Offset(0, -500));
+        await tester.pump();
+        expect(find.text('Quét QR'), findsOneWidget);
+      } else {
+        expect(find.text('Đã đủ số lượng tham gia.'), findsOneWidget);
+        expect(find.text('Quét QR'), findsNothing);
+      }
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
+
   for (final width in [360.0, 412.0]) {
     testWidgets('live F1/F2/A12 layouts at $width dp and 150% text', (
       tester,

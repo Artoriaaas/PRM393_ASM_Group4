@@ -103,7 +103,7 @@ class ScheduleEntry {
 }
 
 int scheduleBucket(Registration r, Event? e, DateTime now) {
-  if (!r.active || e?.status == 'cancelled') return 2;
+  if (!r.hasRequest || e?.status == 'cancelled') return 2;
   if (e != null && !now.isBefore(e.endsAt)) return 1;
   return 0;
 }
@@ -155,7 +155,7 @@ final activeRegistrationForEventProvider = Provider.autoDispose
           .watch(registrationsProvider)
           .asData
           ?.value
-          .where((r) => r.eventId == id && r.active)
+          .where((r) => r.eventId == id && r.hasRequest)
           .firstOrNull,
     );
 final canCancelRegistrationProvider = Provider.autoDispose.family<bool, String>(
@@ -164,11 +164,12 @@ final canCancelRegistrationProvider = Provider.autoDispose.family<bool, String>(
     if (r == null) return false;
     final e = ref.watch(eventProvider(r.eventId)).asData?.value;
     final now = ref.watch(eventClockProvider).asData?.value ?? DateTime.now();
-    return r.active &&
-        r.checkInAt == null &&
-        e?.status == 'published' &&
-        e != null &&
-        now.isBefore(e.startsAt);
+    return r.pending ||
+        r.active &&
+            r.checkInAt == null &&
+            e?.status == 'published' &&
+            e != null &&
+            now.isBefore(e.startsAt);
   },
 );
 
