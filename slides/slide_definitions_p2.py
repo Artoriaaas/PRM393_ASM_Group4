@@ -431,7 +431,7 @@ def get_p2_slides():
         "evidence": "Figma Screen Inventory & 4 Trạng thái UI (Loading, Empty, Error, Success)",
         "left_items": [
             "Sitemap 4 tab Mobile (Khám phá A02, Lịch A07, Hộp thư A09, Tài khoản A10) & 4 màn Web.",
-            "Wireframe Low-fi → Mockup Hi-fi (Figma Final chốt) → Triển khai Flutter Widgets nhất quán.",
+            "Wireframe Low-fi → Mockup Hi-fi → Final Flutter (Figma chốt) → Triển khai Flutter Widgets nhất quán.",
             "Chuẩn hóa 4 trạng thái giao diện bắt buộc: Empty, Loading (Shimmer), Error (kèm Retry), Success.",
             "Ghi nhận cải tiến: D11 (Thanh cuộn Filter Chips nhanh), D08 (Giữ form khi mất mạng)."
         ],
@@ -439,38 +439,59 @@ def get_p2_slides():
         "panel_label": "MẪU BỐ CỤC",
         "panel_content_html": """
           <div style="display: flex; flex-direction: column; height: 100%; justify-content: space-between;">
-            <!-- 3 UI Evolution Steps with Real Images -->
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+            <!-- 3 UI Evolution Steps (Interactive Text Links without images) -->
+            <div style="display: flex; align-items: stretch; justify-content: space-between; gap: 12px; margin-bottom: 8px;">
               <!-- 1. Wireframe -->
-              <div style="flex: 1; background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: 6px; padding: 8px; text-align: center;">
-                <div style="background: rgba(148,163,184,0.14); color: var(--slate-600); font-size: 11px; font-weight: 700; padding: 3px; border-radius: 4px; margin-bottom: 6px;">WIREFRAME (A02)</div>
-                <div style="height: 105px; border-radius: 4px; overflow: hidden; background: #FFF;">
-                  <img src="../evidence/ui-prototype/discover.png" alt="Wireframe Discover" style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
+              <a href="https://www.figma.com/design/WC21Na9ZDS8jjM2LzPKeXa/PRM393?node-id=43-313&p=f&t=2npJzoZzH6u54m3R-0" target="_blank" 
+                 style="flex: 1; text-decoration: none; border: 1.5px solid var(--slate-300); border-radius: 8px; background: #FFFFFF; padding: 14px 12px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: all 0.2s ease;">
+                <div>
+                  <div style="background: rgba(100,116,139,0.12); color: var(--slate-700); font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px;">BƯỚC 1 · WIREFRAME</div>
+                  <div style="font-size: 15px; font-weight: 700; color: var(--tx1);">Low-fi Prototype</div>
+                  <div style="font-size: 12px; color: var(--slate-600); margin-top: 6px; line-height: 1.45;">
+                    Khung xương sơ bộ bố cục màn hình Khám phá A02 và các khối tính năng chính.
+                  </div>
                 </div>
-                <div style="font-size: 11px; color: var(--muted); margin-top: 4px;">Low-fi Prototype</div>
-              </div>
-
-              <span style="color: var(--slate-400); font-weight: 700;">→</span>
-
-              <!-- 2. Mockup Before Filter -->
-              <div style="flex: 1; background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: 6px; padding: 8px; text-align: center;">
-                <div style="background: rgba(219,39,119,0.14); color: var(--accent1); font-size: 11px; font-weight: 700; padding: 3px; border-radius: 4px; margin-bottom: 6px;">MOCKUP FIGMA</div>
-                <div style="height: 105px; border-radius: 4px; overflow: hidden; background: #FFF;">
-                  <img src="../evidence/design-changes/D11-discover-filters/before-android.png" alt="Mockup Figma" style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
+                <div style="margin-top: 14px; background: var(--slate-100); color: var(--slate-700); padding: 8px 10px; border-radius: 6px; font-size: 11.5px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--slate-200);">
+                  <span>🔗 Mở Wireframe Figma</span>
+                  <span>↗</span>
                 </div>
-                <div style="font-size: 11px; color: var(--muted); margin-top: 4px;">Hi-fi Design Tokens</div>
-              </div>
+              </a>
 
-              <span style="color: var(--slate-400); font-weight: 700;">→</span>
+              <div style="display: flex; align-items: center; justify-content: center; color: var(--slate-400); font-weight: 700; font-size: 18px;">→</div>
+
+              <!-- 2. Mockup Figma -->
+              <a href="https://www.figma.com/design/WC21Na9ZDS8jjM2LzPKeXa/PRM393?node-id=153-2&p=f&t=2npJzoZzH6u54m3R-0" target="_blank" 
+                 style="flex: 1; text-decoration: none; border: 1.5px solid var(--accent1); border-radius: 8px; background: rgba(219,39,119,0.02); padding: 14px 12px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 1px 3px rgba(219,39,119,0.08); transition: all 0.2s ease;">
+                <div>
+                  <div style="background: rgba(219,39,119,0.14); color: var(--accent1); font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px;">BƯỚC 2 · MOCKUP</div>
+                  <div style="font-size: 15px; font-weight: 700; color: var(--tx1);">Hi-fi Design Tokens</div>
+                  <div style="font-size: 12px; color: var(--slate-600); margin-top: 6px; line-height: 1.45;">
+                    Chuẩn hóa bảng màu Cam-Vàng-Hồng, Typography, Component cards và nút bấm.
+                  </div>
+                </div>
+                <div style="margin-top: 14px; background: rgba(219,39,119,0.10); color: var(--accent1); padding: 8px 10px; border-radius: 6px; font-size: 11.5px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(219,39,119,0.25);">
+                  <span>🔗 Mở Mockup Figma</span>
+                  <span>↗</span>
+                </div>
+              </a>
+
+              <div style="display: flex; align-items: center; justify-content: center; color: var(--slate-400); font-weight: 700; font-size: 18px;">→</div>
 
               <!-- 3. Final Flutter -->
-              <div style="flex: 1; background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: 6px; padding: 8px; text-align: center;">
-                <div style="background: rgba(249,115,22,0.14); color: var(--accent2); font-size: 11px; font-weight: 700; padding: 3px; border-radius: 4px; margin-bottom: 6px;">FINAL FLUTTER</div>
-                <div style="height: 105px; border-radius: 4px; overflow: hidden; background: #FFF;">
-                  <img src="../evidence/design-changes/D11-discover-filters/after-android.png" alt="Final Android" style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
+              <a href="https://www.figma.com/design/WC21Na9ZDS8jjM2LzPKeXa/PRM393?node-id=199-1681&p=f&t=2npJzoZzH6u54m3R-0" target="_blank" 
+                 style="flex: 1; text-decoration: none; border: 1.5px solid var(--accent2); border-radius: 8px; background: rgba(249,115,22,0.02); padding: 14px 12px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 1px 3px rgba(249,115,22,0.08); transition: all 0.2s ease;">
+                <div>
+                  <div style="background: rgba(249,115,22,0.14); color: var(--accent2); font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px;">BƯỚC 3 · FINAL FLUTTER</div>
+                  <div style="font-size: 15px; font-weight: 700; color: var(--tx1);">Bản chốt triển khai</div>
+                  <div style="font-size: 12px; color: var(--slate-600); margin-top: 6px; line-height: 1.45;">
+                    Giao diện chốt chuyển giao cho Flutter Widgets chạy thật trên điện thoại Android.
+                  </div>
                 </div>
-                <div style="font-size: 11px; color: var(--muted); margin-top: 4px;">Widgets chạy thật</div>
-              </div>
+                <div style="margin-top: 14px; background: rgba(249,115,22,0.10); color: var(--accent2); padding: 8px 10px; border-radius: 6px; font-size: 11.5px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(249,115,22,0.25);">
+                  <span>🔗 Mở Final Flutter</span>
+                  <span>↗</span>
+                </div>
+              </a>
             </div>
 
             <!-- 4 UI States -->

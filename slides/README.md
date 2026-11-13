@@ -22,7 +22,7 @@ Bộ slide này được xây dựng và thiết kế lại hoàn toàn tuân th
 | **12** | `08` | `P2 · DESIGN` | **State Machine**: Vòng đời Registration (`PENDING → APPROVED / REJECTED → ATTENDED`) |
 | **13** | `09` | `P2 · DESIGN` | **System Architecture**: Sơ đồ C4 Container Serverless & Quyết định kiến trúc |
 | **14** | `10` | `P2 · DESIGN` | **Technology Stack**: Bảng công nghệ 7 nhóm (Flutter 3.29, Riverpod, Firestore, Rules) |
-| **15** | `11` | `P2 · DESIGN` | **UI/UX Design**: Sitemap, Wireframe → Figma → Flutter, 4 UI States, Cải tiến D11 |
+| **15** | `11` | `P2 · DESIGN` | **UI/UX Design**: Sitemap, 3 thẻ link ref Figma (Wireframe, Mockup, Final Flutter), 4 UI States, Cải tiến D11 |
 | **16** | `12` | `P2 · DESIGN` | **Sequence Diagram**: Trưởng CLB duyệt đơn (`approveRegistration` transaction + alt hết chỗ) |
 | **17** | `13` | `P2 · DESIGN` | **Class Design**: Clean Architecture MVVM (`BookingViewModel`, `FirestoreEventService`) |
 | **18** | `14` | `P2 · DESIGN` | **Database Conceptual**: Sơ đồ thực thể Conceptual ERD (User, Club, Event, Registration) |
