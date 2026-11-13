@@ -28,7 +28,7 @@ def get_p2_slides():
       <div class="s-body">
         <!-- Khung sơ đồ Swimlane Vector -->
         <div class="panel" style="flex: 1.4; padding: 12px; background: var(--cham-deep); justify-content: center; align-items: center; position: relative;">
-          <img src="../evidence/diagrams/07-business-flow.svg" alt="Business Flow Diagram" 
+          <img src="../evidence/diagrams/07-business-flow.svg?v=3lane2" alt="Business Flow Diagram" 
                style="width: 100%; height: 100%; object-fit: contain;">
         </div>
 
