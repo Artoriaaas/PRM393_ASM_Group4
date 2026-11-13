@@ -2,17 +2,14 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "EventHub — UI Prototype (local demo)",
+      "name": "EventHub Mobile — Firebase (Android)",
       "request": "launch",
       "type": "dart",
-      "program": "lib/main_prototype.dart",
-      "flutterMode": "debug"
-    },
-    {
-      "name": "EventHub — Firebase app",
-      "request": "launch",
-      "type": "dart",
-      "program": "lib/main.dart"
+      "program": "lib/main.dart",
+      "args": [
+        "--dart-define=CLOUDINARY_CLOUD_NAME=qcfqv5oj",
+        "--dart-define=CLOUDINARY_UPLOAD_PRESET=eventhub_lab3_pdf_test"
+      ]
     },
     {
       "name": "EventHub Web — Mock Leader (Chrome)",

@@ -13,6 +13,8 @@ analyzer:
   exclude:
     - build/**
     - android/**
+    - "**/node_modules/**"
+    - firebase/**
     # Independent packages have their own dependencies and validation commands.
     - web/**
     - packages/**
