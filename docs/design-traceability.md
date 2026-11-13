@@ -1,3 +1,5 @@
+> ASM 13/11/2026: A05 gửi yêu cầu chờ duyệt; A06 là kết quả gửi yêu cầu, không phải tự động được duyệt. A07/A08 bổ sung pending/approved/rejected và lý do từ chối; nhóm lịch cuối là “Đã hủy / Từ chối”. A11/A12 chỉ ghi điểm danh sau khi approved. Đây là thay đổi để khớp web CLB theo quyết định của nhóm. Chưa cập nhật Figma trong lần này. Xem [mobile setup](mobile-setup.md).
+
 # Đối chiếu thiết kế Lab 2 → triển khai Lab 3
 
 Ngày lập: 30/10/2026. Cập nhật 04/11/2026: đã có auth, code nghiệp vụ Firestore trực tiếp và test local; cloud/Figma còn các việc chưa hoàn tất. Lab 2 đã được chủ dự án xác nhận chốt. Bảng màn bên dưới là ánh xạ thiết kế, không phải bằng chứng E2E; trạng thái hiện hành ở [lab3-readiness.md](lab3-readiness.md).

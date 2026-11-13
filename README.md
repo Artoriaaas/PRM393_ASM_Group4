@@ -1,10 +1,10 @@
-# EventHub — PRM393 Lab 3 / Group 4
+# EventHub — PRM393 Assignment / Group 4
 
 App Flutter Android cho người tham gia sự kiện. CLB và admin dùng web riêng; mobile không quản trị sự kiện hoặc mở phiên QR.
 
 ## Bắt đầu cho teammate
 
-1. Đọc [tiến độ so với yêu cầu Lab 3](docs/lab3-readiness.md).
+1. Mobile: đọc [hướng dẫn chạy và kiểm tra cùng web](docs/mobile-setup.md). Tài liệu Lab 3 bên dưới là hồ sơ nền của mobile.
 2. Cài Flutter/Android SDK, mở emulator hoặc nối điện thoại Android.
 3. Chạy các lệnh dưới đây. Dự án chỉ cấu hình Android. Để xuất/upload PDF, thêm hai dart-define theo [Cloudinary setup](docs/cloudinary-setup.md); không cần API secret.
 
@@ -16,7 +16,11 @@ flutter run -t lib/main.dart
 
 Project Firebase dùng chung: **eventhub-group4**, application ID **com.eventhub.app**. Không tạo Firebase riêng cho từng teammate. Cấu hình Google Sign-In trên máy mới theo [Firebase setup](docs/firebase-setup.md), gồm fingerprint debug của máy đó.
 
-Firestore có 5 sự kiện nội dung do nhóm biên soạn, ảnh bìa được tạo bằng AI và đóng gói trong app; danh sách/nội dung đọc từ Firestore. Hai sự kiện cũ đã ẩn khỏi danh sách công khai. Google login đã được xác nhận. Đăng ký/hủy/QR dùng Firestore transaction và Rules đã deploy, nhưng vẫn cần test Android thật với sự kiện còn hạn và QR/phiên fixture chuẩn bị qua Firebase Console cho Lab 3. PDF dùng Cloudinary Free; preset đã kiểm tra upload/download theo [hướng dẫn](docs/cloudinary-setup.md). Không dùng Functions hoặc Firebase Storage.
+Mobile ASM kế thừa giao diện và chức năng Lab 3, nhưng đăng ký dùng chung luồng web: **Chờ duyệt → CLB duyệt hoặc từ chối**. Chỉ đăng ký đã duyệt mới điểm danh; chỗ được tính khi duyệt. Danh sách/nội dung sự kiện đọc từ Firestore, ảnh bìa theo dữ liệu sự kiện. Sự kiện phải có `clubId` của CLB quản lý để nhận yêu cầu mới. Không tự chuyển dữ liệu đăng ký cũ sang trạng thái đã duyệt.
+
+`lib/` là mobile Android; `web/` là app web CLB/admin, dùng `packages/core/`. Mỗi app có `pubspec.yaml` và lockfile riêng; mobile không còn phụ thuộc package core của web. Cấu hình Hosting, indexes và mã web được giữ lại. Hướng dẫn Lab 3 về đăng ký trực tiếp không áp dụng cho mobile ASM; xem [hợp đồng đăng ký ASM và cách chạy](docs/mobile-setup.md).
+
+PDF tiếp tục dùng Cloudinary Free theo [hướng dẫn](docs/cloudinary-setup.md). Preset public hiện tại chưa đáp ứng file riêng theo tài khoản; không xem đây là hạng mục đã hoàn tất.
 
 Theo đề Lab 3, **Tài khoản → Dịch vụ Firebase** mở khu demo thông báo, xuất/upload, Remote Config và Crashlytics. Giảng viên đã cho phép Cloudinary thay Firebase Storage. Quyền truy cập file riêng theo tài khoản vẫn chưa đạt với preset public hiện tại.
 
