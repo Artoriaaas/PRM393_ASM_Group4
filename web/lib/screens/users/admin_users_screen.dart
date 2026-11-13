@@ -71,7 +71,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
     String? selectedClubId = targetUser.clubId;
     String? selectedClubName = targetUser.clubName;
 
-    if (selectedClubId != null && selectedClubId!.trim().isNotEmpty) {
+    if (selectedClubId != null && selectedClubId.trim().isNotEmpty) {
       final match = clubs.where((c) => c.id == selectedClubId).firstOrNull;
       selectedClubName = match?.name ?? selectedClubName;
     }
@@ -177,7 +177,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                   ),
                   const SizedBox(height: AppSpacing.s8),
                   DropdownButtonFormField<String>(
-                    value: selectedRole,
+                    initialValue: selectedRole,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(borderRadius: AppRadius.borderR8),
                       contentPadding: const EdgeInsets.symmetric(
@@ -265,7 +265,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                       )
                     else
                       DropdownButtonFormField<String>(
-                        value: availableClubs.any((c) => c.id == selectedClubId)
+                        initialValue: availableClubs.any((c) => c.id == selectedClubId)
                             ? selectedClubId
                             : availableClubs.first.id,
                         decoration: InputDecoration(

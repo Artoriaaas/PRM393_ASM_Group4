@@ -84,14 +84,14 @@ class _AppTextFieldState extends State<AppTextField> {
         label: _isObscured ? 'Hiện mật khẩu' : 'Ẩn mật khẩu',
         child: InkWell(
           onTap: () => setState(() => _isObscured = !_isObscured),
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: AppRadius.borderR24,
           child: SizedBox(
             width: AppTouchTargets.min,
             height: AppTouchTargets.min,
             child: _isObscured
                 ? Center(
                     child: SvgPicture.asset(
-                      'assets/icons/auth_eye.svg',
+                      'packages/eventhub_core/assets/icons/auth_eye.svg',
                       width: 20,
                       height: 24,
                     ),
@@ -166,11 +166,11 @@ class _AppTextFieldState extends State<AppTextField> {
               ),
               border: const OutlineInputBorder(
                 borderRadius: AppRadius.borderR12,
-                borderSide: BorderSide(color: AppColors.border),
+                borderSide: BorderSide(color: AppColors.borderSubtle),
               ),
               enabledBorder: const OutlineInputBorder(
                 borderRadius: AppRadius.borderR12,
-                borderSide: BorderSide(color: AppColors.border),
+                borderSide: BorderSide(color: AppColors.borderSubtle),
               ),
               focusedBorder: const OutlineInputBorder(
                 borderRadius: AppRadius.borderR12,

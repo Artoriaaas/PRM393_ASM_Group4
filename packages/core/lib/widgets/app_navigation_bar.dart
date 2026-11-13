@@ -1,3 +1,5 @@
+import '../theme/app_radius.dart';
+
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
@@ -82,20 +84,20 @@ class AppNavigationBar extends StatelessWidget {
                                   right: -8,
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(
-                                      horizontal: 5,
-                                      vertical: 1,
+                                      horizontal: AppSpacing.s4,
+                                      vertical: AppSpacing.badgeVertical,
                                     ),
                                     decoration: BoxDecoration(
                                       color: AppColors.error,
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: AppRadius.borderR12,
                                     ),
                                     child: Text(
                                       item.badgeCount! > 99
                                           ? '99+'
                                           : '${item.badgeCount}',
                                       style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10,
+                                        color: AppColors.onError,
+                                        fontSize: AppTypography.badgeFontSize,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),

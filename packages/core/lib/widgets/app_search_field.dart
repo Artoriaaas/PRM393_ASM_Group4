@@ -111,7 +111,7 @@ class _AppSearchFieldState extends State<AppSearchField> {
                   label: 'Xóa nội dung tìm kiếm',
                   child: InkWell(
                     onTap: _handleClear,
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: AppRadius.borderR24,
                     child: ConstrainedBox(
                       constraints: AppTouchTargets.minConstraints,
                       child: const Icon(
@@ -129,11 +129,11 @@ class _AppSearchFieldState extends State<AppSearchField> {
           ),
           border: const OutlineInputBorder(
             borderRadius: AppRadius.borderR8,
-            borderSide: BorderSide(color: AppColors.border),
+            borderSide: BorderSide(color: AppColors.borderSubtle),
           ),
           enabledBorder: const OutlineInputBorder(
             borderRadius: AppRadius.borderR8,
-            borderSide: BorderSide(color: AppColors.border),
+            borderSide: BorderSide(color: AppColors.borderSubtle),
           ),
           focusedBorder: const OutlineInputBorder(
             borderRadius: AppRadius.borderR8,

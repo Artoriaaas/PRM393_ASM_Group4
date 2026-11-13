@@ -24,15 +24,15 @@ class QrCredential {
         createdBy: data['createdBy'] as String? ?? '',
         createdAt: data['createdAt'] != null
             ? (data['createdAt'] is DateTime
-                ? data['createdAt'] as DateTime
-                : DateTime.tryParse(data['createdAt'].toString()))
+                  ? data['createdAt'] as DateTime
+                  : DateTime.tryParse(data['createdAt'].toString()))
             : null,
       );
 
   Map<String, dynamic> toJson() => {
-        'eventId': eventId,
-        'clubId': clubId,
-        'enabled': enabled,
-        'createdBy': createdBy,
-      };
+    'eventId': eventId,
+    'clubId': clubId,
+    'enabled': enabled,
+    'createdBy': createdBy,
+  };
 }

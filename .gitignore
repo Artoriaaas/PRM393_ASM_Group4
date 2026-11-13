@@ -70,4 +70,9 @@ evidence/artemis/local-runs/
 # Local Firebase client configuration (download separately from the shared project)
 **/google-services.json
 **/GoogleService-Info.plist
-lib/firebase_options.dart
+**/firebase_options.dart
+
+/mobile/build/
+/mobile/.dart_tool/
+/mobile/.flutter-plugins-dependencies
+/mobile/coverage/

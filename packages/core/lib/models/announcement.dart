@@ -36,19 +36,19 @@ class Announcement {
         authorRole: data['authorRole'] as String? ?? 'staff',
         createdAt: data['createdAt'] != null
             ? (data['createdAt'] is DateTime
-                ? data['createdAt'] as DateTime
-                : DateTime.tryParse(data['createdAt'].toString()))
+                  ? data['createdAt'] as DateTime
+                  : DateTime.tryParse(data['createdAt'].toString()))
             : null,
       );
 
   Map<String, dynamic> toJson() => {
-        'title': title.trim(),
-        'body': body.trim(),
-        'scope': scope,
-        'clubId': clubId,
-        'clubName': clubName,
-        if (eventId != null && eventId!.isNotEmpty) 'eventId': eventId,
-        'authorUid': authorUid,
-        'authorRole': authorRole,
-      };
+    'title': title.trim(),
+    'body': body.trim(),
+    'scope': scope,
+    'clubId': clubId,
+    'clubName': clubName,
+    if (eventId != null && eventId!.isNotEmpty) 'eventId': eventId,
+    'authorUid': authorUid,
+    'authorRole': authorRole,
+  };
 }

@@ -12,9 +12,7 @@ import 'package:eventhub_web/screens/events/club_events_screen.dart';
 import 'package:eventhub_web/screens/events/live_qr_panel_screen.dart';
 import 'package:eventhub_web/services/web_contracts.dart';
 import 'package:eventhub_web/viewmodels/admin_clubs_viewmodel.dart';
-import 'package:eventhub_web/viewmodels/admin_dashboard_viewmodel.dart';
 import 'package:eventhub_web/viewmodels/admin_users_viewmodel.dart';
-import 'package:eventhub_web/viewmodels/web_auth_viewmodel.dart';
 import 'support/fake_web_services.dart';
 
 void main() {

@@ -1,0 +1,192 @@
+import 'package:eventhub/utils/push_destination.dart';
+
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:async';
+
+import 'package:eventhub/viewmodels/session_viewmodel.dart';
+import 'package:eventhub/viewmodels/cloud_state.dart';
+import 'package:eventhub/services/report_providers.dart';
+import 'package:eventhub/models/auth_state.dart';
+import 'package:eventhub/models/report_row.dart';
+import 'package:eventhub/models/cloud_settings.dart';
+import 'package:eventhub/services/contracts/cloud_services.dart';
+import 'package:eventhub/services/contracts/report_services.dart';
+import 'package:eventhub/services/report/pdf_report_service.dart';
+import 'package:eventhub/viewmodels/cloud_tools_viewmodel.dart';
+import 'package:eventhub/viewmodels/export_viewmodel.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+class _Session extends SessionViewModel {
+  @override
+  AuthState build() => const AuthState.signedIn(uid: 'u', email: 'a@b.c');
+  void change(String uid) =>
+      state = AuthState.signedIn(uid: uid, email: 'a@b.c');
+}
+
+class _Cloud extends UnavailableCloudServices {
+  bool fail = false;
+  final events = <String>[];
+  @override
+  Future<CloudSettings> fetchSettings() async {
+    if (fail) throw StateError('offline');
+    return const CloudSettings(
+      recommendationLimit: 3,
+      showRecommendations: false,
+    );
+  }
+
+  @override
+  Future<void> event(String name, Map<String, Object> p) async {
+    events.add(name);
+  }
+}
+
+class _Report implements ReportService {
+  @override
+  Future<Uint8List> generate(List<ReportRow> rows) async =>
+      Uint8List.fromList([37, 80, 68, 70]);
+}
+
+class _Storage implements ReportFileService {
+  final completed = Completer<String>();
+  int count = 0;
+  final removed = <String>[];
+  @override
+  Future<String> save(String uid, String id, Uint8List bytes) {
+    count++;
+    return completed.future;
+  }
+
+  @override
+  Future<void> share(String path) async {}
+  @override
+  Future<void> remove(String path) async {
+    removed.add(path);
+  }
+
+  @override
+  Future<void> clearUser(String uid) async {}
+}
+
+class _Metadata implements ReportMetadataService {
+  @override
+  Future<void> record(String uid, String id, int bytes, int rows) async {}
+}
+
+class _DelayedCloud extends _Cloud {
+  final completion = Completer<CloudSettings>();
+  @override
+  Future<CloudSettings> fetchSettings() => completion.future;
+}
+
+void main() {
+  test(
+    'previous user config completion never emits analytics for a new session',
+    () async {
+      final cloud = _DelayedCloud();
+      final c = ProviderContainer(
+        overrides: [
+          sessionViewModelProvider.overrideWith(_Session.new),
+          cloudServicesProvider.overrideWithValue(cloud),
+        ],
+      );
+      addTearDown(c.dispose);
+      final subscription = c.listen(cloudToolsProvider, (_, _) {});
+      addTearDown(subscription.close);
+      final pending = c.read(cloudToolsProvider.notifier).refresh();
+      (c.read(sessionViewModelProvider.notifier) as _Session).change('another');
+      c.read(cloudToolsProvider);
+      cloud.completion.complete(const CloudSettings(recommendationLimit: 1));
+      await pending;
+      expect(cloud.events, isEmpty);
+      expect(c.read(cloudToolsProvider).message, isNull);
+    },
+  );
+
+  TestWidgetsFlutterBinding.ensureInitialized();
+  const row = ReportRow(
+    title: 'Thiết kế trải nghiệm người dùng',
+    club: 'CLB Thiết kế FPTU',
+    when: '14:00–16:30 · 24/10/2026',
+    location: 'Phòng 204',
+    status: 'Đã đăng ký',
+  );
+  test('Remote Config keeps last good values after a fetch failure', () async {
+    final service = _Cloud();
+    final c = ProviderContainer(
+      overrides: [
+        sessionViewModelProvider.overrideWith(_Session.new),
+        cloudServicesProvider.overrideWithValue(service),
+      ],
+    );
+    addTearDown(c.dispose);
+    final vm = c.read(cloudToolsProvider.notifier);
+    await vm.refresh();
+    expect(c.read(cloudToolsProvider).settings.recommendationLimit, 3);
+    service.fail = true;
+    await vm.refresh();
+    expect(c.read(cloudToolsProvider).settings.recommendationLimit, 3);
+    expect(c.read(cloudToolsProvider).message, contains('Giữ giá trị'));
+  });
+  test(
+    'export blocks duplicate taps and removes a late file after UID changes',
+    () async {
+      final storage = _Storage();
+      final c = ProviderContainer(
+        overrides: [
+          sessionViewModelProvider.overrideWith(_Session.new),
+          reportServiceProvider.overrideWithValue(_Report()),
+          reportFileServiceProvider.overrideWithValue(storage),
+          reportMetadataProvider.overrideWithValue(_Metadata()),
+        ],
+      );
+      addTearDown(c.dispose);
+      final vm = c.read(exportProvider.notifier);
+      final pending = vm.generate([row]);
+      await Future<void>.delayed(Duration.zero);
+      await vm.generate([row]);
+      expect(storage.count, 1);
+      (c.read(sessionViewModelProvider.notifier) as _Session).change('another');
+      expect(c.read(exportProvider).path, isNull);
+      storage.completed.complete('/private/report.pdf');
+      await pending;
+      expect(storage.removed, ['/private/report.pdf']);
+      expect(c.read(exportProvider).path, isNull);
+    },
+  );
+  test(
+    'PDF uses local Vietnamese fonts and generates multiple pages',
+    () async {
+      final bytes = await PdfReportService().generate(List.filled(70, row));
+      expect(String.fromCharCodes(bytes.take(5)), '%PDF-');
+      expect(bytes.length, greaterThan(10000));
+      final file = File('build/pdf-test/report.pdf');
+      await file.parent.create(recursive: true);
+      await file.writeAsBytes(bytes);
+    },
+  );
+
+  test(
+    'push empty registration ID falls back to event and ignores another UID',
+    () {
+      expect(
+        pushDestination(
+          {'uid': 'u', 'registrationId': '', 'eventId': 'e'},
+          'u',
+          opened: true,
+        )?.path,
+        '/events/e',
+      );
+      expect(
+        pushDestination({'uid': 'another', 'eventId': 'e'}, 'u', opened: true),
+        isNull,
+      );
+      expect(
+        pushDestination({'eventId': 'https://evil'}, 'u', opened: true)?.path,
+        '/notifications',
+      );
+    },
+  );
+}

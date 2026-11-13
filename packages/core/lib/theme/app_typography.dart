@@ -7,8 +7,11 @@ import 'app_colors.dart';
 /// 32/40, 28/36, 24/32, 20/28, 18/26, 16/24, 14/21, 14/20, 12/16.
 class AppTypography {
   AppTypography._();
+  static const double captionFontSize = 12;
+  static const double badgeFontSize = 10;
+  static const double coverTitleFontSize = 22;
 
-  static const String fontFamily = 'Be Vietnam Pro';
+  static const String fontFamily = 'packages/eventhub_core/Be Vietnam Pro';
 
   static const TextTheme textTheme = TextTheme(
     displaySmall: TextStyle(
@@ -84,8 +87,8 @@ class AppTypography {
     ),
     bodySmall: TextStyle(
       fontFamily: fontFamily,
-      fontSize: 12,
-      height: 16 / 12,
+      fontSize: 14,
+      height: 20 / 14,
       fontWeight: FontWeight.w400,
       color: AppColors.textSecondary,
     ),

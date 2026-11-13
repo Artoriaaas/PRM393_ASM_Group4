@@ -27,6 +27,7 @@ sealed class AuthState {
   bool get isUser =>
       this is AuthStateSignedIn && (this as AuthStateSignedIn).role == 'user';
 }
+
 final class AuthStateRestoring extends AuthState {
   const AuthStateRestoring();
 }

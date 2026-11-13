@@ -8,8 +8,14 @@ class CloudSettings {
 }
 
 class PushTarget {
-  const PushTarget({required this.path, this.uid, this.opened = false});
+  const PushTarget({
+    required this.path,
+    this.uid,
+    this.opened = false,
+    this.message,
+  });
   final String path;
   final String? uid;
   final bool opened;
+  final String? message;
 }

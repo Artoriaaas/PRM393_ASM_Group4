@@ -13,7 +13,8 @@ class AppNotification {
   final String? registrationId;
   final DateTime? createdAt, readAt;
   String get destination {
-    bool valid(String? value) => value != null && RegExp(r'^[\w-]+$').hasMatch(value);
+    bool valid(String? value) =>
+        value != null && RegExp(r'^[\w-]+$').hasMatch(value);
     if (valid(registrationId)) return '/registrations/$registrationId';
     if (valid(eventId)) return '/events/$eventId';
     return '/notifications';

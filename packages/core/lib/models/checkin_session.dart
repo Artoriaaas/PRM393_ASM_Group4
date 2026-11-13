@@ -21,15 +21,15 @@ class CheckinSession {
         updatedBy: data['updatedBy'] as String? ?? '',
         updatedAt: data['updatedAt'] != null
             ? (data['updatedAt'] is DateTime
-                ? data['updatedAt'] as DateTime
-                : DateTime.tryParse(data['updatedAt'].toString()))
+                  ? data['updatedAt'] as DateTime
+                  : DateTime.tryParse(data['updatedAt'].toString()))
             : null,
       );
 
   Map<String, dynamic> toJson() => {
-        'eventId': eventId,
-        'clubId': clubId,
-        'open': open,
-        'updatedBy': updatedBy,
-      };
+    'eventId': eventId,
+    'clubId': clubId,
+    'open': open,
+    'updatedBy': updatedBy,
+  };
 }

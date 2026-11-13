@@ -16,17 +16,17 @@ class Club {
   bool get isActive => status == 'active';
 
   factory Club.fromJson(String id, Map<String, dynamic> data) => Club(
-        id: id,
-        name: data['name'] as String? ?? '',
-        shortName: data['shortName'] as String? ?? '',
-        description: data['description'] as String? ?? '',
-        status: data['status'] as String? ?? 'active',
-      );
+    id: id,
+    name: data['name'] as String? ?? '',
+    shortName: data['shortName'] as String? ?? '',
+    description: data['description'] as String? ?? '',
+    status: data['status'] as String? ?? 'active',
+  );
 
   Map<String, dynamic> toJson() => {
-        'name': name.trim(),
-        'shortName': shortName.trim(),
-        'description': description.trim(),
-        'status': status,
-      };
+    'name': name.trim(),
+    'shortName': shortName.trim(),
+    'description': description.trim(),
+    'status': status,
+  };
 }

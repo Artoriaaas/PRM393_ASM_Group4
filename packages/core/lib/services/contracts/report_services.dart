@@ -6,12 +6,13 @@ abstract interface class ReportService {
   Future<Uint8List> generate(List<ReportRow> rows);
 }
 
-abstract interface class ReportStorageService {
-  Future<String> upload(
-    String uid,
-    String fileId,
-    Uint8List bytes,
-    void Function(double) onProgress,
-  );
-  Future<void> copyLink(String link);
+abstract interface class ReportFileService {
+  Future<String> save(String uid, String fileId, Uint8List bytes);
+  Future<void> share(String path);
+  Future<void> remove(String path);
+  Future<void> clearUser(String uid);
+}
+
+abstract interface class ReportMetadataService {
+  Future<void> record(String uid, String fileId, int byteCount, int rowCount);
 }

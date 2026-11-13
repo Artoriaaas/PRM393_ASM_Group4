@@ -6,10 +6,7 @@
       "request": "launch",
       "type": "dart",
       "program": "lib/main.dart",
-      "args": [
-        "--dart-define=CLOUDINARY_CLOUD_NAME=qcfqv5oj",
-        "--dart-define=CLOUDINARY_UPLOAD_PRESET=eventhub_lab3_pdf_test"
-      ]
+      "cwd": "mobile"
     },
     {
       "name": "EventHub Web — Mock Leader (Chrome)",

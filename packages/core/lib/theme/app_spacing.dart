@@ -2,6 +2,9 @@
 /// 0, 4, 8, 12, 16, 20, 24, 32, 40, 48
 class AppSpacing {
   AppSpacing._();
+  static const double coverBadgeHorizontal = 10;
+  static const double coverBadgeVertical = 6;
+  static const double badgeVertical = 1;
 
   static const double s0 = 0.0;
   static const double s4 = 4.0;
@@ -20,4 +23,5 @@ class AppSpacing {
   static const double sectionGap = s24;
   static const double itemGap = s12;
   static const double elementGap = s8;
+  static const double inputVertical = 14.0;
 }

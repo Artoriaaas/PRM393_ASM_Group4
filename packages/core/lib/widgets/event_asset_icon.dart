@@ -8,7 +8,7 @@ class EventAssetIcon extends StatelessWidget {
   final double size;
   @override
   Widget build(BuildContext context) => SvgPicture.asset(
-    'assets/icons/$name.svg',
+    'packages/eventhub_core/assets/icons/$name.svg',
     width: size,
     height: size,
     colorFilter: color == null

@@ -9,6 +9,7 @@ class Event {
     this.deadline,
     this.description = '',
     this.coverKey = '',
+    this.coverUrl = '',
     this.topic = '',
     this.audience = '',
     this.preparation = '',
@@ -21,7 +22,7 @@ class Event {
     this.visibility = 'public',
     this.updatedAt,
   });
-  final String coverKey;
+  final String coverKey, coverUrl;
   final String id,
       title,
       clubName,
@@ -137,6 +138,18 @@ class Registration {
   final String lastOperationId;
   bool get active =>
       status == 'pending' || status == 'approved' || status == 'active';
+  bool get pending => status == 'pending';
+  bool get cancelled => status == 'cancelled';
+  bool get rejected => status == 'rejected';
+  bool get hasRequest => active || pending;
+  String get statusLabel => switch (status) {
+    'pending' => 'Chờ duyệt',
+    'approved' => checkInAt != null ? 'Đã điểm danh' : 'Đã được duyệt',
+    'active' => checkInAt != null ? 'Đã điểm danh' : 'Đã đăng ký',
+    'rejected' => 'Bị từ chối',
+    'cancelled' => 'Đã hủy đăng ký',
+    _ => 'Chưa xác định trạng thái',
+  };
   bool get isPending => status == 'pending';
   bool get isApproved => status == 'approved';
   bool get canCheckIn => status == 'approved' || status == 'active';
@@ -151,13 +164,19 @@ class BookingResult {
   final String? registrationId, code;
   bool get terminal => [
     'confirmed',
+    'pending',
     'existing',
     'cancelled',
     'checked-in',
     'rejected',
   ].contains(status);
-  bool get successful =>
-      ['confirmed', 'existing', 'cancelled', 'checked-in'].contains(status);
+  bool get successful => [
+    'confirmed',
+    'pending',
+    'existing',
+    'cancelled',
+    'checked-in',
+  ].contains(status);
   factory BookingResult.fromJson(Map<String, dynamic> d) => BookingResult(
     status: d['status'] as String? ?? 'unknown',
     registrationId: d['registrationId'] as String?,
@@ -166,6 +185,11 @@ class BookingResult {
 }
 
 String bookingMessage(String? code) => switch (code) {
+  'club-required' => 'Sự kiện chưa được liên kết với CLB để duyệt đăng ký.',
+  'registration-not-approved' =>
+    'Đăng ký đang chờ CLB duyệt, chưa thể điểm danh.',
+  'registration-rejected' =>
+    'CLB đã từ chối yêu cầu đăng ký. Xem chi tiết để biết lý do.',
   'event-full' => 'Sự kiện đã hết chỗ.',
   'registration-expired' => 'Đã hết hạn đăng ký.',
   'event-cancelled' => 'Sự kiện đã hủy.',
@@ -175,12 +199,27 @@ String bookingMessage(String? code) => switch (code) {
   'cannot-cancel' =>
     'Không thể hủy khi đã điểm danh, sự kiện đã bắt đầu hoặc đã hủy.',
   'invalid-participant' => 'Kiểm tra lại các trường thông tin tham gia.',
+  'checkin-rejected' => 'Chưa thể ghi nhận điểm danh. Kiểm tra trạng thái đăng ký và phiên rồi thử lại.',
   'invalid-qr' => 'Mã QR không hợp lệ.',
   'wrong-event' => 'Mã QR không đúng sự kiện.',
   'session-closed' => 'Phiên điểm danh đang đóng.',
   'event-not-found' => 'Không tìm thấy sự kiện.',
-  'not-approved' => 'Đơn đăng ký đang chờ CLB duyệt, chưa thể điểm danh.',
   'operation-conflict' =>
     'Nội dung thao tác đã thay đổi. Hãy kiểm tra kết quả cũ trước.',
   _ => 'Chưa thể hoàn tất thao tác. Hãy tải lại dữ liệu và thử lại.',
 };
+
+// Resolve the server's current state, including a review completed after a retry.
+BookingResult registrationOutcome(String id, Map<String, dynamic> data) =>
+    BookingResult(
+      registrationId: id,
+      status: switch (data['status']) {
+        'pending' => 'pending',
+        'approved' ||
+        'active' => data['checkInAt'] != null ? 'checked-in' : 'confirmed',
+        'cancelled' => 'cancelled',
+        'rejected' => 'rejected',
+        _ => 'unknown',
+      },
+      code: data['status'] == 'rejected' ? 'registration-rejected' : null,
+    );
