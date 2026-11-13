@@ -34,23 +34,67 @@ class _LiveScheduleState extends ConsumerState<LiveScheduleScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(AppSpacing.s16),
-            child: Wrap(
-              spacing: AppSpacing.s8,
-              runSpacing: AppSpacing.s8,
-              children: [
-                for (final item in [
-                  'Sắp tới',
-                  'Đã kết thúc',
-                  'Đã hủy / Từ chối',
-                ].indexed)
-                  AppChoiceChip(
-                    label: Text(item.$2),
-                    selected: tab == item.$1,
-                    onSelected: (_) =>
-                        ref.read(scheduleTabProvider.notifier).select(item.$1),
-                  ),
-              ],
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.s16,
+              vertical: AppSpacing.s12,
+            ),
+            child: Container(
+              height: 44,
+              padding: const EdgeInsets.all(AppSpacing.s4),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: AppRadius.borderR12,
+                border: Border.all(color: AppColors.borderSubtle),
+              ),
+              child: Row(
+                children: [
+                  for (final item in [
+                    (0, 'Sắp tới'),
+                    (1, 'Đã kết thúc'),
+                    (2, 'Đã hủy'),
+                  ])
+                    Expanded(
+                      child: Semantics(
+                        button: true,
+                        selected: tab == item.$1,
+                        label: item.$2,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () => ref
+                                .read(scheduleTabProvider.notifier)
+                                .select(item.$1),
+                            borderRadius: AppRadius.borderR8,
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              curve: Curves.easeInOut,
+                              decoration: BoxDecoration(
+                                color: tab == item.$1
+                                    ? AppColors.primary
+                                    : Colors.transparent,
+                                borderRadius: AppRadius.borderR8,
+                              ),
+                              alignment: Alignment.center,
+                              child: Text(
+                                item.$2,
+                                style: AppTypography.textTheme.labelMedium?.copyWith(
+                                  color: tab == item.$1
+                                      ? AppColors.onPrimary
+                                      : AppColors.textSecondary,
+                                  fontWeight: tab == item.$1
+                                      ? FontWeight.bold
+                                      : FontWeight.w500,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
           const Padding(

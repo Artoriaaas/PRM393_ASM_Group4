@@ -145,7 +145,7 @@ class Registration {
   String get statusLabel => switch (status) {
     'pending' => 'Chờ duyệt',
     'approved' => checkInAt != null ? 'Đã điểm danh' : 'Đã được duyệt',
-    'active' => checkInAt != null ? 'Đã điểm danh' : 'Đã đăng ký',
+    'active' => checkInAt != null ? 'Đã điểm danh' : 'Đã được duyệt',
     'rejected' => 'Bị từ chối',
     'cancelled' => 'Đã hủy đăng ký',
     _ => 'Chưa xác định trạng thái',

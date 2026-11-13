@@ -128,8 +128,23 @@ final scheduleEntriesProvider =
         return AsyncError(regs.error!, regs.stackTrace ?? StackTrace.current);
       }
       if (!regs.hasValue) return const AsyncLoading();
-      final list = <ScheduleEntry>[];
+      final bestRegByEvent = <String, Registration>{};
+      int priority(Registration r) {
+        if (r.checkInAt != null) return 5;
+        if (r.status == 'approved') return 4;
+        if (r.status == 'active') return 3;
+        if (r.status == 'pending') return 2;
+        if (r.status == 'rejected') return 1;
+        return 0;
+      }
       for (final r in regs.requireValue) {
+        final existing = bestRegByEvent[r.eventId];
+        if (existing == null || priority(r) > priority(existing)) {
+          bestRegByEvent[r.eventId] = r;
+        }
+      }
+      final list = <ScheduleEntry>[];
+      for (final r in bestRegByEvent.values) {
         final e = ref.watch(eventProvider(r.eventId));
         if (e.hasError) {
           return AsyncError(e.error!, e.stackTrace ?? StackTrace.current);
