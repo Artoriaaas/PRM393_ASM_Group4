@@ -96,3 +96,6 @@ AI feature và bằng chứng; ARTEMIS; App Check/cloud/native proof; web screen
 - Rules: `evidence/rules/club-onboarding.xml` có 61 leaf test cases, 0 failure/error/skip (Node báo 65 tính cả 4 nhóm cha). Chạy với project local `demo-direct-booking`, không sửa dữ liệu production.
 - Onboarding kiểm tra Admin-only, giữ chỗ CLB, email từ Auth token đã xác minh, Google-only, chống ghi nửa transaction/nâng quyền/sai CLB/replay, thu hồi pending/accepted, cấp lại, CLB archived và tài khoản hoàn toàn mới.
 - Chưa build/deploy web cho thay đổi này; chưa có bằng chứng đăng nhập onboarding trên Hosting thật. Xem `docs/club-onboarding.md` để chạy xác nhận hai tài khoản.
+
+## AI ý tưởng tự do — 14/11/2026
+46 tests web và 6 tests core đạt. Web analyze sạch. Chưa gọi Gemini thật với ý tưởng tự do trong lượt này; chưa có bộ 3 output mới để nộp. Test widget dùng fake để xác minh popup Hủy/Tạo lại/Áp dụng theo trường và metadata không đổi, không tiêu tốn quota model.

@@ -18,6 +18,16 @@ class AiEventSuggestion {
   final List<String> activities;
 
   factory AiEventSuggestion.fromJson(Map<String, dynamic> json) {
+    const fields = {
+      'topic',
+      'description',
+      'audience',
+      'preparation',
+      'activities',
+    };
+    if (json.length != fields.length || !json.keys.every(fields.contains)) {
+      throw const FormatException('Unexpected AI fields');
+    }
     String field(String key, int max) {
       final value = json[key];
       if (value is! String ||

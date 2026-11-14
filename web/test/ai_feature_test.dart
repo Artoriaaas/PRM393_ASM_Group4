@@ -43,6 +43,7 @@ class Analytics implements IWebAnalyticsService {
   Future<void> setUserId(String? uid) async {}
 }
 
+const testIdea = 'Workshop chụp ảnh bằng điện thoại cho người mới';
 final payload = {
   'topic': 'Công nghệ',
   'description': 'Thực hành theo nhóm.',
@@ -83,6 +84,7 @@ void main() {
     for (final value in [
       'plain text',
       '{}',
+      jsonEncode({...payload, 'startsAt': '2030-01-01T10:00:00'}),
       jsonEncode({
         ...payload,
         'activities': [1],
@@ -93,9 +95,7 @@ void main() {
     }
   });
   test('configured model/prompt and App Check precede generation', () async {
-    final result = await service().suggestEventContent(
-      title: aiEventIdeas.first,
-    );
+    final result = await service().suggestEventContent(title: testIdea);
     expect(result.isSuccess, isTrue);
     expect(calls, 1);
     expect(config.forceRequested, isTrue);
@@ -112,41 +112,47 @@ void main() {
         },
       );
       expect(
-        (await instance.suggestEventContent(title: aiEventIdeas.first))
-            .isSuccess,
+        (await instance.suggestEventContent(title: testIdea)).isSuccess,
         isTrue,
       );
-      final repeated = await instance.suggestEventContent(
-        title: aiEventIdeas.first,
-      );
+      final repeated = await instance.suggestEventContent(title: testIdea);
       expect(repeated.failureOrNull?.code, 'duplicate_response');
       expect(prompts.last, contains(payload['description']));
       expect(prompts.first, isNot(prompts.last));
     },
   );
-  test('never sends free text names, email or form description', () async {
-    for (final input in ['Nguyễn Văn A', 'test@example.org', '+84912345678']) {
+  test(
+    'rejects contact details and full form fields before any network call',
+    () async {
+      for (final input in [
+        'test@example.org',
+        '+84912345678',
+        'https://example.org/profile',
+        '',
+        'a' * 501,
+      ]) {
+        expect(
+          (await service().suggestEventContent(title: input)).isFailure,
+          isTrue,
+        );
+      }
       expect(
-        (await service().suggestEventContent(title: input)).isFailure,
+        (await service().suggestEventContent(
+          title: testIdea,
+          currentDescription: 'private',
+        )).isFailure,
         isTrue,
       );
-    }
-    expect(
-      (await service().suggestEventContent(
-        title: aiEventIdeas.first,
-        currentDescription: 'private',
-      )).isFailure,
-      isTrue,
-    );
-    expect(calls, 0);
-    expect(analytics.events, everyElement('ai_error'));
-  });
+      expect(calls, 0);
+      expect(analytics.events, everyElement('ai_error'));
+    },
+  );
   test(
     'RC disabled makes no request and leaves manual entry available',
     () async {
       config.enabled = false;
       expect(
-        (await service().suggestEventContent(title: aiEventIdeas.first))
+        (await service().suggestEventContent(title: testIdea))
             .failureOrNull
             ?.code,
         'ai_disabled',
@@ -154,11 +160,24 @@ void main() {
       expect(calls, 0);
     },
   );
+  test('accepts a custom idea and limits generation to content fields without logging the idea', () async {
+    String? sent;
+    final result = await service(
+      generate: (_, prompt) async {
+        sent = prompt;
+        return jsonEncode(payload);
+      },
+    ).suggestEventContent(title: testIdea);
+    expect(result.isSuccess, isTrue);
+    expect(sent, contains(testIdea));
+    expect(sent, contains('KHÔNG đề xuất ngày'));
+    expect(sent, contains('đúng 5 khóa'));
+    expect(analytics.params.toString(), isNot(contains(testIdea)));
+  });
   test('RC refresh failure blocks generation with stale config', () async {
     config.refreshFails = true;
     expect(
-      (await service().suggestEventContent(title: aiEventIdeas.first))
-          .isFailure,
+      (await service().suggestEventContent(title: testIdea)).isFailure,
       isTrue,
     );
     expect(calls, 0);
@@ -169,8 +188,7 @@ void main() {
       () async => throw StateError('invalid'),
     ]) {
       expect(
-        (await service(token: token)
-                .suggestEventContent(title: aiEventIdeas.first))
+        (await service(token: token).suggestEventContent(title: testIdea))
             .isFailure,
         isTrue,
       );
@@ -181,7 +199,7 @@ void main() {
   test('network/quota errors cannot masquerade as generated content or leak details', () async {
     final result = await service(
       generate: (_, _) async => throw StateError('429 secret@example.org'),
-    ).suggestEventContent(title: aiEventIdeas.first);
+    ).suggestEventContent(title: testIdea);
     expect(result.isFailure, isTrue);
     expect(analytics.events, ['ai_request', 'ai_error']);
     expect(analytics.params.toString(), isNot(contains('secret@example.org')));
@@ -189,12 +207,12 @@ void main() {
   test('quota error is reported without generated fallback', () async {
     final result = await service(
       generate: (_, _) async => throw QuotaExceeded('quota'),
-    ).suggestEventContent(title: aiEventIdeas.first);
+    ).suggestEventContent(title: testIdea);
     expect(result.failureOrNull?.code, 'quota_exhausted');
   });
   test('invalid response fails without offline generation', () async {
     final result = await service(generate: (_, _) async => '{}')
-        .suggestEventContent(title: aiEventIdeas.first);
+        .suggestEventContent(title: testIdea);
     expect(result.failureOrNull?.code, 'invalid_response');
   });
   test('accept only an existing result, once per request; failure clears stale suggestion', () async {
@@ -212,7 +230,7 @@ void main() {
     final vm = c.read(aiEventAssistViewModelProvider.notifier);
     vm.markAccepted();
     expect(analytics.events, isEmpty);
-    await vm.requestSuggestion(title: aiEventIdeas.first);
+    await vm.requestSuggestion(title: testIdea);
     vm.markAccepted();
     vm.markAccepted();
     expect(
@@ -220,7 +238,7 @@ void main() {
       hasLength(1),
     );
     config.enabled = false;
-    await vm.requestSuggestion(title: aiEventIdeas.first);
+    await vm.requestSuggestion(title: testIdea);
     expect(c.read(aiEventAssistViewModelProvider).suggestion, isNull);
     vm.markAccepted();
     expect(
@@ -242,7 +260,7 @@ void main() {
       final sub = c.listen(aiEventAssistViewModelProvider, (_, _) {});
       final task = c
           .read(aiEventAssistViewModelProvider.notifier)
-          .requestSuggestion(title: aiEventIdeas.first);
+          .requestSuggestion(title: testIdea);
       await Future<void>.delayed(Duration.zero);
       sub.close();
       c.dispose();

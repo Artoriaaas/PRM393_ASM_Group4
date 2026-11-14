@@ -215,3 +215,6 @@ Form tạo/sửa bổ sung lựa chọn chủ đề AI không chứa dữ liệu
 
 ## Web: phân công CLB trước đăng nhập
 Quản lý người dùng → `ClubAssignmentsPanel`/`AssignmentDialog` → `AssignmentAction` → `IClubAssignmentService`/`FirestoreClubAssignmentService` → clubAssignments, clubManagerSlots, users. Tạo CLB tiếp tục dùng AdminClubsScreen. Web Google auth kích hoạt phân công, không thêm navigation mobile. Loading/error/empty và hủy/thu hồi có UI; Figma chưa cập nhật thay đổi này.
+
+## AI nhập ý tưởng — 14/11/2026
+Bỏ dropdown chủ đề cố định, thêm ô ý tưởng riêng 5–500 ký tự. Popup chọn từng trường nội dung để áp dụng; giữ nguyên ngày giờ, địa điểm, hạn đăng ký và sức chứa theo quyết định CLB. Không thêm route/chat. Figma chưa cập nhật thay đổi này; cần ghi nhận khi đối chiếu thiết kế.

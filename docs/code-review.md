@@ -122,3 +122,6 @@ Kết quả tự động mới: web analyze sạch, 39/39 tests; core analyze s�
 - RC cache5phút khiến demo kill-switch có thể vẫn gọi AI bằng cấu hình cũ. Chấp nhận finding: explicit AI action force-fetch, fetch lỗi thì dừng model; passive dashboard giữ cache bình thường. Test stale-config failure và forceRefresh flag.
 - Profile self-update và event metadata update chưa kiểm tra đầy đủ kiểu/ngày. Chấp nhận finding: string/size/server timestamp profile và timestamp/order/deadline events; matrix thêm allow update hợp lệ +deny sai kiểu/ngày.
 - App Check cloud: AI Logic ENFORCED, Firestore UNENFORCED; Android chưa có debug token và không kết nối thiết bị. Không bật Firestore enforcement trước verified requests để tránh khóa binary test. Helpers chỉ đọc cloud/đăng ký debug token; không tạo backend mới.
+
+## AI đầu vào tự do — 14/11/2026
+Thay quyết định AI03 giới hạn 5 chủ đề bằng ý tưởng riêng 5–500 ký tự: không tự gửi dữ liệu tài khoản hoặc toàn form; chặn mẫu thông tin liên hệ/URL và hướng dẫn không nhập PII. Không tuyên bố lọc được mọi tên người. JSON chỉ nhận 5 trường nội dung, popup chọn từng trường, giữ nguyên ngày giờ/địa điểm/capacity/deadline. Test xác nhận lựa chọn, hủy/tạo lại, giữ trường bỏ chọn, lưu metadata nguyên trạng và không log ý tưởng.

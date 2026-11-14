@@ -10,9 +10,9 @@ import '../../utils/result.dart';
 /// - Graceful error handling (fail-closed to safe manual input)
 abstract interface class IAiEventAssistService {
   Future<Result<AiEventSuggestion>> suggestEventContent({
+    // Dedicated general idea, not the full event form or account identity.
     required String title,
     String? topic,
     String? currentDescription,
   });
 }
-

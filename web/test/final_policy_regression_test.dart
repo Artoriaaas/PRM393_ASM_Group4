@@ -25,20 +25,22 @@ const admin = WebUserProfile(
   displayName: 'Admin',
   role: 'admin',
 );
-Event event(String id, {String status = 'draft'}) => Event(
-  id: id,
-  title: 'Workshop $id',
-  clubName: 'Club',
-  clubId: 'club_it',
-  location: 'Room',
-  startsAt: DateTime(2030, 1, 2),
-  endsAt: DateTime(2030, 1, 2, 3),
-  deadline: DateTime(2030, 1, 1),
-  status: status,
-  capacity: 8,
-  coverKey: 'ux-workshop',
-  coverUrl: 'https://example.org/cover.jpg',
-);
+Event event(String id, {String status = 'draft', String description = ''}) =>
+    Event(
+      id: id,
+      title: 'Workshop $id',
+      description: description,
+      clubName: 'Club',
+      clubId: 'club_it',
+      location: 'Room',
+      startsAt: DateTime(2030, 1, 2),
+      endsAt: DateTime(2030, 1, 2, 3),
+      deadline: DateTime(2030, 1, 1),
+      status: status,
+      capacity: 8,
+      coverKey: 'ux-workshop',
+      coverUrl: 'https://example.org/cover.jpg',
+    );
 
 class Config implements IWebRemoteConfigService {
   @override
@@ -77,32 +79,44 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
+    final original = event('a', description: 'Nội dung CLB đã viết');
+    final clubService = FakeClubService(initialEvents: [original]);
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           webAuthServiceProvider.overrideWithValue(
             FakeWebAuthService(initialUser: staff),
           ),
-          clubServiceProvider.overrideWithValue(FakeClubService()),
+          clubServiceProvider.overrideWithValue(clubService),
           webAnalyticsServiceProvider.overrideWithValue(
             FakeWebAnalyticsService(),
           ),
           geminiAiServiceProvider.overrideWithValue(SuggestionService()),
         ],
         child: MaterialApp(
-          home: Scaffold(body: EventEditorDialog(initialEvent: event('a'))),
+          home: Scaffold(body: EventEditorDialog(initialEvent: original)),
         ),
       ),
     );
     await tester.pumpAndSettle();
-    final request = find.widgetWithText(
-      ElevatedButton,
-      '✨ Gợi ý nội dung bằng AI (Gemini)',
+    final request = find.widgetWithText(ElevatedButton, 'Tạo bản nháp AI');
+    await tester.enterText(
+      find.byKey(const ValueKey('ai-event-idea')),
+      'Workshop chụp ảnh bằng điện thoại cho người mới',
     );
+    await tester.pumpAndSettle();
     await tester.ensureVisible(request);
     await tester.tap(request);
     await tester.pumpAndSettle();
     expect(find.text('Bản nháp do Gemini AI đề xuất'), findsOneWidget);
+    expect(
+      tester
+          .widget<CheckboxListTile>(
+            find.byKey(const ValueKey('ai-apply-description')),
+          )
+          .value,
+      isFalse,
+    );
     final generatedField = find.byWidgetPredicate(
       (w) => w is TextFormField && w.controller?.text == 'Generated draft',
     );
@@ -110,10 +124,7 @@ void main() {
     await tester.tap(find.text('Hủy').last);
     await tester.pumpAndSettle();
     expect(generatedField, findsNothing);
-    final retry = find.widgetWithText(
-      ElevatedButton,
-      '✨ Tạo lại gợi ý khác bằng AI',
-    );
+    final retry = find.widgetWithText(ElevatedButton, 'Tạo bản nháp khác');
     await tester.ensureVisible(retry);
     await tester.tap(retry);
     await tester.pumpAndSettle();
@@ -121,7 +132,10 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Bản nháp do Gemini AI đề xuất'), findsOneWidget);
     expect(generatedField, findsNothing);
-    await tester.tap(find.text('Áp dụng'));
+    await tester.tap(find.byKey(const ValueKey('ai-apply-description')));
+    await tester.tap(find.byKey(const ValueKey('ai-apply-audience')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Áp dụng phần đã chọn'));
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(
       generatedField,
@@ -131,6 +145,26 @@ void main() {
           .first,
     );
     expect(generatedField, findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (w) => w is TextFormField && w.controller?.text == 'Students',
+      ),
+      findsNothing,
+    );
+    await tester.tap(find.text('Lưu bản nháp'));
+    await tester.pumpAndSettle();
+    final saved = await tester.runAsync(
+      () => clubService.streamEvent('a').first,
+    );
+    expect(saved!.description, 'Generated draft');
+    expect(saved.audience, original.audience);
+    expect(saved.title, original.title);
+    expect(saved.startsAt, original.startsAt);
+    expect(saved.endsAt, original.endsAt);
+    expect(saved.deadline, original.deadline);
+    expect(saved.location, original.location);
+    expect(saved.capacity, original.capacity);
+    expect(saved.mode, original.mode);
     expect(tester.takeException(), isNull);
   });
 
