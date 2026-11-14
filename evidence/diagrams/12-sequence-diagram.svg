@@ -17,7 +17,7 @@
   <rect width="960" height="440" rx="8" fill="#FFFFFF" />
 
   <!-- Title -->
-  <text x="24" y="32" font-family="Calibri, Arial, sans-serif" font-size="16" font-weight="700" fill="#1E293B">SƠ ĐỒ TUẦN TỰ (SEQUENCE DIAGRAM) — PHÊ DUYỆT ĐƠN ĐĂNG KÝ (WF-02)</text>
+  <text x="24" y="32" font-family="Calibri, Arial, sans-serif" font-size="16" font-weight="700" fill="#1E293B">SEQUENCE DIAGRAM — REGISTRATION APPROVAL (WF-02)</text>
   <text x="24" y="48" font-family="Calibri, Arial, sans-serif" font-size="11.5" fill="#64748B">EventHub PRM393 · Trưởng CLB (Web) thao tác duyệt → Firestore Atomic Transaction → Mobile cập nhật realtime</text>
 
   <!-- Lifeline Headers -->

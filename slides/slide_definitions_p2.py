@@ -24,9 +24,9 @@ def get_p2_slides():
         "pill_right": None,
         "question": "Nghiệp vụ của hệ thống vận hành thế nào, ai làm gì ở đâu?",
         "duration": "60 s",
-        "evidence": "Sơ đồ swimlane 4 làn (Sinh viên, Hệ thống, Trưởng CLB, Admin) kèm mã BR",
+        "evidence": "Sơ đồ swimlane 3 làn (Sinh viên, Hệ thống, Trưởng CLB) kèm mã BR",
         "left_items": [
-            "Toàn bộ 4 làn phối hợp: Sinh viên (Mobile), Hệ thống (Rules), Trưởng CLB (Web), Admin (Web).",
+            "Toàn bộ 3 làn phối hợp: Sinh viên (Mobile App), Hệ thống (Firestore Rules), Trưởng CLB (Web Admin).",
             "Trình tự từ đề xuất sự kiện → mở đăng ký → duyệt đơn → mở phiên QR → điểm danh.",
             "Thể hiện rõ các nhánh ngoại lệ: Sai form (FAIL BR-02), Hết chỗ (BR-01), Từ chối duyệt (BR-03).",
             "Gán mã quy tắc nghiệp vụ BR-01..BR-05 tại điểm rẽ để nối với State Machine và Test Case."
@@ -36,7 +36,7 @@ def get_p2_slides():
         "panel_content_html": """
           <div style="width: 100%; height: 100%; position: relative;">
             <!-- Optional User Image (priority if provided in evidence/diagrams/07-business-flow.png) -->
-            <img src="../evidence/diagrams/07-business-flow.svg" alt="Business Flow Diagram" 
+            <img src="../evidence/diagrams/07-business-flow.svg?v=3lane_bpmn_clean2" alt="Business Flow Diagram" 
                  style="width: 100%; height: 100%; object-fit: contain; display: block;" 
                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
             
@@ -60,8 +60,8 @@ def get_p2_slides():
                 <text x="177" y="41" fill="#DB2777" font-size="10.5" font-weight="700" text-anchor="middle">Điền form A05</text>
 
                 <rect x="390" y="16" width="105" height="42" rx="4" fill="#FDF2F8" stroke="#DB2777" stroke-width="1.5" />
-                <text x="442" y="35" fill="#DB2777" font-size="10" font-weight="700" text-anchor="middle">Nhận vé QR</text>
-                <text x="442" y="48" fill="#64748B" font-size="9" text-anchor="middle">FCM + Inbox A09</text>
+                <text x="442" y="35" fill="#DB2777" font-size="10" font-weight="700" text-anchor="middle">Thông báo duyệt</text>
+                <text x="442" y="48" fill="#64748B" font-size="9" text-anchor="middle">Inbox A09 · A08</text>
 
                 <rect x="545" y="16" width="105" height="42" rx="4" fill="#FDF2F8" stroke="#DB2777" stroke-width="1.5" />
                 <text x="597" y="35" fill="#DB2777" font-size="10" font-weight="700" text-anchor="middle">Quét QR (A11)</text>
@@ -271,7 +271,7 @@ def get_p2_slides():
         "panel_label": "MẪU BỐ CỤC",
         "panel_content_html": """
           <div style="width: 100%; height: 100%; position: relative;">
-            <img src="../evidence/diagrams/09-system-architecture.svg" alt="System Architecture Diagram" 
+            <img src="../evidence/diagrams/09-system-architecture.svg?v=c4_perfect_clean" alt="System Architecture Diagram" 
                  style="width: 100%; height: 100%; object-fit: contain; display: block;" 
                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
             
@@ -635,7 +635,7 @@ def get_p2_slides():
         "panel_label": "MẪU BỐ CỤC",
         "panel_content_html": """
           <div style="width: 100%; height: 100%; position: relative;">
-            <img src="../evidence/diagrams/13-class-design.svg" alt="Class Design Diagram" 
+            <img src="../evidence/diagrams/13-class-design.svg?v=valid_xml" alt="Class Design Diagram" 
                  style="width: 100%; height: 100%; object-fit: contain; display: block;" 
                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
             
@@ -727,7 +727,7 @@ def get_p2_slides():
         "panel_label": "MẪU BỐ CỤC",
         "panel_content_html": """
           <div style="width: 100%; height: 100%; position: relative;">
-            <img src="../evidence/diagrams/14-conceptual-erd.svg" alt="Conceptual ERD" 
+            <img src="../evidence/diagrams/14-conceptual-erd.svg?v=clean_rel" alt="Conceptual ERD" 
                  style="width: 100%; height: 100%; object-fit: contain; display: block;" 
                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
             

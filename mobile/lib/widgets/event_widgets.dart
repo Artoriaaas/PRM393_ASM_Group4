@@ -1,3 +1,4 @@
+import 'dart:convert';
 import '../utils/event_formatters.dart';
 export '../utils/event_formatters.dart';
 import 'workshop_cover.dart';
@@ -109,6 +110,31 @@ class EventSummary extends StatelessWidget {
                 'assets/event-covers/${event.coverKey == 'acoustic-live' ? 'acoustic' : event.coverKey}.jpg',
                 fit: BoxFit.cover,
                 semanticLabel: 'Ảnh bìa ${event.title}',
+              ),
+            ),
+          )
+        else if (event.coverUrl.startsWith('data:image'))
+          ClipRRect(
+            borderRadius: AppRadius.borderR16,
+            child: AspectRatio(
+              aspectRatio: 2,
+              child: Builder(
+                builder: (context) {
+                  try {
+                    final base64Str = event.coverUrl.substring(
+                      event.coverUrl.indexOf(',') + 1,
+                    );
+                    final bytes = base64Decode(base64Str);
+                    return Image.memory(
+                      bytes,
+                      fit: BoxFit.cover,
+                      semanticLabel: 'Ảnh bìa ${event.title}',
+                      errorBuilder: (_, _, _) => GenericEventCover(event),
+                    );
+                  } catch (_) {
+                    return GenericEventCover(event);
+                  }
+                },
               ),
             ),
           )

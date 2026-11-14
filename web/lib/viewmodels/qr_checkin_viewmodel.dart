@@ -144,7 +144,9 @@ class QrCheckinViewModel extends Notifier<QrCheckinState> {
     );
     ref.onDispose(sessionSub.cancel);
 
-    final regsSub = clubService.streamEventRegistrations(eventId).listen(
+    final regsSub = clubService
+        .streamEventRegistrations(eventId, clubId: clubId)
+        .listen(
       (regs) {
         if (!ref.mounted) return;
         final approved = regs.where((r) => r.isApproved).toList();

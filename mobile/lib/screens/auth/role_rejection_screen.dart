@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../viewmodels/session_viewmodel.dart';
 import '../../viewmodels/auth_viewmodel.dart';
 import '../../models/auth_state.dart';
+import '../../theme/theme.dart';
 import '../../widgets/widgets.dart';
-
 class RoleRejectionScreen extends ConsumerWidget {
   const RoleRejectionScreen({super.key});
   @override
@@ -14,6 +14,8 @@ class RoleRejectionScreen extends ConsumerWidget {
     final unavailable =
         auth is AuthStateSignedIn &&
         ['unknown', 'unavailable'].contains(auth.role);
+    final isStaff = auth is AuthStateSignedIn && auth.role == 'staff';
+    final staffClubId = isStaff ? (auth as AuthStateSignedIn).clubId : null;
     final state = ref.watch(authViewModelProvider);
     return Scaffold(
       appBar: AppTopBar(title: 'Tài khoản', showBackButton: false),
@@ -32,6 +34,43 @@ class RoleRejectionScreen extends ConsumerWidget {
                   ? 'Kiểm tra kết nối và thử lại. Dữ liệu cá nhân chưa được mở.'
                   : 'Ứng dụng mobile dành cho người tham gia. Tài khoản CLB và quản trị viên sử dụng ứng dụng web của nhóm.',
             ),
+            if (isStaff) ...[
+              const SizedBox(height: AppSpacing.s16),
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.s12),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceSubtle,
+                  borderRadius: AppRadius.borderR8,
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Thông tin vai trò hiện tại:',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.s4),
+                    const Text('• Vai trò: Trưởng câu lạc bộ (Staff)'),
+                    if (staffClubId != null && staffClubId.isNotEmpty)
+                      Text('• Câu lạc bộ quản lý: $staffClubId'),
+                    const SizedBox(height: AppSpacing.s4),
+                    const Text(
+                      'Vui lòng truy cập cổng Web Admin trên máy tính để quản lý sự kiện và xét duyệt đơn của CLB.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontStyle: FontStyle.italic,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            const SizedBox(height: AppSpacing.s16),
             if (unavailable)
               AppButton(
                 label: 'Thử lại',

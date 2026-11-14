@@ -206,6 +206,7 @@ class FakeClubService implements IClubService {
       deadline: event.deadline,
       description: event.description,
       coverKey: event.coverKey,
+      coverUrl: event.coverUrl,
       topic: event.topic,
       audience: event.audience,
       preparation: event.preparation,
@@ -389,11 +390,22 @@ class FakeClubService implements IClubService {
   }
 
   @override
-  Stream<List<Registration>> streamEventRegistrations(String eventId) =>
+  Stream<List<Registration>> streamEventRegistrations(
+    String eventId, {
+    String? clubId,
+  }) =>
       _replayStream(
         () => List<Registration>.unmodifiable(_registrations),
         _registrationsController.stream,
-      ).map((list) => list.where((r) => r.eventId == eventId).toList());
+      ).map(
+        (list) => list.where((r) {
+          final matchEvent = r.eventId == eventId;
+          final matchClub = clubId == null ||
+              clubId.trim().isEmpty ||
+              r.clubId == clubId.trim();
+          return matchEvent && matchClub;
+        }).toList(),
+      );
 
   @override
   Stream<List<Registration>> streamClubPendingRegistrations(String clubId) =>

@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:eventhub_core/eventhub_core.dart';
 
+import '../../app/providers.dart';
 import '../../viewmodels/dashboard_viewmodel.dart';
+import '../../viewmodels/web_auth_viewmodel.dart';
 import 'club_attendance_chart.dart';
 
 class ClubDashboardScreen extends ConsumerWidget {
@@ -89,6 +91,8 @@ class ClubDashboardScreen extends ConsumerWidget {
               ),
             ],
           ),
+          const SizedBox(height: AppSpacing.s20),
+          _buildClubInfoBanner(context, ref),
           const SizedBox(height: AppSpacing.s24),
           LayoutBuilder(
             builder: (context, constraints) {
@@ -551,4 +555,137 @@ class ClubDashboardScreen extends ConsumerWidget {
     'archived' => Icons.archive_outlined,
     _ => Icons.info_outline,
   };
+
+  Widget _buildClubInfoBanner(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(currentStaffProfileProvider);
+    final clubId = ref.watch(currentClubIdProvider);
+    final activeClubAsync = ref.watch(activeClubProvider(clubId));
+    final activeClub = activeClubAsync.asData?.value;
+
+    final clubName = activeClub?.name.isNotEmpty == true
+        ? activeClub!.name
+        : (user?.clubName?.isNotEmpty == true
+            ? user!.clubName!
+            : (clubId.isNotEmpty ? 'Câu lạc bộ ($clubId)' : 'Chưa phân công CLB'));
+
+    final clubShortName = activeClub?.shortName ?? '';
+    final clubDescription = activeClub?.description ?? '';
+
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.s16),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: AppRadius.borderR12,
+        border: Border.all(color: AppColors.border),
+        boxShadow: AppShadows.elevation1,
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: const BoxDecoration(
+              color: AppColors.primaryContainer,
+              borderRadius: AppRadius.borderR8,
+            ),
+            child: const Icon(
+              Icons.groups_outlined,
+              color: AppColors.onPrimaryContainer,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: AppSpacing.s16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: AppSpacing.s8,
+                  runSpacing: AppSpacing.s4,
+                  children: [
+                    Text(
+                      'CÂU LẠC BỘ ĐANG QUẢN LÝ',
+                      style: AppTypography.textTheme.labelSmall?.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.8,
+                      ),
+                    ),
+                    const AppStatusBadge(
+                      label: 'Trưởng CLB',
+                      variant: AppBadgeVariant.info,
+                      icon: Icon(Icons.verified_user_outlined),
+                    ),
+                    if (activeClub?.status == 'active')
+                      const AppStatusBadge(
+                        label: 'Đang hoạt động',
+                        variant: AppBadgeVariant.success,
+                        icon: Icon(Icons.check_circle_outline),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.s4),
+                Text(
+                  clubShortName.isNotEmpty
+                      ? '$clubName ($clubShortName)'
+                      : clubName,
+                  style: AppTypography.textTheme.titleMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (clubDescription.isNotEmpty) ...[
+                  const SizedBox(height: AppSpacing.s4),
+                  Text(
+                    clubDescription,
+                    style: AppTypography.textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ],
+            ),
+          ),
+          if (clubId.isNotEmpty) ...[
+            const SizedBox(width: AppSpacing.s12),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.s12,
+                vertical: AppSpacing.s8,
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceSubtle,
+                borderRadius: AppRadius.borderR6,
+                border: Border.all(color: AppColors.border),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    'MÃ CLB',
+                    style: AppTypography.textTheme.labelSmall?.copyWith(
+                      color: AppColors.textSecondary,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    clubId,
+                    style: AppTypography.textTheme.labelMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'monospace',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
 }

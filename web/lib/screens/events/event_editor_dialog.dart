@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eventhub_core/eventhub_core.dart';
@@ -6,6 +8,7 @@ import '../../app/providers.dart';
 import '../../services/gemini_ai_service.dart';
 import '../../viewmodels/ai_event_assist_viewmodel.dart';
 import '../../viewmodels/club_events_viewmodel.dart';
+import '../../utils/device_image_picker.dart';
 import '../../viewmodels/web_auth_viewmodel.dart';
 import 'mobile_preview_card.dart';
 
@@ -30,7 +33,10 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
   late final TextEditingController _audienceController;
   late final TextEditingController _preparationController;
   late final TextEditingController _activitiesController;
-
+  late final TextEditingController _coverUrlController;
+  late String _selectedCoverKey;
+  bool _isPickingImage = false;
+  String? _pickedFileName;
   late DateTime _startsAt;
   late DateTime _endsAt;
   DateTime? _deadline;
@@ -55,7 +61,9 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
     _activitiesController = TextEditingController(
       text: ev?.activities.join('\n') ?? '',
     );
-
+    _coverUrlController = TextEditingController(text: ev?.coverUrl ?? '');
+    _selectedCoverKey =
+        ev?.coverKey.isNotEmpty == true ? ev!.coverKey : 'ux-design';
     final baseStart = DateTime.now().add(const Duration(days: 3));
     _startsAt =
         ev?.startsAt ??
@@ -73,6 +81,7 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
       _audienceController,
       _preparationController,
       _activitiesController,
+      _coverUrlController,
     ]) {
       c.addListener(_updatePreview);
     }
@@ -92,6 +101,7 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
     _audienceController.dispose();
     _preparationController.dispose();
     _activitiesController.dispose();
+    _coverUrlController.dispose();
     super.dispose();
   }
 
@@ -101,6 +111,25 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
     final hh = dt.hour.toString().padLeft(2, '0');
     final min = dt.minute.toString().padLeft(2, '0');
     return '$dd/$mm/${dt.year} • $hh:$min';
+  }
+
+  Future<void> _pickImageFromDevice() async {
+    if (ref.read(currentStaffProfileProvider)?.isAdmin == true) return;
+    setState(() => _isPickingImage = true);
+    try {
+      final picked = await pickAndCompressImageFromDevice(
+        maxWidth: 800,
+        quality: 0.75,
+      );
+      if (picked != null && mounted) {
+        setState(() {
+          _coverUrlController.text = picked.dataUrl;
+          _pickedFileName = picked.name;
+        });
+      }
+    } finally {
+      if (mounted) setState(() => _isPickingImage = false);
+    }
   }
 
   Future<void> _pickDateTime({
@@ -205,8 +234,8 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
       audience: _audienceController.text.trim(),
       preparation: _preparationController.text.trim(),
       activities: activities,
-      coverKey: widget.initialEvent?.coverKey ?? '',
-      coverUrl: widget.initialEvent?.coverUrl ?? '',
+      coverKey: _selectedCoverKey,
+      coverUrl: _coverUrlController.text.trim(),
       mode: _registrationMode,
       status: targetStatus,
       capacity: _registrationMode == 'free' ? 0 : capacity,
@@ -457,6 +486,9 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                             ),
                             const SizedBox(height: AppSpacing.s16),
                             _buildAiAssistantCard(isAdmin),
+                            const SizedBox(height: AppSpacing.s16),
+                            _buildCoverPicker(isAdmin),
+                            const SizedBox(height: AppSpacing.s16),
                             Row(
                               children: [
                                 Expanded(
@@ -690,6 +722,8 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                                   preparation: _preparationController.text
                                       .trim(),
                                   activities: activities,
+                                  coverKey: _selectedCoverKey,
+                                  coverUrl: _coverUrlController.text.trim(),
                                 ),
                               ),
                             ),
@@ -1060,6 +1094,8 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
     TextInputType? keyboardType,
     bool readOnly = false,
     String? Function(String?)? validator,
+    Widget? prefixIcon,
+    Widget? suffixIcon,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1080,6 +1116,8 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
           validator: validator,
           decoration: InputDecoration(
             hintText: hintText,
+            prefixIcon: prefixIcon,
+            suffixIcon: suffixIcon,
             filled: true,
             fillColor: AppColors.surfaceSubtle,
             contentPadding: const EdgeInsets.symmetric(
@@ -1101,6 +1139,341 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildCoverPicker(bool isAdmin) {
+    final presetCovers = [
+      (
+        key: 'ux-design',
+        label: 'Công nghệ & UI/UX',
+        icon: Icons.computer_outlined,
+        color: const Color(0xFF4F46E5),
+      ),
+      (
+        key: 'acoustic-live',
+        label: 'Âm nhạc & Nghệ thuật',
+        icon: Icons.music_note_outlined,
+        color: const Color(0xFFEA580C),
+      ),
+      (
+        key: 'badminton',
+        label: 'Thể thao & Hoạt động',
+        icon: Icons.sports_tennis_outlined,
+        color: const Color(0xFF0D9488),
+      ),
+      (
+        key: 'green-campus',
+        label: 'Tình nguyện & Môi trường',
+        icon: Icons.eco_outlined,
+        color: const Color(0xFF059669),
+      ),
+      (
+        key: 'career-connect',
+        label: 'Hướng nghiệp & Việc làm',
+        icon: Icons.work_outline,
+        color: const Color(0xFF2563EB),
+      ),
+    ];
+
+    final hasCustomUrl = _coverUrlController.text.trim().isNotEmpty;
+
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.s16),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceSubtle,
+        borderRadius: AppRadius.borderR12,
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.s8),
+                decoration: const BoxDecoration(
+                  color: AppColors.primaryContainer,
+                  borderRadius: AppRadius.borderR6,
+                ),
+                child: const Icon(
+                  Icons.image_outlined,
+                  color: AppColors.primary,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.s12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Hình ảnh / Ảnh bìa sự kiện',
+                      style: AppTypography.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    Text(
+                      'Dán link ảnh trực tuyến (HTTPS) hoặc chọn mẫu có sẵn bên dưới',
+                      style: AppTypography.textTheme.labelSmall?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.s16),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  icon: _isPickingImage
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.upload_file_outlined, size: 18),
+                  label: Text(
+                    _isPickingImage
+                        ? 'Đang nén & tải ảnh...'
+                        : (_pickedFileName != null
+                            ? 'Đã chọn: $_pickedFileName'
+                            : 'Tải ảnh từ thiết bị (máy tính / điện thoại)'),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.s12,
+                      horizontal: AppSpacing.s16,
+                    ),
+                    side: const BorderSide(color: AppColors.primary),
+                    foregroundColor: AppColors.primary,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: AppRadius.borderR8,
+                    ),
+                  ),
+                  onPressed: isAdmin || _isPickingImage
+                      ? null
+                      : _pickImageFromDevice,
+                ),
+              ),
+              if (_pickedFileName != null && !isAdmin) ...[
+                const SizedBox(width: AppSpacing.s8),
+                IconButton(
+                  icon: const Icon(Icons.clear, size: 20),
+                  tooltip: 'Hủy ảnh đã tải',
+                  onPressed: () {
+                    setState(() {
+                      _coverUrlController.clear();
+                      _pickedFileName = null;
+                    });
+                  },
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: AppSpacing.s12),
+          Row(
+            children: [
+              const Expanded(child: Divider(color: AppColors.borderSubtle)),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s8),
+                child: Text(
+                  'HOẶC',
+                  style: AppTypography.textTheme.labelSmall?.copyWith(
+                    color: AppColors.textDisabled,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const Expanded(child: Divider(color: AppColors.borderSubtle)),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.s12),
+          _buildTextField(
+            controller: _coverUrlController,
+            label: 'Link ảnh trực tuyến (Image URL)',
+            hintText: 'https://example.com/banner.jpg',
+            readOnly: isAdmin,
+            prefixIcon: const Icon(Icons.link, size: 20),
+            suffixIcon: _coverUrlController.text.isNotEmpty && !isAdmin
+                ? IconButton(
+                    icon: const Icon(Icons.clear, size: 18),
+                    tooltip: 'Xóa link ảnh',
+                    onPressed: () {
+                      _coverUrlController.clear();
+                      setState(() {});
+                    },
+                  )
+                : null,
+          ),
+          if (hasCustomUrl) ...[
+            const SizedBox(height: AppSpacing.s12),
+            ClipRRect(
+              borderRadius: AppRadius.borderR8,
+              child: Container(
+                height: 120,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  border: Border.all(color: AppColors.border),
+                  borderRadius: AppRadius.borderR8,
+                ),
+                child: _coverUrlController.text.trim().startsWith('data:image')
+                    ? Builder(
+                        builder: (context) {
+                          try {
+                            final base64Str = _coverUrlController.text
+                                .substring(
+                                  _coverUrlController.text.indexOf(',') + 1,
+                                );
+                            final bytes = base64Decode(base64Str);
+                            return Image.memory(
+                              bytes,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(
+                                    color: AppColors.errorContainer,
+                                    alignment: Alignment.center,
+                                    child: const Icon(
+                                      Icons.broken_image_outlined,
+                                      color: AppColors.error,
+                                    ),
+                                  ),
+                            );
+                          } catch (_) {
+                            return const Center(
+                              child: Icon(
+                                Icons.broken_image_outlined,
+                                color: AppColors.error,
+                              ),
+                            );
+                          }
+                        },
+                      )
+                    : (kIsWeb
+                        ? Image.network(
+                            _coverUrlController.text.trim(),
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                                  color: AppColors.errorContainer,
+                                  padding: const EdgeInsets.all(AppSpacing.s12),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(
+                                        Icons.broken_image_outlined,
+                                        color: AppColors.error,
+                                      ),
+                                      const SizedBox(width: AppSpacing.s8),
+                                      Expanded(
+                                        child: Text(
+                                          'Không thể tải ảnh từ link này. Vui lòng kiểm tra lại URL.',
+                                          style: AppTypography.textTheme.bodySmall
+                                              ?.copyWith(
+                                                color: AppColors
+                                                    .onErrorContainer,
+                                              ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return const Center(
+                                child: SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                ),
+                              );
+                            },
+                          )
+                        : Container(
+                            color: AppColors.surfaceSubtle,
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.all(AppSpacing.s12),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.image_outlined,
+                                  color: AppColors.primary,
+                                ),
+                                const SizedBox(width: AppSpacing.s8),
+                                Expanded(
+                                  child: Text(
+                                    _coverUrlController.text.trim(),
+                                    style: AppTypography.textTheme.bodySmall,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )),
+              ),
+            ),
+          ],
+          const SizedBox(height: AppSpacing.s16),
+          Text(
+            hasCustomUrl
+                ? 'Hoặc chọn mẫu ảnh có sẵn (sẽ xóa link URL ở trên):'
+                : 'Mẫu ảnh bìa chủ đề có sẵn:',
+            style: AppTypography.textTheme.labelMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.s8),
+          Wrap(
+            spacing: AppSpacing.s8,
+            runSpacing: AppSpacing.s8,
+            children: [
+              for (final preset in presetCovers)
+                ChoiceChip(
+                  avatar: Icon(
+                    preset.icon,
+                    size: 16,
+                    color: (!hasCustomUrl && _selectedCoverKey == preset.key)
+                        ? Colors.white
+                        : preset.color,
+                  ),
+                  label: Text(preset.label),
+                  selected: !hasCustomUrl && _selectedCoverKey == preset.key,
+                  selectedColor: preset.color,
+                  labelStyle: TextStyle(
+                    color: (!hasCustomUrl && _selectedCoverKey == preset.key)
+                        ? Colors.white
+                        : AppColors.textPrimary,
+                    fontWeight: (!hasCustomUrl && _selectedCoverKey == preset.key)
+                        ? FontWeight.bold
+                        : FontWeight.normal,
+                  ),
+                  onSelected: isAdmin
+                      ? null
+                      : (selected) {
+                          if (selected) {
+                            setState(() {
+                              _selectedCoverKey = preset.key;
+                              _coverUrlController.clear();
+                            });
+                          }
+                        },
+                ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
