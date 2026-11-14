@@ -59,3 +59,6 @@ sequenceDiagram
 Mỗi màn tải dữ liệu thể hiện loading/empty/error/data từ Riverpod; lỗi có retry. Instrumentation không được thay đổi kết quả nghiệp vụ. File test/fake chỉ dùng cho kiểm thử; production entrypoint là mobile/lib/main.dart.
 
 Giữ mã analytics LAB3_EXPORT/LAB3_FIREBASE để đối chiếu lịch sử, không có nghĩa luồng upload Lab 3 còn áp dụng. App Check/FCM/native share và cross-role phải có bằng chứng thật theo docs/mobile-final-checklist.md.
+
+## Club representative onboarding
+Admin UI → AssignmentAction → IClubAssignmentService → FirestoreClubAssignmentService (shared core). The auth service activates the current verified Google email assignment in a transaction, then streams profile changes. Firestore Rules validate the atomic profile/assignment transition and club reservation. See docs/club-onboarding.md for lifecycle and deployment checks.

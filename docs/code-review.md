@@ -103,3 +103,22 @@ Mỗi commit mới có một audit ID. Đây không sửa lại lịch sử PR #
 - M01–M02: đăng ký cũ thắng bản hủy mới và vùng bấm tab nhỏ. Dùng canonical/generation/time chung lịch/detail/PDF; tăng vùng bấm và test text lớn.
 
 Kết quả: mobile86, web28, core6, Rules12 nhóm đạt. Các fix đã commit/push; review source này chưa thay thế bộ bằng chứng review trên PR. Fix commit: `0e9854f`; cleanup runtime: `261d191`. AI/ARTEMIS chưa thực hiện trong đợt này.
+
+## AI review và quyết định sửa — 13/11/2026
+
+| Finding | Quyết định / sửa | Kiểm chứng |
+|---|---|---|
+| AI01: gọi Google REST bằng Firebase Web key, App Check lỗi vẫn gửi | Dùng firebase_ai 5.1.0, FirebaseAI.googleAI + response schema; chặn khi không có App Check token | Unit test cấu hình/token; build web |
+| AI02: fallback cố định bị gắn nhãn Gemini | Bỏ generator offline; trả lỗi và tiếp tục nhập tay | Quota/network/invalid output tests |
+| AI03: gửi nguyên title/description có thể chứa PII | Chỉ gửi một chủ đề trong danh sách cố định; từ chối free text; không log raw exception/prompt | Input rejection và telemetry privacy tests |
+| AI04: ghi đè form và accepted sai thời điểm/stale state | Xem trước/cancel/apply; chỉ apply ghi accepted; autoDispose và bỏ kết quả muộn | Widget preview/cancel/apply, lifecycle tests |
+| AI05: text/JSON thiếu trường được nhận như Level 2 | JSON/schema và kiểm tra bắt buộc/type/length, không fallback regex/plain text | Model invalid output tests |
+| AI06: tài liệu ghi kết quả thực tế chưa có bằng chứng | Thay bằng bảng chưa chạy; không dùng fake làm cloud evidence | docs/ai-feature.md |
+
+Kết quả tự động mới: web analyze sạch, 39/39 tests; core analyze sạch, 6/6 tests; web build thành công. Cần Console setup và 3 output thật +1 failure trước khi chốt yêu cầu AI hoàn thành. Chưa có PR evidence hoặc commit SHA mới cho lượt sửa AI này.
+
+### Bổ sung trước chạy thật
+
+- RC cache5phút khiến demo kill-switch có thể vẫn gọi AI bằng cấu hình cũ. Chấp nhận finding: explicit AI action force-fetch, fetch lỗi thì dừng model; passive dashboard giữ cache bình thường. Test stale-config failure và forceRefresh flag.
+- Profile self-update và event metadata update chưa kiểm tra đầy đủ kiểu/ngày. Chấp nhận finding: string/size/server timestamp profile và timestamp/order/deadline events; matrix thêm allow update hợp lệ +deny sai kiểu/ngày.
+- App Check cloud: AI Logic ENFORCED, Firestore UNENFORCED; Android chưa có debug token và không kết nối thiết bị. Không bật Firestore enforcement trước verified requests để tránh khóa binary test. Helpers chỉ đọc cloud/đăng ký debug token; không tạo backend mới.

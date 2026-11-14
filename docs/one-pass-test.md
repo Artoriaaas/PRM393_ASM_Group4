@@ -1,4 +1,4 @@
-# Chạy thật toàn hệ thống Final — danh sách chốt sau main e5b15a4
+# Chạy thật toàn hệ thống Final
 
 Đây là kế hoạch xác nhận, không phải kết quả đã pass. Các lỗi source đã xác định đã được sửa; tiếp tục xác nhận trên cloud. Không thêm chức năng ngoài đề. Chủ dự án tự chạy app; agent đọc ảnh/log và sửa.
 
@@ -17,14 +17,14 @@ Giữ instrumentation Lab 3 vì Final kế thừa. PDF Final là local/native sh
 - M01: Lịch/chi tiết/PDF chọn đăng ký canonical; fallback theo generation/thời gian, không ưu tiên approved cũ.
 - M02: Tab lịch có vùng bấm >=48dp và tăng chiều cao theo cỡ chữ.
 
-Analyze mobile/web sạch. Mobile 86/86; web 28/28; core 6/6; Rules emulator 12/12 nhóm đạt. Đây chưa phải bằng chứng chạy cloud liên ứng dụng.
+Analyze mobile/web/core sạch. Mobile86/86; web40/40; core6/6; Rules55/55 đạt. Đây chưa phải bằng chứng chạy cloud liên ứng dụng.
 
 ## 3. Thiết lập trước chạy thật
 
 - Một project eventhub-group4, ba tài khoản test: user mobile; staff có clubId trên web; admin web. Admin đầu tiên và danh sách demo cần chủ project xác nhận để ghi README; không gửi mật khẩu.
 - Android config đã có local tại mobile/android/app/google-services.json; SHA/OAuth/Google provider phải đúng máy.
-- **web/web_env.json đã có trên máy này**, lấy từ app EventHub Web của project qua Firebase CLI. File được Git bỏ qua; teammate lấy cấu hình riêng theo docs/firebase-setup.md. reCAPTCHA site key/App Check Console vẫn cần xác nhận.
-- App Check Android debug token/Play Integrity và web reCAPTCHA site key/authorized domains cần xác nhận Console. Không bật enforcement khi một client chưa sẵn sàng.
+- **web/web_env.json đã có trên máy này**, lấy từ app EventHub Web của project qua Firebase CLI. File được Git bỏ qua; teammate lấy cấu hình riêng theo docs/firebase-setup.md. Enterprise site key đã nối và deploy; key chỉ cho hai domain Hosting.
+- Web Enterprise và Android Play Integrity đã registered; Android debug token chưa có, request verified chưa xác nhận. Không bật enforcement khi một client chưa sẵn sàng.
 - Rules/indexes đã deploy lên eventhub-group4 ngày 13/11/2026 sau kiểm thử emulator. Khi sửa tiếp, deploy từ ASM bằng tool/deploy-cloud.ps1. Không deploy Rules Lab 3 đè lên.
 - Chuẩn bị ít nhất hai CLB để test chéo quyền; sự kiện mới do web tạo, published/public còn hạn và chỗ, clubId đúng. Không tự sửa activeCount/role từ mobile.
 
@@ -45,6 +45,7 @@ Thay emulator-5554 bằng thiết bị Android thật đang kết nối. Termina
 cd web
 flutter pub get --enforce-lockfile
 flutter run -d chrome -t lib/main.dart --dart-define-from-file=web_env.json
+# AI/App Check thật: dùng URL Hosting https://eventhub-group4.web.app, không localhost.
 ```
 
 Đây là hai client local dùng Firebase thật, chưa phải bằng chứng web deployment. Trước đo cross-role chính thức phải build/deploy Hosting và mở private window. Giữ terminal để gửi log lỗi, không đóng trong lúc test.
@@ -70,12 +71,14 @@ Mỗi lỗi gửi: bước/role/màn, thao tác, ảnh hoặc log và kết qu�
 
 ## 6. Còn thiếu để nộp, không thể giải quyết chỉ bằng test thủ công
 
-- AI Gemini qua Firebase AI Logic chưa có; đề cho phép ở web hoặc mobile. Cần RC model/prompt/flag, App Check, no PII, JSON/Dart+confirm để đạt full,3 input/output thật+1 failure,3 events và demo RC off. Không thêm server.
+- AI Gemini qua Firebase AI Logic đã có source và test, chưa chạy thật; đề cho phép ở web hoặc mobile. Cần RC model/prompt/flag, App Check, no PII, JSON/Dart+confirm để đạt full,3 input/output thật+1 failure,3 events và demo RC off. Không thêm server.
 - ARTEMIS mới:25ca×3 đều skipped do thiếu ARTEMIS_BASE_URL và ARTEMIS_TEST_ACCOUNT_EMAIL; có client_error NetworkError. Chưa có Final pass; cần cross-role/AI coverage và3 lượt thực mỗi ca.
 - Cross-role trên deployment3 lần và measured latency; web checklist ảnh từng main action/error/empty; Console App Check/instrumentation Final.
-- Matrix Rules allowed/denied từng role/collection còn phải chốt;12 nhóm test đã đạt, gồm lỗi quyền sự kiện vừa sửa; vẫn cần rà matrix từng role/collection.
+- Matrix Rules đã chốt ở docs/security-rules-matrix.md;55tests đạt và lưu JUnit.
 - Fix commits đã push: 261d191 (cleanup), 0e9854f (fix/tests), 496e6ba (docs). Còn bằng chứng review trên PR và quyết định cho ít nhất 3 findings theo đề.
 - README còn thiếu Admin đầu tiên/demo accounts/URL verified/video/ID theo mẫu đề; kiểm tra lịch sử Git tiếp nối Lab3 và đóng góp nhóm.
 - Report Final10–15 trang, slides12–15, video live8–12 phút chưa chốt. Slide nhóm giữ nguyên, phải đối chiếu riêng độ dài/số liệu thực. Figma chưa xác nhận đồng bộ hết.
 
 Chi tiết nguồn: docs/final-requirements.md, docs/test-report.md; đề PDF Final ở gốc repo. Không đánh dấu hoàn thành vì build/unit pass hoặc có tài liệu placeholder.
+
+Hướng dẫn cập nhật ưu tiên cho đợt chạy hiện tại: [final-live-verification.md](final-live-verification.md).

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+	<testcase name="1. users &amp; clubs: self-bootstrap user allowed, self-privilege-escalation denied, admin cannot change own role, admin manages clubs without hard-delete" time="0.751935" classname="test" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+	<testcase name="2. events: staff manages own club events (create/update/archive), cross-club staff &amp; user writes denied, hard delete denied" time="0.220668" classname="test" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+	<testcase name="3. Cross-Role Flow 1 (registrations + notifications): student submits pending -> staff approves/rejects atomically -> cross-club &amp; over-capacity blocked" time="0.371713" classname="test" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+	<testcase name="4. Cross-Role Flow 2 (checkinSessions + qrCredentials): staff opens QR session, approved student checks in once, rotated/closed QR &amp; pending check-in denied" time="0.307989" classname="test" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+	<testcase name="5. announcements &amp; push receipts: staff publishes club announcement, cross-club/global/user writes denied, private push receipts enforced" time="0.214150" classname="test" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+	<testcase name="archived event stays readable only to its registrant or club staff" time="0.185007" classname="test" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+	<testcase name="legacy mobile active registration without clubId can cancel atomically once" time="0.181330" classname="test" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+	<testcase name="legacy ownerless events cannot create a new direct registration in ASM" time="0.133976" classname="test" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+	<testcase name="pending withdrawal preserves seats and a new request resets review state" time="0.144216" classname="test" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+	<testcase name="report metadata is owner-only, shaped, immutable and contains no file URL" time="0.312943" classname="test" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+	<testcase name="announcement read receipts belong only to their reader and require a real announcement" time="0.312758" classname="test" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+	<testcase name="unpublished events stay private; staff submits but cannot publish or impersonate another club" time="0.415474" classname="test" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+	<testsuite name="Appendix B matrix: user covers every collection" time="0.450618" disabled="0" errors="0" tests="13" failures="0" skipped="0" timestamp="2026-11-13T13:43:33.118Z" hostname="DESKTOP-TBHV9IB">
+		<testcase name="users: own read/update allowed; role/type violations denied" time="0.063519" classname="Appendix B matrix: user covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="clubs: read allowed, delete denied" time="0.015273" classname="Appendix B matrix: user covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="events: published read allowed; delete/invalid dates denied" time="0.044859" classname="Appendix B matrix: user covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="registrations: permitted read allowed, delete denied" time="0.010998" classname="Appendix B matrix: user covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="history: own parent history read allowed, writes denied" time="0.017593" classname="Appendix B matrix: user covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="checkinSessions: approved owner/club/admin read allowed, delete denied" time="0.010177" classname="Appendix B matrix: user covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="qrCredentials: known hash read allowed, delete denied" time="0.022940" classname="Appendix B matrix: user covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="announcements: read allowed, immutable update denied" time="0.017312" classname="Appendix B matrix: user covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="notifications: own read allowed, other UID read denied" time="0.027526" classname="Appendix B matrix: user covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="devices: own read allowed, other UID read denied" time="0.032001" classname="Appendix B matrix: user covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="reports: user owns metadata; staff/admin intentionally forbidden" time="0.037607" classname="Appendix B matrix: user covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="announcementReads: user owns receipt; staff/admin intentionally forbidden" time="0.032140" classname="Appendix B matrix: user covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="unmatched collection: default-deny read and write" time="0.034043" classname="Appendix B matrix: user covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+	</testsuite>
+	<testsuite name="Appendix B matrix: staff covers every collection" time="0.502117" disabled="0" errors="0" tests="13" failures="0" skipped="0" timestamp="2026-11-13T13:43:33.568Z" hostname="DESKTOP-TBHV9IB">
+		<testcase name="users: own read/update allowed; role/type violations denied" time="0.053039" classname="Appendix B matrix: staff covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="clubs: read allowed, delete denied" time="0.015871" classname="Appendix B matrix: staff covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="events: published read allowed; delete/invalid dates denied" time="0.068703" classname="Appendix B matrix: staff covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="registrations: permitted read allowed, delete denied" time="0.013872" classname="Appendix B matrix: staff covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="history: own parent history read allowed, writes denied" time="0.018311" classname="Appendix B matrix: staff covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="checkinSessions: approved owner/club/admin read allowed, delete denied" time="0.009147" classname="Appendix B matrix: staff covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="qrCredentials: known hash read allowed, delete denied" time="0.021680" classname="Appendix B matrix: staff covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="announcements: read allowed, immutable update denied" time="0.016762" classname="Appendix B matrix: staff covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="notifications: own read allowed, other UID read denied" time="0.031823" classname="Appendix B matrix: staff covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="devices: own read allowed, other UID read denied" time="0.030355" classname="Appendix B matrix: staff covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="reports: user owns metadata; staff/admin intentionally forbidden" time="0.037710" classname="Appendix B matrix: staff covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="announcementReads: user owns receipt; staff/admin intentionally forbidden" time="0.064369" classname="Appendix B matrix: staff covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="unmatched collection: default-deny read and write" time="0.019606" classname="Appendix B matrix: staff covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+	</testsuite>
+	<testsuite name="Appendix B matrix: admin covers every collection" time="0.505275" disabled="0" errors="0" tests="13" failures="0" skipped="0" timestamp="2026-11-13T13:43:34.071Z" hostname="DESKTOP-TBHV9IB">
+		<testcase name="users: own read/update allowed; role/type violations denied" time="0.064568" classname="Appendix B matrix: admin covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="clubs: read allowed, delete denied" time="0.016355" classname="Appendix B matrix: admin covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="events: published read allowed; delete/invalid dates denied" time="0.044507" classname="Appendix B matrix: admin covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="registrations: permitted read allowed, delete denied" time="0.012802" classname="Appendix B matrix: admin covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="history: own parent history read allowed, writes denied" time="0.016658" classname="Appendix B matrix: admin covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="checkinSessions: approved owner/club/admin read allowed, delete denied" time="0.016309" classname="Appendix B matrix: admin covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="qrCredentials: known hash read allowed, delete denied" time="0.013812" classname="Appendix B matrix: admin covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="announcements: read allowed, immutable update denied" time="0.016185" classname="Appendix B matrix: admin covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="notifications: own read allowed, other UID read denied" time="0.025765" classname="Appendix B matrix: admin covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="devices: own read allowed, other UID read denied" time="0.031503" classname="Appendix B matrix: admin covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="reports: user owns metadata; staff/admin intentionally forbidden" time="0.056297" classname="Appendix B matrix: admin covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="announcementReads: user owns receipt; staff/admin intentionally forbidden" time="0.062666" classname="Appendix B matrix: admin covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+		<testcase name="unmatched collection: default-deny read and write" time="0.032193" classname="Appendix B matrix: admin covers every collection" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+	</testsuite>
+	<testcase name="Appendix B: anonymous and unverified accounts cannot access application collections" time="0.682673" classname="test" file="C:\Users\ThinhCri\Downloads\PRM393_ASM_Group4\firebase\tests\direct-firestore.test.js"/>
+	<!-- tests 55 -->
+	<!-- suites 0 -->
+	<!-- pass 55 -->
+	<!-- fail 0 -->
+	<!-- cancelled 0 -->
+	<!-- skipped 0 -->
+	<!-- todo 0 -->
+	<!-- duration_ms 6134.1873 -->
+</testsuites>

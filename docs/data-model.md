@@ -87,3 +87,10 @@ stateDiagram-v2
 ## 4. Kiểm thử Mô hình Dữ liệu & Security Rules
 
 Các ca hiện có nằm ở `firebase/tests/direct-firestore.test.js`. Kết quả local và khoảng trống ở `docs/test-report.md`; cần rà matrix allowed/denied cho mỗi role/collection trước nộp, không suy ra đủ coverage chỉ từ số nhóm test.
+
+### Ràng buộc shape sau matrix Final
+
+Self-update users: displayName/email phải là string với giới hạn120/254, không đổi role; updatedAt khi thay đổi dùng server timestamp. Events create/metadata update: startsAt/endsAt timestamp, endsAt>startsAt; required có deadline timestamp trước startsAt; free không bắt deadline. Client form đã kiểm tra cùng ràng buộc. Cases hợp lệ và sai kiểu/ngày được kiểm thử trong Appendix B matrix.
+
+## Phân công đại diện CLB qua email
+Xem [club-onboarding.md](club-onboarding.md). `clubAssignments/{email}` lưu phân công chờ/kích hoạt/thu hồi; `clubManagerSlots/{clubId}` giữ chỗ duy nhất cho phân công qua email. Admin quản lý; người nhận chỉ get đúng email đã xác minh, nhận staff bằng transaction với hồ sơ, không tự cấp quyền. Không dùng mobile để khởi tạo tài khoản CLB.

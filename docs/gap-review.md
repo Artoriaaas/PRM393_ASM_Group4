@@ -1,28 +1,26 @@
-## Sửa lỗi Final — 13/11/2026
+# Gap review Final — cập nhật 13/11/2026
 
-Analyze mobile/web sạch. Mobile 86/86 tests, web 28/28, core 6/6, Firestore emulator 12/12 nhóm đạt. Rules/indexes đã triển khai lên eventhub-group4.
+## Phần tự động đã xác nhận
 
-Đã sửa phân quyền tạo/gửi/duyệt sự kiện, giữ ảnh bìa, Remote Config dashboard, chọn đăng ký mới nhất và vùng bấm tab lịch. Đây là kết quả tự động, chưa thay thế chạy cloud liên ứng dụng. AI và ARTEMIS vẫn để sau theo yêu cầu. Slides nhóm không sửa.
+- Mobile86/86, web40/40, core6/6; analyze cả3package sạch. Web production build thành công.
+- Security Rules55/55 gồm16top-level groups và39subtests; JUnit52case lá+3role suites,0failure/skip. [Matrix](security-rules-matrix.md), [JUnit](../evidence/rules/final-matrix.xml). Kiểm tra quyền/chuyển trạng thái và shape profile/dates; không sửa production data trong test.
+- Rules/indexes và web mới đã deploy: https://eventhub-group4.web.app. HTTP200 không chứng minh chức năng/đăng nhập thành công.
+- AI dùng Firebase AI Logic SDK, JSON/schema, preview/apply/edit, chặn PII từ form bằng input chủ đề có sẵn, lỗi tiếp tục nhập tay; RC force-fetch trên explicit action. Cloud RCv6 bật model gemini-3.5-flash-lite, AI Logic App Check ENFORCED.
+- Web Enterprise/Android Play Integrity registered, TTL1giờ. Không đưa site key/token/config local vào Git. Slides nhóm giữ nguyên.
 
-# Gap review — Final, 13/11/2026
+## Cần người dùng mở app để xác nhận
 
-| Hạng mục | Code hiện tại | Xác nhận còn lại |
+| Phần | Chưa đủ | Cách hoàn thành |
 |---|---|---|
-| Phân vai mobile | Role stream từ Firestore, user-only router/providers, reject staff/admin và fail closed khi lỗi | Đăng nhập từng role trên cloud |
-| Đăng ký/duyệt/QR | Pending, approved, rejected + lý do; giao dịch và Rules; không tạo active mới | Rules đã deploy; còn chạy liên ứng dụng 3 lần và đo độ trễ |
-| Inbox | Tin riêng + announcements global/club/event, read receipts theo UID | CLB đăng tin và xem mobile realtime trên cloud |
-| PDF | File local/private, chia sẻ native theo thao tác, metadata riêng trên Firestore | Native share sheet và metadata cloud trên thiết bị |
-| Kiến trúc | mobile/, web/, packages/core/; model/theme/widgets/fonts/icons/Firestore services dùng chung | Test regression cả hai client |
-| App Check | Debug provider/Play Integrity khởi tạo trước Firestore | Đăng ký app/token, verified metrics và enforcement Console chưa được xác nhận |
-| Lab 2 states và Lab 3 instrumentation | Giữ flows/loading/empty/error; Auth/Analytics/RC/FCM/Crashlytics | Bằng chứng mới cho bản Final không được suy từ test Lab 3 |
-| AI | Đã hoàn thành Level 2: Gemini Developer API + Remote Config + App Check + Analytics + Fallback thông minh | Kiểm tra live bằng API key thật trên Web |
-| ARTEMIS | Hồ sơ/kịch bản Lab 3 còn trong repo | Cập nhật luồng Final và chạy sau theo yêu cầu |
+| Mobile/web | Native flows/states, QR/PDF/share, web main actions và empty/error/loading | Theo docs/final-live-verification.md, lưu evidence/final-live |
+| AI | 3output thật+1failure/RCoff; Console Analytics | Dùng web Hosted role staff; preview/apply/edit; không lấy mock tests làm proof |
+| Cross-role | 3lượt deployment và số đo độ trễ | Mobile pending→web queue→staff approve/reject→mobile/inbox, video2client |
+| App Check | Android debug token0, chưa có request verified Web/Android trong lần quan sát; Firestore UNENFORCED | Mở app debug, node tool/register-android-appcheck.cjs DEVICE; dùng cả2client rồi node tool/check-cloud.cjs; chốt enforcement sau verified requests |
 
-Không kết luận “tất cả CLOSED” chỉ vì có source code hoặc build thành công. Báo cáo và video Final cần bằng chứng thực thi thật. Figma chưa đồng bộ trong đợt này; thay đổi được ghi ở design-traceability.md.
+Lần cloud audit lưu timestamp và số đếm thật trong evidence/cloud-readiness/config-status.json; cửa sổ24giờ thấy24Firestore INVALID/UNKNOWN. Không suy ra verified chỉ từ registered. Không có thiết bị ADB kết nối trong đợt chuẩn bị, nên không thể đăng ký token thiết bị hoặc kiểm thử native thay người dùng. Không hạ AI enforcement để vượt lỗi.
 
-## Bàn giao và phần hệ thống còn mở
+## Ngoài phạm vi 5mục đang chốt
 
-- Runtime chỉ mobile/lib/main.dart và web/lib/main.dart; mock entrypoints/server HTTP mô phỏng đã bỏ. Fake service chỉ dùng test. Tài liệu upload, Storage Rules, seed demo và report Lab03 đã bỏ khỏi cây hiện hành; không thay đổi Git history hoặc repo Lab 3.
-- Đề Final mapping: docs/final-requirements.md. docs/ai-feature.md mới ghi yêu cầu/chưa triển khai, không có kết quả AI giả.
-- Web deployment/ẩn danh, screenshot main action/error/empty, matrix Rules đầy đủ, demo account/Admin đầu tiên, URL/video và bộ PDF Final: chưa xác nhận hoàn tất.
-- Slides nhóm giữ nguyên theo yêu cầu; rà nội dung/độ dài/claim riêng, không lấy số liệu slide làm test result.
+ARTEMIS Final chưa có pass (bộ cũ25ca×3 đều skipped), AI review/PR và fix commit evidence, report10–15trang, slides12–15, video8–12phút, README demo accounts/Admin/ID/video và Figma cần chốt trước nộp. Không sửa slides nhóm, không rewrite lịch sử, không tạo screenshot/test output giả. Source sửa mới đang working tree, chưa commit/push.
+
+[Đối chiếu đề](final-requirements.md) · [Chạy thật từng bước](final-live-verification.md) · [Test report](test-report.md).
