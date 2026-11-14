@@ -11,6 +11,7 @@ class Assignments implements IClubAssignmentService {
   String? email;
   Club? club;
   int calls = 0;
+  ClubAssignment? activated;
   bool fail = false;
   bool throwError = false;
   @override
@@ -30,8 +31,13 @@ class Assignments implements IClubAssignmentService {
   }
 
   @override
-  Future<Result<void>> activate(ClubAssignment assignment) async =>
-      const Success(null);
+  Future<Result<void>> activate(ClubAssignment assignment) async {
+    activated = assignment;
+    return fail
+        ? const Failure(AppFailure(code: 'offline', message: 'Mất kết nối'))
+        : const Success(null);
+  }
+
   @override
   Future<Result<void>> revoke(ClubAssignment assignment) async =>
       const Success(null);
@@ -39,6 +45,45 @@ class Assignments implements IClubAssignmentService {
 
 void main() {
   const club = Club(id: 'club-it', name: 'CLB Công nghệ');
+  testWidgets(
+    'Admin activates only waiting assignments and failures preserve the row',
+    (tester) async {
+      final service = Assignments()..fail = true;
+      const waiting = ClubAssignment(
+        email: 'waiting@example.com',
+        clubId: 'club-it',
+        clubName: 'CLB Công nghệ',
+        status: 'awaiting_activation',
+        requestedUid: 'member',
+      );
+      const pending = ClubAssignment(
+        email: 'pending@example.com',
+        clubId: 'other',
+        clubName: 'CLB khác',
+        status: 'pending',
+      );
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            clubAssignmentServiceProvider.overrideWithValue(service),
+            clubAssignmentsProvider.overrideWith(
+              (ref) => Stream.value([waiting, pending]),
+            ),
+          ],
+          child: const MaterialApp(
+            home: Scaffold(body: ClubAssignmentsPanel(clubs: [club])),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Kích hoạt'), findsOneWidget);
+      await tester.tap(find.text('Kích hoạt'));
+      await tester.pumpAndSettle();
+      expect(service.activated?.requestedUid, 'member');
+      expect(find.text('Mất kết nối'), findsOneWidget);
+      expect(find.text('waiting@example.com'), findsOneWidget);
+    },
+  );
   test('normalizes email and rejects invalid input', () {
     expect(
       FirestoreClubAssignmentService.normalizeEmail('  Leader@Gmail.com '),

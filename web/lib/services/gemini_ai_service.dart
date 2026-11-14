@@ -13,11 +13,8 @@ String? validateAiEventIdea(String idea) {
   if (text.length < 5 || text.length > 500) {
     return 'Nhập ý tưởng từ 5 đến 500 ký tự.';
   }
-  if (RegExp(
-    r'[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}|(?:\+?\d[\s().-]*){9,}|https?://',
-    caseSensitive: false,
-  ).hasMatch(text)) {
-    return 'Chỉ mô tả ý tưởng chung, không nhập email, số điện thoại hoặc đường dẫn cá nhân.';
+  if (AiContentPrivacy.containsPersonalData(text)) {
+    return 'Ý tưởng có thể chứa tên người hoặc thông tin cá nhân. Hãy bỏ tên, thông tin liên hệ và chỉ mô tả hoạt động chung; nội dung chưa được gửi tới Gemini.';
   }
   return null;
 }
@@ -126,10 +123,12 @@ class GeminiAiEventAssistService implements IAiEventAssistService {
           'Chưa xác minh được ứng dụng. Bạn có thể tự nhập sự kiện.',
         );
       }
-      await _analytics.logEvent('ai_request', {
-        'feature': 'event_content_suggestion',
-        'model': model,
-      });
+      await _analytics
+          .logEvent('ai_request', {
+            'feature': 'event_content_suggestion',
+            'model': model,
+          })
+          .catchError((Object _) {});
       final recent = _recentDrafts[idea] ?? <String>[];
       final variation = ++_requestNumber;
       final text = await _generate(

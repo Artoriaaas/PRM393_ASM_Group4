@@ -31,12 +31,14 @@ class Config implements IWebRemoteConfigService {
 }
 
 class Analytics implements IWebAnalyticsService {
+  bool fail = false;
   final events = <String>[];
   final params = <Map<String, Object>?>[];
   @override
   Future<void> logEvent(String name, [Map<String, Object>? parameters]) async {
     events.add(name);
     params.add(parameters);
+    if (fail) throw StateError('analytics unavailable');
   }
 
   @override
@@ -173,6 +175,56 @@ void main() {
     expect(sent, contains('KHÔNG đề xuất ngày'));
     expect(sent, contains('đúng 5 khóa'));
     expect(analytics.params.toString(), isNot(contains(testIdea)));
+  });
+  test(
+    'suspected names are rejected before config, token or model calls',
+    () async {
+      var tokens = 0;
+      final instance = service(
+        token: () async {
+          tokens++;
+          return 'token';
+        },
+      );
+      for (final idea in [
+        'Workshop với Nguyễn Minh Anh',
+        'Workshop của John Smith',
+        'giao lưu với nguyễn minh anh',
+        'Diễn giả: alex',
+      ]) {
+        expect(
+          (await instance.suggestEventContent(title: idea)).failureOrNull?.code,
+          'unsafe_input',
+        );
+      }
+      expect(config.forceRequested, isFalse);
+      expect(tokens, 0);
+      expect(calls, 0);
+      expect(analytics.params.toString(), isNot(contains('Minh Anh')));
+    },
+  );
+  test('analytics outage does not prevent generation or acceptance', () async {
+    analytics.fail = true;
+    final instance = service();
+    expect(
+      (await instance.suggestEventContent(title: testIdea)).isSuccess,
+      isTrue,
+    );
+    expect(calls, 1);
+    final c = ProviderContainer(
+      overrides: [
+        geminiAiServiceProvider.overrideWithValue(service()),
+        webAnalyticsServiceProvider.overrideWithValue(analytics),
+      ],
+    );
+    addTearDown(c.dispose);
+    final sub = c.listen(aiEventAssistViewModelProvider, (_, __) {});
+    addTearDown(sub.close);
+    final vm = c.read(aiEventAssistViewModelProvider.notifier);
+    await vm.requestSuggestion(title: testIdea);
+    vm.markAccepted();
+    await Future<void>.delayed(Duration.zero);
+    expect(c.read(aiEventAssistViewModelProvider).isAccepted, isTrue);
   });
   test('RC refresh failure blocks generation with stale config', () async {
     config.refreshFails = true;

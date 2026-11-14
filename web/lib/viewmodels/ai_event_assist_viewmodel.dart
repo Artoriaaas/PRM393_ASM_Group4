@@ -82,10 +82,11 @@ class AiEventAssistViewModel extends Notifier<AiEventAssistState> {
     state = state.copyWith(isAccepted: true);
     final analytics = ref.read(webAnalyticsServiceProvider);
     unawaited(
-      analytics.logEvent('ai_result_accepted', {
-        'feature': 'event_content_suggestion',
-        'accepted_at': DateTime.now().toIso8601String(),
-      }),
+      analytics
+          .logEvent('ai_result_accepted', {
+            'feature': 'event_content_suggestion',
+          })
+          .catchError((Object _) {}),
     );
   }
 

@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import '../utils/ai_content_privacy.dart';
+
 /// Level 2 Structured AI suggestion model for event content drafting.
-/// Validates structured event fields and contact patterns; not a general person-name detector.
+/// Validates structured fields and screens suspected personal data locally.
 class AiEventSuggestion {
   const AiEventSuggestion({
     required this.topic,
@@ -33,7 +35,7 @@ class AiEventSuggestion {
       if (value is! String ||
           value.trim().isEmpty ||
           value.length > max ||
-          _contact.hasMatch(value)) {
+          AiContentPrivacy.containsPersonalData(value)) {
         throw const FormatException('Invalid AI field');
       }
       return value.trim();
@@ -48,7 +50,7 @@ class AiEventSuggestion {
               v is! String ||
               v.trim().isEmpty ||
               v.length > 300 ||
-              _contact.hasMatch(v),
+              AiContentPrivacy.containsPersonalData(v),
         )) {
       throw const FormatException('Invalid AI activities');
     }
@@ -62,11 +64,6 @@ class AiEventSuggestion {
       ),
     );
   }
-  static final _contact = RegExp(
-    r'[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}|(?:\+?\d[\s().-]*){9,}',
-    caseSensitive: false,
-  );
-
   factory AiEventSuggestion.fromRawText(String text) {
     final decoded = jsonDecode(text);
     if (decoded is! Map<String, dynamic>)
@@ -90,8 +87,19 @@ class AiEventSuggestion {
           topic == other.topic &&
           description == other.description &&
           audience == other.audience &&
-          preparation == other.preparation;
+          preparation == other.preparation &&
+          activities.length == other.activities.length &&
+          List.generate(
+            activities.length,
+            (i) => activities[i] == other.activities[i],
+          ).every((same) => same);
 
   @override
-  int get hashCode => Object.hash(topic, description, audience, preparation);
+  int get hashCode => Object.hash(
+    topic,
+    description,
+    audience,
+    preparation,
+    Object.hashAll(activities),
+  );
 }
