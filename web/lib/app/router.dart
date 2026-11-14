@@ -5,6 +5,7 @@ import '../screens/auth/sign_in_screen.dart';
 import '../screens/shell/app_shell.dart';
 import '../screens/dashboard/club_dashboard_screen.dart';
 import '../screens/admin/admin_dashboard_screen.dart';
+import '../screens/admin/crash_reports_screen.dart';
 import '../screens/users/admin_users_screen.dart';
 import '../screens/clubs/admin_clubs_screen.dart';
 import '../screens/events/club_events_screen.dart';
@@ -56,6 +57,7 @@ final webRouterProvider = Provider<GoRouter>((ref) {
           child: child,
         ),
         routes: [
+          GoRoute(path: '/crash-reports', builder: (context, state) => const CrashReportsScreen()),
           GoRoute(
             path: '/dashboard',
             builder: (context, state) => const ClubDashboardScreen(),

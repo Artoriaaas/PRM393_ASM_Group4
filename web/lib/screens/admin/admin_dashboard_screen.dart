@@ -12,6 +12,11 @@ class AdminDashboardScreen extends ConsumerWidget {
     final state = ref.watch(adminDashboardViewModelProvider);
 
     return Scaffold(
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => context.go('/crash-reports'),
+        icon: const Icon(Icons.bug_report_outlined),
+        label: const Text('Báo cáo lỗi ứng dụng'),
+      ),
       backgroundColor: AppColors.surfaceSubtle,
       body: state.loadState.when(
         initial: () =>
@@ -50,30 +55,51 @@ class AdminDashboardScreen extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Bảng điều khiển Toàn hệ thống',
+                      style: AppTypography.textTheme.headlineMedium?.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.s4),
+                    Text(
+                      'Giám sát hoạt động sự kiện, xét duyệt và cơ cấu người dùng trên toàn trường FPTU',
+                      style: AppTypography.textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppSpacing.s16),
+              Row(
                 children: [
-                  Text(
-                    'Bảng điều khiển Toàn hệ thống',
-                    style: AppTypography.textTheme.headlineMedium?.copyWith(
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.bold,
+                  OutlinedButton.icon(
+                    onPressed: () => context.go('/crash-reports'),
+                    icon: const Icon(Icons.bug_report_outlined, size: 18),
+                    label: const Text('Báo cáo lỗi Crashlytics'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.primary,
+                      side: const BorderSide(color: AppColors.primary),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.s16,
+                        vertical: AppSpacing.s12,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: AppSpacing.s4),
-                  Text(
-                    'Giám sát hoạt động sự kiện, xét duyệt và cơ cấu người dùng trên toàn trường FPTU',
-                    style: AppTypography.textTheme.bodyMedium?.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
+                  const SizedBox(width: AppSpacing.s8),
+                  IconButton(
+                    icon: const Icon(Icons.refresh),
+                    tooltip: 'Làm mới số liệu',
+                    onPressed: () =>
+                        ref.read(adminDashboardViewModelProvider.notifier).loadDashboard(),
                   ),
                 ],
-              ),
-              IconButton(
-                icon: const Icon(Icons.refresh),
-                tooltip: 'Làm mới số liệu',
-                onPressed: () =>
-                    ref.read(adminDashboardViewModelProvider.notifier).loadDashboard(),
               ),
             ],
           ),

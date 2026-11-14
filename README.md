@@ -82,6 +82,7 @@ Mobile87, web51, core10; Rules matrix52 ca lá và bộ Rules hiện tại61 ca 
 - [Test report](docs/test-report.md), [AI requirements/status](docs/ai-feature.md), [code review](docs/code-review.md)
 - [Traceability](docs/design-traceability.md), [Flutter handoff](docs/flutter-handoff.md)
 - [Report](report/README.md), [video script](docs/demo-video-script.md), [evidence index](evidence/README.md)
+- [Báo cáo lỗi Crashlytics](docs/admin-crashlytics.md)
 - [Figma Lab 2](https://www.figma.com/design/WC21Na9ZDS8jjM2LzPKeXa/PRM393): chưa xác nhận đồng bộ mọi thay đổi Final.
 
 Code/build/unit test không thay thế cloud/native/cross-role proof. AI source/config đã có; ARTEMIS và bằng chứng thực thi Final vẫn cần trước nộp. Bộ slide của nhóm không bị sửa trong đợt dọn repo này và chưa được coi là bộ nộp đã xác nhận.

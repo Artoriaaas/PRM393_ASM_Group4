@@ -23,6 +23,7 @@ class AppShell extends ConsumerWidget {
       if (location.startsWith('/clubs')) return 2;
       if (location.startsWith('/events')) return 3;
       if (location.startsWith('/announcements')) return 4;
+      if (location.startsWith('/crash-reports')) return 5;
       return 0;
     }
     if (location.startsWith('/dashboard')) return 0;
@@ -49,6 +50,9 @@ class AppShell extends ConsumerWidget {
           break;
         case 4:
           context.go('/announcements');
+          break;
+        case 5:
+          context.go('/crash-reports');
           break;
       }
       return;
@@ -198,6 +202,11 @@ class AppShell extends ConsumerWidget {
                             selectedIcon: Icon(Icons.campaign),
                             label: Text('Thông báo'),
                           ),
+                          const NavigationRailDestination(
+                            icon: Icon(Icons.bug_report_outlined),
+                            selectedIcon: Icon(Icons.bug_report),
+                            label: Text('Báo cáo lỗi'),
+                          ),
                         ]
                       : [
                           const NavigationRailDestination(
@@ -224,6 +233,11 @@ class AppShell extends ConsumerWidget {
                             icon: Icon(Icons.campaign_outlined),
                             selectedIcon: Icon(Icons.campaign),
                             label: Text('Thông báo'),
+                          ),
+                          const NavigationRailDestination(
+                            icon: Icon(Icons.bug_report_outlined),
+                            selectedIcon: Icon(Icons.bug_report),
+                            label: Text('Báo cáo lỗi'),
                           ),
                         ],
                 ),
@@ -372,6 +386,15 @@ class AppShell extends ConsumerWidget {
                         _onDestinationSelected(context, 4, isAdmin);
                       },
                     ),
+                    ListTile(
+                      leading: const Icon(Icons.bug_report_outlined),
+                      title: const Text('Báo cáo lỗi (Crashlytics)'),
+                      selected: selectedIndex == 5,
+                      onTap: () {
+                        Navigator.pop(context);
+                        _onDestinationSelected(context, 5, isAdmin);
+                      },
+                    ),
                   ] else ...[
                     ListTile(
                       leading: const Icon(Icons.dashboard_outlined),
@@ -425,6 +448,9 @@ class AppShell extends ConsumerWidget {
 
   String _getTitleForIndex(int index, bool isAdmin) {
     if (isAdmin) {
+      if (currentLocation.startsWith('/crash-reports')) {
+        return 'Báo cáo lỗi ứng dụng (Crashlytics)';
+      }
       return switch (index) {
         0 => 'Bảng điều khiển Hệ thống',
         1 => 'Quản lý Người dùng & Phân quyền',
@@ -607,6 +633,15 @@ class AppShell extends ConsumerWidget {
                         semanticsLabel: 'Mở màn hình Thông báo hệ thống',
                         isSelected: selectedIndex == 4,
                         onTap: () => _onDestinationSelected(context, 4, isAdmin),
+                      ),
+                      const SizedBox(height: AppSpacing.s4),
+                      _buildNavItem(
+                        icon: Icons.bug_report_outlined,
+                        selectedIcon: Icons.bug_report,
+                        label: 'Báo cáo lỗi ứng dụng',
+                        semanticsLabel: 'Mở màn hình Báo cáo lỗi Crashlytics',
+                        isSelected: selectedIndex == 5,
+                        onTap: () => _onDestinationSelected(context, 5, isAdmin),
                       ),
                     ]
                   : [

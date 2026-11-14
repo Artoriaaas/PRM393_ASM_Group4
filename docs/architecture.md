@@ -55,6 +55,7 @@ sequenceDiagram
 | Notifications | NotificationService, CloudServices |
 | Export | ReportService, ReportFileService, ReportMetadataService |
 | CloudTools | CloudServices (FCM, RC, Crashlytics, Analytics) |
+| CrashReports (Web Admin) | CrashReportsService (Firebase Crashlytics REST API v1alpha) |
 
 Mỗi màn tải dữ liệu thể hiện loading/empty/error/data từ Riverpod; lỗi có retry. Instrumentation không được thay đổi kết quả nghiệp vụ. File test/fake chỉ dùng cho kiểm thử; production entrypoint là mobile/lib/main.dart.
 
