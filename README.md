@@ -71,7 +71,7 @@ Không chạy lệnh Flutter ở gốc hệ thống. Test doubles nằm trong te
 
 ## Kết quả tự động mới nhất
 
-Mobile86, web40, core6 và Rules55 tests đạt; web/Rules/indexes đã deploy. Chưa thay thế kiểm thử native, 3AIoutputs/1failure, 3cross-role runs và request App Check hợp lệ. Xem docs/final-live-verification.md trước khi chạy.
+Mobile87, web48, core6; Rules matrix52 ca lá và bộ Rules hiện tại61 ca lá đạt; web/Rules/indexes đã deploy. Chưa thay thế kiểm thử native, 3AIoutputs/1failure, 3cross-role runs và request App Check hợp lệ. Xem docs/final-live-verification.md trước khi chạy.
 
 ## Theo dõi hoàn thành
 
@@ -94,7 +94,7 @@ AI đã dùng theo lịch sử nhóm: Stitch hỗ trợ thiết kế; Antigravit
 
 ### AI content assistant (Final)
 
-Web uses `firebase_ai` **5.1.0** (Firebase AI Logic Gemini Developer API), not a direct Gemini REST key. In the CLB event form choose a controlled topic, preview, and explicitly apply before editing/saving. Local fallback defaults are disabled; cloud RC version6 is enabled with model gemini-3.5-flash-lite. Web Enterprise is configured; real Gemini outputs still need verification. Setup and honest evidence status: [docs/ai-feature.md](docs/ai-feature.md). No real Gemini execution evidence is claimed from unit tests.
+Web uses `firebase_ai` **5.1.0** (Firebase AI Logic Gemini Developer API), not a direct Gemini REST key. In the CLB event form enter a general idea without personal data, preview the draft, and explicitly apply selected content before editing/saving. Local fallback defaults are disabled; cloud RC version6 is enabled with model gemini-3.5-flash-lite. Web Enterprise is configured; real Gemini outputs still need verification. Setup and honest evidence status: [docs/ai-feature.md](docs/ai-feature.md). No real Gemini execution evidence is claimed from unit tests.
 
 ## Chạy thật để chốt 5 mục
 
@@ -109,7 +109,7 @@ node tool/register-android-appcheck.cjs emulator-5554
 Các lệnh hỗ trợ dùng phiên đăng nhập Firebase CLI hiện có và thư viện trong firebase/tests/node_modules; cần npm ci --prefix firebase/tests nếu máy mới. Không phải custom backend và không chạy trên Hosting. Lệnh kiểm tra cloud chỉ đọc; lệnh register chỉ đăng ký debug token đúng app test, không in token.
 
 ### Cấp quyền đại diện CLB
-Admin tạo CLB → Quản lý người dùng → Phân công bằng email → gửi link cổng CLB qua kênh của trường. Đại diện đăng nhập Google đúng email để kích hoạt; không cần tạo tài khoản mobile trước. [Hướng dẫn và kiểm thử](docs/club-onboarding.md).
+Admin tạo CLB → Quản lý người dùng → Phân công bằng email → gửi link cổng CLB qua kênh của trường. Đại diện đăng nhập Google đúng email để ghi nhận danh tính, sau đó Admin bấm Kích hoạt; không cần tạo tài khoản mobile trước. [Hướng dẫn và kiểm thử](docs/club-onboarding.md).
 
 ### Tự động deploy web
 Workflow `Test and deploy EventHub Web` kiểm tra rồi triển khai Hosting + Rules + indexes khi main thay đổi phần app. Cần cấu hình GitHub Secrets một lần theo [hướng dẫn](docs/web-deployment.md). Slides giữ workflow riêng. Push Git không cập nhật APK trên điện thoại.

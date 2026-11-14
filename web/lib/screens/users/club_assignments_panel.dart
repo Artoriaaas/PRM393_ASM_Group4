@@ -95,10 +95,24 @@ class ClubAssignmentsPanel extends ConsumerWidget {
                               subtitle: Text(
                                 '${a.clubName} · ${switch (a.status) {
                                   "pending" => "Chờ đăng nhập",
+                                  "awaiting_activation" => "Chờ Admin kích hoạt",
                                   "accepted" => "Đã kích hoạt",
                                   _ => "Đã thu hồi",
                                 }}',
                               ),
+                              leading: a.status == 'awaiting_activation'
+                                  ? FilledButton(
+                                      onPressed: action.isLoading
+                                          ? null
+                                          : () => ref
+                                                .read(
+                                                  assignmentActionProvider
+                                                      .notifier,
+                                                )
+                                                .activate(a),
+                                      child: const Text('Kích hoạt'),
+                                    )
+                                  : null,
                               trailing: a.status == 'revoked'
                                   ? null
                                   : TextButton(

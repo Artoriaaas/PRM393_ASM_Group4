@@ -141,24 +141,6 @@ service cloud.firestore {
     function slotPath(clubId) {
       return /databases/$(database)/documents/clubManagerSlots/$(clubId);
     }
-    function claimingAssignment(uid) {
-      let email = request.auth.token.email.lower();
-      let before = get(assignmentPath(email)).data;
-      let after = getAfter(assignmentPath(email)).data;
-      return member() && request.auth.uid == uid
-        && request.auth.token.firebase.sign_in_provider == 'google.com'
-        && resource.data.role == 'user'
-        && before.status == 'pending' && before.email == email
-        && after.status == 'accepted' && after.acceptedUid == uid
-        && after.acceptedAt == request.time
-        && get(/databases/$(database)/documents/clubs/$(before.clubId)).data.status == 'active'
-        && get(slotPath(before.clubId)).data.email == email
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['role', 'clubId', 'clubName', 'updatedAt'])
-        && request.resource.data.role == 'staff'
-        && request.resource.data.clubId == before.clubId
-        && request.resource.data.clubName == before.clubName
-        && request.resource.data.updatedAt == request.time;
-    }
     match /clubAssignments/{email} {
       allow get: if isAdmin() || (member() && request.auth.token.email.lower() == email);
       allow list: if isAdmin();
@@ -176,7 +158,7 @@ service cloud.firestore {
         && (!exists(assignmentPath(email)) || resource.data.status == 'revoked')
         && getAfter(slotPath(request.resource.data.clubId)).data.email == email;
       allow update: if (isAdmin()
-          && resource.data.status in ['pending', 'accepted']
+          && resource.data.status in ['pending', 'awaiting_activation', 'accepted']
           && request.resource.data.status == 'revoked'
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'revokedAt', 'revokedBy'])
           && request.resource.data.revokedBy == request.auth.uid
@@ -188,14 +170,25 @@ service cloud.firestore {
         || (member() && request.auth.token.email.lower() == email
           && request.auth.token.firebase.sign_in_provider == 'google.com'
           && resource.data.status == 'pending'
-          && request.resource.data.status == 'accepted'
-          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'acceptedUid', 'acceptedAt'])
-          && request.resource.data.acceptedUid == request.auth.uid
-          && request.resource.data.acceptedAt == request.time
+          && request.resource.data.status == 'awaiting_activation'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'requestedUid', 'requestedAt'])
+          && request.resource.data.requestedUid == request.auth.uid
+          && request.resource.data.requestedAt == request.time
           && get(userDocPath(request.auth.uid)).data.role == 'user'
-          && getAfter(userDocPath(request.auth.uid)).data.role == 'staff'
-          && getAfter(userDocPath(request.auth.uid)).data.clubId == resource.data.clubId
-          && getAfter(userDocPath(request.auth.uid)).data.clubName == resource.data.clubName
+          && getAfter(userDocPath(request.auth.uid)).data.role == 'user'
+          && get(/databases/$(database)/documents/clubs/$(resource.data.clubId)).data.status == 'active'
+          && get(slotPath(resource.data.clubId)).data.email == email)
+        || (isAdmin() && resource.data.status == 'awaiting_activation'
+          && request.resource.data.status == 'accepted'
+          && resource.data.requestedUid != request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'acceptedUid', 'acceptedAt', 'acceptedBy'])
+          && request.resource.data.acceptedUid == resource.data.requestedUid
+          && request.resource.data.acceptedBy == request.auth.uid
+          && request.resource.data.acceptedAt == request.time
+          && get(userDocPath(resource.data.requestedUid)).data.role == 'user'
+          && getAfter(userDocPath(resource.data.requestedUid)).data.role == 'staff'
+          && getAfter(userDocPath(resource.data.requestedUid)).data.clubId == resource.data.clubId
+          && getAfter(userDocPath(resource.data.requestedUid)).data.clubName == resource.data.clubName
           && get(/databases/$(database)/documents/clubs/$(resource.data.clubId)).data.status == 'active'
           && get(slotPath(resource.data.clubId)).data.email == email);
       allow delete: if false;
@@ -223,7 +216,7 @@ service cloud.firestore {
         && request.resource.data.email is string
         && request.resource.data.email.size() <= 254
         && request.resource.data.createdAt == request.time;
-      allow update: if claimingAssignment(uid) || (
+      allow update: if (
           signedIn()
           && request.auth.uid == uid
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName', 'email', 'updatedAt'])
@@ -244,7 +237,7 @@ service cloud.firestore {
                   && request.resource.data.clubId is string
                   && request.resource.data.clubId.size() > 0
                   && (!exists(slotPath(request.resource.data.clubId))
-                      || get(assignmentPath(get(slotPath(request.resource.data.clubId)).data.email)).data.get('acceptedUid', '') == uid)))
+                      || getAfter(assignmentPath(get(slotPath(request.resource.data.clubId)).data.email)).data.get('acceptedUid', '') == uid)))
         );
       allow delete: if false;
 

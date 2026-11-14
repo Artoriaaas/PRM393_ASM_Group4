@@ -99,3 +99,7 @@ AI feature và bằng chứng; ARTEMIS; App Check/cloud/native proof; web screen
 
 ## AI ý tưởng tự do — 14/11/2026
 46 tests web và 6 tests core đạt. Web analyze sạch. Chưa gọi Gemini thật với ý tưởng tự do trong lượt này; chưa có bộ 3 output mới để nộp. Test widget dùng fake để xác minh popup Hủy/Tạo lại/Áp dụng theo trường và metadata không đổi, không tiêu tốn quota model.
+
+
+## Chốt source trước push — 14/11/2026
+Mobile87 và core6 tests đạt ở lượt sửa UI; web48/48 đạt sau sửa preview A04 và phân quyền. Firestore emulator project demo-direct-booking chạy bộ Rules hiện tại: 61 testcase lá, 0fail/0skip; JUnit evidence/rules/club-onboarding.xml. Người nhận chỉ ghi danh tính chờ kích hoạt, Admin khác UID trực tiếp cấp staff. Đây là kiểm thử local, không thay bằng chứng triển khai/cross-role/ARTEMIS.

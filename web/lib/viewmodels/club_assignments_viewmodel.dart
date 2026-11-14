@@ -24,6 +24,8 @@ class AssignmentAction extends Notifier<AsyncValue<void>> {
         .read(clubAssignmentServiceProvider)
         .assign(email: email, club: club),
   );
+  Future<Result<void>> activate(ClubAssignment assignment) =>
+      _run(() => ref.read(clubAssignmentServiceProvider).activate(assignment));
   Future<Result<void>> revoke(ClubAssignment assignment) =>
       _run(() => ref.read(clubAssignmentServiceProvider).revoke(assignment));
   Future<Result<void>> _run(Future<Result<void>> Function() action) async {

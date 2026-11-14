@@ -30,6 +30,9 @@ class Assignments implements IClubAssignmentService {
   }
 
   @override
+  Future<Result<void>> activate(ClubAssignment assignment) async =>
+      const Success(null);
+  @override
   Future<Result<void>> revoke(ClubAssignment assignment) async =>
       const Success(null);
 }

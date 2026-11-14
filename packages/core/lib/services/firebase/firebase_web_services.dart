@@ -88,14 +88,14 @@ class FirebaseWebAuthService implements IWebAuthService {
         await FirestoreClubAssignmentService(
           firestore: _firestore,
           auth: _auth,
-        ).activateForCurrentUser();
+        ).registerCurrentUser();
         final activated = await _firestore.collection('users').doc(uid).get();
         return Result.success(WebUserProfile.fromJson(uid, activated.data()!));
       }
       await FirestoreClubAssignmentService(
         firestore: _firestore,
         auth: _auth,
-      ).activateForCurrentUser();
+      ).registerCurrentUser();
       final refreshed = await _firestore.collection('users').doc(uid).get();
       return Result.success(WebUserProfile.fromJson(uid, refreshed.data()!));
     } on FirebaseException catch (e) {
@@ -503,9 +503,9 @@ class FirestoreClubService implements IClubService {
     if (clubId != null && clubId.trim().isNotEmpty) {
       query = query.where('clubId', isEqualTo: clubId.trim());
     }
-    return query
-        .snapshots()
-        .map((snap) => snap.docs.map(_mapRegistrationDoc).toList());
+    return query.snapshots().map(
+      (snap) => snap.docs.map(_mapRegistrationDoc).toList(),
+    );
   }
 
   @override

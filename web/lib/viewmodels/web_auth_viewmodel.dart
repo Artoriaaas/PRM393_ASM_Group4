@@ -66,7 +66,7 @@ class WebAuthViewModel extends Notifier<WebAuthUIState> {
     if (user == null) return const WebAuthInitial();
     if (user.role == 'user') {
       return WebAuthRejected(
-        reason: 'Tài khoản chưa được phân công quản lý CLB. Đại diện CLB vui lòng cung cấp email Google cho quản trị viên nhà trường, sau đó đăng nhập lại đúng email được phân công. Người tham gia sử dụng ứng dụng mobile.',
+        reason: 'Tài khoản chưa được phân công quản lý CLB. Đại diện CLB vui lòng cung cấp email Google cho quản trị viên nhà trường, đăng nhập đúng email được phân công để xác minh danh tính, rồi chờ Admin bấm Kích hoạt. Tài khoản sẽ cập nhật quyền khi Admin hoàn tất. Người tham gia sử dụng ứng dụng mobile.',
         user: user,
       );
     }

@@ -43,8 +43,8 @@ Lượt matrix đã bổ sung shape guards cho profile self-update và dates/dea
 
 | Collection | Admin | Google account có email đã xác minh | Tài khoản khác / anonymous |
 |---|---|---|---|
-| clubAssignments/{email} | Get/list; tạo pending kèm slot; thu hồi kèm xóa slot và gỡ staff tương ứng | Get đúng email; pending→accepted chỉ cùng transaction users→staff đúng CLB | Deny |
+| clubAssignments/{email} | Get/list; tạo pending kèm slot; awaiting_activation→accepted kèm cấp staff cho UID khác; thu hồi kèm xóa slot và gỡ staff tương ứng | Get đúng email; Google đã xác minh chỉ pending→awaiting_activation, role vẫn user | Deny |
 | clubManagerSlots/{clubId} | Read; tạo kèm pending invitation; delete kèm revoked invitation; không update | Deny đọc/ghi trực tiếp | Deny |
-| users/{uid} activation | Giữ chính sách phân quyền hiện có; không tự đổi role; staff không được chiếm CLB đang có slot khác | Chỉ user→staff khi invitation+slot hợp lệ và invitation accepted cùng transaction; không đổi profile khác | Deny |
+| users/{uid} activation | Giữ chính sách phân quyền hiện có; không tự đổi role; staff không được chiếm CLB đang có slot khác | Deny mọi tự đổi role; chỉ Admin khác UID được cấp staff kèm accepted invitation và slot hợp lệ | Deny |
 
-Bằng chứng: `evidence/rules/club-onboarding.xml`, không phải kiểm thử cloud thật. Phân công email là ngoại lệ có kiểm soát cho bước nhận quyền, không cho người dùng tự chọn quyền.
+Bằng chứng: `evidence/rules/club-onboarding.xml`, không phải kiểm thử cloud thật. Phân công email không còn ngoại lệ tự nhận role: người nhận chỉ ghi danh tính, Admin trực tiếp kích hoạt.

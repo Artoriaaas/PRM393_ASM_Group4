@@ -753,85 +753,86 @@ test('Appendix B: anonymous and unverified accounts cannot access application co
 });
 
 
-// Email assignment onboarding uses the verified Auth token, not users.email.
-function managerDb(uid, email, { verified = true, provider = 'google.com' } = {}) {
+// Email onboarding: user proves identity, only Admin writes role.
+function managerDb(uid, email, {verified = true, provider = 'google.com'} = {}) {
   return env.authenticatedContext(uid, {email, email_verified: verified, firebase: {sign_in_provider: provider}}).firestore();
 }
 function invitationBatch(db, email, clubId = 'club_it', clubName = 'CLB IT FPTU') {
-  const batch = writeBatch(db);
-  batch.set(doc(db, 'clubAssignments', email), { email, clubId, clubName, status: 'pending', createdBy: 'admin_1', createdAt: serverTimestamp() });
-  batch.set(doc(db, 'clubManagerSlots', clubId), {email});
-  return batch;
+  const b = writeBatch(db);
+  b.set(doc(db, 'clubAssignments', email), {email, clubId, clubName, status:'pending', createdBy:'admin_1', createdAt:serverTimestamp()});
+  b.set(doc(db, 'clubManagerSlots', clubId), {email});
+  return b;
 }
-function activateBatch(db, uid, email, clubId = 'club_it', clubName = 'CLB IT FPTU') {
-  const batch = writeBatch(db);
-  batch.update(doc(db, 'users', uid), { role: 'staff', clubId, clubName, updatedAt: serverTimestamp() });
-  batch.update(doc(db, 'clubAssignments', email), { status: 'accepted', acceptedUid: uid, acceptedAt: serverTimestamp() });
-  return batch;
+function identityRequest(db, uid, email) {
+  return updateDoc(doc(db, 'clubAssignments', email), {status:'awaiting_activation', requestedUid:uid, requestedAt:serverTimestamp()});
 }
-test('email onboarding: administrator-only reservations and verified atomic activation', async (t) => {
-  await seedSystem();
-  const admin = managerDb('admin_1', 'admin@fpt.edu.vn');
-  const alice = managerDb('alice', 'alice@fpt.edu.vn');
-  const bob = managerDb('bob', 'bob@fpt.edu.vn');
-  await t.test('participant and staff cannot issue invitations', async () => {
-    await assertFails(invitationBatch(alice, 'alice@fpt.edu.vn').commit());
-    await assertFails(invitationBatch(managerDb('staff_it', 'leader.it@fpt.edu.vn'), 'alice@fpt.edu.vn').commit());
-  });
-  await t.test('admin creates pending invitation and club reservation atomically', async () => {
-    await assertFails(setDoc(doc(admin, 'clubAssignments/alice@fpt.edu.vn'), {email:'alice@fpt.edu.vn', clubId:'club_it', clubName:'CLB IT FPTU', status:'pending', createdBy:'admin_1', createdAt: serverTimestamp()}));
-    await assertSucceeds(invitationBatch(admin, 'alice@fpt.edu.vn').commit());
-    await assertFails(invitationBatch(admin, 'other@fpt.edu.vn').commit());
-  });
-  await t.test('only own verified email can read; lists stay admin-only', async () => {
-    await assertSucceeds(getDoc(doc(alice, 'clubAssignments/alice@fpt.edu.vn')));
-    await assertSucceeds(getDoc(doc(managerDb('new_user', 'new@fpt.edu.vn'), 'clubAssignments/new@fpt.edu.vn')));
-  });
-  await t.test('other email and unverified/password accounts cannot activate', async () => {
-    await assertFails(getDoc(doc(bob, 'clubAssignments/alice@fpt.edu.vn')));
-    await assertFails(getDocs(collection(alice, 'clubAssignments')));
-    await assertFails(activateBatch(bob, 'bob', 'alice@fpt.edu.vn').commit());
-    await assertFails(activateBatch(managerDb('alice', 'alice@fpt.edu.vn', {verified:false}), 'alice', 'alice@fpt.edu.vn').commit());
-    await assertFails(activateBatch(managerDb('alice', 'alice@fpt.edu.vn', {provider:'password'}), 'alice', 'alice@fpt.edu.vn').commit());
-  });
-  await t.test('profile-only escalation, invitation-only consumption and wrong club are denied', async () => {
-    await assertFails(updateDoc(doc(alice, 'users/alice'), {role:'staff', clubId:'club_it', clubName:'CLB IT FPTU', updatedAt: serverTimestamp()}));
-    await assertFails(updateDoc(doc(alice, 'clubAssignments/alice@fpt.edu.vn'), {status:'accepted', acceptedUid:'alice', acceptedAt:serverTimestamp()}));
-    await assertFails(activateBatch(alice, 'alice', 'alice@fpt.edu.vn', 'club_music', 'CLB Am Nhac').commit());
-  });
-  await t.test('matching Google account activates once and cannot replay', async () => {
-    await assertSucceeds(activateBatch(alice, 'alice', 'alice@fpt.edu.vn').commit());
-    assert.equal((await getDoc(doc(alice, 'users/alice'))).data().role, 'staff');
-    await assertFails(activateBatch(alice, 'alice', 'alice@fpt.edu.vn').commit());
-  });
-  await t.test('revocation requires releasing reservation and removing live staff access', async () => {
-    await assertFails(updateDoc(doc(admin, 'clubAssignments/alice@fpt.edu.vn'), {status:'revoked', revokedBy:'admin_1', revokedAt:serverTimestamp()}));
-    const batch = writeBatch(admin);
-    batch.update(doc(admin, 'clubAssignments/alice@fpt.edu.vn'), {status:'revoked', revokedBy:'admin_1', revokedAt:serverTimestamp()});
-    batch.delete(doc(admin, 'clubManagerSlots/club_it'));
-    batch.update(doc(admin, 'users/alice'), {role:'user', clubId:null, clubName:null, updatedAt:serverTimestamp()});
-    await assertSucceeds(batch.commit());
-    await assertFails(activateBatch(alice, 'alice', 'alice@fpt.edu.vn').commit());
-    await assertSucceeds(invitationBatch(admin, 'bob@fpt.edu.vn').commit());
-  });
-  await t.test('pending revocation and reissue use the same email safely', async () => {
-    const revoke = writeBatch(admin);
-    revoke.update(doc(admin, 'clubAssignments/bob@fpt.edu.vn'), {status:'revoked', revokedBy:'admin_1', revokedAt:serverTimestamp()});
-    revoke.delete(doc(admin, 'clubManagerSlots/club_it'));
-    await assertSucceeds(revoke.commit());
-    await assertFails(activateBatch(bob, 'bob', 'bob@fpt.edu.vn').commit());
-    await assertSucceeds(invitationBatch(admin, 'bob@fpt.edu.vn').commit());
-  });
-  await t.test('archived club cannot be activated; new account bootstraps as user first', async () => {
-    await assertSucceeds(updateDoc(doc(admin, 'clubs/club_it'), {status:'archived'}));
-    await assertFails(activateBatch(bob, 'bob', 'bob@fpt.edu.vn').commit());
-    await assertSucceeds(updateDoc(doc(admin, 'clubs/club_it'), {status:'active'}));
-    await assertSucceeds(setDoc(doc(admin, 'clubs/club_new'), {name:'CLB Mới', status:'active'}));
-    await assertSucceeds(invitationBatch(admin, 'new@fpt.edu.vn', 'club_new', 'CLB Mới').commit());
-    const newcomer = managerDb('new_user', 'new@fpt.edu.vn');
-    await assertSucceeds(setDoc(doc(newcomer, 'users/new_user'), {role:'user', email:'new@fpt.edu.vn', displayName:'New manager', createdAt:serverTimestamp()}));
-    await assertSucceeds(activateBatch(newcomer, 'new_user', 'new@fpt.edu.vn', 'club_new', 'CLB Mới').commit());
-    await assertSucceeds(updateDoc(doc(newcomer, 'users/new_user'), {displayName:'Updated manager', updatedAt:serverTimestamp()}));
-    await assertFails(updateDoc(doc(newcomer, 'users/new_user'), {role:'admin'}));
-  });
+function activationBatch(db, uid, email, clubId='club_it', clubName='CLB IT FPTU', actor='admin_1') {
+  const b=writeBatch(db);
+  b.update(doc(db,'users',uid), {role:'staff',clubId,clubName,updatedAt:serverTimestamp()});
+  b.update(doc(db,'clubAssignments',email), {status:'accepted',acceptedUid:uid,acceptedAt:serverTimestamp(),acceptedBy:actor});
+  return b;
+}
+test('email onboarding: verified identity request then Admin-only activation',async(t)=>{
+ await seedSystem();
+ const admin=managerDb('admin_1','admin@fpt.edu.vn');
+ const alice=managerDb('alice','alice@fpt.edu.vn');
+ const bob=managerDb('bob','bob@fpt.edu.vn');
+ await t.test('only Admin may reserve an email and club',async()=>{
+  await assertFails(invitationBatch(alice,'alice@fpt.edu.vn').commit());
+  await assertFails(invitationBatch(managerDb('staff_it','leader.it@fpt.edu.vn'),'alice@fpt.edu.vn').commit());
+  await assertSucceeds(invitationBatch(admin,'alice@fpt.edu.vn').commit());
+  await assertFails(invitationBatch(admin,'other@fpt.edu.vn').commit());
+ });
+ await t.test('read is scoped to verified email, lists and slots Admin-only',async()=>{
+  await assertSucceeds(getDoc(doc(alice,'clubAssignments/alice@fpt.edu.vn')));
+  await assertFails(getDoc(doc(bob,'clubAssignments/alice@fpt.edu.vn')));
+  await assertFails(getDocs(collection(alice,'clubAssignments')));
+  await assertSucceeds(getDocs(collection(admin,'clubAssignments')));
+  await assertSucceeds(getDoc(doc(admin,'clubManagerSlots/club_it')));
+  await assertFails(getDoc(doc(alice,'clubManagerSlots/club_it')));
+ });
+ await t.test('cannot self-promote before or after identity registration',async()=>{
+  await assertFails(activationBatch(alice,'alice','alice@fpt.edu.vn','club_it','CLB IT FPTU','alice').commit());
+  await assertFails(updateDoc(doc(alice,'users/alice'),{role:'staff',clubId:'club_it',clubName:'CLB IT FPTU'}));
+ });
+ await t.test('wrong, unverified or non-Google identity cannot claim the email',async()=>{
+  await assertFails(identityRequest(bob,'bob','alice@fpt.edu.vn'));
+  await assertFails(identityRequest(managerDb('alice','alice@fpt.edu.vn',{verified:false}),'alice','alice@fpt.edu.vn'));
+  await assertFails(identityRequest(managerDb('alice','alice@fpt.edu.vn',{provider:'password'}),'alice','alice@fpt.edu.vn'));
+ });
+ await t.test('matching identity can request activation but stays user',async()=>{
+  await assertSucceeds(identityRequest(alice,'alice','alice@fpt.edu.vn'));
+  assert.equal((await getDoc(doc(alice,'users/alice'))).data().role,'user');
+  await assertFails(identityRequest(alice,'alice','alice@fpt.edu.vn'));
+  await assertFails(activationBatch(alice,'alice','alice@fpt.edu.vn','club_it','CLB IT FPTU','alice').commit());
+ });
+ await t.test('Admin cannot activate wrong club or consume invitation without assigning role',async()=>{
+  await assertFails(activationBatch(admin,'alice','alice@fpt.edu.vn','club_music','CLB Am Nhac').commit());
+  await assertFails(updateDoc(doc(admin,'clubAssignments/alice@fpt.edu.vn'),{status:'accepted',acceptedUid:'alice',acceptedAt:serverTimestamp(),acceptedBy:'admin_1'}));
+ });
+ await t.test('Admin atomically activates role and invitation, no replay',async()=>{
+  await assertSucceeds(activationBatch(admin,'alice','alice@fpt.edu.vn').commit());
+  assert.equal((await getDoc(doc(alice,'users/alice'))).data().role,'staff');
+  await assertFails(activationBatch(admin,'alice','alice@fpt.edu.vn').commit());
+ });
+ await t.test('accepted role can only be revoked with slot release',async()=>{
+  await assertFails(updateDoc(doc(admin,'clubAssignments/alice@fpt.edu.vn'),{status:'revoked',revokedBy:'admin_1',revokedAt:serverTimestamp()}));
+  const b=writeBatch(admin);
+  b.update(doc(admin,'clubAssignments/alice@fpt.edu.vn'),{status:'revoked',revokedBy:'admin_1',revokedAt:serverTimestamp()});
+  b.delete(doc(admin,'clubManagerSlots/club_it'));
+  b.update(doc(admin,'users/alice'),{role:'user',clubId:null,clubName:null,updatedAt:serverTimestamp()});
+  await assertSucceeds(b.commit());
+  await assertFails(identityRequest(alice,'alice','alice@fpt.edu.vn'));
+ });
+ await t.test('new account bootstrap and archived-club guard',async()=>{
+  await assertSucceeds(invitationBatch(admin,'new@fpt.edu.vn').commit());
+  const newcomer=managerDb('new_user','new@fpt.edu.vn');
+  await assertSucceeds(setDoc(doc(newcomer,'users/new_user'),{role:'user',email:'new@fpt.edu.vn',displayName:'New manager',createdAt:serverTimestamp()}));
+  await assertSucceeds(updateDoc(doc(admin,'clubs/club_it'),{status:'archived'}));
+  await assertFails(identityRequest(newcomer,'new_user','new@fpt.edu.vn'));
+  await assertSucceeds(updateDoc(doc(admin,'clubs/club_it'),{status:'active'}));
+  await assertSucceeds(identityRequest(newcomer,'new_user','new@fpt.edu.vn'));
+  await assertSucceeds(activationBatch(admin,'new_user','new@fpt.edu.vn').commit());
+  await assertFails(updateDoc(doc(newcomer,'users/new_user'),{role:'admin'}));
+ });
 });

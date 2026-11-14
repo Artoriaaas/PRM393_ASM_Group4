@@ -9,21 +9,25 @@ class ClubAssignment {
     required this.clubName,
     required this.status,
     this.acceptedUid,
+    this.requestedUid,
   });
   final String email, clubId, clubName, status;
   final String? acceptedUid;
+  final String? requestedUid;
   factory ClubAssignment.fromJson(Map<String, dynamic> d) => ClubAssignment(
     email: d['email'] as String,
     clubId: d['clubId'] as String,
     clubName: d['clubName'] as String,
     status: d['status'] as String,
     acceptedUid: d['acceptedUid'] as String?,
+    requestedUid: d['requestedUid'] as String?,
   );
 }
 
 abstract class IClubAssignmentService {
   Stream<List<ClubAssignment>> watchAssignments();
   Future<Result<void>> assign({required String email, required Club club});
+  Future<Result<void>> activate(ClubAssignment assignment);
   Future<Result<void>> revoke(ClubAssignment assignment);
 }
 
@@ -159,34 +163,80 @@ class FirestoreClubAssignmentService implements IClubAssignmentService {
     }
   }
 
-  /// Called only for the Firebase-authenticated, verified email, never form input.
-  Future<void> activateForCurrentUser() async {
+  @override
+  Future<Result<void>> activate(ClubAssignment assignment) async {
+    try {
+      await _db.runTransaction((tx) async {
+        final target = _db.collection('clubAssignments').doc(assignment.email);
+        final snapshot = await tx.get(target);
+        final data = snapshot.data();
+        if (data == null || data['status'] != 'awaiting_activation') {
+          throw StateError(
+            'Đại diện cần đăng nhập Google đúng email trước khi Admin kích hoạt.',
+          );
+        }
+        final uid = data['requestedUid'] as String;
+        final profile = await tx.get(_db.collection('users').doc(uid));
+        final club = await tx.get(
+          _db.collection('clubs').doc(data['clubId'] as String),
+        );
+        if (uid == _auth.currentUser?.uid ||
+            profile.data()?['role'] != 'user' ||
+            club.data()?['status'] != 'active') {
+          throw StateError(
+            'Tài khoản hoặc CLB không còn đủ điều kiện. Tải lại danh sách và kiểm tra phân công.',
+          );
+        }
+        tx.update(profile.reference, {
+          'role': 'staff',
+          'clubId': data['clubId'],
+          'clubName': data['clubName'],
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+        tx.update(target, {
+          'status': 'accepted',
+          'acceptedUid': uid,
+          'acceptedAt': FieldValue.serverTimestamp(),
+          'acceptedBy': _auth.currentUser!.uid,
+        });
+      });
+      return const Success(null);
+    } on StateError catch (e) {
+      return Failure(
+        AppFailure(code: 'activation_conflict', message: e.message.toString()),
+      );
+    } catch (_) {
+      return const Failure(
+        AppFailure(
+          code: 'activation_failed',
+          message: 'Chưa kích hoạt được phân công. Kiểm tra quyền Admin và kết nối rồi thử lại.',
+          isRetryable: true,
+        ),
+      );
+    }
+  }
+
+  /// Only registers the verified Google identity. Role changes remain Admin-only.
+  Future<void> registerCurrentUser() async {
     final user = _auth.currentUser;
     if (user == null || !user.emailVerified || user.email == null) return;
     final target = _db
         .collection('clubAssignments')
         .doc(normalizeEmail(user.email!));
-    final profile = _db.collection('users').doc(user.uid);
     await _db.runTransaction((tx) async {
       final invitation = await tx.get(target);
       final data = invitation.data();
       if (data == null || data['status'] != 'pending') return;
-      final current = await tx.get(profile);
-      if (current.data()?['role'] != 'user') return;
+      final profile = await tx.get(_db.collection('users').doc(user.uid));
+      if (profile.data()?['role'] != 'user') return;
       final club = await tx.get(
         _db.collection('clubs').doc(data['clubId'] as String),
       );
       if (club.data()?['status'] != 'active') return;
-      tx.update(profile, {
-        'role': 'staff',
-        'clubId': data['clubId'],
-        'clubName': data['clubName'],
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
       tx.update(target, {
-        'status': 'accepted',
-        'acceptedUid': user.uid,
-        'acceptedAt': FieldValue.serverTimestamp(),
+        'status': 'awaiting_activation',
+        'requestedUid': user.uid,
+        'requestedAt': FieldValue.serverTimestamp(),
       });
     });
   }
