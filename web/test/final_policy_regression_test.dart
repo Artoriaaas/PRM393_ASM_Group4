@@ -123,6 +123,13 @@ void main() {
     expect(generatedField, findsNothing);
     await tester.tap(find.text('Áp dụng'));
     await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      generatedField,
+      300,
+      scrollable: find
+          .descendant(of: find.byType(Form), matching: find.byType(Scrollable))
+          .first,
+    );
     expect(generatedField, findsOneWidget);
     expect(tester.takeException(), isNull);
   });
