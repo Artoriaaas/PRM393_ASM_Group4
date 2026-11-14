@@ -103,7 +103,7 @@
 
   <!-- Decision BR-03 (Duyệt?) -->
   <polygon points="584,338 608,362 584,386 560,362" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5" filter="url(#shadow)" />
-  <text x="584" y="365" font-family="Calibri, Arial, sans-serif" font-size="9" font-weight="700" fill="#B45309" text-anchor="middle">Duyệt?</text>
+  <text x="584" y="365" font-family="Calibri, Arial, sans-serif" font-size="9" font-weight="700" fill="#B45309" text-anchor="middle">BR-03?</text>
 
   <!-- Mở phiên QR -->
   <rect x="795" y="339" width="96" height="46" rx="6" fill="#FFF" stroke="#EA580C" stroke-width="1.5" filter="url(#shadow)" />

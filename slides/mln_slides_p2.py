@@ -28,7 +28,7 @@ def get_p2_slides():
       <div class="s-body">
         <!-- Khung sơ đồ Swimlane Vector -->
         <div class="panel" style="flex: 1.4; padding: 12px; background: var(--cham-deep); justify-content: center; align-items: center; position: relative;">
-          <img src="../evidence/diagrams/07-business-flow.svg?v=3lane_bpmn_clean2" alt="Business Flow Diagram" 
+          <img src="../evidence/diagrams/07-business-flow.svg?v=br03" alt="Business Flow Diagram" 
                style="width: 100%; height: 100%; object-fit: contain;">
         </div>
 
@@ -177,7 +177,7 @@ def get_p2_slides():
       <div class="s-body">
         <!-- Khung sơ đồ C4 Container Vector -->
         <div class="panel" style="flex: 1.35; padding: 12px; background: var(--cham-deep); justify-content: center; align-items: center; position: relative;">
-          <img src="../evidence/diagrams/09-system-architecture.svg?v=c4_perfect_clean" alt="System Architecture Diagram" 
+          <img src="../evidence/diagrams/09-system-architecture.svg?v=c4_fe" alt="System Architecture Diagram" 
                style="width: 100%; height: 100%; object-fit: contain;">
         </div>
 
@@ -225,7 +225,7 @@ def get_p2_slides():
       </div>
 
       <div class="s-head">
-        <h2>Ngăn xếp công nghệ 8 nhóm: <em>Đồng nhất mã nguồn &amp; Trợ lý Gemini AI</em></h2>
+        <h2>Technology Stack 8 nhóm: <em>Đồng nhất mã nguồn &amp; Trợ lý Gemini AI</em></h2>
         <p class="sub">Tất cả công nghệ đều khớp 100% với file `pubspec.yaml` và đang vận hành thực tế; tích hợp Gemini AI Structured Output Level 2.</p>
       </div>
 
