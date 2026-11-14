@@ -770,6 +770,8 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                                   deadline: _deadline,
                                   registrationMode: _registrationMode,
                                   capacity: capacity,
+                                  activeCount:
+                                      widget.initialEvent?.activeCount ?? 0,
                                   description: _descriptionController.text
                                       .trim(),
                                   topic: _topicController.text.trim(),

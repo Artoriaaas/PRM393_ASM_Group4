@@ -1,8 +1,9 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
 import 'package:eventhub_core/eventhub_core.dart';
 
+/// Read-only A04 preview. Values come from the editor, never a saved mock event.
 class MobilePreviewCard extends StatelessWidget {
   const MobilePreviewCard({
     super.key,
@@ -21,356 +22,328 @@ class MobilePreviewCard extends StatelessWidget {
     required this.activities,
     this.coverKey = '',
     this.coverUrl = '',
+    this.activeCount = 0,
   });
-
-  final String title;
-  final String clubName;
-  final String location;
-  final DateTime startsAt;
-  final DateTime endsAt;
+  final String title,
+      clubName,
+      location,
+      registrationMode,
+      description,
+      topic,
+      audience,
+      preparation;
+  final DateTime startsAt, endsAt;
   final DateTime? deadline;
-  final String registrationMode;
-  final int capacity;
-  final String description;
-  final String topic;
-  final String audience;
-  final String preparation;
+  final int capacity, activeCount;
   final List<String> activities;
-  final String coverKey;
-  final String coverUrl;
+  final String coverKey, coverUrl;
 
-  String _formatDateTime(DateTime dt) {
-    final dd = dt.day.toString().padLeft(2, '0');
-    final mm = dt.month.toString().padLeft(2, '0');
-    final hh = dt.hour.toString().padLeft(2, '0');
-    final min = dt.minute.toString().padLeft(2, '0');
-    return '$dd/$mm/${dt.year} • $hh:$min';
-  }
+  bool get _free => registrationMode == 'free';
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 340,
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: AppRadius.borderR24,
-        border: Border.all(color: AppColors.border, width: 2),
-        boxShadow: AppShadows.elevation2,
-      ),
-      child: ClipRRect(
-        borderRadius: AppRadius.borderR24,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.s16,
-                vertical: AppSpacing.s8,
-              ),
-              color: AppColors.surfaceSubtle,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '9:41',
-                    style: AppTypography.textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Row(
-                    children: [
-                      Icon(Icons.wifi, size: 14),
-                      SizedBox(width: AppSpacing.s4),
-                      Icon(Icons.battery_full, size: 14),
-                    ],
-                  ),
-                ],
-              ),
+  Widget build(BuildContext context) => Container(
+    width: 360,
+    height: 800,
+    decoration: BoxDecoration(
+      color: AppColors.surface,
+      borderRadius: AppRadius.borderR24,
+      border: Border.all(color: AppColors.border, width: 2),
+      boxShadow: AppShadows.elevation2,
+    ),
+    child: ClipRRect(
+      borderRadius: AppRadius.borderR24,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('9:41', style: AppTypography.textTheme.labelSmall),
+                const Row(
+                  children: [
+                    Icon(Icons.wifi, size: 14),
+                    SizedBox(width: 4),
+                    Icon(Icons.battery_full, size: 14),
+                  ],
+                ),
+              ],
             ),
-            Container(
-              height: 140,
-              padding: const EdgeInsets.all(AppSpacing.s16),
-              decoration: BoxDecoration(
-                image: _buildCoverDecoration(coverUrl),
-                gradient: _buildCoverDecoration(coverUrl) != null
-                    ? null
-                    : _gradientForCoverKey(coverKey),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: Row(
+              children: [
+                const Icon(Icons.arrow_back, size: 24),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    'Chi tiết sự kiện',
+                    style: AppTypography.textTheme.titleMedium,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: ListView(
+              key: const ValueKey('mobile-preview-content'),
+              padding: const EdgeInsets.all(16),
+              children: [
+                ClipRRect(
+                  borderRadius: AppRadius.borderR16,
+                  child: AspectRatio(aspectRatio: 2, child: _cover(context)),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      child: AppStatusBadge(
+                        label: _free ? 'Tham gia tự do' : 'Cần đăng ký',
+                        variant: AppBadgeVariant.warning,
+                      ),
+                    ),
+                    if (!_free)
                       Flexible(
                         child: AppStatusBadge(
-                          label: registrationMode == 'free'
-                              ? 'Tham gia tự do'
-                              : 'Yêu cầu đăng ký',
-                          variant: registrationMode == 'free'
-                              ? AppBadgeVariant.info
-                              : AppBadgeVariant.warning,
-                          icon: Icon(
-                            registrationMode == 'free'
-                                ? Icons.lock_open_outlined
-                                : Icons.how_to_reg_outlined,
-                          ),
+                          label:
+                              'Còn ${(capacity - activeCount).clamp(0, capacity < 0 ? 0 : capacity)} chỗ',
+                          variant: AppBadgeVariant.success,
                         ),
                       ),
-                      CircleAvatar(
-                        radius: 14,
-                        backgroundColor: AppColors.onPrimary.withValues(
-                          alpha: 0.24,
-                        ),
-                        child: const Icon(
-                          Icons.share,
-                          size: 14,
-                          color: AppColors.onPrimary,
-                        ),
-                      ),
-                    ],
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  title.isEmpty ? 'Tiêu đề sự kiện' : title,
+                  style: AppTypography.textTheme.titleLarge,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  clubName.isEmpty ? 'Câu lạc bộ tổ chức' : clubName,
+                  style: const TextStyle(color: AppColors.primary),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: const BoxDecoration(
+                    color: AppColors.surfaceSubtle,
+                    borderRadius: AppRadius.borderR16,
                   ),
-                  Text(
-                    title.isEmpty ? 'Tiêu đề sự kiện...' : title,
-                    style: AppTypography.textTheme.titleMedium?.copyWith(
-                      color: AppColors.onPrimary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.s16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+                  child: Column(
                     children: [
-                      const Icon(
-                        Icons.groups,
-                        size: 16,
-                        color: AppColors.primary,
+                      _fact(
+                        Icons.calendar_today_outlined,
+                        'Thời gian diễn ra',
+                        '${eventTime(startsAt)}–${eventTime(endsAt)} · ${eventDate(startsAt)}',
                       ),
-                      const SizedBox(width: AppSpacing.s8),
-                      Expanded(
-                        child: Text(
-                          clubName.isEmpty ? 'Câu lạc bộ tổ chức' : clubName,
-                          style: AppTypography.textTheme.labelMedium?.copyWith(
-                            color: AppColors.textPrimary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      if (topic.isNotEmpty) ...[
-                        const SizedBox(width: AppSpacing.s8),
-                        AppStatusBadge(
-                          label: topic,
-                          variant: AppBadgeVariant.neutral,
-                          icon: const Icon(Icons.sell_outlined),
-                        ),
-                      ],
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.s12),
-                  Row(
-                    children: [
-                      const Icon(
+                      const SizedBox(height: 16),
+                      _fact(
                         Icons.location_on_outlined,
-                        size: 16,
-                        color: AppColors.textSecondary,
+                        'Địa điểm',
+                        location.isEmpty ? 'Địa điểm tổ chức' : location,
                       ),
-                      const SizedBox(width: AppSpacing.s8),
-                      Expanded(
-                        child: Text(
-                          location.isEmpty ? 'Địa điểm tổ chức' : location,
-                          style: AppTypography.textTheme.labelSmall?.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.s8),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.access_time,
-                        size: 16,
-                        color: AppColors.textSecondary,
-                      ),
-                      const SizedBox(width: AppSpacing.s8),
-                      Expanded(
-                        child: Text(
-                          _formatDateTime(startsAt),
-                          style: AppTypography.textTheme.labelSmall?.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (registrationMode != 'free' && deadline != null) ...[
-                    const SizedBox(height: AppSpacing.s4),
-                    Text(
-                      'Hạn đăng ký: ${_formatDateTime(deadline!)}',
-                      style: AppTypography.textTheme.labelSmall?.copyWith(
-                        color: AppColors.warning,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: AppSpacing.s12),
-                  if (registrationMode != 'free') ...[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Sức chứa:',
-                          style: AppTypography.textTheme.labelSmall?.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                        Text(
-                          '$capacity chỗ',
-                          style: AppTypography.textTheme.labelSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.primary,
-                          ),
+                      if (!_free && deadline != null) ...[
+                        const SizedBox(height: 16),
+                        _fact(
+                          Icons.schedule,
+                          'Hạn đăng ký',
+                          '${eventTime(deadline!)} · ${eventDate(deadline!)}',
                         ),
                       ],
-                    ),
-                    const SizedBox(height: AppSpacing.s4),
-                    ClipRRect(
-                      borderRadius: AppRadius.borderR6,
-                      child: const LinearProgressIndicator(
-                        value: 0.0,
-                        backgroundColor: AppColors.border,
-                        valueColor: AlwaysStoppedAnimation(AppColors.primary),
-                        minHeight: 6,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.s12),
-                  ],
-                  Text(
-                    description.isEmpty
-                        ? 'Mô tả chi tiết sự kiện sẽ hiển thị tại đây...'
-                        : description,
-                    style: AppTypography.textTheme.bodyMedium?.copyWith(
-                      color: AppColors.textPrimary,
-                    ),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
+                    ],
                   ),
-                  if (activities.isNotEmpty) ...[
-                    const SizedBox(height: AppSpacing.s8),
-                    Text(
-                      'Hoạt động (${activities.length}): ${activities.join(" • ")}',
-                      style: AppTypography.textTheme.labelSmall?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                  const SizedBox(height: AppSpacing.s16),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.s12),
-                    decoration: const BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: AppRadius.borderR8,
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      registrationMode == 'free'
-                          ? 'Tham gia tự do'
-                          : 'Đăng ký tham gia ngay',
-                      style: AppTypography.textTheme.labelLarge?.copyWith(
-                        color: AppColors.onPrimary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                ),
+                if (_free) ...[
+                  const SizedBox(height: 16),
+                  _panel(
+                    'Không cần đăng ký. Đến trực tiếp theo thời gian và địa điểm công bố. Không có điểm danh QR trên app.',
                   ),
                 ],
+                const SizedBox(height: 16),
+                Text('Giới thiệu', style: AppTypography.textTheme.titleMedium),
+                const SizedBox(height: 4),
+                Text(
+                  description.isEmpty
+                      ? 'Mô tả chi tiết sự kiện sẽ hiển thị tại đây.'
+                      : description,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Bạn sẽ làm gì?',
+                  style: AppTypography.textTheme.titleMedium,
+                ),
+                for (final activity in activities)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text('• $activity'),
+                  ),
+                if (audience.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  Text(
+                    'Dành cho ai?',
+                    style: AppTypography.textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(audience),
+                ],
+                if (preparation.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  Text(
+                    'Cần chuẩn bị',
+                    style: AppTypography.textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(preparation),
+                ],
+              ],
+            ),
+          ),
+          if (!_free)
+            Container(
+              padding: const EdgeInsets.all(16),
+              color: AppColors.surface,
+              child: ExcludeSemantics(
+                child: Container(
+                  constraints: const BoxConstraints(minHeight: 48),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
+                  decoration: const BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: AppRadius.borderR12,
+                  ),
+                  child: Text(
+                    'Đăng ký sự kiện',
+                    textAlign: TextAlign.center,
+                    style: AppTypography.textTheme.labelLarge?.copyWith(
+                      color: AppColors.onPrimary,
+                    ),
+                  ),
+                ),
               ),
             ),
+          const SizedBox(height: 16),
+        ],
+      ),
+    ),
+  );
+
+  Widget _panel(String text) => Container(
+    padding: const EdgeInsets.all(16),
+    decoration: const BoxDecoration(
+      color: AppColors.surfaceSubtle,
+      borderRadius: AppRadius.borderR16,
+    ),
+    child: Text(text),
+  );
+
+  Widget _fact(IconData icon, String label, String value) => Row(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Container(
+        padding: const EdgeInsets.all(8),
+        decoration: const BoxDecoration(
+          color: AppColors.brandSubtle,
+          borderRadius: AppRadius.borderR12,
+        ),
+        child: Icon(icon, size: 22),
+      ),
+      const SizedBox(width: 12),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: AppTypography.textTheme.labelMedium?.copyWith(
+                color: AppColors.primary,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(value),
           ],
         ),
       ),
-    );
-  }
+    ],
+  );
 
-  LinearGradient _gradientForCoverKey(String key) {
-    return switch (key) {
-      'ux-design' => const LinearGradient(
-          colors: [Color(0xFF4F46E5), Color(0xFF7C3AED)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      'acoustic-live' => const LinearGradient(
-          colors: [Color(0xFFEA580C), Color(0xFFF59E0B)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      'badminton' => const LinearGradient(
-          colors: [Color(0xFF0D9488), Color(0xFF06B6D4)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      'green-campus' => const LinearGradient(
-          colors: [Color(0xFF059669), Color(0xFF10B981)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      'career-connect' => const LinearGradient(
-          colors: [Color(0xFF2563EB), Color(0xFF3B82F6)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      _ => const LinearGradient(
-          colors: [AppColors.coverStart, AppColors.coverEnd],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-    };
-  }
-
-  DecorationImage? _buildCoverDecoration(String coverUrl) {
+  Widget _cover(BuildContext context) {
     final url = coverUrl.trim();
     if (url.startsWith('data:image')) {
       try {
-        final base64Str = url.substring(url.indexOf(',') + 1);
-        final bytes = base64Decode(base64Str);
-        return DecorationImage(
-          image: MemoryImage(bytes),
+        return Image.memory(
+          base64Decode(url.substring(url.indexOf(',') + 1)),
           fit: BoxFit.cover,
-          colorFilter: ColorFilter.mode(
-            Colors.black.withValues(alpha: 0.38),
-            BlendMode.darken,
-          ),
+          semanticLabel: 'Ảnh bìa $title',
+          errorBuilder: (_, _, _) => _fallbackCover(),
         );
       } catch (_) {
-        return null;
+        return _fallbackCover();
       }
-    } else if (kIsWeb &&
-        (url.startsWith('http://') || url.startsWith('https://'))) {
-      return DecorationImage(
-        image: NetworkImage(url),
+    }
+    if (Uri.tryParse(url)?.scheme == 'https') {
+      return Image.network(
+        url,
         fit: BoxFit.cover,
-        colorFilter: ColorFilter.mode(
-          Colors.black.withValues(alpha: 0.38),
-          BlendMode.darken,
-        ),
+        semanticLabel: 'Ảnh bìa $title',
+        errorBuilder: (_, _, _) => _fallbackCover(),
+        loadingBuilder: (_, child, progress) => progress == null
+            ? child
+            : const Center(child: CircularProgressIndicator()),
       );
     }
-    return null;
+    return _fallbackCover();
   }
+
+  Widget _fallbackCover() => Container(
+    padding: const EdgeInsets.all(16),
+    decoration: const BoxDecoration(
+      gradient: LinearGradient(
+        colors: [AppColors.coverStart, AppColors.coverEnd],
+      ),
+    ),
+    child: Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                topic.isEmpty ? 'SỰ KIỆN' : topic.toUpperCase(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: AppColors.onPrimary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Flexible(
+                child: Text(
+                  title.isEmpty ? 'Tiêu đề sự kiện' : title,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.textTheme.titleLarge?.copyWith(
+                    color: AppColors.onPrimary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 12),
+        const Icon(
+          Icons.calendar_today_outlined,
+          color: AppColors.onPrimary,
+          size: 40,
+        ),
+      ],
+    ),
+  );
 }

@@ -214,7 +214,7 @@ Figma chưa chỉnh trong lượt này; giữ bản hiện tại để nhóm đ�
 Form tạo/sửa bổ sung lựa chọn chủ đề AI không chứa dữ liệu cá nhân, bản xem trước có nhãn Gemini và nút Áp dụng/Giữ nội dung hiện tại. Lý do: mục 8 Final yêu cầu Level 2 được xác nhận, có thể sửa và không gửi PII. Không gửi title/description của form; AI không tự lưu/gửi duyệt. Chưa cập nhật Figma trong lượt sửa source này; nhóm cần đồng bộ trước nộp.
 
 ## Web: phân công CLB trước đăng nhập
-Quản lý người dùng → `ClubAssignmentsPanel`/`AssignmentDialog` → `AssignmentAction` → `IClubAssignmentService`/`FirestoreClubAssignmentService` → clubAssignments, clubManagerSlots, users. Tạo CLB tiếp tục dùng AdminClubsScreen. Web Google auth kích hoạt phân công, không thêm navigation mobile. Loading/error/empty và hủy/thu hồi có UI; Figma chưa cập nhật thay đổi này.
+Quản lý người dùng → `ClubAssignmentsPanel`/`AssignmentDialog` → `AssignmentAction` → `IClubAssignmentService`/`FirestoreClubAssignmentService` → clubAssignments, clubManagerSlots, users. Tạo CLB tiếp tục dùng AdminClubsScreen. Web Google auth ghi nhận danh tính chờ kích hoạt; chỉ Admin bấm Kích hoạt để cấp staff. Không thêm navigation mobile. Loading/error/empty và hủy/thu hồi có UI; Figma chưa cập nhật thay đổi này.
 
 ## AI nhập ý tưởng — 14/11/2026
 Bỏ dropdown chủ đề cố định, thêm ô ý tưởng riêng 5–500 ký tự. Popup chọn từng trường nội dung để áp dụng; giữ nguyên ngày giờ, địa điểm, hạn đăng ký và sức chứa theo quyết định CLB. Không thêm route/chat. Figma chưa cập nhật thay đổi này; cần ghi nhận khi đối chiếu thiết kế.
@@ -234,3 +234,6 @@ Nguồn tham chiếu: ba ảnh “Prototype mô phỏng” do nhóm cung cấp. 
 - Khác ảnh có chủ đích: ASM đăng ký chờ CLB duyệt nên kết quả pending không ghi thành công/được duyệt. Các nút “Quét mã hợp lệ”, “QR sai sự kiện”, “Mô phỏng lỗi mạng” chỉ là điều khiển prototype, không thêm vào bản chạy thật. Dữ liệu và thời gian lấy từ cloud, không chép ngày/giờ, số chỗ hoặc tên người trong ảnh vào ứng dụng.
 
 Ảnh `evidence/ui-reference/local-preview/` nếu được tạo bằng test chỉ dùng kiểm tra bố cục với fixture, không phải bằng chứng chạy cloud/thiết bị thật. Chạy bằng `flutter test --dart-define=CAPTURE_REFERENCE=true test/reference_layout_test.dart` trong mobile.
+
+## Web CLB: xem trước A04 — 14/11/2026
+Form tạo/sửa dùng MobilePreviewCard 360 × 800, ảnh bìa tách tiêu đề/nhãn, metadata có icon và nút đăng ký cố định dưới vùng cuộn. Hiển thị giờ kết thúc, đối tượng, chuẩn bị, hoạt động; sự kiện tự do không có nút đăng ký/hạn/sức chứa. Giá trị cập nhật từ form; số chỗ bằng capacity trừ activeCount hiện có. Đây là preview nội dung, không phải phiên mobile đăng nhập; không mô phỏng trạng thái đăng ký cá nhân. Figma không thay đổi trong lượt này.
