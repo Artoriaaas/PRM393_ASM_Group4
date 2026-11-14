@@ -226,12 +226,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           variant: AppButtonVariant.secondary,
         ),
       ],
-      if (login)
-        button(
-          'Khám phá không cần đăng nhập',
-          () => context.go('/discover'),
-          variant: AppButtonVariant.text,
-        ),
       if (register)
         button(
           'Điều khoản và chính sách dữ liệu',
