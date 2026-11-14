@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-13T13:46:57.311Z",
+  "checkedAt": "2026-11-14T03:39:36.843Z",
   "project": "eventhub-group4",
   "config": {
     "web": {
@@ -27,11 +27,18 @@
   },
   "appCheckObservations": [
     {
-      "service": "firestore.googleapis.com",
-      "appId": "UNKNOWN",
+      "service": "firebaseml.googleapis.com",
+      "appId": "1:218815401893:web:1b87cb5223b55aee53a24c",
       "result": "ALLOW",
-      "security": "INVALID",
-      "count": 24
+      "security": "VALID",
+      "count": 4
+    },
+    {
+      "service": "firestore.googleapis.com",
+      "appId": "1:218815401893:android:c3166be3181a746c53a24c",
+      "result": "ALLOW",
+      "security": "VALID",
+      "count": 232
     }
   ],
   "hostingHttpStatus": 200,
