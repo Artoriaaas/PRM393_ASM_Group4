@@ -1,288 +1,253 @@
+import 'dart:async';
 import 'dart:convert';
+
+import 'package:firebase_ai/firebase_ai.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart' as http;
-import 'package:http/testing.dart';
 import 'package:eventhub_core/eventhub_core.dart';
 import 'package:eventhub_web/app/providers.dart';
 import 'package:eventhub_web/services/gemini_ai_service.dart';
 import 'package:eventhub_web/services/web_contracts.dart';
 import 'package:eventhub_web/viewmodels/ai_event_assist_viewmodel.dart';
 
-class _FakeRemoteConfig implements IWebRemoteConfigService {
-  _FakeRemoteConfig({
-    this.enabled = true,
-  });
-
-  bool enabled;
-  String modelName = 'gemini-1.5-flash';
-
+class Config implements IWebRemoteConfigService {
+  bool enabled = true;
+  bool refreshFails = false;
+  bool forceRequested = false;
   @override
-  Future<void> initialize() async {}
-
-  @override
-  bool getBool(String key, {bool defaultValue = false}) {
-    if (key == 'ai_feature_enabled') return enabled;
-    return defaultValue;
+  Future<void> initialize({bool forceRefresh = false}) async {
+    forceRequested = forceRefresh;
+    if (refreshFails) throw StateError('offline');
   }
 
+  @override
+  bool getBool(String key, {bool defaultValue = false}) => enabled;
   @override
   int getInt(String key, {int defaultValue = 0}) => defaultValue;
-
   @override
-  String getString(String key, {String defaultValue = ''}) {
-    if (key == 'ai_model_name') return modelName;
-    return defaultValue;
-  }
+  String getString(String key, {String defaultValue = ''}) =>
+      key == 'ai_model_name' ? 'configured-model' : 'configured-prompt';
 }
 
-class _FakeAnalytics implements IWebAnalyticsService {
-  final List<String> loggedEvents = [];
-  final List<Map<String, Object>?> loggedParams = [];
-
+class Analytics implements IWebAnalyticsService {
+  final events = <String>[];
+  final params = <Map<String, Object>?>[];
   @override
   Future<void> logEvent(String name, [Map<String, Object>? parameters]) async {
-    loggedEvents.add(name);
-    loggedParams.add(parameters);
+    events.add(name);
+    params.add(parameters);
   }
 
   @override
   Future<void> setUserId(String? uid) async {}
 }
 
+final payload = {
+  'topic': 'Công nghệ',
+  'description': 'Thực hành theo nhóm.',
+  'audience': 'Sinh viên',
+  'preparation': 'Laptop',
+  'activities': ['Giới thiệu', 'Thực hành'],
+};
 void main() {
-  group('AiEventSuggestion model (Level 2 Structured Output)', () {
-    test('parses clean JSON into structured model', () {
-      const jsonStr = '''
-      {
-        "topic": "Lập trình Di động",
-        "description": "Workshop chuyên sâu về Flutter.",
-        "audience": "Sinh viên ngành CNTT",
-        "preparation": "Mang theo laptop cài sẵn Flutter",
-        "activities": ["Đón tiếp", "Thực hành", "Q&A"]
-      }
-      ''';
-
-      final suggestion =
-          AiEventSuggestion.fromJson(jsonDecode(jsonStr) as Map<String, dynamic>);
-      expect(suggestion.topic, 'Lập trình Di động');
-      expect(suggestion.description, 'Workshop chuyên sâu về Flutter.');
-      expect(suggestion.audience, 'Sinh viên ngành CNTT');
-      expect(suggestion.preparation, 'Mang theo laptop cài sẵn Flutter');
-      expect(suggestion.activities, ['Đón tiếp', 'Thực hành', 'Q&A']);
-    });
-
-    test('parses markdown-fenced json string gracefully', () {
-      const raw = '''
-      ```json
-      {
-        "topic": "Thiết kế UI/UX",
-        "description": "Hướng dẫn sử dụng Figma căn bản.",
-        "audience": "Tất cả sinh viên quan tâm",
-        "preparation": "Tạo tài khoản Figma",
-        "activities": ["Giới thiệu", "Demo"]
-      }
-      ```
-      ''';
-
-      final suggestion = AiEventSuggestion.fromRawText(raw);
-      expect(suggestion.topic, 'Thiết kế UI/UX');
-      expect(suggestion.description, 'Hướng dẫn sử dụng Figma căn bản.');
-      expect(suggestion.activities.length, 2);
-    });
+  late Config config;
+  late Analytics analytics;
+  late int calls;
+  GeminiAiEventAssistService service({
+    AiGenerate? generate,
+    Future<String?> Function()? token,
+  }) => GeminiAiEventAssistService(
+    remoteConfig: config,
+    analytics: analytics,
+    appCheckToken: token ?? (() async => 'test-token'),
+    generate:
+        generate ??
+        ((model, prompt) async {
+          calls++;
+          expect(model, 'configured-model');
+          expect(prompt, contains('configured-prompt'));
+          return jsonEncode(payload);
+        }),
+  );
+  setUp(() {
+    config = Config();
+    analytics = Analytics();
+    calls = 0;
   });
-
-  group('GeminiAiEventAssistService', () {
-    test('valid input calls Gemini API and returns structured suggestion', () async {
-      final remoteConfig = _FakeRemoteConfig();
-      final analytics = _FakeAnalytics();
-
-      final mockClient = MockClient((request) async {
-        expect(request.url.toString(), contains('gemini-1.5-flash'));
-        expect(request.headers['Content-Type'], 'application/json');
-
-        // Check privacy requirement: NO personal data (names, emails) in payload
-        final bodyText = request.body;
-        expect(bodyText, isNot(contains('@gmail.com')));
-        expect(bodyText, isNot(contains('@fpt.edu.vn')));
-
-        final responseJson = {
-          'candidates': [
-            {
-              'content': {
-                'parts': [
-                  {
-                    'text': jsonEncode({
-                      'topic': 'Trí tuệ Nhân tạo',
-                      'description': 'Hội thảo AI trong đời sống sinh viên.',
-                      'audience': 'Sinh viên yêu thích AI',
-                      'preparation': 'Sổ tay ghi chú',
-                      'activities': ['Khai mạc', 'Thảo luận', 'Bế mạc']
-                    })
-                  }
-                ]
-              }
-            }
-          ]
-        };
-
-        return http.Response(jsonEncode(responseJson), 200, headers: {
-          'content-type': 'application/json; charset=utf-8',
-        });
-      });
-
-      final service = GeminiAiEventAssistService(
-        remoteConfig: remoteConfig,
-        analytics: analytics,
-        httpClient: mockClient,
-        apiKey: 'test-api-key',
-      );
-
-      final result = await service.suggestEventContent(
-        title: 'Hội thảo Trí tuệ Nhân tạo 2026',
-        topic: 'Công nghệ',
-      );
-
-      expect(result.isSuccess, isTrue);
-      final suggestion = result.dataOrNull!;
-      expect(suggestion.topic, 'Trí tuệ Nhân tạo');
-      expect(suggestion.description, 'Hội thảo AI trong đời sống sinh viên.');
-      expect(suggestion.activities.length, 3);
-
-      expect(analytics.loggedEvents, contains('ai_request'));
-    });
-
-    test('respects Remote Config on/off kill-switch and logs ai_error', () async {
-      final remoteConfig = _FakeRemoteConfig(enabled: false);
-      final analytics = _FakeAnalytics();
-
-      final service = GeminiAiEventAssistService(
-        remoteConfig: remoteConfig,
-        analytics: analytics,
-        apiKey: 'test-api-key',
-      );
-
-      final result = await service.suggestEventContent(
-        title: 'Workshop lập trình di động',
-      );
-
-      expect(result.isFailure, isTrue);
-      expect(result.failureOrNull?.code, 'ai_disabled');
-      expect(
-        result.failureOrNull?.message,
-        contains('tạm tắt từ hệ thống (Remote Config)'),
-      );
-      expect(analytics.loggedEvents, contains('ai_error'));
-    });
-
-    test('handles HTTP 429 Quota Exceeded gracefully without crashing', () async {
-      final remoteConfig = _FakeRemoteConfig();
-      final analytics = _FakeAnalytics();
-
-      final mockClient = MockClient((request) async {
-        return http.Response('Resource Exhausted (Quota)', 429);
-      });
-
-      final service = GeminiAiEventAssistService(
-        remoteConfig: remoteConfig,
-        analytics: analytics,
-        httpClient: mockClient,
-        apiKey: 'test-api-key',
-      );
-
-      final result = await service.suggestEventContent(
-        title: 'Giao lưu câu lạc bộ âm nhạc',
-      );
-
-      expect(result.isFailure, isTrue);
-      expect(result.failureOrNull?.code, 'quota_exhausted');
-      expect(analytics.loggedEvents, contains('ai_error'));
-    });
-
-    test('rejects inputs shorter than 3 characters before network call', () async {
-      final remoteConfig = _FakeRemoteConfig();
-      final analytics = _FakeAnalytics();
-
-      final service = GeminiAiEventAssistService(
-        remoteConfig: remoteConfig,
-        analytics: analytics,
-        apiKey: 'test-api-key',
-      );
-
-      final result = await service.suggestEventContent(title: '  a ');
-      expect(result.isFailure, isTrue);
-      expect(result.failureOrNull?.code, 'invalid_input');
-      expect(analytics.loggedEvents, isEmpty);
-    });
+  test('schema validates required fields and rejects malformed/plain text/contact output', () {
+    expect(
+      AiEventSuggestion.fromRawText(jsonEncode(payload)).activities,
+      hasLength(2),
+    );
+    for (final value in [
+      'plain text',
+      '{}',
+      jsonEncode({
+        ...payload,
+        'activities': [1],
+      }),
+      jsonEncode({...payload, 'description': 'Contact test@example.org'}),
+    ]) {
+      expect(() => AiEventSuggestion.fromRawText(value), throwsFormatException);
+    }
   });
-
-  group('AiEventAssistViewModel', () {
-    test('requests suggestion, updates state, and marks accepted', () async {
-      final remoteConfig = _FakeRemoteConfig();
-      final analytics = _FakeAnalytics();
-
-      final mockClient = MockClient((request) async {
-        return http.Response(
-          jsonEncode({
-            'candidates': [
-              {
-                'content': {
-                  'parts': [
-                    {
-                      'text': jsonEncode({
-                        'topic': 'Âm nhạc',
-                        'description': 'Đêm nhạc acoustic.',
-                        'audience': 'Sinh viên',
-                        'preparation': 'Nước uống',
-                        'activities': ['Văn nghệ', 'Giao lưu']
-                      })
-                    }
-                  ]
-                }
-              }
-            ]
-          }),
-          200,
-          headers: {'content-type': 'application/json; charset=utf-8'},
-        );
-      });
-
-      final service = GeminiAiEventAssistService(
-        remoteConfig: remoteConfig,
-        analytics: analytics,
-        httpClient: mockClient,
-        apiKey: 'test-key',
+  test('configured model/prompt and App Check precede generation', () async {
+    final result = await service().suggestEventContent(
+      title: aiEventIdeas.first,
+    );
+    expect(result.isSuccess, isTrue);
+    expect(calls, 1);
+    expect(config.forceRequested, isTrue);
+    expect(analytics.events, ['ai_request']);
+  });
+  test(
+    'regeneration sends previous draft and rejects identical content',
+    () async {
+      final prompts = <String>[];
+      final instance = service(
+        generate: (model, prompt) async {
+          prompts.add(prompt);
+          return jsonEncode(payload);
+        },
       );
-
-      final container = ProviderContainer(
-        overrides: [
-          webRemoteConfigServiceProvider.overrideWithValue(remoteConfig),
-          webAnalyticsServiceProvider.overrideWithValue(analytics),
-          geminiAiServiceProvider.overrideWithValue(service),
-        ],
-      );
-      addTearDown(container.dispose);
-
-      final vm = container.read(aiEventAssistViewModelProvider.notifier);
-      final res = await vm.requestSuggestion(title: 'Acoustic Night');
-
-      expect(res, isNotNull);
-      expect(res?.topic, 'Âm nhạc');
       expect(
-        container.read(aiEventAssistViewModelProvider).isAiGenerated,
+        (await instance.suggestEventContent(title: aiEventIdeas.first))
+            .isSuccess,
         isTrue,
       );
-
-      vm.markAccepted();
-      expect(container.read(aiEventAssistViewModelProvider).isAccepted, isTrue);
-      expect(analytics.loggedEvents, contains('ai_result_accepted'));
-
-      vm.clearMessage();
-      vm.reset();
-      expect(
-        container.read(aiEventAssistViewModelProvider).isAiGenerated,
-        isFalse,
+      final repeated = await instance.suggestEventContent(
+        title: aiEventIdeas.first,
       );
-    });
+      expect(repeated.failureOrNull?.code, 'duplicate_response');
+      expect(prompts.last, contains(payload['description']));
+      expect(prompts.first, isNot(prompts.last));
+    },
+  );
+  test('never sends free text names, email or form description', () async {
+    for (final input in ['Nguyễn Văn A', 'test@example.org', '+84912345678']) {
+      expect(
+        (await service().suggestEventContent(title: input)).isFailure,
+        isTrue,
+      );
+    }
+    expect(
+      (await service().suggestEventContent(
+        title: aiEventIdeas.first,
+        currentDescription: 'private',
+      )).isFailure,
+      isTrue,
+    );
+    expect(calls, 0);
+    expect(analytics.events, everyElement('ai_error'));
   });
+  test(
+    'RC disabled makes no request and leaves manual entry available',
+    () async {
+      config.enabled = false;
+      expect(
+        (await service().suggestEventContent(title: aiEventIdeas.first))
+            .failureOrNull
+            ?.code,
+        'ai_disabled',
+      );
+      expect(calls, 0);
+    },
+  );
+  test('RC refresh failure blocks generation with stale config', () async {
+    config.refreshFails = true;
+    expect(
+      (await service().suggestEventContent(title: aiEventIdeas.first))
+          .isFailure,
+      isTrue,
+    );
+    expect(calls, 0);
+  });
+  test('missing or failed App Check stops generation', () async {
+    for (final token in <Future<String?> Function()>[
+      () async => null,
+      () async => throw StateError('invalid'),
+    ]) {
+      expect(
+        (await service(token: token)
+                .suggestEventContent(title: aiEventIdeas.first))
+            .isFailure,
+        isTrue,
+      );
+    }
+    expect(calls, 0);
+    expect(analytics.events, isNot(contains('ai_request')));
+  });
+  test('network/quota errors cannot masquerade as generated content or leak details', () async {
+    final result = await service(
+      generate: (_, _) async => throw StateError('429 secret@example.org'),
+    ).suggestEventContent(title: aiEventIdeas.first);
+    expect(result.isFailure, isTrue);
+    expect(analytics.events, ['ai_request', 'ai_error']);
+    expect(analytics.params.toString(), isNot(contains('secret@example.org')));
+  });
+  test('quota error is reported without generated fallback', () async {
+    final result = await service(
+      generate: (_, _) async => throw QuotaExceeded('quota'),
+    ).suggestEventContent(title: aiEventIdeas.first);
+    expect(result.failureOrNull?.code, 'quota_exhausted');
+  });
+  test('invalid response fails without offline generation', () async {
+    final result = await service(generate: (_, _) async => '{}')
+        .suggestEventContent(title: aiEventIdeas.first);
+    expect(result.failureOrNull?.code, 'invalid_response');
+  });
+  test('accept only an existing result, once per request; failure clears stale suggestion', () async {
+    final c = ProviderContainer(
+      overrides: [
+        geminiAiServiceProvider.overrideWithValue(service()),
+        webAnalyticsServiceProvider.overrideWithValue(analytics),
+      ],
+    );
+    final sub = c.listen(aiEventAssistViewModelProvider, (_, _) {});
+    addTearDown(() {
+      sub.close();
+      c.dispose();
+    });
+    final vm = c.read(aiEventAssistViewModelProvider.notifier);
+    vm.markAccepted();
+    expect(analytics.events, isEmpty);
+    await vm.requestSuggestion(title: aiEventIdeas.first);
+    vm.markAccepted();
+    vm.markAccepted();
+    expect(
+      analytics.events.where((e) => e == 'ai_result_accepted'),
+      hasLength(1),
+    );
+    config.enabled = false;
+    await vm.requestSuggestion(title: aiEventIdeas.first);
+    expect(c.read(aiEventAssistViewModelProvider).suggestion, isNull);
+    vm.markAccepted();
+    expect(
+      analytics.events.where((e) => e == 'ai_result_accepted'),
+      hasLength(1),
+    );
+  });
+  test(
+    'disposing a form while request runs does not update another session',
+    () async {
+      final delayed = Completer<String?>();
+      final c = ProviderContainer(
+        overrides: [
+          geminiAiServiceProvider.overrideWithValue(
+            service(generate: (_, _) => delayed.future),
+          ),
+        ],
+      );
+      final sub = c.listen(aiEventAssistViewModelProvider, (_, _) {});
+      final task = c
+          .read(aiEventAssistViewModelProvider.notifier)
+          .requestSuggestion(title: aiEventIdeas.first);
+      await Future<void>.delayed(Duration.zero);
+      sub.close();
+      c.dispose();
+      delayed.complete(jsonEncode(payload));
+      expect(await task, isNull);
+    },
+  );
 }

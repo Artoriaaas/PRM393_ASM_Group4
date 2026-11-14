@@ -15,3 +15,4 @@ abstract interface class IAiEventAssistService {
     String? currentDescription,
   });
 }
+

@@ -1,6 +1,8 @@
 import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eventhub_core/eventhub_core.dart';
+
 import '../app/providers.dart';
 
 class AiEventAssistState {
@@ -24,20 +26,19 @@ class AiEventAssistState {
     String? errorMessage,
     bool? isAccepted,
     bool? isAiGenerated,
-  }) =>
-      AiEventAssistState(
-        isLoading: isLoading ?? this.isLoading,
-        suggestion: suggestion ?? this.suggestion,
-        errorMessage: errorMessage,
-        isAccepted: isAccepted ?? this.isAccepted,
-        isAiGenerated: isAiGenerated ?? this.isAiGenerated,
-      );
+  }) => AiEventAssistState(
+    isLoading: isLoading ?? this.isLoading,
+    suggestion: suggestion ?? this.suggestion,
+    errorMessage: errorMessage,
+    isAccepted: isAccepted ?? this.isAccepted,
+    isAiGenerated: isAiGenerated ?? this.isAiGenerated,
+  );
 }
 
 final aiEventAssistViewModelProvider =
-    NotifierProvider<AiEventAssistViewModel, AiEventAssistState>(
-  AiEventAssistViewModel.new,
-);
+    NotifierProvider.autoDispose<AiEventAssistViewModel, AiEventAssistState>(
+      AiEventAssistViewModel.new,
+    );
 
 class AiEventAssistViewModel extends Notifier<AiEventAssistState> {
   @override
@@ -48,7 +49,8 @@ class AiEventAssistViewModel extends Notifier<AiEventAssistState> {
     String? topic,
     String? currentDescription,
   }) async {
-    state = state.copyWith(isLoading: true, errorMessage: null);
+    if (state.isLoading) return null;
+    state = const AiEventAssistState(isLoading: true);
 
     final service = ref.read(geminiAiServiceProvider);
     final result = await service.suggestEventContent(
@@ -57,6 +59,7 @@ class AiEventAssistViewModel extends Notifier<AiEventAssistState> {
       currentDescription: currentDescription,
     );
 
+    if (!ref.mounted) return null;
     return result.when(
       success: (suggestion) {
         state = state.copyWith(
@@ -68,16 +71,14 @@ class AiEventAssistViewModel extends Notifier<AiEventAssistState> {
         return suggestion;
       },
       failure: (failure) {
-        state = state.copyWith(
-          isLoading: false,
-          errorMessage: failure.message,
-        );
+        state = state.copyWith(isLoading: false, errorMessage: failure.message);
         return null;
       },
     );
   }
 
   void markAccepted() {
+    if (state.suggestion == null || state.isAccepted || state.isLoading) return;
     state = state.copyWith(isAccepted: true);
     final analytics = ref.read(webAnalyticsServiceProvider);
     unawaited(

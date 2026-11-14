@@ -1328,12 +1328,14 @@ class FirebaseWebRemoteConfigService implements IWebRemoteConfigService {
   final FirebaseRemoteConfig _remoteConfig;
 
   @override
-  Future<void> initialize() async {
+  Future<void> initialize({bool forceRefresh = false}) async {
     try {
       await _remoteConfig.setConfigSettings(
         RemoteConfigSettings(
           fetchTimeout: const Duration(seconds: 15),
-          minimumFetchInterval: const Duration(minutes: 5),
+          minimumFetchInterval: forceRefresh
+              ? Duration.zero
+              : const Duration(minutes: 5),
         ),
       );
       await _remoteConfig.setDefaults(const {
@@ -1341,14 +1343,15 @@ class FirebaseWebRemoteConfigService implements IWebRemoteConfigService {
         'recommendation_limit': 10,
         'web_dashboard_recent_limit': 4,
         'web_dashboard_chart_limit': 5,
-        'ai_feature_enabled': true,
-        'ai_model_name': 'gemini-1.5-flash',
-        'ai_prompt_template':
-            'Bạn là trợ lý AI cho ứng dụng EventHub của trường đại học. Dựa trên ý chính hoặc tiêu đề do CLB cung cấp, hãy đề xuất nội dung sự kiện theo định dạng JSON có cấu trúc gồm các trường: topic, description, audience, preparation, activities. Tuyệt đối không gửi hoặc yêu cầu thông tin cá nhân.',
+        'ai_feature_enabled': false,
+        'ai_model_name': '',
+        'ai_prompt_template': 'Bạn là trợ lý AI cho ứng dụng EventHub của trường đại học. Dựa trên ý chính hoặc tiêu đề do CLB cung cấp, hãy đề xuất nội dung sự kiện theo định dạng JSON có cấu trúc gồm các trường: topic, description, audience, preparation, activities. Tuyệt đối không gửi hoặc yêu cầu thông tin cá nhân.',
       });
       await _remoteConfig.fetchAndActivate();
     } catch (_) {
-      // Safe fallback to local defaults when offline.
+      // Explicit AI actions must not run with stale kill-switch/model settings.
+      if (forceRefresh) rethrow;
+      // Safe fallback to local defaults for passive dashboard startup.
     }
   }
 

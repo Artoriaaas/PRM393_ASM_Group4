@@ -7,6 +7,7 @@ import 'package:eventhub_web/services/web_contracts.dart';
 import 'package:eventhub_web/viewmodels/club_events_viewmodel.dart';
 import 'package:eventhub_web/viewmodels/dashboard_viewmodel.dart';
 import 'package:eventhub_web/screens/events/club_events_screen.dart';
+import 'package:eventhub_web/screens/events/event_editor_dialog.dart';
 
 import 'support/fake_web_services.dart';
 
@@ -41,7 +42,7 @@ Event event(String id, {String status = 'draft'}) => Event(
 
 class Config implements IWebRemoteConfigService {
   @override
-  Future<void> initialize() async {}
+  Future<void> initialize({bool forceRefresh = false}) async {}
   @override
   int getInt(String key, {int defaultValue = 0}) =>
       key == 'web_dashboard_recent_limit' ? 1 : 2;
@@ -51,7 +52,81 @@ class Config implements IWebRemoteConfigService {
   String getString(String key, {String defaultValue = ''}) => defaultValue;
 }
 
+class SuggestionService implements IAiEventAssistService {
+  @override
+  Future<Result<AiEventSuggestion>> suggestEventContent({
+    required String title,
+    String? topic,
+    String? currentDescription,
+  }) async => Result.success(
+    const AiEventSuggestion(
+      topic: 'New topic',
+      description: 'Generated draft',
+      audience: 'Students',
+      preparation: 'Laptop',
+      activities: ['Discuss'],
+    ),
+  );
+}
+
 void main() {
+  testWidgets('AI preview requires confirmation and cancel preserves input', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1400, 1600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          webAuthServiceProvider.overrideWithValue(
+            FakeWebAuthService(initialUser: staff),
+          ),
+          clubServiceProvider.overrideWithValue(FakeClubService()),
+          webAnalyticsServiceProvider.overrideWithValue(
+            FakeWebAnalyticsService(),
+          ),
+          geminiAiServiceProvider.overrideWithValue(SuggestionService()),
+        ],
+        child: MaterialApp(
+          home: Scaffold(body: EventEditorDialog(initialEvent: event('a'))),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final request = find.widgetWithText(
+      ElevatedButton,
+      '✨ Gợi ý nội dung bằng AI (Gemini)',
+    );
+    await tester.ensureVisible(request);
+    await tester.tap(request);
+    await tester.pumpAndSettle();
+    expect(find.text('Bản nháp do Gemini AI đề xuất'), findsOneWidget);
+    final generatedField = find.byWidgetPredicate(
+      (w) => w is TextFormField && w.controller?.text == 'Generated draft',
+    );
+    expect(generatedField, findsNothing);
+    await tester.tap(find.text('Hủy').last);
+    await tester.pumpAndSettle();
+    expect(generatedField, findsNothing);
+    final retry = find.widgetWithText(
+      ElevatedButton,
+      '✨ Tạo lại gợi ý khác bằng AI',
+    );
+    await tester.ensureVisible(retry);
+    await tester.tap(retry);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Tạo lại'));
+    await tester.pumpAndSettle();
+    expect(find.text('Bản nháp do Gemini AI đề xuất'), findsOneWidget);
+    expect(generatedField, findsNothing);
+    await tester.tap(find.text('Áp dụng'));
+    await tester.pumpAndSettle();
+    expect(generatedField, findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   test('web Remote Config values feed dashboard presentation limits', () async {
     final c = ProviderContainer(
       overrides: [
@@ -174,7 +249,9 @@ void main() {
           await tester.tap(find.text('Cập nhật sự kiện'));
         }
         await tester.pumpAndSettle();
-        final saved = await tester.runAsync(() => service.streamEvent('a').first);
+        final saved = await tester.runAsync(
+          () => service.streamEvent('a').first,
+        );
         expect(saved!.coverKey, 'ux-workshop');
         expect(
           saved.status,

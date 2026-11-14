@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eventhub_core/eventhub_core.dart';
 
 import '../../app/providers.dart';
+import '../../services/gemini_ai_service.dart';
 import '../../viewmodels/ai_event_assist_viewmodel.dart';
 import '../../viewmodels/club_events_viewmodel.dart';
 import '../../viewmodels/web_auth_viewmodel.dart';
@@ -19,6 +20,7 @@ class EventEditorDialog extends ConsumerStatefulWidget {
 
 class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
   final _formKey = GlobalKey<FormState>();
+  String _aiIdea = aiEventIdeas.first;
 
   late final TextEditingController _titleController;
   late final TextEditingController _topicController;
@@ -228,10 +230,6 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
 
     res.when(
       success: (_) {
-        final aiState = ref.read(aiEventAssistViewModelProvider);
-        if (aiState.isAiGenerated && !aiState.isAccepted) {
-          ref.read(aiEventAssistViewModelProvider.notifier).markAccepted();
-        }
         Navigator.of(context).pop(true);
       },
       failure: (failure) => setState(() => _errorMessage = failure.message),
@@ -239,48 +237,66 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
   }
 
   Future<void> _requestAiSuggestion() async {
-    final title = _titleController.text.trim();
-    if (title.length < 3) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Vui lòng nhập tiêu đề hoặc ý tưởng sự kiện (tối thiểu 3 ký tự) trước khi gọi AI.',
+    while (mounted) {
+      final suggestion = await ref
+          .read(aiEventAssistViewModelProvider.notifier)
+          .requestSuggestion(title: _aiIdea);
+      if (suggestion == null || !mounted) return;
+      final action = await showDialog<String>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Bản nháp do Gemini AI đề xuất'),
+          content: SizedBox(
+            width: 520,
+            child: SingleChildScrollView(
+              child: Text(
+                '${suggestion.topic}\n\n${suggestion.description}\n\nĐối tượng: ${suggestion.audience}\n\nChuẩn bị: ${suggestion.preparation}\n\n${suggestion.activities.map((v) => '• $v').join('\n')}\n\nÁp dụng sẽ thay nội dung mô tả, đối tượng, chuẩn bị và hoạt động hiện tại. Bạn có thể sửa trước khi lưu.',
+              ),
+            ),
           ),
-          backgroundColor: AppColors.error,
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'cancel'),
+              child: const Text('Hủy'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'regenerate'),
+              child: const Text('Tạo lại'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, 'apply'),
+              child: const Text('Áp dụng'),
+            ),
+          ],
         ),
       );
-      return;
-    }
+      if (!mounted) return;
+      if (action == 'regenerate') continue;
+      if (action != 'apply') return;
+      ref.read(aiEventAssistViewModelProvider.notifier).markAccepted();
+      if (mounted) {
+        setState(() {
+          if (_topicController.text.trim().isEmpty ||
+              _topicController.text.trim() == 'Chưa phân loại') {
+            _topicController.text = suggestion.topic;
+          }
+          _descriptionController.text = suggestion.description;
+          _audienceController.text = suggestion.audience;
+          _preparationController.text = suggestion.preparation;
+          _activitiesController.text = suggestion.activities.join('\n');
+        });
 
-    final suggestion = await ref
-        .read(aiEventAssistViewModelProvider.notifier)
-        .requestSuggestion(
-          title: title,
-          topic: _topicController.text.trim(),
-          currentDescription: _descriptionController.text.trim(),
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              '✨ Đã áp dụng gợi ý từ Gemini AI! Bạn có thể xem và chỉnh sửa trực tiếp các trường bên dưới trước khi lưu.',
+            ),
+            backgroundColor: AppColors.primary,
+            duration: Duration(seconds: 4),
+          ),
         );
-
-    if (suggestion != null && mounted) {
-      setState(() {
-        if (_topicController.text.trim().isEmpty ||
-            _topicController.text.trim() == 'Chưa phân loại') {
-          _topicController.text = suggestion.topic;
-        }
-        _descriptionController.text = suggestion.description;
-        _audienceController.text = suggestion.audience;
-        _preparationController.text = suggestion.preparation;
-        _activitiesController.text = suggestion.activities.join('\n');
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            '✨ Đã áp dụng gợi ý từ Gemini AI! Bạn có thể xem và chỉnh sửa trực tiếp các trường bên dưới trước khi lưu.',
-          ),
-          backgroundColor: AppColors.primary,
-          duration: Duration(seconds: 4),
-        ),
-      );
+      }
+      break;
     }
   }
 
@@ -808,14 +824,14 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
               const SizedBox(width: AppSpacing.s8),
               Expanded(
                 child: Text(
-                  'Trợ lý nội dung Gemini AI (Level 2 Structured Output)',
+                  'Gợi ý nội dung sự kiện',
                   style: AppTypography.textTheme.labelLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: AppColors.primary,
                   ),
                 ),
               ),
-              if (aiState.isAiGenerated)
+              if (aiState.isAccepted)
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.s8,
@@ -837,7 +853,7 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
           ),
           const SizedBox(height: AppSpacing.s8),
           Text(
-            'Nhập tên sự kiện hoặc vài từ khóa ý tưởng vào ô tiêu đề trên, sau đó bấm nút để Gemini AI tự động gợi ý chủ đề, mô tả, đối tượng, chuẩn bị và các hoạt động phù hợp. Bạn hoàn toàn có thể kiểm tra và chỉnh sửa trước khi lưu.',
+            'Chỉ chủ đề có sẵn dưới đây được gửi đến Gemini. Tên, mô tả sự kiện và dữ liệu tài khoản không được gửi. Xem trước rồi chọn Áp dụng; bạn vẫn có thể sửa trước khi lưu.',
             style: AppTypography.textTheme.bodySmall?.copyWith(
               color: AppColors.textSecondary,
             ),
@@ -878,6 +894,18 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
             ),
           ],
           const SizedBox(height: AppSpacing.s12),
+          DropdownButtonFormField<String>(
+            isExpanded: true,
+            initialValue: _aiIdea,
+            decoration: const InputDecoration(labelText: 'Chủ đề gửi AI'),
+            items: aiEventIdeas
+                .map((v) => DropdownMenuItem(value: v, child: Text(v)))
+                .toList(),
+            onChanged: aiState.isLoading
+                ? null
+                : (v) => setState(() => _aiIdea = v!),
+          ),
+          const SizedBox(height: AppSpacing.s12),
           ElevatedButton.icon(
             onPressed: aiState.isLoading ? null : _requestAiSuggestion,
             icon: aiState.isLoading
@@ -894,8 +922,8 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
               aiState.isLoading
                   ? 'Đang kết nối Gemini AI...'
                   : (aiState.isAiGenerated
-                      ? '✨ Tạo lại gợi ý khác bằng AI'
-                      : '✨ Gợi ý nội dung bằng AI (Gemini)'),
+                        ? '✨ Tạo lại gợi ý khác bằng AI'
+                        : '✨ Gợi ý nội dung bằng AI (Gemini)'),
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,

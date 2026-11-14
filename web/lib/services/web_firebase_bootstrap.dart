@@ -24,8 +24,8 @@ class WebFirebaseEnvironment {
   static const String measurementId = String.fromEnvironment(
     'FIREBASE_WEB_MEASUREMENT_ID',
   );
-  static const String recaptchaV3SiteKey = String.fromEnvironment(
-    'FIREBASE_RECAPTCHA_V3_SITE_KEY',
+  static const String recaptchaEnterpriseSiteKey = String.fromEnvironment(
+    'FIREBASE_RECAPTCHA_ENTERPRISE_SITE_KEY',
   );
 
   static bool get hasExplicitOptions =>
@@ -64,10 +64,10 @@ Future<bool> initializeWebFirebase() async {
       persistenceEnabled: false,
     );
 
-    if (WebFirebaseEnvironment.recaptchaV3SiteKey.isNotEmpty) {
+    if (WebFirebaseEnvironment.recaptchaEnterpriseSiteKey.isNotEmpty) {
       await FirebaseAppCheck.instance.activate(
-        providerWeb: ReCaptchaV3Provider(
-          WebFirebaseEnvironment.recaptchaV3SiteKey,
+        providerWeb: ReCaptchaEnterpriseProvider(
+          WebFirebaseEnvironment.recaptchaEnterpriseSiteKey,
         ),
       );
     }

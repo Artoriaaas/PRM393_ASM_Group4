@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:eventhub_core/eventhub_core.dart';
+
 import 'web_contracts.dart';
 
 /// Non-mock fallback used only when Firebase has not initialized yet.
@@ -9,7 +11,8 @@ class UnconfiguredWebAuthService implements IWebAuthService {
   WebUserProfile? get currentUser => null;
 
   @override
-  Stream<WebUserProfile?> authStateChanges() => Stream<WebUserProfile?>.value(null);
+  Stream<WebUserProfile?> authStateChanges() =>
+      Stream<WebUserProfile?>.value(null);
 
   @override
   Future<Result<WebUserProfile>> fetchProfile(String uid) async {
@@ -50,7 +53,7 @@ class NoopWebRemoteConfigService implements IWebRemoteConfigService {
   const NoopWebRemoteConfigService();
 
   @override
-  Future<void> initialize() async {}
+  Future<void> initialize({bool forceRefresh = false}) async {}
 
   @override
   bool getBool(String key, {bool defaultValue = false}) => defaultValue;
@@ -79,8 +82,7 @@ class UnconfiguredAdminService implements IAdminService {
     required String newRole,
     String? clubId,
     String? clubName,
-  }) async =>
-      Result.failure(_unconfiguredFailure);
+  }) async => Result.failure(_unconfiguredFailure);
 
   @override
   Stream<List<Club>> streamAllClubs() => Stream.value(const []);
@@ -90,8 +92,7 @@ class UnconfiguredAdminService implements IAdminService {
     required String name,
     String shortName = '',
     String description = '',
-  }) async =>
-      Result.failure(_unconfiguredFailure);
+  }) async => Result.failure(_unconfiguredFailure);
 
   @override
   Future<Result<void>> updateClub(Club club) async =>
@@ -109,8 +110,10 @@ class UnconfiguredAdminService implements IAdminService {
       Result.failure(_unconfiguredFailure);
 
   @override
-  Future<Result<void>> adminRejectEvent(String eventId, {required String reason}) async =>
-      Result.failure(_unconfiguredFailure);
+  Future<Result<void>> adminRejectEvent(
+    String eventId, {
+    required String reason,
+  }) async => Result.failure(_unconfiguredFailure);
 
   @override
   Future<Result<void>> adminCancelEvent(String eventId) async =>
@@ -148,4 +151,3 @@ class UnconfiguredAdminService implements IAdminService {
   @override
   Stream<List<Announcement>> streamAllAnnouncements() => Stream.value(const []);
 }
-

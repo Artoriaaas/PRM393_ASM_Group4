@@ -30,14 +30,14 @@
     },
     "ai_feature_enabled": {
       "defaultValue": {
-        "value": "true"
+        "value": "false"
       },
       "valueType": "BOOLEAN",
       "description": "Master switch to enable or disable Gemini AI content assistant."
     },
     "ai_model_name": {
       "defaultValue": {
-        "value": "gemini-1.5-flash"
+        "value": ""
       },
       "valueType": "STRING",
       "description": "Gemini model name used for content generation via Developer API."
