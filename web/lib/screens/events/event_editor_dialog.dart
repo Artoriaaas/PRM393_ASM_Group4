@@ -1207,39 +1207,6 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
   }
 
   Widget _buildCoverPicker(bool isAdmin) {
-    final presetCovers = [
-      (
-        key: 'ux-design',
-        label: 'Công nghệ & UI/UX',
-        icon: Icons.computer_outlined,
-        color: const Color(0xFF4F46E5),
-      ),
-      (
-        key: 'acoustic-live',
-        label: 'Âm nhạc & Nghệ thuật',
-        icon: Icons.music_note_outlined,
-        color: const Color(0xFFEA580C),
-      ),
-      (
-        key: 'badminton',
-        label: 'Thể thao & Hoạt động',
-        icon: Icons.sports_tennis_outlined,
-        color: const Color(0xFF0D9488),
-      ),
-      (
-        key: 'green-campus',
-        label: 'Tình nguyện & Môi trường',
-        icon: Icons.eco_outlined,
-        color: const Color(0xFF059669),
-      ),
-      (
-        key: 'career-connect',
-        label: 'Hướng nghiệp & Việc làm',
-        icon: Icons.work_outline,
-        color: const Color(0xFF2563EB),
-      ),
-    ];
-
     final hasCustomUrl = _coverUrlController.text.trim().isNotEmpty;
 
     return Container(
@@ -1279,7 +1246,7 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                       ),
                     ),
                     Text(
-                      'Dán link ảnh trực tuyến (HTTPS) hoặc chọn mẫu có sẵn bên dưới',
+                      'Tải ảnh từ thiết bị hoặc dán link ảnh trực tuyến (HTTPS).',
                       style: AppTypography.textTheme.labelSmall?.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -1494,55 +1461,6 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
               ),
             ),
           ],
-          const SizedBox(height: AppSpacing.s16),
-          Text(
-            hasCustomUrl
-                ? 'Hoặc chọn mẫu ảnh có sẵn (sẽ xóa link URL ở trên):'
-                : 'Mẫu ảnh bìa chủ đề có sẵn:',
-            style: AppTypography.textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.s8),
-          Wrap(
-            spacing: AppSpacing.s8,
-            runSpacing: AppSpacing.s8,
-            children: [
-              for (final preset in presetCovers)
-                ChoiceChip(
-                  avatar: Icon(
-                    preset.icon,
-                    size: 16,
-                    color: (!hasCustomUrl && _selectedCoverKey == preset.key)
-                        ? Colors.white
-                        : preset.color,
-                  ),
-                  label: Text(preset.label),
-                  selected: !hasCustomUrl && _selectedCoverKey == preset.key,
-                  selectedColor: preset.color,
-                  labelStyle: TextStyle(
-                    color: (!hasCustomUrl && _selectedCoverKey == preset.key)
-                        ? Colors.white
-                        : AppColors.textPrimary,
-                    fontWeight:
-                        (!hasCustomUrl && _selectedCoverKey == preset.key)
-                        ? FontWeight.bold
-                        : FontWeight.normal,
-                  ),
-                  onSelected: isAdmin
-                      ? null
-                      : (selected) {
-                          if (selected) {
-                            setState(() {
-                              _selectedCoverKey = preset.key;
-                              _coverUrlController.clear();
-                            });
-                          }
-                        },
-                ),
-            ],
-          ),
         ],
       ),
     );
