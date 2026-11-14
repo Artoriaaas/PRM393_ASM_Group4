@@ -110,3 +110,6 @@ Các lệnh hỗ trợ dùng phiên đăng nhập Firebase CLI hiện có và th
 
 ### Cấp quyền đại diện CLB
 Admin tạo CLB → Quản lý người dùng → Phân công bằng email → gửi link cổng CLB qua kênh của trường. Đại diện đăng nhập Google đúng email để kích hoạt; không cần tạo tài khoản mobile trước. [Hướng dẫn và kiểm thử](docs/club-onboarding.md).
+
+### Tự động deploy web
+Workflow `Test and deploy EventHub Web` kiểm tra rồi triển khai Hosting + Rules + indexes khi main thay đổi phần app. Cần cấu hình GitHub Secrets một lần theo [hướng dẫn](docs/web-deployment.md). Slides giữ workflow riêng. Push Git không cập nhật APK trên điện thoại.
