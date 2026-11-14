@@ -77,3 +77,6 @@ evidence/artemis/local-runs/
 /mobile/.dart_tool/
 /mobile/.flutter-plugins-dependencies
 /mobile/coverage/
+
+# Ephemeral GitHub Google authentication credentials
+gha-creds-*.json

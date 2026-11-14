@@ -1,3 +1,5 @@
+import 'package:eventhub_core/services/firebase/club_assignments.dart';
+
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -120,3 +122,10 @@ final webDashboardSettingsProvider =
             .clamp(1, 10),
       );
     });
+
+final clubAssignmentServiceProvider = Provider<IClubAssignmentService>(
+  (ref) => FirestoreClubAssignmentService(
+    firestore: FirebaseFirestore.instance,
+    auth: FirebaseAuth.instance,
+  ),
+);

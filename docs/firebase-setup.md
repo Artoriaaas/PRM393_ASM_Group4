@@ -29,3 +29,12 @@ flutter build web -t lib/main.dart --dart-define-from-file=web_env.json
 - Dữ liệu và transitions: [data model](data-model.md); emulator/tests: firebase/tests/README.md. Không chạy script seed tự động khi mở app.
 - Không Cloud Functions, Cloud Storage, App Hosting, Cloudinary hay custom server. PDF lưu/share trên máy, metadata riêng Firestore.
 - FCM, Analytics, RC, Crashlytics tiếp tục theo Lab 3; xem [analytics plan](analytics-plan.md), [test plan](test-plan.md). Inbox từ web không đồng nghĩa push tự động.
+
+## Firebase AI Logic — xác nhận trước khi bật AI
+
+1. Dùng project `eventhub-group4` → Firebase AI Logic → Get started → Gemini Developer API. Không tạo custom server, không nhúng Gemini API secret vào client.
+2. App Check → app EventHub Web: đăng ký provider/domain đúng; thêm `FIREBASE_RECAPTCHA_ENTERPRISE_SITE_KEY` vào `web/web_env.json` local. File này đã được Git bỏ qua. Dùng Console xác nhận request hợp lệ trước khi enforce; không bật enforcement Firestore khi các client khác chưa sẵn sàng.
+3. Xác nhận enforcement riêng cho Firebase AI Logic. Lấy token ở client chỉ là guard, không thay thế bảo vệ phía dịch vụ.
+4. Remote Config: đặt `ai_model_name` bằng tên model đang hỗ trợ trong project, `ai_prompt_template` là hướng dẫn bản nháp sự kiện chung; `ai_feature_enabled=true` sau khi sẵn sàng. Template trong repo mặc định tắt và để trống model để không dùng nhầm model ngừng hỗ trợ. Không deploy đè template Console nếu teammate đã cấu hình tham số khác.
+5. Chạy web với file define local, đăng nhập staff có clubId → Sự kiện → Tạo/sửa → chọn chủ đề AI → Gợi ý → xem trước → Áp dụng. Form title/description không được gửi; nội dung AI không tự lưu.
+6. Chụp 3 lần input/output thật, 1 failure (có thể RC off), các Analytics events và thao tác vẫn nhập tay/lưu khi AI tắt. Điền docs/ai-feature.md. Test tự động không thay thế bước này.

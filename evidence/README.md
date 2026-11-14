@@ -114,3 +114,9 @@ Cross-role 3 lượt, AI, ARTEMIS Final và Console App Check chưa có bộ pro
 | **Google ARTEMIS** | Commit `351ca842...` (Flash & Pro) | Agent kiểm thử tự động E2E trên Android và phiên kiểm thử khám phá (Exploratory testing) | *Cập nhật khi chạy* |
 | *Điền công cụ PR Review* | *Copilot / CodeRabbit / SonarCloud* | Review Pull Request phát hiện lỗi kiến trúc, bảo mật và bảo trì mã nguồn | *Cập nhật khi mở PR* |
 | *Điền công cụ Slide (nếu có)* | *Gamma / Canva AI / Gemini...* | *Ghi rõ nếu có dùng AI hỗ trợ bố cục slide thuyết trình (bắt buộc khai báo theo đề)* | *Cập nhật khi làm slide* |
+
+## Bản Final hiện tại
+
+- Rules role/collection matrix thực thi: rules/final-matrix.xml (55reported tests,52leaf cases+3role suites,0failure/skip).
+- Cloud config/metrics read-only có thời điểm: cloud-readiness/config-status.json. Registered/HTTP200 không phải thao tác chức năng pass.
+- Bằng chứng native/AI/cross-role do đợt chạy thật tiếp theo: final-live/README.md. Hiện chưa tự đánh dấu đạt.

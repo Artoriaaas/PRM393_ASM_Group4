@@ -1,6 +1,8 @@
 import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eventhub_core/eventhub_core.dart';
+
 import '../app/providers.dart';
 import '../services/web_contracts.dart';
 
@@ -64,23 +66,20 @@ class WebAuthViewModel extends Notifier<WebAuthUIState> {
     if (user == null) return const WebAuthInitial();
     if (user.role == 'user') {
       return WebAuthRejected(
-        reason:
-            'Tài khoản này thuộc vai trò Người tham gia. Vui lòng dùng ứng dụng EventHub trên di động hoặc liên hệ Quản trị viên.',
+        reason: 'Tài khoản chưa được phân công quản lý CLB. Đại diện CLB vui lòng cung cấp email Google cho quản trị viên nhà trường, sau đó đăng nhập lại đúng email được phân công. Người tham gia sử dụng ứng dụng mobile.',
         user: user,
       );
     }
     if (user.role == 'staff' &&
         (user.clubId == null || user.clubId!.trim().isEmpty)) {
       return WebAuthRejected(
-        reason:
-            'Tài khoản Trưởng CLB chưa được Quản trị viên phân công Câu lạc bộ. Vui lòng liên hệ Quản trị viên để được cấp quyền.',
+        reason: 'Tài khoản Trưởng CLB chưa được Quản trị viên phân công Câu lạc bộ. Vui lòng liên hệ Quản trị viên để được cấp quyền.',
         user: user,
       );
     }
     if (user.role != 'staff' && user.role != 'admin') {
       return WebAuthRejected(
-        reason:
-            'Vai trò tài khoản không hợp lệ để truy cập cổng quản trị Web. Vui lòng liên hệ Quản trị viên.',
+        reason: 'Vai trò tài khoản không hợp lệ để truy cập cổng quản trị Web. Vui lòng liên hệ Quản trị viên.',
         user: user,
       );
     }

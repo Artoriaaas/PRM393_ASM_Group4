@@ -1,0 +1,116 @@
+name: Test and deploy EventHub Web
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'web/**'
+      - 'packages/core/**'
+      - 'firebase/**'
+      - 'firebase.json'
+      - '.github/workflows/deploy-web.yml'
+      - 'tool/prepare-web-ci*.cjs'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'web/**'
+      - 'packages/core/**'
+      - 'firebase/**'
+      - 'firebase.json'
+      - '.github/workflows/deploy-web.yml'
+      - 'tool/prepare-web-ci*.cjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Never cancel a deployment midway through Rules + Hosting.
+concurrency:
+  group: eventhub-web-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  FLUTTER_VERSION: '3.47.4'
+  FIREBASE_PROJECT: eventhub-group4
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: firebase/tests/package-lock.json
+      - name: Test deployment configuration validation
+        run: node --test tool/prepare-web-ci.test.cjs
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - name: Restore locked Dart dependencies
+        run: |
+          (cd packages/core && flutter pub get --enforce-lockfile)
+          (cd web && flutter pub get --enforce-lockfile)
+      - name: Analyze and test shared core
+        working-directory: packages/core
+        run: |
+          flutter analyze --no-pub
+          flutter test --no-pub
+      - name: Analyze and test web
+        working-directory: web
+        run: |
+          flutter analyze --no-pub
+          flutter test --no-pub
+      - name: Restore Rules test dependencies
+        run: npm ci --prefix firebase/tests
+      - name: Test Firestore Rules in isolated emulator
+        run: npx --yes firebase-tools@15.34.2 emulators:exec --only firestore --project demo-direct-booking "npm test --prefix firebase/tests"
+
+  deploy:
+    needs: verify
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: firebase-production
+      url: https://eventhub-group4.web.app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - name: Validate and write private build configuration
+        env:
+          FIREBASE_WEB_ENV_JSON: ${{ secrets.FIREBASE_WEB_ENV_JSON }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EVENTHUB_GROUP4 }}
+        run: node tool/prepare-web-ci.cjs
+      - name: Restore locked web dependencies
+        working-directory: web
+        run: flutter pub get --enforce-lockfile
+      - name: Build web release
+        working-directory: web
+        run: flutter build web --release --no-pub --dart-define-from-file=web_env.json
+      # Authenticate deployment only after tests and build have passed.
+      - uses: google-github-actions/auth@v3
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EVENTHUB_GROUP4 }}
+      - name: Deploy Rules, indexes and website
+        run: npx --yes firebase-tools@15.34.2 deploy --only hosting,firestore:rules,firestore:indexes --project "$FIREBASE_PROJECT" --non-interactive
+      - name: Check hosted URL
+        run: curl --fail --silent --show-error --retry 3 https://eventhub-group4.web.app/ --output /dev/null
+      - name: Remove local build configuration
+        if: always()
+        run: rm -f web/web_env.json

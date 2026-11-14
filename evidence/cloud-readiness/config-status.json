@@ -1,0 +1,40 @@
+{
+  "checkedAt": "2026-11-13T13:46:57.311Z",
+  "project": "eventhub-group4",
+  "config": {
+    "web": {
+      "registered": true,
+      "provider": "recaptcha-enterprise",
+      "ttl": "3600s"
+    },
+    "android": {
+      "registered": true,
+      "provider": "play-integrity",
+      "ttl": "3600s"
+    }
+  },
+  "verificationWindowHours": 24,
+  "androidDebugTokenCount": 0,
+  "enforcement": {
+    "firebaseml.googleapis.com": "ENFORCED",
+    "firestore.googleapis.com": "UNENFORCED"
+  },
+  "ai": {
+    "rcVersion": "6",
+    "enabled": true,
+    "model": "gemini-3.5-flash-lite",
+    "promptConfigured": true
+  },
+  "appCheckObservations": [
+    {
+      "service": "firestore.googleapis.com",
+      "appId": "UNKNOWN",
+      "result": "ALLOW",
+      "security": "INVALID",
+      "count": 24
+    }
+  ],
+  "hostingHttpStatus": 200,
+  "realGeminiOutputs": "Not verified by this read-only script",
+  "nativeAndCrossRole": "Require user execution and evidence"
+}

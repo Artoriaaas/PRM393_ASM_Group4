@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,6 +23,7 @@ class EventEditorDialog extends ConsumerStatefulWidget {
 
 class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
   final _formKey = GlobalKey<FormState>();
+  final _aiIdeaController = TextEditingController();
 
   late final TextEditingController _titleController;
   late final TextEditingController _topicController;
@@ -60,8 +62,9 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
       text: ev?.activities.join('\n') ?? '',
     );
     _coverUrlController = TextEditingController(text: ev?.coverUrl ?? '');
-    _selectedCoverKey =
-        ev?.coverKey.isNotEmpty == true ? ev!.coverKey : 'ux-design';
+    _selectedCoverKey = ev?.coverKey.isNotEmpty == true
+        ? ev!.coverKey
+        : 'ux-design';
     final baseStart = DateTime.now().add(const Duration(days: 3));
     _startsAt =
         ev?.startsAt ??
@@ -91,6 +94,7 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
 
   @override
   void dispose() {
+    _aiIdeaController.dispose();
     _titleController.dispose();
     _topicController.dispose();
     _locationController.dispose();
@@ -257,10 +261,6 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
 
     res.when(
       success: (_) {
-        final aiState = ref.read(aiEventAssistViewModelProvider);
-        if (aiState.isAiGenerated && !aiState.isAccepted) {
-          ref.read(aiEventAssistViewModelProvider.notifier).markAccepted();
-        }
         Navigator.of(context).pop(true);
       },
       failure: (failure) => setState(() => _errorMessage = failure.message),
@@ -268,48 +268,119 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
   }
 
   Future<void> _requestAiSuggestion() async {
-    final title = _titleController.text.trim();
-    if (title.length < 3) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Vui lòng nhập tiêu đề hoặc ý tưởng sự kiện (tối thiểu 3 ký tự) trước khi gọi AI.',
+    while (mounted) {
+      final suggestion = await ref
+          .read(aiEventAssistViewModelProvider.notifier)
+          .requestSuggestion(title: _aiIdeaController.text.trim());
+      if (suggestion == null || !mounted) return;
+      final fields = <String, ({String label, String value})>{
+        'topic': (label: 'Danh mục sự kiện', value: suggestion.topic),
+        'description': (label: 'Mô tả chi tiết', value: suggestion.description),
+        'audience': (label: 'Đối tượng tham gia', value: suggestion.audience),
+        'preparation': (
+          label: 'Yêu cầu chuẩn bị',
+          value: suggestion.preparation,
+        ),
+        'activities': (
+          label: 'Các hoạt động chính',
+          value: suggestion.activities.map((v) => '• $v').join('\n'),
+        ),
+      };
+      // Existing content stays untouched unless its field is explicitly selected.
+      final selected = <String>{
+        if (_topicController.text.trim().isEmpty) 'topic',
+        if (_descriptionController.text.trim().isEmpty) 'description',
+        if (_audienceController.text.trim().isEmpty) 'audience',
+        if (_preparationController.text.trim().isEmpty) 'preparation',
+        if (_activitiesController.text.trim().isEmpty) 'activities',
+      };
+      final action = await showDialog<String>(
+        context: context,
+        builder: (dialogContext) => StatefulBuilder(
+          builder: (context, updateDialog) => AlertDialog(
+            title: const Text('Bản nháp do Gemini AI đề xuất'),
+            content: SizedBox(
+              width: 560,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Chọn từng phần muốn áp dụng. Các ô đang có nội dung không được chọn sẵn. Ngày giờ, địa điểm, hạn đăng ký và sức chứa được giữ nguyên.',
+                    ),
+                    ...fields.entries.map(
+                      (entry) => CheckboxListTile(
+                        key: ValueKey('ai-apply-${entry.key}'),
+                        contentPadding: EdgeInsets.zero,
+                        controlAffinity: ListTileControlAffinity.leading,
+                        value: selected.contains(entry.key),
+                        onChanged: (checked) => updateDialog(() {
+                          if (checked == true) {
+                            selected.add(entry.key);
+                          } else {
+                            selected.remove(entry.key);
+                          }
+                        }),
+                        title: Text(
+                          entry.value.label,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(entry.value.value),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, 'cancel'),
+                child: const Text('Hủy'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, 'regenerate'),
+                child: const Text('Tạo lại'),
+              ),
+              FilledButton(
+                onPressed: selected.isEmpty
+                    ? null
+                    : () => Navigator.pop(dialogContext, 'apply'),
+                child: const Text('Áp dụng phần đã chọn'),
+              ),
+            ],
           ),
-          backgroundColor: AppColors.error,
         ),
       );
-      return;
-    }
+      if (!mounted) return;
+      if (action == 'regenerate') continue;
+      if (action != 'apply') return;
+      ref.read(aiEventAssistViewModelProvider.notifier).markAccepted();
+      if (mounted) {
+        setState(() {
+          if (selected.contains('topic'))
+            _topicController.text = suggestion.topic;
+          if (selected.contains('description'))
+            _descriptionController.text = suggestion.description;
+          if (selected.contains('audience'))
+            _audienceController.text = suggestion.audience;
+          if (selected.contains('preparation'))
+            _preparationController.text = suggestion.preparation;
+          if (selected.contains('activities'))
+            _activitiesController.text = suggestion.activities.join('\n');
+        });
 
-    final suggestion = await ref
-        .read(aiEventAssistViewModelProvider.notifier)
-        .requestSuggestion(
-          title: title,
-          topic: _topicController.text.trim(),
-          currentDescription: _descriptionController.text.trim(),
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              '✨ Đã áp dụng gợi ý từ Gemini AI! Bạn có thể xem và chỉnh sửa trực tiếp các trường bên dưới trước khi lưu.',
+            ),
+            backgroundColor: AppColors.primary,
+            duration: Duration(seconds: 4),
+          ),
         );
-
-    if (suggestion != null && mounted) {
-      setState(() {
-        if (_topicController.text.trim().isEmpty ||
-            _topicController.text.trim() == 'Chưa phân loại') {
-          _topicController.text = suggestion.topic;
-        }
-        _descriptionController.text = suggestion.description;
-        _audienceController.text = suggestion.audience;
-        _preparationController.text = suggestion.preparation;
-        _activitiesController.text = suggestion.activities.join('\n');
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            '✨ Đã áp dụng gợi ý từ Gemini AI! Bạn có thể xem và chỉnh sửa trực tiếp các trường bên dưới trước khi lưu.',
-          ),
-          backgroundColor: AppColors.primary,
-          duration: Duration(seconds: 4),
-        ),
-      );
+      }
+      break;
     }
   }
 
@@ -478,7 +549,7 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                                 Expanded(
                                   child: _buildTextField(
                                     controller: _topicController,
-                                    label: 'Chủ đề',
+                                    label: 'Danh mục sự kiện',
                                     hintText: 'VD: AI, Mobile, Thiết kế...',
                                     readOnly: isAdmin,
                                   ),
@@ -842,14 +913,14 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
               const SizedBox(width: AppSpacing.s8),
               Expanded(
                 child: Text(
-                  'Trợ lý nội dung Gemini AI (Level 2 Structured Output)',
+                  'Gợi ý nội dung sự kiện',
                   style: AppTypography.textTheme.labelLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: AppColors.primary,
                   ),
                 ),
               ),
-              if (aiState.isAiGenerated)
+              if (aiState.isAccepted)
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.s8,
@@ -871,7 +942,7 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
           ),
           const SizedBox(height: AppSpacing.s8),
           Text(
-            'Nhập tên sự kiện hoặc vài từ khóa ý tưởng vào ô tiêu đề trên, sau đó bấm nút để Gemini AI tự động gợi ý chủ đề, mô tả, đối tượng, chuẩn bị và các hoạt động phù hợp. Bạn hoàn toàn có thể kiểm tra và chỉnh sửa trước khi lưu.',
+            'Nhập ý tưởng chung, không chứa tên người hoặc thông tin liên hệ. Chỉ ý tưởng trong ô này được gửi tới Gemini; các phần khác trong form không được gửi. Ngày giờ và địa điểm do CLB tự chọn.',
             style: AppTypography.textTheme.bodySmall?.copyWith(
               color: AppColors.textSecondary,
             ),
@@ -912,8 +983,29 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
             ),
           ],
           const SizedBox(height: AppSpacing.s12),
+          TextField(
+            key: const ValueKey('ai-event-idea'),
+            controller: _aiIdeaController,
+            enabled: !aiState.isLoading,
+            maxLength: 500,
+            minLines: 2,
+            maxLines: 4,
+            decoration: const InputDecoration(
+              labelText: 'Ý tưởng cần AI hỗ trợ',
+              hintText:
+                  'Ví dụ: Workshop chụp ảnh bằng điện thoại cho người mới',
+            ),
+            onChanged: (_) {
+              ref.read(aiEventAssistViewModelProvider.notifier).reset();
+              setState(() {});
+            },
+          ),
+          const SizedBox(height: AppSpacing.s12),
           ElevatedButton.icon(
-            onPressed: aiState.isLoading ? null : _requestAiSuggestion,
+            onPressed:
+                aiState.isLoading || _aiIdeaController.text.trim().length < 5
+                ? null
+                : _requestAiSuggestion,
             icon: aiState.isLoading
                 ? const SizedBox(
                     width: 16,
@@ -928,8 +1020,8 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
               aiState.isLoading
                   ? 'Đang kết nối Gemini AI...'
                   : (aiState.isAiGenerated
-                      ? '✨ Tạo lại gợi ý khác bằng AI'
-                      : '✨ Gợi ý nội dung bằng AI (Gemini)'),
+                        ? 'Tạo bản nháp khác'
+                        : 'Tạo bản nháp AI'),
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
@@ -1115,39 +1207,6 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
   }
 
   Widget _buildCoverPicker(bool isAdmin) {
-    final presetCovers = [
-      (
-        key: 'ux-design',
-        label: 'Công nghệ & UI/UX',
-        icon: Icons.computer_outlined,
-        color: const Color(0xFF4F46E5),
-      ),
-      (
-        key: 'acoustic-live',
-        label: 'Âm nhạc & Nghệ thuật',
-        icon: Icons.music_note_outlined,
-        color: const Color(0xFFEA580C),
-      ),
-      (
-        key: 'badminton',
-        label: 'Thể thao & Hoạt động',
-        icon: Icons.sports_tennis_outlined,
-        color: const Color(0xFF0D9488),
-      ),
-      (
-        key: 'green-campus',
-        label: 'Tình nguyện & Môi trường',
-        icon: Icons.eco_outlined,
-        color: const Color(0xFF059669),
-      ),
-      (
-        key: 'career-connect',
-        label: 'Hướng nghiệp & Việc làm',
-        icon: Icons.work_outline,
-        color: const Color(0xFF2563EB),
-      ),
-    ];
-
     final hasCustomUrl = _coverUrlController.text.trim().isNotEmpty;
 
     return Container(
@@ -1187,7 +1246,7 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                       ),
                     ),
                     Text(
-                      'Dán link ảnh trực tuyến (HTTPS) hoặc chọn mẫu có sẵn bên dưới',
+                      'Tải ảnh từ thiết bị hoặc dán link ảnh trực tuyến (HTTPS).',
                       style: AppTypography.textTheme.labelSmall?.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -1213,8 +1272,8 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                     _isPickingImage
                         ? 'Đang nén & tải ảnh...'
                         : (_pickedFileName != null
-                            ? 'Đã chọn: $_pickedFileName'
-                            : 'Tải ảnh từ thiết bị (máy tính / điện thoại)'),
+                              ? 'Đã chọn: $_pickedFileName'
+                              : 'Tải ảnh từ thiết bị (máy tính / điện thoại)'),
                     overflow: TextOverflow.ellipsis,
                   ),
                   style: OutlinedButton.styleFrom(
@@ -1327,123 +1386,81 @@ class _EventEditorDialogState extends ConsumerState<EventEditorDialog> {
                         },
                       )
                     : (kIsWeb
-                        ? Image.network(
-                            _coverUrlController.text.trim(),
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(
-                                  color: AppColors.errorContainer,
-                                  padding: const EdgeInsets.all(AppSpacing.s12),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Icon(
-                                        Icons.broken_image_outlined,
-                                        color: AppColors.error,
-                                      ),
-                                      const SizedBox(width: AppSpacing.s8),
-                                      Expanded(
-                                        child: Text(
-                                          'Không thể tải ảnh từ link này. Vui lòng kiểm tra lại URL.',
-                                          style: AppTypography.textTheme.bodySmall
-                                              ?.copyWith(
-                                                color: AppColors
-                                                    .onErrorContainer,
-                                              ),
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
+                          ? Image.network(
+                              _coverUrlController.text.trim(),
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(
+                                    color: AppColors.errorContainer,
+                                    padding: const EdgeInsets.all(
+                                      AppSpacing.s12,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(
+                                          Icons.broken_image_outlined,
+                                          color: AppColors.error,
+                                        ),
+                                        const SizedBox(width: AppSpacing.s8),
+                                        Expanded(
+                                          child: Text(
+                                            'Không thể tải ảnh từ link này. Vui lòng kiểm tra lại URL.',
+                                            style: AppTypography
+                                                .textTheme
+                                                .bodySmall
+                                                ?.copyWith(
+                                                  color: AppColors
+                                                      .onErrorContainer,
+                                                ),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return const Center(
+                                      child: SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
                                         ),
                                       ),
-                                    ],
+                                    );
+                                  },
+                            )
+                          : Container(
+                              color: AppColors.surfaceSubtle,
+                              alignment: Alignment.center,
+                              padding: const EdgeInsets.all(AppSpacing.s12),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.image_outlined,
+                                    color: AppColors.primary,
                                   ),
-                                ),
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return const Center(
-                                child: SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
+                                  const SizedBox(width: AppSpacing.s8),
+                                  Expanded(
+                                    child: Text(
+                                      _coverUrlController.text.trim(),
+                                      style: AppTypography.textTheme.bodySmall,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                          )
-                        : Container(
-                            color: AppColors.surfaceSubtle,
-                            alignment: Alignment.center,
-                            padding: const EdgeInsets.all(AppSpacing.s12),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(
-                                  Icons.image_outlined,
-                                  color: AppColors.primary,
-                                ),
-                                const SizedBox(width: AppSpacing.s8),
-                                Expanded(
-                                  child: Text(
-                                    _coverUrlController.text.trim(),
-                                    style: AppTypography.textTheme.bodySmall,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )),
+                                ],
+                              ),
+                            )),
               ),
             ),
           ],
-          const SizedBox(height: AppSpacing.s16),
-          Text(
-            hasCustomUrl
-                ? 'Hoặc chọn mẫu ảnh có sẵn (sẽ xóa link URL ở trên):'
-                : 'Mẫu ảnh bìa chủ đề có sẵn:',
-            style: AppTypography.textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.s8),
-          Wrap(
-            spacing: AppSpacing.s8,
-            runSpacing: AppSpacing.s8,
-            children: [
-              for (final preset in presetCovers)
-                ChoiceChip(
-                  avatar: Icon(
-                    preset.icon,
-                    size: 16,
-                    color: (!hasCustomUrl && _selectedCoverKey == preset.key)
-                        ? Colors.white
-                        : preset.color,
-                  ),
-                  label: Text(preset.label),
-                  selected: !hasCustomUrl && _selectedCoverKey == preset.key,
-                  selectedColor: preset.color,
-                  labelStyle: TextStyle(
-                    color: (!hasCustomUrl && _selectedCoverKey == preset.key)
-                        ? Colors.white
-                        : AppColors.textPrimary,
-                    fontWeight: (!hasCustomUrl && _selectedCoverKey == preset.key)
-                        ? FontWeight.bold
-                        : FontWeight.normal,
-                  ),
-                  onSelected: isAdmin
-                      ? null
-                      : (selected) {
-                          if (selected) {
-                            setState(() {
-                              _selectedCoverKey = preset.key;
-                              _coverUrlController.clear();
-                            });
-                          }
-                        },
-                ),
-            ],
-          ),
         ],
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:eventhub_core/eventhub_core.dart';
+
 export '../contracts/ai_service.dart';
 
 class WebUserProfile {
@@ -121,7 +122,7 @@ abstract class IWebAnalyticsService {
 }
 
 abstract class IWebRemoteConfigService {
-  Future<void> initialize();
+  Future<void> initialize({bool forceRefresh = false});
   bool getBool(String key, {bool defaultValue = false});
   int getInt(String key, {int defaultValue = 0});
   String getString(String key, {String defaultValue = ''});

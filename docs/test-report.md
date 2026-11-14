@@ -1,3 +1,17 @@
+## Kết quả mới nhất — 13/11/2026
+
+Web40/40, core6/6 và Rules55/55 đạt; web/core analyze sạch; web production build thành công. Rules JUnit có52case lá+3role suites,0failure/skip. Force-refresh RC cho AI đã được kiểm tra: đổi kill-switch được lấy lại khi người dùng yêu cầu; lỗi fetch không tiếp tục dùng cấu hình cũ. Rules bổ sung kiểm tra kiểu displayName/email và timestamp hồ sơ, ngày/giờ/deadline sự kiện. Cloud/native/AI-output/cross-role vẫn cần chạy thật, không suy pass từ các kết quả này.
+
+## Appendix B và cloud readiness — 13/11/2026
+
+Rules emulator:55 tests đạt,0fail,0skipped, gồm16 top-level groups và39 role/collection subtests. JUnit thật: evidence/rules/final-matrix.xml; ma trận docs/security-rules-matrix.md. Project test demo-direct-booking, không ghi production data.
+
+Cloud đọc thật: evidence/cloud-readiness/config-status.json. Hosting HTTP200; Web Enterprise và Android Play Integrity registered; AI Logic ENFORCED; Firestore UNENFORCED, Android debug tokens0 và chưa có verified requests trong cửa sổ quan sát. Không coi config/HTTP200 là AI hoặc cross-role pass. Các mục native/cloud cần người dùng chạy theo docs/final-live-verification.md.
+
+## Sửa AI theo mục 8 — 13/11/2026
+
+Web analyze sạch; 39/39 tests đạt (10 service/model/lifecycle AI +1 UI preview/cancel/apply và các regression hiện hữu). Core analyze sạch và 6/6 tests đạt. Web build với Firebase config local thành công. Không gọi Gemini thật trong test, không phát sinh bằng chứng cloud giả. Chưa xác nhận AI Logic/App Check Console, 3 input/output thật, 1 failure thực và Analytics Console. Chi tiết: docs/ai-feature.md, docs/code-review.md.
+
 ## Sửa lỗi Final — 13/11/2026
 
 Analyze mobile/web sạch. Mobile 86/86 tests, web 28/28, core 6/6, Firestore emulator 12/12 nhóm đạt. Rules/indexes đã triển khai lên eventhub-group4.
@@ -74,3 +88,14 @@ AI feature và bằng chứng; ARTEMIS; App Check/cloud/native proof; web screen
 - Bổ sung findings S01/W02/W04/W05 bên cạnh4 finding lượt trước: Rules public draft đọc được (reproduced emulator demo-final-audit, user verified get draft=true, đã clear namespace test); Admin tự chọn CLB đầu; form sửa mất coverKey; RC web fetch nhưng chưa dùng giá trị ở ViewModel/UI.
 - web/web_env.json thiếu local; chưa thể khẳng định chạy web Firebase thật theo lệnh README. Android config local có; App Check Console chưa xác nhận.
 - Không sửa production source hoặc deploy trong audit. Hướng dẫn chuẩn bị, thứ tự chạy thật và danh sách lỗi tại docs/one-pass-test.md. Không chạy lại unit suite vì không đổi code kể từ kết quả mới nhất.
+
+## Phân công CLB bằng email — 14/11/2026
+
+- Web: toàn bộ 45 tests đạt (gồm nhập email/chọn CLB, giữ input khi lỗi, empty, ViewModel và các regression Admin/Auth/AI).
+- Core: 6 tests đạt.
+- Rules: `evidence/rules/club-onboarding.xml` có 61 leaf test cases, 0 failure/error/skip (Node báo 65 tính cả 4 nhóm cha). Chạy với project local `demo-direct-booking`, không sửa dữ liệu production.
+- Onboarding kiểm tra Admin-only, giữ chỗ CLB, email từ Auth token đã xác minh, Google-only, chống ghi nửa transaction/nâng quyền/sai CLB/replay, thu hồi pending/accepted, cấp lại, CLB archived và tài khoản hoàn toàn mới.
+- Chưa build/deploy web cho thay đổi này; chưa có bằng chứng đăng nhập onboarding trên Hosting thật. Xem `docs/club-onboarding.md` để chạy xác nhận hai tài khoản.
+
+## AI ý tưởng tự do — 14/11/2026
+46 tests web và 6 tests core đạt. Web analyze sạch. Chưa gọi Gemini thật với ý tưởng tự do trong lượt này; chưa có bộ 3 output mới để nộp. Test widget dùng fake để xác minh popup Hủy/Tạo lại/Áp dụng theo trường và metadata không đổi, không tiêu tốn quota model.
