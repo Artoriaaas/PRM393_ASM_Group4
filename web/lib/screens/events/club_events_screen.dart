@@ -147,13 +147,9 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Wrap(
-              alignment: WrapAlignment.spaceBetween,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: AppSpacing.s16,
-              runSpacing: AppSpacing.s12,
-              children: [
-                Column(
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final heading = Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
@@ -175,16 +171,33 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
                       ),
                     ),
                   ],
-                ),
-                if (!isAdmin)
-                  AppButton(
-                    label: 'Tạo sự kiện mới',
-                    semanticsLabel:
-                        'Mở biểu mẫu tạo sự kiện mới cho câu lạc bộ',
-                    icon: const Icon(Icons.add, size: 18),
-                    onPressed: () => _openEventEditor(context),
-                  ),
-              ],
+                );
+                if (isAdmin) return heading;
+                final createButton = AppButton(
+                  label: 'Tạo sự kiện mới',
+                  semanticsLabel: 'Mở biểu mẫu tạo sự kiện mới cho câu lạc bộ',
+                  icon: const Icon(Icons.add, size: 18),
+                  onPressed: () => _openEventEditor(context),
+                );
+                if (constraints.maxWidth < 720) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      heading,
+                      const SizedBox(height: AppSpacing.s16),
+                      createButton,
+                    ],
+                  );
+                }
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(child: heading),
+                    const SizedBox(width: AppSpacing.s24),
+                    createButton,
+                  ],
+                );
+              },
             ),
             const SizedBox(height: AppSpacing.s20),
             if (state.actionMessage != null) ...[
@@ -332,8 +345,6 @@ class _ClubEventsScreenState extends ConsumerState<ClubEventsScreen> {
                       (isAdmin
                           ? 'Chưa có đề xuất sự kiện nào từ các câu lạc bộ.'
                           : 'Câu lạc bộ chưa khởi tạo sự kiện nào.'),
-                  actionLabel: isAdmin ? null : 'Tạo sự kiện đầu tiên',
-                  onAction: isAdmin ? null : () => _openEventEditor(context),
                 ),
               ),
               error: (failure, _) => Center(
