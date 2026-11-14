@@ -125,3 +125,14 @@ Kết quả tự động mới: web analyze sạch, 39/39 tests; core analyze s�
 
 ## AI đầu vào tự do — 14/11/2026
 Thay quyết định AI03 giới hạn 5 chủ đề bằng ý tưởng riêng 5–500 ký tự: không tự gửi dữ liệu tài khoản hoặc toàn form; chặn mẫu thông tin liên hệ/URL và hướng dẫn không nhập PII. Không tuyên bố lọc được mọi tên người. JSON chỉ nhận 5 trường nội dung, popup chọn từng trường, giữ nguyên ngày giờ/địa điểm/capacity/deadline. Test xác nhận lựa chọn, hủy/tạo lại, giữ trường bỏ chọn, lưu metadata nguyên trạng và không log ý tưởng.
+
+
+## Rà source trước kiểm thử thật — 14/11/2026
+- P01 (accept): ý tưởng tự do có thể chứa tên người. Thêm AiContentPrivacy local dùng chung; từ chối nội dung nghi PII trước RC/App Check/model; kiểm tra cả output trước khi đưa vào lịch sử tạo lại. Test tên tiếng Việt có dấu/không dấu, tên viết hoa, nhãn định danh, liên hệ và ý tưởng chung hợp lệ. Không tuyên bố regex nhận diện mọi tên người; input AI phải là ý tưởng phi cá nhân.
+- P02 (accept): lỗi Analytics có thể ngăn tạo AI hoặc ném lỗi bất đồng bộ khi Áp dụng. Telemetry được bắt lỗi độc lập; kiểm thử dịch vụ Analytics lỗi mà tạo/áp dụng vẫn hoạt động.
+- P03 (accept): equality bản nháp không so sánh activities. So sánh toàn bộ danh sách hoạt động và hash tương ứng; test hai bản nháp chỉ khác hoạt động.
+- R01 (verified): chỉ Admin kích hoạt staff; người nhận chỉ ghi nhận danh tính chờ kích hoạt. Giữ Rules đã deploy, thêm test nút Kích hoạt và giữ hàng khi lỗi. Không cần PR riêng theo đề; findings/decisions và fix commits là bằng chứng review source.
+
+Đây là review code/local test; output AI thật, bản release trên điện thoại, App Check Firestore và cross-role vẫn cần xác nhận riêng.
+
+- T01 (accept): report ARTEMIS có final_screen phẳng bị harness đọc thành thiếu. Chuẩn hóa hai schema, giữ raw output, từ chối mâu thuẫn;3unittest độc lập. Không nới điều kiện text/setup/status hay tạo kết quả pass giả.

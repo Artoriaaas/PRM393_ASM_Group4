@@ -30,10 +30,10 @@ Mobile:
 ```powershell
 cd mobile
 flutter pub get --enforce-lockfile
-flutter run -d emulator-5554 -t lib/main.dart
+flutter build apk --release -t lib/main.dart
 ```
 
-Cần config `mobile/android/app/google-services.json`, SHA và App Check debug token của từng máy. Không commit token, keystore, service-account hay config local. Chi tiết [mobile setup](docs/mobile-setup.md).
+Cài APK trên điện thoại Android thật. Cần config `mobile/android/app/google-services.json`, khóa ký nhóm và SHA đúng; release dùng Play Integrity. Debug token chỉ dành cho bản debug. Không commit token, keystore, service-account hay config local. Chi tiết [mobile setup](docs/mobile-setup.md).
 
 Web:
 
@@ -71,7 +71,7 @@ Không chạy lệnh Flutter ở gốc hệ thống. Test doubles nằm trong te
 
 ## Kết quả tự động mới nhất
 
-Mobile87, web48, core6; Rules matrix52 ca lá và bộ Rules hiện tại61 ca lá đạt; web/Rules/indexes đã deploy. Chưa thay thế kiểm thử native, 3AIoutputs/1failure, 3cross-role runs và request App Check hợp lệ. Xem docs/final-live-verification.md trước khi chạy.
+Mobile87, web51, core10; Rules matrix52 ca lá và bộ Rules hiện tại61 ca lá đạt; web/Rules/indexes đã deploy. Chưa thay thế kiểm thử native, 3AIoutputs/1failure, 3cross-role runs và request App Check hợp lệ. Xem docs/final-live-verification.md trước khi chạy.
 
 ## Theo dõi hoàn thành
 
@@ -102,8 +102,8 @@ Web uses `firebase_ai` **5.1.0** (Firebase AI Logic Gemini Developer API), not a
 
 ```powershell
 node tool/check-cloud.cjs
-# Sau khi mở app Android debug trên thiết bị test:
-node tool/register-android-appcheck.cjs emulator-5554
+# Chỉ khi dùng bản debug trên điện thoại thật:
+# node tool/register-android-appcheck.cjs DEVICE_ID
 ```
 
 Các lệnh hỗ trợ dùng phiên đăng nhập Firebase CLI hiện có và thư viện trong firebase/tests/node_modules; cần npm ci --prefix firebase/tests nếu máy mới. Không phải custom backend và không chạy trên Hosting. Lệnh kiểm tra cloud chỉ đọc; lệnh register chỉ đăng ký debug token đúng app test, không in token.

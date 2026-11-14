@@ -1,26 +1,24 @@
-# Gap review Final — cập nhật 13/11/2026
+# Gap review Final — chốt source 14/11/2026
 
-## Phần tự động đã xác nhận
+## Phần source đã kiểm tra
 
-- Mobile86/86, web40/40, core6/6; analyze cả3package sạch. Web production build thành công.
-- Security Rules55/55 gồm16top-level groups và39subtests; JUnit52case lá+3role suites,0failure/skip. [Matrix](security-rules-matrix.md), [JUnit](../evidence/rules/final-matrix.xml). Kiểm tra quyền/chuyển trạng thái và shape profile/dates; không sửa production data trong test.
-- Rules/indexes và web mới đã deploy: https://eventhub-group4.web.app. HTTP200 không chứng minh chức năng/đăng nhập thành công.
-- AI dùng Firebase AI Logic SDK, JSON/schema, preview/apply/edit, chặn PII từ form bằng input chủ đề có sẵn, lỗi tiếp tục nhập tay; RC force-fetch trên explicit action. Cloud RCv6 bật model gemini-3.5-flash-lite, AI Logic App Check ENFORCED.
-- Web Enterprise/Android Play Integrity registered, TTL1giờ. Không đưa site key/token/config local vào Git. Slides nhóm giữ nguyên.
+- Mobile87, web51 và core10 tests đạt; kiểm tra nguồn dữ liệu Firestore, MVVM, shared core, đăng ký pending→staff approve/reject, inbox, QR, PDF local/share và metadata riêng UID qua các test hiện có.
+- Mobile UI đối chiếu ảnh F1/F2/F4A, xử lý vùng an toàn Android; preview A04 trên web theo bố cục mới. Không chép dữ liệu mẫu hoặc nút mô phỏng prototype vào build.
+- Phân quyền: Admin phân công email, đại diện Google ghi danh tính chờ kích hoạt, chỉ Admin khác UID cấp staff. Rules đã được triển khai ở commit trước, bộ hiện tại61 ca lá đạt; không thay Rules trong lượt sửa AI này.
+- AI Firebase AI Logic, JSON→Dart, popup chọn phần áp dụng, nhập tay khi lỗi/RC tắt. Thêm sàng lọc nghi PII local trước RC/token/model và trong output; không log nội dung. Bộ lọc có thể từ chối nhầm và không nhận diện mọi tên/biệt danh/ngôn ngữ; chỉ nhập ý tưởng hoạt động chung. Không gọi Gemini để phân loại PII.
+- Lỗi Analytics không chặn tạo/áp dụng AI; equality bản nháp bao gồm hoạt động. Review findings/decisions ở docs/code-review.md.
+- Harness ARTEMIS nhận cả report final_screen phẳng/lồng mà không suy diễn giá trị; giữ raw report và không nhận thiếu/mâu thuẫn là pass. Yêu cầu serial điện thoại thật. Ba unittest parser chạy local không được tính là ARTEMIS E2E pass.
 
-## Cần người dùng mở app để xác nhận
+## Cấu hình cloud đã đọc thật
 
-| Phần | Chưa đủ | Cách hoàn thành |
-|---|---|---|
-| Mobile/web | Native flows/states, QR/PDF/share, web main actions và empty/error/loading | Theo docs/final-live-verification.md, lưu evidence/final-live |
-| AI | 3output thật+1failure/RCoff; Console Analytics | Dùng web Hosted role staff; preview/apply/edit; không lấy mock tests làm proof |
-| Cross-role | 3lượt deployment và số đo độ trễ | Mobile pending→web queue→staff approve/reject→mobile/inbox, video2client |
-| App Check | Android debug token0, chưa có request verified Web/Android trong lần quan sát; Firestore UNENFORCED | Mở app debug, node tool/register-android-appcheck.cjs DEVICE; dùng cả2client rồi node tool/check-cloud.cjs; chốt enforcement sau verified requests |
+Theo evidence/cloud-readiness/config-status.json ngày14/11: Web Enterprise/Android Play Integrity đã đăng ký, AI Logic ENFORCED, Firestore UNENFORCED. Cửa sổ24h có web AI VALID4 và Android Firestore VALID380; chưa có hàng Firestore web VALID trong lần quan sát. HostingHTTP200, RCv6 bật AI. Đây không phải bằng chứng ba output Gemini/cross-role chạy thành công.
 
-Lần cloud audit lưu timestamp và số đếm thật trong evidence/cloud-readiness/config-status.json; cửa sổ24giờ thấy24Firestore INVALID/UNKNOWN. Không suy ra verified chỉ từ registered. Không có thiết bị ADB kết nối trong đợt chuẩn bị, nên không thể đăng ký token thiết bị hoặc kiểm thử native thay người dùng. Không hạ AI enforcement để vượt lỗi.
+## Việc còn lại trước nộp
 
-## Ngoài phạm vi 5mục đang chốt
+1. Xác nhận request Firestore web/mobile hợp lệ, chốt enforcement và thử lại; không bật vội làm khóa client.
+2. Cài APK mới trên điện thoại thật, kiểm thử chức năng và trạng thái một lượt; sửa lỗi thực tế nếu phát hiện. Không thể cam kết không còn lỗi chỉ từ unit test.
+3. Lưu3input/output Gemini thật,1lỗi,RCoff và Analytics; cross-role3lượt deployment kèm độ trễ/ảnh/video. Bộ slide nhóm được giữ nguyên.
+4. ARTEMIS đủ flow Lab2/cross-role/AI,3lượt và trace/pass rate. Bộ kết quả cũ25ca×3 đều skipped, chưa đạt; coverage Final chưa được chốt.
+5. README Admin đầu tiên/demo accounts/ID/video; report10–15trang, slidePDF12–15trang, video8–12phút. Đồng bộ đối chiếu thiết kế theo tài liệu traceability. Không có yêu cầu phải thêm chức năng mới hoặc backend riêng.
 
-ARTEMIS Final chưa có pass (bộ cũ25ca×3 đều skipped), AI review/PR và fix commit evidence, report10–15trang, slides12–15, video8–12phút, README demo accounts/Admin/ID/video và Figma cần chốt trước nộp. Không sửa slides nhóm, không rewrite lịch sử, không tạo screenshot/test output giả. Source sửa mới đang working tree, chưa commit/push.
-
-[Đối chiếu đề](final-requirements.md) · [Chạy thật từng bước](final-live-verification.md) · [Test report](test-report.md).
+Thực hiện theo docs/final-live-verification.md. Nguồn và cấu hình chỉ là tiền điều kiện; chỉ đánh dấu chạy thật đạt khi đã lưu bằng chứng.

@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-14T03:39:36.843Z",
+  "checkedAt": "2026-11-14T06:45:48.022Z",
   "project": "eventhub-group4",
   "config": {
     "web": {
@@ -38,7 +38,7 @@
       "appId": "1:218815401893:android:c3166be3181a746c53a24c",
       "result": "ALLOW",
       "security": "VALID",
-      "count": 232
+      "count": 380
     }
   ],
   "hostingHttpStatus": 200,

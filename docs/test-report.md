@@ -1,3 +1,13 @@
+# Kết quả chốt source — 14/11/2026
+
+- Mobile87, web51, core10 tests đạt. Ba unittest chuẩn hóa report ARTEMIS đạt, không gọi thiết bị/model, không tính là E2E.
+- Rules hiện tại61ca lá đạt ở lượt phân quyền đã deploy trước đó; bản sửa này không thay Rules.
+- Review mới: chặn input/output nghi PII trước truyền mạng, bảo vệ luồng AI khi Analytics lỗi, so sánh đầy đủ activities; test Admin kích hoạt và giữ dữ liệu khi lỗi.
+- Cloud audit chỉ đọc: xem evidence/cloud-readiness/config-status.json; Firestore chưa enforcement. Không có bằng chứng Gemini/cross-role/ARTEMIS mới từ các test local.
+- ARTEMIS harness test: `python -m unittest discover -s e2e_test -p observations_unit_checks.py`. Bộ25ca×3 cũ đều skipped. Không coi unittest/schema normalization là xác minh thao tác Android.
+
+## Lịch sử các lượt kiểm tra (không dùng số cũ làm trạng thái hiện tại)
+
 ## Kết quả mới nhất — 13/11/2026
 
 Web40/40, core6/6 và Rules55/55 đạt; web/core analyze sạch; web production build thành công. Rules JUnit có52case lá+3role suites,0failure/skip. Force-refresh RC cho AI đã được kiểm tra: đổi kill-switch được lấy lại khi người dùng yêu cầu; lỗi fetch không tiếp tục dùng cấu hình cũ. Rules bổ sung kiểm tra kiểu displayName/email và timestamp hồ sơ, ngày/giờ/deadline sự kiện. Cloud/native/AI-output/cross-role vẫn cần chạy thật, không suy pass từ các kết quả này.
