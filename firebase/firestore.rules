@@ -495,7 +495,9 @@ service cloud.firestore {
     }
 
     match /checkinSessions/{eventId} {
-      allow get: if member() && ((exists(regPath(eventId)) && get(regPath(eventId)).data.status in ['active', 'approved']) || isStaffOf(resource.data.clubId));
+      // Authorize against the event even before its first session exists.
+      allow get: if member() && ((exists(regPath(eventId)) && get(regPath(eventId)).data.status in ['active', 'approved'])
+        || (exists(eventPath(eventId)) && isStaffOf(get(eventPath(eventId)).data.clubId)));
       allow list: if isAdmin() || (isStaff() && resource.data.clubId == myClubId());
       allow create, update: if exists(eventPath(eventId))
         && isStaffOf(get(eventPath(eventId)).data.clubId)

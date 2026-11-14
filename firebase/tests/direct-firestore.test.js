@@ -269,6 +269,12 @@ test('3. Cross-Role Flow 1 (registrations + notifications): student submits pend
   const staffItDb = authedDb('staff_it');
   const staffMusicDb = authedDb('staff_music');
 
+  // The owning club can watch a new event before a session document exists.
+  const unopened = await assertSucceeds(getDoc(doc(staffItDb, 'checkinSessions/ev_flow1')));
+  assert.equal(unopened.exists(), false);
+  await assertFails(getDoc(doc(staffMusicDb, 'checkinSessions/ev_flow1')));
+  await assertFails(getDoc(doc(bobDb, 'checkinSessions/ev_flow1')));
+
   // Denied: student tries to self-approve at creation or forge activeCount
   await assertFails(
     setDoc(doc(aliceDb, 'registrations/alice_ev_flow1'), {
