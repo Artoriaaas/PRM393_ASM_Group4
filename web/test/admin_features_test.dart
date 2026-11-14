@@ -1,3 +1,4 @@
+import 'package:eventhub_web/viewmodels/club_assignments_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,6 +14,7 @@ import 'package:eventhub_web/screens/events/live_qr_panel_screen.dart';
 import 'package:eventhub_web/services/web_contracts.dart';
 import 'package:eventhub_web/viewmodels/admin_clubs_viewmodel.dart';
 import 'package:eventhub_web/viewmodels/admin_users_viewmodel.dart';
+
 import 'support/fake_web_services.dart';
 
 void main() {
@@ -64,42 +66,46 @@ void main() {
   ];
 
   group('Admin Features - User Management', () {
-    testWidgets('AdminUsersScreen renders user list and allows role filtering', (tester) async {
-      tester.view.physicalSize = const Size(1280, 800);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(() => tester.view.resetPhysicalSize());
+    testWidgets(
+      'AdminUsersScreen renders user list and allows role filtering',
+      (tester) async {
+        tester.view.physicalSize = const Size(1280, 800);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() => tester.view.resetPhysicalSize());
 
-      final fakeAuth = FakeWebAuthService(initialUser: adminUser);
-      final fakeAdmin = FakeAdminService(
-        initialUsers: sampleUsers,
-        initialClubs: sampleClubs,
-      );
+        final fakeAuth = FakeWebAuthService(initialUser: adminUser);
+        final fakeAdmin = FakeAdminService(
+          initialUsers: sampleUsers,
+          initialClubs: sampleClubs,
+        );
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            webAuthServiceProvider.overrideWithValue(fakeAuth),
-            adminServiceProvider.overrideWithValue(fakeAdmin),
-          ],
-          child: MaterialApp(
-            theme: EventHubTheme.lightTheme,
-            home: const AdminUsersScreen(),
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              webAuthServiceProvider.overrideWithValue(fakeAuth),
+              adminServiceProvider.overrideWithValue(fakeAdmin),
+              clubAssignmentsProvider.overrideWith((ref) => Stream.value([])),
+            ],
+            child: MaterialApp(
+              theme: EventHubTheme.lightTheme,
+              home: const AdminUsersScreen(),
+            ),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.text('Quản lý Người dùng & Phân quyền'), findsOneWidget);
-      expect(find.text('Nguyen Van A'), findsOneWidget);
-      expect(find.text('Tran Van B'), findsOneWidget);
+        expect(find.text('Quản lý Người dùng & Phân quyền'), findsOneWidget);
+        expect(find.text('Nguyen Van A'), findsOneWidget);
+        expect(find.text('Tran Van B'), findsOneWidget);
 
-      // Filter by staff
-      await tester.tap(find.text('Trưởng CLB (staff)'));
-      await tester.pumpAndSettle();
+        // Filter by staff
+        await tester.tap(find.text('Trưởng CLB (staff)'));
+        await tester.pumpAndSettle();
 
-      expect(find.text('Tran Van B'), findsOneWidget);
-      expect(find.text('Nguyen Van A'), findsNothing);
-    });
+        expect(find.text('Tran Van B'), findsOneWidget);
+        expect(find.text('Nguyen Van A'), findsNothing);
+      },
+    );
 
     test('AdminUsersViewModel updateUserRole modifies user list', () async {
       final fakeAdmin = FakeAdminService(
@@ -112,6 +118,7 @@ void main() {
         overrides: [
           webAuthServiceProvider.overrideWithValue(fakeAuth),
           adminServiceProvider.overrideWithValue(fakeAdmin),
+          clubAssignmentsProvider.overrideWith((ref) => Stream.value([])),
         ],
       );
       addTearDown(container.dispose);
@@ -137,58 +144,62 @@ void main() {
       expect(u1.clubId, 'c_fuda');
     });
 
-    testWidgets('AdminUsersScreen displays club name for staff and excludes assigned clubs in role dialog', (tester) async {
-      tester.view.physicalSize = const Size(1280, 800);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(() => tester.view.resetPhysicalSize());
+    testWidgets(
+      'AdminUsersScreen displays club name for staff and excludes assigned clubs in role dialog',
+      (tester) async {
+        tester.view.physicalSize = const Size(1280, 800);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() => tester.view.resetPhysicalSize());
 
-      final fakeAuth = FakeWebAuthService(initialUser: adminUser);
-      final fakeAdmin = FakeAdminService(
-        initialUsers: sampleUsers,
-        initialClubs: sampleClubs,
-      );
+        final fakeAuth = FakeWebAuthService(initialUser: adminUser);
+        final fakeAdmin = FakeAdminService(
+          initialUsers: sampleUsers,
+          initialClubs: sampleClubs,
+        );
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            webAuthServiceProvider.overrideWithValue(fakeAuth),
-            adminServiceProvider.overrideWithValue(fakeAdmin),
-          ],
-          child: const MaterialApp(
-            home: AdminUsersScreen(),
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              webAuthServiceProvider.overrideWithValue(fakeAuth),
+              adminServiceProvider.overrideWithValue(fakeAdmin),
+              clubAssignmentsProvider.overrideWith((ref) => Stream.value([])),
+            ],
+            child: const MaterialApp(home: AdminUsersScreen()),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
+        await tester.pumpAndSettle();
 
-      // Tran Van B is staff of c_fcode ('CLB F-Code')
-      expect(find.text('Trưởng CLB: CLB F-Code'), findsOneWidget);
+        // Tran Van B is staff of c_fcode ('CLB F-Code')
+        expect(find.text('Trưởng CLB: CLB F-Code'), findsOneWidget);
 
-      // Open role dialog for first user (Nguyen Van A)
-      await tester.tap(find.text('Phân quyền').first);
-      await tester.pumpAndSettle();
+        // Open role dialog for first user (Nguyen Van A)
+        await tester.ensureVisible(find.text('Phân quyền').first);
+        await tester.tap(find.text('Phân quyền').first);
+        await tester.pumpAndSettle();
 
-      expect(find.text('Phân quyền người dùng'), findsOneWidget);
+        expect(find.text('Phân quyền người dùng'), findsOneWidget);
 
-      // Switch role to staff
-      await tester.tap(find.text('Sinh viên / Người tham gia (user)'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Trưởng CLB (staff)').last);
-      await tester.pumpAndSettle();
+        // Switch role to staff
+        await tester.tap(find.text('Sinh viên / Người tham gia (user)'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Trưởng CLB (staff)').last);
+        await tester.pumpAndSettle();
 
-      // Club c_fcode already has a leader (Tran Van B), so only c_fuda should be available!
-      expect(find.text('CLB Mỹ thuật FUDA'), findsOneWidget);
+        // Club c_fcode already has a leader (Tran Van B), so only c_fuda should be available!
+        // No implicit first-club selection; explicitly open the club field.
+        await tester.tap(find.byType(DropdownButtonFormField<String>).last);
+        await tester.pumpAndSettle();
 
-      // Open club dropdown
-      await tester.tap(find.text('CLB Mỹ thuật FUDA'));
-      await tester.pumpAndSettle();
-
-      // 'Câu lạc bộ F-Code' must NOT be in the dropdown items because it already has a leader!
-      expect(find.text('Câu lạc bộ F-Code'), findsNothing);
-    });
+        expect(find.text('CLB Mỹ thuật FUDA'), findsOneWidget);
+        // 'Câu lạc bộ F-Code' must NOT be in the dropdown items because it already has a leader!
+        expect(find.text('Câu lạc bộ F-Code'), findsNothing);
+      },
+    );
   });
   group('Admin Features - Club Directory Management', () {
-    testWidgets('AdminClubsScreen renders clubs and allows searching', (tester) async {
+    testWidgets('AdminClubsScreen renders clubs and allows searching', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(1280, 800);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(() => tester.view.resetPhysicalSize());
@@ -201,6 +212,7 @@ void main() {
           overrides: [
             webAuthServiceProvider.overrideWithValue(fakeAuth),
             adminServiceProvider.overrideWithValue(fakeAdmin),
+            clubAssignmentsProvider.overrideWith((ref) => Stream.value([])),
           ],
           child: MaterialApp(
             theme: EventHubTheme.lightTheme,
@@ -230,6 +242,7 @@ void main() {
         overrides: [
           webAuthServiceProvider.overrideWithValue(fakeAuth),
           adminServiceProvider.overrideWithValue(fakeAdmin),
+          clubAssignmentsProvider.overrideWith((ref) => Stream.value([])),
         ],
       );
       addTearDown(container.dispose);
@@ -251,8 +264,10 @@ void main() {
 
       await vm.archiveClub('c_fcode');
       await Future<void>.delayed(const Duration(milliseconds: 50));
-      final archivedClub =
-          container.read(adminClubsViewModelProvider).allClubs.firstWhere((c) => c.id == 'c_fcode');
+      final archivedClub = container
+          .read(adminClubsViewModelProvider)
+          .allClubs
+          .firstWhere((c) => c.id == 'c_fcode');
       expect(archivedClub.status, 'archived');
     });
   });
@@ -274,6 +289,7 @@ void main() {
           overrides: [
             webAuthServiceProvider.overrideWithValue(fakeAuth),
             adminServiceProvider.overrideWithValue(fakeAdmin),
+            clubAssignmentsProvider.overrideWith((ref) => Stream.value([])),
           ],
           child: MaterialApp(
             theme: EventHubTheme.lightTheme,
@@ -289,7 +305,9 @@ void main() {
       expect(find.text('CLB đang hoạt động'), findsOneWidget);
     });
 
-    testWidgets('AppShell renders Admin sidebar when user is admin', (tester) async {
+    testWidgets('AppShell renders Admin sidebar when user is admin', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(1280, 800);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(() => tester.view.resetPhysicalSize());
@@ -305,6 +323,7 @@ void main() {
           overrides: [
             webAuthServiceProvider.overrideWithValue(fakeAuth),
             adminServiceProvider.overrideWithValue(fakeAdmin),
+            clubAssignmentsProvider.overrideWith((ref) => Stream.value([])),
           ],
           child: MaterialApp(
             theme: EventHubTheme.lightTheme,
@@ -352,36 +371,40 @@ void main() {
       expect(await fakeAdmin.countSystemPendingEvents(), 0);
 
       // Reject
-      await fakeAdmin.adminRejectEvent('ev_proposal_1', reason: 'Trùng lịch thi');
+      await fakeAdmin.adminRejectEvent(
+        'ev_proposal_1',
+        reason: 'Trùng lịch thi',
+      );
       final rejectedEvents = await fakeAdmin.streamAllEvents().first;
       expect(rejectedEvents.first.status, 'rejected');
     });
 
-    testWidgets('ReviewQueueScreen displays role boundary notice when viewed by Admin',
-        (tester) async {
-      tester.view.physicalSize = const Size(1280, 800);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(() => tester.view.resetPhysicalSize());
+    testWidgets(
+      'ReviewQueueScreen displays role boundary notice when viewed by Admin',
+      (tester) async {
+        tester.view.physicalSize = const Size(1280, 800);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() => tester.view.resetPhysicalSize());
 
-      final fakeAuth = FakeWebAuthService(initialUser: adminUser);
-      final fakeAdmin = FakeAdminService();
+        final fakeAuth = FakeWebAuthService(initialUser: adminUser);
+        final fakeAdmin = FakeAdminService();
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            webAuthServiceProvider.overrideWithValue(fakeAuth),
-            adminServiceProvider.overrideWithValue(fakeAdmin),
-          ],
-          child: const MaterialApp(
-            home: ReviewQueueScreen(),
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              webAuthServiceProvider.overrideWithValue(fakeAuth),
+              adminServiceProvider.overrideWithValue(fakeAdmin),
+              clubAssignmentsProvider.overrideWith((ref) => Stream.value([])),
+            ],
+            child: const MaterialApp(home: ReviewQueueScreen()),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.text('Phân quyền Duyệt Đăng ký'), findsOneWidget);
-      expect(find.text('Đến Giám sát & Phê duyệt Sự kiện'), findsOneWidget);
-    });
+        expect(find.text('Phân quyền Duyệt Đăng ký'), findsOneWidget);
+        expect(find.text('Đến Giám sát & Phê duyệt Sự kiện'), findsOneWidget);
+      },
+    );
 
     testWidgets(
       'ClubEventsScreen hides create button & QR check-in for Admin and allows approving proposals',
@@ -417,6 +440,7 @@ void main() {
             overrides: [
               webAuthServiceProvider.overrideWithValue(fakeAuth),
               adminServiceProvider.overrideWithValue(fakeAdmin),
+              clubAssignmentsProvider.overrideWith((ref) => Stream.value([])),
               clubServiceProvider.overrideWithValue(fakeClub),
               webAnalyticsServiceProvider.overrideWithValue(fakeAnalytics),
             ],
@@ -468,6 +492,7 @@ void main() {
             overrides: [
               webAuthServiceProvider.overrideWithValue(fakeAuth),
               adminServiceProvider.overrideWithValue(fakeAdmin),
+              clubAssignmentsProvider.overrideWith((ref) => Stream.value([])),
               clubServiceProvider.overrideWithValue(FakeClubService()),
             ],
             child: const MaterialApp(
@@ -486,4 +511,3 @@ void main() {
     );
   });
 }
-

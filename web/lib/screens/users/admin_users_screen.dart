@@ -1,6 +1,9 @@
+import 'club_assignments_panel.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eventhub_core/eventhub_core.dart';
+
 import '../../services/web_contracts.dart';
 import '../../viewmodels/admin_users_viewmodel.dart';
 import '../../viewmodels/web_auth_viewmodel.dart';
@@ -54,11 +57,13 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
 
     // Các CLB đã có Trưởng CLB khác phụ trách (loại trừ chính targetUser)
     final assignedClubIds = allUsers
-        .where((u) =>
-            u.role == 'staff' &&
-            u.uid != targetUser.uid &&
-            u.clubId != null &&
-            u.clubId!.trim().isNotEmpty)
+        .where(
+          (u) =>
+              u.role == 'staff' &&
+              u.uid != targetUser.uid &&
+              u.clubId != null &&
+              u.clubId!.trim().isNotEmpty,
+        )
         .map((u) => u.clubId!.trim())
         .toSet();
 
@@ -77,9 +82,10 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
     }
 
     if (selectedRole == 'staff') {
-      if (selectedClubId == null || !availableClubs.any((c) => c.id == selectedClubId)) {
-        selectedClubId = availableClubs.isNotEmpty ? availableClubs.first.id : null;
-        selectedClubName = availableClubs.isNotEmpty ? availableClubs.first.name : null;
+      if (selectedClubId == null ||
+          !availableClubs.any((c) => c.id == selectedClubId)) {
+        selectedClubId = null;
+        selectedClubName = null;
       }
     }
     showDialog(
@@ -88,10 +94,15 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
         builder: (context, setDialogState) {
           return AlertDialog(
             backgroundColor: AppColors.surface,
-            shape: const RoundedRectangleBorder(borderRadius: AppRadius.borderR16),
+            shape: const RoundedRectangleBorder(
+              borderRadius: AppRadius.borderR16,
+            ),
             title: Row(
               children: [
-                const Icon(Icons.admin_panel_settings, color: AppColors.primary),
+                const Icon(
+                  Icons.admin_panel_settings,
+                  color: AppColors.primary,
+                ),
                 const SizedBox(width: AppSpacing.s8),
                 Expanded(
                   child: Text(
@@ -124,9 +135,8 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                                 targetUser.displayName.isNotEmpty
                                     ? targetUser.displayName
                                     : 'Chưa đặt tên',
-                                style: AppTypography.textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: AppTypography.textTheme.bodyMedium
+                                    ?.copyWith(fontWeight: FontWeight.bold),
                               ),
                             ),
                             if (targetUser.role == 'staff')
@@ -156,10 +166,11 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                               Expanded(
                                 child: Text(
                                   'Hiện là Trưởng CLB: ${_resolveClubName(targetUser, clubs)}',
-                                  style: AppTypography.textTheme.bodySmall?.copyWith(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                                  style: AppTypography.textTheme.bodySmall
+                                      ?.copyWith(
+                                        color: AppColors.primary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                 ),
                               ),
                             ],
@@ -179,7 +190,9 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                   DropdownButtonFormField<String>(
                     initialValue: selectedRole,
                     decoration: InputDecoration(
-                      border: OutlineInputBorder(borderRadius: AppRadius.borderR8),
+                      border: OutlineInputBorder(
+                        borderRadius: AppRadius.borderR8,
+                      ),
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: AppSpacing.s12,
                         vertical: AppSpacing.s8,
@@ -208,18 +221,17 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                             selectedClubName = null;
                           } else {
                             if (selectedClubId == null ||
-                                !availableClubs.any((c) => c.id == selectedClubId)) {
-                              selectedClubId = availableClubs.isNotEmpty
-                                  ? availableClubs.first.id
-                                  : null;
-                              selectedClubName = availableClubs.isNotEmpty
-                                  ? availableClubs.first.name
-                                  : null;
+                                !availableClubs.any(
+                                  (c) => c.id == selectedClubId,
+                                )) {
+                              selectedClubId = null;
+                              selectedClubName = null;
                             } else {
                               final match = availableClubs
                                   .where((c) => c.id == selectedClubId)
                                   .firstOrNull;
-                              selectedClubName = match?.name ?? selectedClubName;
+                              selectedClubName =
+                                  match?.name ?? selectedClubName;
                             }
                           }
                         });
@@ -255,9 +267,10 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                                 clubs.isEmpty
                                     ? 'Chưa có CLB nào hoạt động. Vui lòng tạo CLB trước.'
                                     : 'Tất cả các CLB hiện đều đã có Trưởng CLB. Không còn CLB trống để gán.',
-                                style: AppTypography.textTheme.bodySmall?.copyWith(
-                                  color: AppColors.onWarningContainer,
-                                ),
+                                style: AppTypography.textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: AppColors.onWarningContainer,
+                                    ),
                               ),
                             ),
                           ],
@@ -265,25 +278,32 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                       )
                     else
                       DropdownButtonFormField<String>(
-                        initialValue: availableClubs.any((c) => c.id == selectedClubId)
+                        initialValue:
+                            availableClubs.any((c) => c.id == selectedClubId)
                             ? selectedClubId
-                            : availableClubs.first.id,
+                            : null,
                         decoration: InputDecoration(
-                          border: OutlineInputBorder(borderRadius: AppRadius.borderR8),
+                          border: OutlineInputBorder(
+                            borderRadius: AppRadius.borderR8,
+                          ),
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: AppSpacing.s12,
                             vertical: AppSpacing.s8,
                           ),
                         ),
                         items: availableClubs
-                            .map((c) => DropdownMenuItem(
-                                  value: c.id,
-                                  child: Text(c.name),
-                                ))
+                            .map(
+                              (c) => DropdownMenuItem(
+                                value: c.id,
+                                child: Text(c.name),
+                              ),
+                            )
                             .toList(),
                         onChanged: (val) {
                           if (val != null) {
-                            final c = availableClubs.firstWhere((x) => x.id == val);
+                            final c = availableClubs.firstWhere(
+                              (x) => x.id == val,
+                            );
                             setDialogState(() {
                               selectedClubId = c.id;
                               selectedClubName = c.name;
@@ -309,19 +329,25 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                         selectedClubId!.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Không có Câu lạc bộ hợp lệ để gán cho Trưởng CLB.'),
+                          content: Text(
+                            'Không có Câu lạc bộ hợp lệ để gán cho Trưởng CLB.',
+                          ),
                           backgroundColor: AppColors.error,
                         ),
                       );
                       return;
                     }
                     if (selectedClubName == null || selectedClubName!.isEmpty) {
-                      final c = clubs.where((x) => x.id == selectedClubId).firstOrNull;
+                      final c = clubs
+                          .where((x) => x.id == selectedClubId)
+                          .firstOrNull;
                       selectedClubName = c?.name;
                     }
                   }
                   Navigator.pop(ctx);
-                  await ref.read(adminUsersViewModelProvider.notifier).updateUserRole(
+                  await ref
+                      .read(adminUsersViewModelProvider.notifier)
+                      .updateUserRole(
                         targetUid: targetUser.uid,
                         newRole: selectedRole,
                         clubId: selectedClubId,
@@ -404,12 +430,17 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.check_circle, color: AppColors.onSuccessContainer),
+                    const Icon(
+                      Icons.check_circle,
+                      color: AppColors.onSuccessContainer,
+                    ),
                     const SizedBox(width: AppSpacing.s8),
                     Expanded(
                       child: Text(
                         state.actionMessage!,
-                        style: const TextStyle(color: AppColors.onSuccessContainer),
+                        style: const TextStyle(
+                          color: AppColors.onSuccessContainer,
+                        ),
                       ),
                     ),
                     IconButton(
@@ -431,12 +462,17 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.error_outline, color: AppColors.onErrorContainer),
+                    const Icon(
+                      Icons.error_outline,
+                      color: AppColors.onErrorContainer,
+                    ),
                     const SizedBox(width: AppSpacing.s8),
                     Expanded(
                       child: Text(
                         state.errorMessage!,
-                        style: const TextStyle(color: AppColors.onErrorContainer),
+                        style: const TextStyle(
+                          color: AppColors.onErrorContainer,
+                        ),
                       ),
                     ),
                     IconButton(
@@ -448,6 +484,17 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
               ),
               const SizedBox(height: AppSpacing.s16),
             ],
+
+            ClubAssignmentsPanel(
+              clubs: state.clubs
+                  .where(
+                    (c) => !state.allUsers.any(
+                      (u) => u.role == 'staff' && u.clubId == c.id,
+                    ),
+                  )
+                  .toList(),
+            ),
+            const SizedBox(height: AppSpacing.s16),
 
             // Search bar & filters
             Row(
@@ -472,17 +519,35 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
               runSpacing: AppSpacing.s8,
               children: [
                 _buildFilterChip('Tất cả', 'all', state.roleFilter, vm),
-                _buildFilterChip('Sinh viên (user)', 'user', state.roleFilter, vm),
-                _buildFilterChip('Trưởng CLB (staff)', 'staff', state.roleFilter, vm),
-                _buildFilterChip('Quản trị viên (admin)', 'admin', state.roleFilter, vm),
+                _buildFilterChip(
+                  'Sinh viên (user)',
+                  'user',
+                  state.roleFilter,
+                  vm,
+                ),
+                _buildFilterChip(
+                  'Trưởng CLB (staff)',
+                  'staff',
+                  state.roleFilter,
+                  vm,
+                ),
+                _buildFilterChip(
+                  'Quản trị viên (admin)',
+                  'admin',
+                  state.roleFilter,
+                  vm,
+                ),
               ],
             ),
             const SizedBox(height: AppSpacing.s20),
 
             // Content
             state.loadState.when(
-              initial: () => const Center(child: AppLoadingState(message: 'Đang tải…')),
-              loading: (_) => const Center(child: AppLoadingState(message: 'Đang tải người dùng…')),
+              initial: () =>
+                  const Center(child: AppLoadingState(message: 'Đang tải…')),
+              loading: (_) => const Center(
+                child: AppLoadingState(message: 'Đang tải người dùng…'),
+              ),
               empty: (msg) => Center(
                 child: AppEmptyState(
                   title: 'Không tìm thấy người dùng',
@@ -512,7 +577,8 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: users.length,
-                    separatorBuilder: (_, __) => const Divider(height: 1, color: AppColors.border),
+                    separatorBuilder: (_, __) =>
+                        const Divider(height: 1, color: AppColors.border),
                     itemBuilder: (context, index) {
                       final u = users[index];
                       final isCurrent = u.uid == currentAdmin?.uid;
@@ -520,15 +586,20 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                       return ListTile(
                         leading: CircleAvatar(
                           backgroundColor: _getRoleBgColor(u.role),
-                          child: Icon(_getRoleIcon(u.role), color: _getRoleFgColor(u.role), size: 20),
+                          child: Icon(
+                            _getRoleIcon(u.role),
+                            color: _getRoleFgColor(u.role),
+                            size: 20,
+                          ),
                         ),
                         title: Row(
                           children: [
                             Text(
-                              u.displayName.isNotEmpty ? u.displayName : 'Chưa đặt tên',
-                              style: AppTypography.textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              u.displayName.isNotEmpty
+                                  ? u.displayName
+                                  : 'Chưa đặt tên',
+                              style: AppTypography.textTheme.bodyMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             if (isCurrent) ...[
                               const SizedBox(width: AppSpacing.s8),
@@ -544,9 +615,8 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                           children: [
                             Text(
                               u.email,
-                              style: AppTypography.textTheme.bodySmall?.copyWith(
-                                color: AppColors.textSecondary,
-                              ),
+                              style: AppTypography.textTheme.bodySmall
+                                  ?.copyWith(color: AppColors.textSecondary),
                             ),
                             if (u.role == 'staff') ...[
                               const SizedBox(height: AppSpacing.s4),
@@ -560,10 +630,11 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                                   const SizedBox(width: AppSpacing.s4),
                                   Text(
                                     'Trưởng CLB: ${_resolveClubName(u, state.clubs)}',
-                                    style: AppTypography.textTheme.labelSmall?.copyWith(
-                                      color: AppColors.primary,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                                    style: AppTypography.textTheme.labelSmall
+                                        ?.copyWith(
+                                          color: AppColors.primary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                   ),
                                 ],
                               ),
@@ -586,7 +657,12 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                                 label: const Text('Phân quyền'),
                                 onPressed: isCurrent
                                     ? null
-                                    : () => _openRoleDialog(context, u, state.clubs, state.allUsers),
+                                    : () => _openRoleDialog(
+                                        context,
+                                        u,
+                                        state.clubs,
+                                        state.allUsers,
+                                      ),
                               ),
                             ),
                           ],
@@ -623,33 +699,32 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
   }
 
   IconData _getRoleIcon(String role) => switch (role) {
-        'admin' => Icons.admin_panel_settings,
-        'staff' => Icons.manage_accounts,
-        _ => Icons.person,
-      };
+    'admin' => Icons.admin_panel_settings,
+    'staff' => Icons.manage_accounts,
+    _ => Icons.person,
+  };
 
   Color _getRoleBgColor(String role) => switch (role) {
-        'admin' => AppColors.warningContainer,
-        'staff' => AppColors.brandSubtle,
-        _ => AppColors.surfaceSubtle,
-      };
+    'admin' => AppColors.warningContainer,
+    'staff' => AppColors.brandSubtle,
+    _ => AppColors.surfaceSubtle,
+  };
 
   Color _getRoleFgColor(String role) => switch (role) {
-        'admin' => AppColors.onWarningContainer,
-        'staff' => AppColors.primary,
-        _ => AppColors.textSecondary,
-      };
+    'admin' => AppColors.onWarningContainer,
+    'staff' => AppColors.primary,
+    _ => AppColors.textSecondary,
+  };
 
   String _getRoleLabel(String role) => switch (role) {
-        'admin' => 'Quản trị viên',
-        'staff' => 'Trưởng CLB',
-        _ => 'Sinh viên',
-      };
+    'admin' => 'Quản trị viên',
+    'staff' => 'Trưởng CLB',
+    _ => 'Sinh viên',
+  };
 
   AppBadgeVariant _getRoleBadgeVariant(String role) => switch (role) {
-        'admin' => AppBadgeVariant.warning,
-        'staff' => AppBadgeVariant.info,
-        _ => AppBadgeVariant.neutral,
-      };
+    'admin' => AppBadgeVariant.warning,
+    'staff' => AppBadgeVariant.info,
+    _ => AppBadgeVariant.neutral,
+  };
 }
-

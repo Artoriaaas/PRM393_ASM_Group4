@@ -642,6 +642,9 @@ test('unpublished events stay private; staff submits but cannot publish or imper
       await c.firestore().doc('events/private_' + status).set({
         title: 'Private proposal', status, visibility: 'public', clubId: 'club_it',
         registrationMode: 'required', capacity: 3, activeCount: 0,
+        startsAt: Timestamp.fromMillis(Date.now()+7200000),
+        endsAt: Timestamp.fromMillis(Date.now()+10800000),
+        deadline: Timestamp.fromMillis(Date.now()+3600000),
       });
     }
   });
@@ -665,9 +668,170 @@ test('unpublished events stay private; staff submits but cannot publish or imper
   const payload = {title: 'Proposal', clubId: 'club_it', visibility: 'public',
     registrationMode: 'required', capacity: 3, activeCount: 0,
     startsAt: Timestamp.fromMillis(Date.now()+7200000),
-    endsAt: Timestamp.fromMillis(Date.now()+10800000), updatedAt: serverTimestamp()};
+    endsAt: Timestamp.fromMillis(Date.now()+10800000), deadline: Timestamp.fromMillis(Date.now()+3600000), updatedAt: serverTimestamp()};
   await assertFails(setDoc(doc(admin, 'events/admin_create'), {...payload, status:'draft'}));
   await assertFails(setDoc(doc(staff, 'events/staff_publish'), {...payload, status:'published'}));
   await assertFails(setDoc(doc(authedDb('staff_music'), 'events/other_club'), {...payload, status:'draft'}));
   await assertSucceeds(setDoc(doc(staff, 'events/staff_proposal'), {...payload, status:'pending_approval'}));
+});
+
+// Appendix B: every role × collection. A forbidden-only role has no invented allow case.
+for (const [role, uid] of [['user', 'alice'], ['staff', 'staff_it'], ['admin', 'admin_1']]) {
+  test(`Appendix B matrix: ${role} covers every collection`, async (t) => {
+    await seedSystem();
+    const eventId = 'ev_ai_1', regId = `${uid}_${eventId}`, hash = 'e'.repeat(64);
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      const db = ctx.firestore();
+      await db.doc(`registrations/${regId}`).set({uid, eventId, clubId:'club_it',status:'approved',generation:1,participant,checkInAt:null});
+      await db.doc(`registrations/${regId}/history/entry`).set({status:'pending'});
+      await db.doc(`checkinSessions/${eventId}`).set({eventId,clubId:'club_it',open:true});
+      await db.doc(`qrCredentials/${hash}`).set({eventId,clubId:'club_it',enabled:true});
+      await db.doc('announcements/notice').set({title:'Notice',body:'Club update',scope:'global',authorRole:'admin'});
+      for(const owner of [uid,'bob']) {
+        await db.doc(`users/${owner}/notifications/notice`).set({title:'Private',readAt:null});
+        await db.doc(`users/${owner}/devices/device`).set({fid:'token',platform:'android'});
+        await db.doc(`users/${owner}/reports/report-check`).set({fileName:'report-check.pdf',mimeType:'application/pdf',byteCount:100,rowCount:1});
+        await db.doc(`users/${owner}/announcementReads/notice`).set({readAt:Timestamp.now()});
+      }
+    });
+    const db=authedDb(uid);
+    const readAndDeny = async (path, denied) => {await assertSucceeds(getDoc(doc(db,path)));await assertFails(denied());};
+    await t.test('users: own read/update allowed; role/type violations denied',async()=>{
+      await readAndDeny(`users/${uid}`,()=>updateDoc(doc(db,`users/${uid}`),{role:role==='admin'?'user':'admin'}));
+      await assertSucceeds(updateDoc(doc(db,`users/${uid}`),{displayName:'Updated profile',updatedAt:serverTimestamp()}));
+      await assertFails(updateDoc(doc(db,`users/${uid}`),{displayName:123,updatedAt:serverTimestamp()}));
+      await assertFails(updateDoc(doc(db,`users/${uid}`),{email:['invalid'],updatedAt:serverTimestamp()}));
+    });
+    await t.test('clubs: read allowed, delete denied',()=>readAndDeny('clubs/club_it',()=>deleteDoc(doc(db,'clubs/club_it'))));
+    await t.test('events: published read allowed; delete/invalid dates denied',async()=>{
+      await readAndDeny(`events/${eventId}`,()=>deleteDoc(doc(db,`events/${eventId}`)));
+      if(role==='staff') await assertSucceeds(updateDoc(doc(db,`events/${eventId}`),{description:'Updated description',updatedAt:serverTimestamp()}));
+      await assertFails(updateDoc(doc(db,`events/${eventId}`),{startsAt:'invalid',updatedAt:serverTimestamp()}));
+      await assertFails(updateDoc(doc(db,`events/${eventId}`),{deadline:null,updatedAt:serverTimestamp()}));
+    });
+    await t.test('registrations: permitted read allowed, delete denied',()=>readAndDeny(`registrations/${regId}`,()=>deleteDoc(doc(db,`registrations/${regId}`))));
+    await t.test('history: own parent history read allowed, writes denied',()=>readAndDeny(`registrations/${regId}/history/entry`,()=>setDoc(doc(db,`registrations/${regId}/history/entry`),{status:'approved'})));
+    await t.test('checkinSessions: approved owner/club/admin read allowed, delete denied',()=>readAndDeny(`checkinSessions/${eventId}`,()=>deleteDoc(doc(db,`checkinSessions/${eventId}`))));
+    await t.test('qrCredentials: known hash read allowed, delete denied',()=>readAndDeny(`qrCredentials/${hash}`,()=>deleteDoc(doc(db,`qrCredentials/${hash}`))));
+    await t.test('announcements: read allowed, immutable update denied',()=>readAndDeny('announcements/notice',()=>updateDoc(doc(db,'announcements/notice'),{title:'Changed'})));
+    for(const collection of ['notifications','devices']) {
+      const id=collection==='devices'?'device':'notice';
+      await t.test(`${collection}: own read allowed, other UID read denied`,()=>readAndDeny(`users/${uid}/${collection}/${id}`,()=>getDoc(doc(db,`users/bob/${collection}/${id}`))));
+    }
+    await t.test('reports: user owns metadata; staff/admin intentionally forbidden',async()=>{
+      const own=doc(db,`users/${uid}/reports/report-check`);
+      if(role==='user') {
+        await assertSucceeds(getDoc(own));
+        await assertSucceeds(setDoc(doc(db,`users/${uid}/reports/report-matrix`),{fileName:'report-matrix.pdf',mimeType:'application/pdf',byteCount:100,rowCount:1,createdAt:serverTimestamp()}));
+      } else {
+        await assertFails(getDoc(own));
+        await assertFails(setDoc(doc(db,`users/${uid}/reports/report-matrix`),{fileName:'report-matrix.pdf',mimeType:'application/pdf',byteCount:100,rowCount:1,createdAt:serverTimestamp()}));
+      }
+      await assertFails(getDoc(doc(db,'users/bob/reports/report-check')));
+      await assertFails(updateDoc(own,{rowCount:2}));
+    });
+    await t.test('announcementReads: user owns receipt; staff/admin intentionally forbidden',async()=>{
+      const own=doc(db,`users/${uid}/announcementReads/notice`);
+      if(role==='user') {await assertSucceeds(getDoc(own));await assertSucceeds(setDoc(own,{readAt:serverTimestamp()}));}
+      else {await assertFails(getDoc(own));await assertFails(setDoc(own,{readAt:serverTimestamp()}));}
+      await assertFails(getDoc(doc(db,'users/bob/announcementReads/notice')));
+      await assertFails(deleteDoc(own));
+    });
+    await t.test('unmatched collection: default-deny read and write',async()=>{
+      await assertFails(getDoc(doc(db,'unknown/record')));
+      await assertFails(setDoc(doc(db,'unknown/record'),{value:1}));
+    });
+  });
+}
+
+test('Appendix B: anonymous and unverified accounts cannot access application collections',async()=>{
+  await seedSystem();
+  const paths=['users/alice','clubs/club_it','events/ev_ai_1','registrations/alice_ev_ai_1','registrations/alice_ev_ai_1/history/entry','checkinSessions/ev_ai_1',`qrCredentials/${'e'.repeat(64)}`,'announcements/notice','users/alice/notifications/notice','users/alice/devices/device','users/alice/reports/report-check','users/alice/announcementReads/notice'];
+  for(const db of [env.unauthenticatedContext().firestore(),authedDb('bob',false)]) {
+    for(const path of paths) {await assertFails(getDoc(doc(db,path))); await assertFails(setDoc(doc(db,path),{unexpected:true}));}
+  }
+});
+
+
+// Email assignment onboarding uses the verified Auth token, not users.email.
+function managerDb(uid, email, { verified = true, provider = 'google.com' } = {}) {
+  return env.authenticatedContext(uid, {email, email_verified: verified, firebase: {sign_in_provider: provider}}).firestore();
+}
+function invitationBatch(db, email, clubId = 'club_it', clubName = 'CLB IT FPTU') {
+  const batch = writeBatch(db);
+  batch.set(doc(db, 'clubAssignments', email), { email, clubId, clubName, status: 'pending', createdBy: 'admin_1', createdAt: serverTimestamp() });
+  batch.set(doc(db, 'clubManagerSlots', clubId), {email});
+  return batch;
+}
+function activateBatch(db, uid, email, clubId = 'club_it', clubName = 'CLB IT FPTU') {
+  const batch = writeBatch(db);
+  batch.update(doc(db, 'users', uid), { role: 'staff', clubId, clubName, updatedAt: serverTimestamp() });
+  batch.update(doc(db, 'clubAssignments', email), { status: 'accepted', acceptedUid: uid, acceptedAt: serverTimestamp() });
+  return batch;
+}
+test('email onboarding: administrator-only reservations and verified atomic activation', async (t) => {
+  await seedSystem();
+  const admin = managerDb('admin_1', 'admin@fpt.edu.vn');
+  const alice = managerDb('alice', 'alice@fpt.edu.vn');
+  const bob = managerDb('bob', 'bob@fpt.edu.vn');
+  await t.test('participant and staff cannot issue invitations', async () => {
+    await assertFails(invitationBatch(alice, 'alice@fpt.edu.vn').commit());
+    await assertFails(invitationBatch(managerDb('staff_it', 'leader.it@fpt.edu.vn'), 'alice@fpt.edu.vn').commit());
+  });
+  await t.test('admin creates pending invitation and club reservation atomically', async () => {
+    await assertFails(setDoc(doc(admin, 'clubAssignments/alice@fpt.edu.vn'), {email:'alice@fpt.edu.vn', clubId:'club_it', clubName:'CLB IT FPTU', status:'pending', createdBy:'admin_1', createdAt: serverTimestamp()}));
+    await assertSucceeds(invitationBatch(admin, 'alice@fpt.edu.vn').commit());
+    await assertFails(invitationBatch(admin, 'other@fpt.edu.vn').commit());
+  });
+  await t.test('only own verified email can read; lists stay admin-only', async () => {
+    await assertSucceeds(getDoc(doc(alice, 'clubAssignments/alice@fpt.edu.vn')));
+    await assertSucceeds(getDoc(doc(managerDb('new_user', 'new@fpt.edu.vn'), 'clubAssignments/new@fpt.edu.vn')));
+  });
+  await t.test('other email and unverified/password accounts cannot activate', async () => {
+    await assertFails(getDoc(doc(bob, 'clubAssignments/alice@fpt.edu.vn')));
+    await assertFails(getDocs(collection(alice, 'clubAssignments')));
+    await assertFails(activateBatch(bob, 'bob', 'alice@fpt.edu.vn').commit());
+    await assertFails(activateBatch(managerDb('alice', 'alice@fpt.edu.vn', {verified:false}), 'alice', 'alice@fpt.edu.vn').commit());
+    await assertFails(activateBatch(managerDb('alice', 'alice@fpt.edu.vn', {provider:'password'}), 'alice', 'alice@fpt.edu.vn').commit());
+  });
+  await t.test('profile-only escalation, invitation-only consumption and wrong club are denied', async () => {
+    await assertFails(updateDoc(doc(alice, 'users/alice'), {role:'staff', clubId:'club_it', clubName:'CLB IT FPTU', updatedAt: serverTimestamp()}));
+    await assertFails(updateDoc(doc(alice, 'clubAssignments/alice@fpt.edu.vn'), {status:'accepted', acceptedUid:'alice', acceptedAt:serverTimestamp()}));
+    await assertFails(activateBatch(alice, 'alice', 'alice@fpt.edu.vn', 'club_music', 'CLB Am Nhac').commit());
+  });
+  await t.test('matching Google account activates once and cannot replay', async () => {
+    await assertSucceeds(activateBatch(alice, 'alice', 'alice@fpt.edu.vn').commit());
+    assert.equal((await getDoc(doc(alice, 'users/alice'))).data().role, 'staff');
+    await assertFails(activateBatch(alice, 'alice', 'alice@fpt.edu.vn').commit());
+  });
+  await t.test('revocation requires releasing reservation and removing live staff access', async () => {
+    await assertFails(updateDoc(doc(admin, 'clubAssignments/alice@fpt.edu.vn'), {status:'revoked', revokedBy:'admin_1', revokedAt:serverTimestamp()}));
+    const batch = writeBatch(admin);
+    batch.update(doc(admin, 'clubAssignments/alice@fpt.edu.vn'), {status:'revoked', revokedBy:'admin_1', revokedAt:serverTimestamp()});
+    batch.delete(doc(admin, 'clubManagerSlots/club_it'));
+    batch.update(doc(admin, 'users/alice'), {role:'user', clubId:null, clubName:null, updatedAt:serverTimestamp()});
+    await assertSucceeds(batch.commit());
+    await assertFails(activateBatch(alice, 'alice', 'alice@fpt.edu.vn').commit());
+    await assertSucceeds(invitationBatch(admin, 'bob@fpt.edu.vn').commit());
+  });
+  await t.test('pending revocation and reissue use the same email safely', async () => {
+    const revoke = writeBatch(admin);
+    revoke.update(doc(admin, 'clubAssignments/bob@fpt.edu.vn'), {status:'revoked', revokedBy:'admin_1', revokedAt:serverTimestamp()});
+    revoke.delete(doc(admin, 'clubManagerSlots/club_it'));
+    await assertSucceeds(revoke.commit());
+    await assertFails(activateBatch(bob, 'bob', 'bob@fpt.edu.vn').commit());
+    await assertSucceeds(invitationBatch(admin, 'bob@fpt.edu.vn').commit());
+  });
+  await t.test('archived club cannot be activated; new account bootstraps as user first', async () => {
+    await assertSucceeds(updateDoc(doc(admin, 'clubs/club_it'), {status:'archived'}));
+    await assertFails(activateBatch(bob, 'bob', 'bob@fpt.edu.vn').commit());
+    await assertSucceeds(updateDoc(doc(admin, 'clubs/club_it'), {status:'active'}));
+    await assertSucceeds(setDoc(doc(admin, 'clubs/club_new'), {name:'CLB Mới', status:'active'}));
+    await assertSucceeds(invitationBatch(admin, 'new@fpt.edu.vn', 'club_new', 'CLB Mới').commit());
+    const newcomer = managerDb('new_user', 'new@fpt.edu.vn');
+    await assertSucceeds(setDoc(doc(newcomer, 'users/new_user'), {role:'user', email:'new@fpt.edu.vn', displayName:'New manager', createdAt:serverTimestamp()}));
+    await assertSucceeds(activateBatch(newcomer, 'new_user', 'new@fpt.edu.vn', 'club_new', 'CLB Mới').commit());
+    await assertSucceeds(updateDoc(doc(newcomer, 'users/new_user'), {displayName:'Updated manager', updatedAt:serverTimestamp()}));
+    await assertFails(updateDoc(doc(newcomer, 'users/new_user'), {role:'admin'}));
+  });
 });

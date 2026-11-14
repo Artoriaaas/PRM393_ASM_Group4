@@ -10,6 +10,7 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:eventhub_core/eventhub_core.dart';
 
 import 'web_contracts.dart';
+import 'club_assignments.dart';
 
 class FirebaseWebAuthService implements IWebAuthService {
   FirebaseWebAuthService({FirebaseAuth? auth, FirebaseFirestore? firestore})
@@ -25,22 +26,45 @@ class FirebaseWebAuthService implements IWebAuthService {
 
   @override
   Stream<WebUserProfile?> authStateChanges() {
-    return _auth.authStateChanges().asyncMap((user) async {
-      if (user == null) {
-        _cachedUser = null;
-        return null;
-      }
-      final result = await fetchProfile(user.uid);
-      return result.when(
-        success: (profile) {
-          _cachedUser = profile;
-          return profile;
-        },
-        failure: (failure) {
+    return Stream.multi((controller) {
+      StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? profiles;
+      var generation = 0;
+      var disposed = false;
+      final authSubscription = _auth.authStateChanges().listen((user) async {
+        final currentGeneration = ++generation;
+        final previousProfiles = profiles;
+        profiles = null;
+        await previousProfiles?.cancel();
+        if (disposed || currentGeneration != generation) return;
+        if (user == null) {
           _cachedUser = null;
-          throw failure;
-        },
-      );
+          controller.add(null);
+          return;
+        }
+        final result = await fetchProfile(user.uid);
+        if (disposed || currentGeneration != generation) return;
+        if (result.isFailure) {
+          controller.addError(result.failureOrNull!);
+          return;
+        }
+        profiles = _firestore
+            .collection('users')
+            .doc(user.uid)
+            .snapshots()
+            .listen((doc) {
+              if (disposed || currentGeneration != generation) return;
+              _cachedUser = doc.exists
+                  ? WebUserProfile.fromJson(user.uid, doc.data()!)
+                  : null;
+              controller.add(_cachedUser);
+            }, onError: controller.addError);
+      }, onError: controller.addError);
+      controller.onCancel = () async {
+        disposed = true;
+        generation++;
+        await authSubscription.cancel();
+        await profiles?.cancel();
+      };
     });
   }
 
@@ -56,17 +80,24 @@ class FirebaseWebAuthService implements IWebAuthService {
           'email': authUser?.email ?? '',
           'createdAt': FieldValue.serverTimestamp(),
         };
-        await _firestore.collection('users').doc(uid).set(initialProfile);
-        return Result.success(
-          WebUserProfile(
-            uid: uid,
-            email: authUser?.email ?? '',
-            displayName: authUser?.displayName ?? '',
-            role: 'user',
-          ),
-        );
+        final profileRef = _firestore.collection('users').doc(uid);
+        await _firestore.runTransaction((tx) async {
+          if (!(await tx.get(profileRef)).exists)
+            tx.set(profileRef, initialProfile);
+        });
+        await FirestoreClubAssignmentService(
+          firestore: _firestore,
+          auth: _auth,
+        ).activateForCurrentUser();
+        final activated = await _firestore.collection('users').doc(uid).get();
+        return Result.success(WebUserProfile.fromJson(uid, activated.data()!));
       }
-      return Result.success(WebUserProfile.fromJson(uid, doc.data()!));
+      await FirestoreClubAssignmentService(
+        firestore: _firestore,
+        auth: _auth,
+      ).activateForCurrentUser();
+      final refreshed = await _firestore.collection('users').doc(uid).get();
+      return Result.success(WebUserProfile.fromJson(uid, refreshed.data()!));
     } on FirebaseException catch (e) {
       return Result.failure(
         AppFailure(
