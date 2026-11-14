@@ -8,6 +8,7 @@ import uuid
 from pathlib import Path
 
 import pytest
+from observations import normalize_observations
 
 @pytest.fixture
 def run_case():
@@ -15,6 +16,9 @@ def run_case():
     account = os.getenv("ARTEMIS_TEST_ACCOUNT_EMAIL")
     if not base or not account:
         pytest.skip("Set ARTEMIS_BASE_URL and ARTEMIS_TEST_ACCOUNT_EMAIL; no device/model calls made")
+    device = os.getenv("ARTEMIS_DEVICE", "")
+    if not device or device.startswith("emulator-"):
+        pytest.skip("Set ARTEMIS_DEVICE to the physical Android device serial for Final evidence")
     sdk = pytest.importorskip("artemis_client")
     client = sdk.ArtemisClient(base, token=os.getenv("ARTEMIS_TOKEN"))
     event = os.getenv("ARTEMIS_EVENT_TITLE")
@@ -42,7 +46,7 @@ def run_case():
             trace_id = re.sub(r'[^\w-]', '_', str(payload.get('trace_id') or uuid.uuid4()))
             (evidence / f'{case_id}-run-{run_id}-{trace_id}.json').write_text(serialized, encoding='utf-8')
         try:
-            result = asyncio.run(client.run(instruction, profile="flash", device_serial=os.getenv("ARTEMIS_DEVICE", "emulator-5554"), timeout=int(os.getenv("ARTEMIS_CASE_TIMEOUT_SECONDS", "1800"))))
+            result = asyncio.run(client.run(instruction, profile="flash", device_serial=device, timeout=int(os.getenv("ARTEMIS_CASE_TIMEOUT_SECONDS", "1800"))))
         except Exception as exc:
             save({'case_id': case_id, 'status': 'client_error', 'acceptance_status': 'not_passed',
                   'elapsed_seconds': time.monotonic() - started, 'error_type': type(exc).__name__})
@@ -70,14 +74,10 @@ def run_case():
                 if action.get("action") == "report_task_status":
                     output = (action.get("args") or {}).get("explanation")
                     break
-        if isinstance(output, str):
-            output = re.sub(r"^```(?:json)?\s*|\s*```$", "", output.strip())
-            try:
-                output = json.loads(output)
-            except json.JSONDecodeError:
-                output = {"unparsed": output}
+        raw_output = output
+        output = normalize_observations(output)
         payload = {"case_id": case_id, "trace_id": result.trace_id, "status": result.status,
-                   "elapsed_seconds": duration, "output": output, "error": result.error,
+                   "elapsed_seconds": duration, "output": output, "raw_output": raw_output, "error": result.error,
                    "run": os.getenv("ARTEMIS_RUN", "1")}
         # Only pytest's full test outcome (including additional assertions such as
         # TC18's Logcat check) may establish acceptance. Raw model status cannot.
