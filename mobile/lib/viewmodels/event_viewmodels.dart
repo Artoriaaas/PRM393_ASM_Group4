@@ -188,7 +188,7 @@ final recommendationFeedProvider =
           .watch(eventsProvider)
           .whenData(
             (rows) => settings.showRecommendations
-                ? rows.take(settings.recommendationLimit.clamp(1, 3)).toList()
+                ? rows.take(settings.recommendationLimit.clamp(1, 100)).toList()
                 : [],
           );
     });

@@ -21,7 +21,7 @@ void main() {
       endsAt: DateTime.utc(2027, 1, 1, 2),
     ),
   );
-  test('home preview is capped and independent of search filters', () async {
+  test('home respects configured limit without a hidden three-event cap', () async {
     final c = ProviderContainer(
       overrides: [
         signedInUidProvider.overrideWithValue('u'),
@@ -36,7 +36,7 @@ void main() {
     await c.read(eventsProvider.future);
     c.read(eventFilterProvider.notifier).set(query: 'no match');
     expect(c.read(eventFeedProvider).requireValue, isEmpty);
-    expect(c.read(recommendationFeedProvider).requireValue.length, 3);
+    expect(c.read(recommendationFeedProvider).requireValue.length, 5);
   });
   for (final q in ['', 'Workshop']) {
     testWidgets('list title reflects query: $q', (tester) async {
