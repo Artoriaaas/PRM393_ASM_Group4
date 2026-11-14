@@ -29,7 +29,7 @@
   <!-- Left: Client Layer (x=24..270, width=246, y=80..470) -->
   <rect x="24" y="80" width="246" height="390" rx="8" fill="#FDF2F8" stroke="#DB2777" stroke-width="1.5" filter="url(#shadow)" />
   <rect x="24" y="80" width="246" height="34" rx="8" fill="#DB2777" />
-  <text x="147" y="102" font-family="Calibri, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#FFF" text-anchor="middle">CLIENT APPLICATIONS (TẦNG CLIENT)</text>
+  <text x="147" y="102" font-family="Calibri, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#FFF" text-anchor="middle">FE: CLIENT APPLICATIONS</text>
 
   <!-- Mobile App Box -->
   <rect x="36" y="125" width="222" height="135" rx="6" fill="#FFF" stroke="#F472B6" stroke-width="1.2" filter="url(#shadow)" />

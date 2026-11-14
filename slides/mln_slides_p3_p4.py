@@ -813,7 +813,7 @@ def get_p3_p4_slides():
               <strong style="font-size: 16px;">1. Problem có minh chứng thực tế</strong>
             </div>
             <div style="font-size: 13.5px; color: var(--vai-2); margin-top: 4px;">
-              3 Pain points đều có số liệu khảo sát thực tế (120 SV, 15 CLB) và đo lường hậu quả rõ ràng.
+              3 Pain points đều xuất phát từ hiện trạng thực tế tại các CLB và phân tích nguyên nhân - hệ quả rõ ràng.
             </div>
           </div>
 

@@ -373,97 +373,97 @@ def get_p1_slides():
       </div>
 
       <div class="s-head">
-        <h2>3 Điểm nghẽn lớn: <em>Ùn tắc, quá tải sức chứa và sự cố treo hệ thống</em></h2>
-        <p class="sub">Số liệu khảo sát thực tế trên 120 sinh viên và 15 ban chủ nhiệm CLB tại ĐH FPT; ghi nhận tình trạng nghẽn đón tiếp và ứng dụng bị đơ cứng (ANR).</p>
+        <h2>3 Điểm nghẽn cốt lõi: <em>Ùn tắc đón tiếp, vượt sức chứa &amp; mù thông tin xét duyệt</em></h2>
+        <p class="sub">Thực tế tổ chức sự kiện tại ĐH FPT: quy trình thủ công rời rạc gây khó khăn cho cả sinh viên, ban chủ nhiệm CLB và ban tổ chức.</p>
       </div>
 
-      <div class="s-body">
-        <!-- Cột trái: 3 Khối Pain Points & Phân tích hệ quả -->
-        <div style="flex: 1.35; display: flex; flex-direction: column; gap: 14px;">
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; flex: 1;">
-            <!-- Pain point 1 -->
-            <div class="panel accent-pink" style="justify-content: space-between; padding: 18px 16px;">
-              <div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                  <span class="tag pink">PAIN POINT 1</span>
-                  <span style="font: 800 24px var(--display); color: var(--pink);">78%</span>
-                </div>
-                <h3 style="font-size: 19px; color: var(--vai);">Ùn tắc tại bàn đón tiếp</h3>
-                <p style="font-size: 13.5px; color: var(--vai-2); margin-top: 8px; line-height: 1.4;">
-                  <strong>Nguyên nhân:</strong> Dò tên thủ công trên danh sách giấy A4 dài 5–10 trang.<br><br>
-                  <strong>Hệ quả:</strong> Mất 45–60 giây/SV; 78% sinh viên phàn nàn về cảnh chen lấn, trễ giờ khai mạc.
-                </p>
+      <div class="s-body" style="flex-direction: column; gap: 20px;">
+        <!-- 3 Cột Pain Points lớn phủ đều chiều ngang slide -->
+        <div style="flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+          <!-- Pain point 1 -->
+          <div class="panel accent-pink" style="display: flex; flex-direction: column; justify-content: space-between; padding: 26px 22px;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span class="tag pink" style="font-size: 13px; padding: 4px 10px;">PAIN POINT 1</span>
+                <span style="font: 700 13px var(--mono); color: var(--pink);">CHECK-IN THỦ CÔNG</span>
               </div>
-              <div style="background: rgba(219,39,119,0.08); padding: 6px 10px; border-radius: 4px; font: 600 11.5px var(--mono); color: var(--pink);">
-                ẢNH HƯỞNG: Bàn đón tiếp
+              <h3 style="font-size: 24px; font-weight: 800; color: var(--vai); line-height: 1.25;">Ùn tắc tại bàn đón tiếp</h3>
+              <div style="font-size: 15px; color: var(--vai-2); margin-top: 16px; line-height: 1.55;">
+                <div style="margin-bottom: 12px;">
+                  <strong style="color: var(--vai);">Nguyên nhân:</strong><br>
+                  Dò tên từng sinh viên trên danh sách giấy A4 dài nhiều trang bằng bút dạ; tìm kiếm chậm và dễ nhầm lẫn thông tin.
+                </div>
+                <div>
+                  <strong style="color: var(--vai);">Hệ quả:</strong><br>
+                  Sinh viên phải xếp hàng chen lấn kéo dài tại cửa phòng, gây nghẽn lối đi và làm trễ giờ khai mạc sự kiện.
+                </div>
               </div>
             </div>
-
-            <!-- Pain point 2 -->
-            <div class="panel accent-nghe" style="justify-content: space-between; padding: 18px 16px;">
-              <div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                  <span class="tag nghe">PAIN POINT 2</span>
-                  <span style="font: 800 24px var(--display); color: var(--nghe);">65%</span>
-                </div>
-                <h3 style="font-size: 19px; color: var(--vai);">Vượt sức chứa &amp; Treo máy</h3>
-                <p style="font-size: 13.5px; color: var(--vai-2); margin-top: 8px; line-height: 1.4;">
-                  <strong>Nguyên nhân:</strong> Không có cơ chế khóa đơn theo thời gian thực.<br><br>
-                  <strong>Hệ quả:</strong> 65% CLB nhận dư 30–50 đơn; thiết bị đơ cứng, báo lỗi System UI ANR khi tải đông.
-                </p>
-              </div>
-              <div style="background: rgba(234,88,12,0.08); padding: 6px 10px; border-radius: 4px; font: 600 11.5px var(--mono); color: var(--nghe);">
-                ẢNH HƯỞNG: CLB &amp; An toàn
-              </div>
-            </div>
-
-            <!-- Pain point 3 -->
-            <div class="panel accent-son" style="justify-content: space-between; padding: 18px 16px;">
-              <div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                  <span class="tag son">PAIN POINT 3</span>
-                  <span style="font: 800 24px var(--display); color: var(--son);">82%</span>
-                </div>
-                <h3 style="font-size: 19px; color: var(--vai);">Mù thông tin xét duyệt</h3>
-                <p style="font-size: 13.5px; color: var(--vai-2); margin-top: 8px; line-height: 1.4;">
-                  <strong>Nguyên nhân:</strong> Thiếu kênh thông báo tập trung hai chiều.<br><br>
-                  <strong>Hệ quả:</strong> 82% sinh viên không biết đơn được duyệt chưa; bị từ chối không rõ lý do.
-                </p>
-              </div>
-              <div style="background: rgba(29,78,216,0.08); padding: 6px 10px; border-radius: 4px; font: 600 11.5px var(--mono); color: var(--son);">
-                ẢNH HƯỞNG: Quyền lợi sinh viên
-              </div>
+            <div style="background: rgba(219,39,119,0.08); padding: 10px 14px; border-radius: 6px; font: 600 13px var(--mono); color: var(--pink); margin-top: 18px;">
+              KHU VỰC ẢNH HƯỞNG: Bàn đón tiếp &amp; Cửa hội trường
             </div>
           </div>
 
-          <!-- Thanh tổng hợp số liệu đo đạc -->
-          <div class="panel" style="padding: 12px 18px; background: var(--cham-2);">
-            <div style="font: 600 13px var(--mono); color: var(--vai-3); text-transform: uppercase;">
-              SỐ LIỆU ĐO ĐẠC TẠI ĐH FPT: 78% PHÀN NÀN CHEN LẤN · 65% SỰ KIỆN QUÁ TẢI · MẤT 45-60S CHO MỖI LƯỢT ĐIỂM DANH THỦ CÔNG
+          <!-- Pain point 2 -->
+          <div class="panel accent-nghe" style="display: flex; flex-direction: column; justify-content: space-between; padding: 26px 22px;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span class="tag nghe" style="font-size: 13px; padding: 4px 10px;">PAIN POINT 2</span>
+                <span style="font: 700 13px var(--mono); color: var(--nghe);">QUẢN LÝ SỨC CHỨA</span>
+              </div>
+              <h3 style="font-size: 24px; font-weight: 800; color: var(--vai); line-height: 1.25;">Vượt sức chứa hội trường</h3>
+              <div style="font-size: 15px; color: var(--vai-2); margin-top: 16px; line-height: 1.55;">
+                <div style="margin-bottom: 12px;">
+                  <strong style="color: var(--vai);">Nguyên nhân:</strong><br>
+                  Biểu mẫu đăng ký không có cơ chế tự động khóa đơn theo thời gian thực khi số lượng đăng ký đã đạt giới hạn phòng.
+                </div>
+                <div>
+                  <strong style="color: var(--vai);">Hệ quả:</strong><br>
+                  CLB thường xuyên nhận thừa người tham gia so với số ghế; tiềm ẩn rủi ro quá tải phòng và ảnh hưởng an toàn sự kiện.
+                </div>
+              </div>
+            </div>
+            <div style="background: rgba(234,88,12,0.08); padding: 10px 14px; border-radius: 6px; font: 600 13px var(--mono); color: var(--nghe); margin-top: 18px;">
+              KHU VỰC ẢNH HƯỞNG: Ban tổ chức CLB &amp; Khán phòng
+            </div>
+          </div>
+
+          <!-- Pain point 3 -->
+          <div class="panel accent-son" style="display: flex; flex-direction: column; justify-content: space-between; padding: 26px 22px;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span class="tag son" style="font-size: 13px; padding: 4px 10px;">PAIN POINT 3</span>
+                <span style="font: 700 13px var(--mono); color: var(--son);">KÊNH THÔNG TIN</span>
+              </div>
+              <h3 style="font-size: 24px; font-weight: 800; color: var(--vai); line-height: 1.25;">Mù thông tin xét duyệt</h3>
+              <div style="font-size: 15px; color: var(--vai-2); margin-top: 16px; line-height: 1.55;">
+                <div style="margin-bottom: 12px;">
+                  <strong style="color: var(--vai);">Nguyên nhân:</strong><br>
+                  Thiếu kênh thông báo tập trung hai chiều giữa Ban tổ chức CLB và người nộp đơn sau khi gửi yêu cầu tham gia.
+                </div>
+                <div>
+                  <strong style="color: var(--vai);">Hệ quả:</strong><br>
+                  Sinh viên không nắm được tình trạng duyệt đơn; khi bị từ chối không nhận được lý do phản hồi minh bạch, rõ ràng.
+                </div>
+              </div>
+            </div>
+            <div style="background: rgba(29,78,216,0.08); padding: 10px 14px; border-radius: 6px; font: 600 13px var(--mono); color: var(--son); margin-top: 18px;">
+              KHU VỰC ẢNH HƯỞNG: Quyền lợi &amp; Trải nghiệm sinh viên
             </div>
           </div>
         </div>
 
-        <!-- Cột phải: Khung ảnh minh chứng sự cố treo máy ANR -->
-        <div class="panel" style="flex: 0.65; padding: 16px; background: var(--cham-2); align-items: center; justify-content: space-between; position: relative;">
-          <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
-            <span class="tag red">● SỰ CỐ: APPLICATION NOT RESPONDING</span>
-            <span style="font: 600 12px var(--mono); color: var(--red);">ANR ERROR</span>
+        <!-- Thanh tổng hợp vấn đề -->
+        <div class="panel" style="padding: 14px 24px; background: var(--cham-2); display: flex; justify-content: space-between; align-items: center;">
+          <div style="font: 600 14px var(--mono); color: var(--vai-3); text-transform: uppercase;">
+            TỔNG HỢP VẤN ĐỀ: QUY TRÌNH THỦ CÔNG GÂY TẮC NGHẼN ĐÓN TIẾP · NGUY CƠ QUÁ TẢI CHỖ NGỒI · MẤT MINH BẠCH KHI XÉT DUYỆT
           </div>
-
-          <div style="width: 250px; height: 490px; background: #000; border-radius: 32px; padding: 8px; box-shadow: 0 16px 40px rgba(0,0,0,0.25); border: 4px solid #1E293B; margin-top: 8px; overflow: hidden; display: flex; flex-direction: column;">
-            <img src="../evidence/screen_ui_not_responding.png" alt="System UI Not Responding ANR" 
-                 style="width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 24px;">
-          </div>
-
-          <div style="font: 600 12px var(--mono); color: var(--vai-3); text-align: center; margin-top: 8px;">
-            Minh chứng: Thiết bị bị treo cứng (ANR) khi ứng dụng xử lý dữ liệu nặng hoặc quá tải
-          </div>
+          <span class="tag red">CẦN GIẢI PHÁP SỐ HÓA</span>
         </div>
       </div>
 
       <div class="s-foot">
-        <div class="foot-left"><span class="mono-meta">DỮ LIỆU ĐO ĐẠC: KHẢO SÁT 120 SINH VIÊN + 15 BAN CHỦ NHIỆM CLB FPTU</span></div>
+        <div class="foot-left"><span class="mono-meta">HIỆN TRẠNG THỰC TẾ: QUAN SÁT TẠI CÁC SỰ KIỆN CÂU LẠC BỘ ĐẠI HỌC FPT</span></div>
         <div class="foot-right"><span class="mono-meta">03 / 24</span></div>
       </div>
     </section>

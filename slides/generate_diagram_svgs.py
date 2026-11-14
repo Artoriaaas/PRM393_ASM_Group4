@@ -117,7 +117,7 @@ svg_07 = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width=
 
   <!-- Decision BR-03 (Duyệt?) -->
   <polygon points="584,338 608,362 584,386 560,362" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5" filter="url(#shadow)" />
-  <text x="584" y="365" font-family="Calibri, Arial, sans-serif" font-size="9" font-weight="700" fill="#B45309" text-anchor="middle">Duyệt?</text>
+  <text x="584" y="365" font-family="Calibri, Arial, sans-serif" font-size="9" font-weight="700" fill="#B45309" text-anchor="middle">BR-03?</text>
 
   <!-- Mở phiên QR -->
   <rect x="795" y="339" width="96" height="46" rx="6" fill="#FFF" stroke="#EA580C" stroke-width="1.5" filter="url(#shadow)" />
@@ -315,7 +315,7 @@ svg_09 = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 485" width=
   <!-- Left: Client Layer (x=24..270, width=246, y=80..470) -->
   <rect x="24" y="80" width="246" height="390" rx="8" fill="#FDF2F8" stroke="#DB2777" stroke-width="1.5" filter="url(#shadow)" />
   <rect x="24" y="80" width="246" height="34" rx="8" fill="#DB2777" />
-  <text x="147" y="102" font-family="Calibri, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#FFF" text-anchor="middle">CLIENT APPLICATIONS (TẦNG CLIENT)</text>
+  <text x="147" y="102" font-family="Calibri, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#FFF" text-anchor="middle">FE: CLIENT APPLICATIONS</text>
 
   <!-- Mobile App Box -->
   <rect x="36" y="125" width="222" height="135" rx="6" fill="#FFF" stroke="#F472B6" stroke-width="1.2" filter="url(#shadow)" />
