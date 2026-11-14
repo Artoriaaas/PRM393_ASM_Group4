@@ -19,7 +19,13 @@ class BookingFeedback extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (s.message != null) EventPanel(children: [Text(s.message!)]),
+        if (s.message != null)
+          EventNotice(
+            s.message!,
+            variant: s.unresolved
+                ? AppBadgeVariant.warning
+                : AppBadgeVariant.info,
+          ),
         if (s.unresolved) ...[
           EventPanel(
             children: [

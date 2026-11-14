@@ -84,45 +84,101 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
               return ListView(
                 padding: const EdgeInsets.all(AppSpacing.s16),
                 children: [
-                  if (r.pending) ...[
-                    Text(
-                      'Đã gửi đăng ký',
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    const EventPanel(
-                      children: [
-                        Text(
-                          'Yêu cầu đang chờ CLB duyệt. Bạn chỉ có thể quét QR sau khi được duyệt.',
+                  if (widget.success || widget.checkInResult) ...[
+                    const SizedBox(height: 24),
+                    Center(
+                      child: CircleAvatar(
+                        radius: 32,
+                        backgroundColor: r.rejected || r.cancelled
+                            ? AppColors.errorContainer
+                            : r.pending
+                            ? AppColors.infoContainer
+                            : AppColors.successContainer,
+                        child: Icon(
+                          r.rejected || r.cancelled
+                              ? Icons.close
+                              : r.pending
+                              ? Icons.schedule
+                              : Icons.check,
+                          size: 30,
+                          color: r.rejected || r.cancelled
+                              ? AppColors.error
+                              : r.pending
+                              ? AppColors.info
+                              : AppColors.success,
                         ),
-                      ],
+                      ),
                     ),
+                    const SizedBox(height: 20),
+                    Text(
+                      widget.checkInResult
+                          ? (r.checkInAt == null
+                                ? 'Chưa có xác nhận điểm danh'
+                                : ref.read(bookingProvider).result?.code ==
+                                      'already-checked-in'
+                                ? 'Bạn đã điểm danh'
+                                : 'Điểm danh thành công')
+                          : r.rejected
+                          ? 'Đăng ký bị từ chối'
+                          : r.cancelled
+                          ? 'Đã hủy đăng ký'
+                          : r.pending
+                          ? 'Đã gửi đăng ký'
+                          : 'Đăng ký được xác nhận',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: 16),
+                    if (widget.checkInResult)
+                      const Text(
+                        'Đưa màn hình này cho CLB kiểm tra.',
+                        textAlign: TextAlign.center,
+                      ),
+                    const SizedBox(height: 24),
+                    if (!widget.checkInResult) ...[
+                      EventNotice(r.statusLabel),
+                      const SizedBox(height: 16),
+                    ],
+                  ] else ...[
+                    EventNotice(
+                      e.status == 'cancelled'
+                          ? 'Sự kiện đã hủy'
+                          : r.statusLabel,
+                      variant: r.checkInAt != null
+                          ? AppBadgeVariant.success
+                          : AppBadgeVariant.info,
+                    ),
+                    const SizedBox(height: 16),
                   ],
-                  if (r.rejected)
-                    EventPanel(
-                      children: [
-                        Text('CLB đã từ chối đăng ký.'),
-                        if (r.reason?.isNotEmpty == true) Text(r.reason!),
-                      ],
+                  if (r.pending) ...[
+                    const EventNotice(
+                      'Yêu cầu đang chờ CLB duyệt. Bạn chỉ có thể quét QR sau khi được duyệt.',
                     ),
-                  if (widget.success && r.canCheckIn)
-                    Text(
-                      'Đăng ký được xác nhận',
-                      style: Theme.of(context).textTheme.headlineSmall,
+                    const SizedBox(height: 16),
+                  ],
+                  if (r.rejected) ...[
+                    EventNotice(
+                      r.reason?.isNotEmpty == true
+                          ? r.reason!
+                          : 'CLB đã từ chối đăng ký.',
+                      variant: AppBadgeVariant.error,
                     ),
-                  if (widget.checkInResult)
-                    Text(
-                      r.checkInAt != null
-                          ? (ref.read(bookingProvider).result?.status ==
-                                        'checked-in' &&
-                                    ref.read(bookingProvider).result?.code !=
-                                        'already-checked-in'
-                                ? 'Điểm danh thành công'
-                                : 'Bạn đã điểm danh')
-                          : 'Chưa có xác nhận điểm danh',
-                      style: Theme.of(context).textTheme.headlineSmall,
+                    const SizedBox(height: 16),
+                  ],
+                  if (widget.checkInResult && r.checkInAt != null) ...[
+                    EventNotice(
+                      'Đã điểm danh lúc ${eventTime(r.checkInAt!)} · ${eventDate(r.checkInAt!)}',
+                      variant: AppBadgeVariant.success,
                     ),
-                  if (widget.checkInResult && r.checkInAt != null)
-                    const Text('Đưa màn hình này cho CLB kiểm tra.'),
+                    const SizedBox(height: 16),
+                  ],
+                  EventIdentityCard(e),
+                  const SizedBox(height: 16),
+                  EventParticipantCard(
+                    r.participant,
+                    showEmail: !widget.checkInResult && !widget.success,
+                  ),
+                  const SizedBox(height: 16),
                   if (!widget.checkInResult &&
                       r.canCheckIn &&
                       r.checkInAt == null &&
@@ -134,68 +190,32 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
                             ref.invalidate(checkinSessionProvider(e.id)),
                       ),
                     if (session.asData != null)
-                      EventPanel(
-                        children: [
-                          Text(
-                            session.asData!.value
-                                ? 'Phiên điểm danh đang mở. Quét mã QR do CLB hiển thị tại sự kiện.'
-                                : 'Phiên điểm danh đang đóng. Kiểm tra lại khi CLB mở phiên.',
-                          ),
-                        ],
+                      EventNotice(
+                        session.asData!.value
+                            ? 'Phiên điểm danh đang mở. Quét mã QR do CLB hiển thị tại sự kiện.'
+                            : 'Điểm danh sẽ khả dụng khi CLB mở phiên tại sự kiện.',
                       ),
                     if (!ref.watch(canCancelRegistrationProvider(r.id)))
-                      const EventPanel(
-                        children: [
-                          Text('Sự kiện đã bắt đầu. Không thể hủy đăng ký.'),
-                        ],
+                      const EventNotice(
+                        'Sự kiện đã bắt đầu. Không thể hủy đăng ký.',
                       ),
                   ],
-                  AppStatusBadge(
-                    label: e.status == 'cancelled'
-                        ? 'Sự kiện đã hủy'
-                        : r.statusLabel,
-                    variant: AppBadgeVariant.info,
-                  ),
                   const SizedBox(height: AppSpacing.s16),
-                  EventSummary(e),
-                  const SizedBox(height: AppSpacing.s16),
-                  EventPanel(
-                    children: [
-                      Text(
-                        'Người tham gia',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      Text(r.participant.name),
-                      Text(
-                        r.participant.group == 'student'
-                            ? 'Sinh viên FPTU · ${r.participant.cohort} (tự khai)'
-                            : 'Khách ngoài trường',
-                      ),
-                      if (!widget.checkInResult) Text(r.participant.email),
-                    ],
-                  ),
-                  if (r.checkInAt != null)
-                    EventPanel(
-                      children: [
-                        const Text('Thời gian điểm danh đã xác nhận'),
-                        Text(
-                          '${eventTime(r.checkInAt!)} · ${eventDate(r.checkInAt!)}',
-                        ),
-                      ],
+                  if (!widget.checkInResult && r.checkInAt != null) ...[
+                    EventNotice(
+                      'Đã điểm danh lúc ${eventTime(r.checkInAt!)} · ${eventDate(r.checkInAt!)}',
+                      variant: AppBadgeVariant.success,
                     ),
-                  const SizedBox(height: AppSpacing.s16),
-                  if (!widget.checkInResult)
-                    AppButton(
-                      label: 'Xem đầy đủ sự kiện',
-                      variant: AppButtonVariant.secondary,
-                      onPressed: () => context.push('/events/${e.id}'),
-                    ),
+                    const SizedBox(height: 16),
+                  ],
                   if (r.canCheckIn &&
                       e.status == 'published' &&
                       !widget.checkInResult) ...[
                     const SizedBox(height: AppSpacing.s12),
                     AppButton(
-                      label: r.checkInAt != null ? 'Xem xác nhận' : 'Quét QR',
+                      label: r.checkInAt != null
+                          ? 'Xem xác nhận'
+                          : 'Quét QR điểm danh',
                       isDisabled:
                           r.checkInAt == null && session?.asData?.value != true,
                       onPressed: () => context.push(
@@ -204,17 +224,32 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
                     ),
                   ],
                   if (ref.watch(canCancelRegistrationProvider(r.id)) &&
-                      !widget.checkInResult) ...[
+                      !widget.checkInResult &&
+                      !widget.success) ...[
                     const SizedBox(height: AppSpacing.s12),
-                    AppButton(
-                      label: 'Hủy đăng ký',
-                      variant: AppButtonVariant.secondary,
-                      isDisabled:
+                    FilledButton(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppColors.errorContainer,
+                        foregroundColor: AppColors.error,
+                        minimumSize: const Size.fromHeight(48),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: AppRadius.borderR12,
+                        ),
+                      ),
+                      onPressed:
                           ref.watch(bookingProvider).busy ||
-                          ref.watch(bookingProvider).unresolved,
-                      onPressed: () => _cancel(context, r),
+                              ref.watch(bookingProvider).unresolved
+                          ? null
+                          : () => _cancel(context, r),
+                      child: const Text('Hủy đăng ký'),
                     ),
                   ],
+                  if (!widget.checkInResult && !widget.success)
+                    AppButton(
+                      label: 'Xem đầy đủ sự kiện',
+                      variant: AppButtonVariant.text,
+                      onPressed: () => context.push('/events/${e.id}'),
+                    ),
                   if (r.cancelled)
                     const EventPanel(
                       children: [
@@ -235,9 +270,19 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
                   const BookingFeedback(),
                   const SizedBox(height: AppSpacing.s16),
                   AppButton(
-                    label: 'Về lịch tham gia',
+                    label: widget.success
+                        ? 'Xem lịch tham gia'
+                        : 'Về lịch tham gia',
                     onPressed: () => context.go('/schedule'),
                   ),
+                  if (widget.success) ...[
+                    const SizedBox(height: 12),
+                    AppButton(
+                      label: 'Xem chi tiết đăng ký',
+                      variant: AppButtonVariant.secondary,
+                      onPressed: () => context.go('/registrations/${r.id}'),
+                    ),
+                  ],
                 ],
               );
             },
@@ -248,12 +293,50 @@ class _RegistrationDetailState extends ConsumerState<RegistrationDetailScreen> {
   }
 
   Future<void> _cancel(BuildContext context, Registration r) async {
-    final ok = await AppConfirmationDialog.show(
+    final ok = await showDialog<bool>(
       context: context,
-      title: 'Hủy đăng ký?',
-      message: 'Sau khi máy chủ xác nhận, đăng ký không còn trong Sắp tới và không dùng để điểm danh.',
-      confirmLabel: 'Xác nhận hủy',
-      cancelLabel: 'Giữ đăng ký',
+      builder: (dialogContext) => Dialog(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Icon(Icons.warning_amber_rounded, size: 28),
+                const SizedBox(height: 24),
+                Text(
+                  'Hủy đăng ký?',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'Đăng ký sẽ được bỏ khỏi mục Sắp tới sau khi máy chủ xác nhận. Không thể dùng đăng ký đã hủy để điểm danh.',
+                ),
+                const SizedBox(height: 24),
+                AppButton(
+                  label: 'Giữ đăng ký',
+                  variant: AppButtonVariant.secondary,
+                  onPressed: () => Navigator.pop(dialogContext, false),
+                ),
+                const SizedBox(height: 8),
+                FilledButton(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.errorContainer,
+                    foregroundColor: AppColors.error,
+                    minimumSize: const Size.fromHeight(48),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: AppRadius.borderR12,
+                    ),
+                  ),
+                  onPressed: () => Navigator.pop(dialogContext, true),
+                  child: const Text('Xác nhận hủy'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
     if (ok == true && mounted) {
       await ref.read(bookingProvider.notifier).cancel(r);

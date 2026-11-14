@@ -56,6 +56,9 @@ class _EventListState extends ConsumerState<EventListScreen> {
     final filter = ref.watch(eventFilterProvider);
     final filterVM = ref.read(eventFilterProvider.notifier);
     return Scaffold(
+      backgroundColor: widget.search
+          ? AppColors.surface
+          : AppColors.surfaceSubtle,
       appBar: AppTopBar(
         title: (!widget.search
             ? 'Khám phá'

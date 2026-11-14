@@ -218,3 +218,19 @@ Quản lý người dùng → `ClubAssignmentsPanel`/`AssignmentDialog` → `Ass
 
 ## AI nhập ý tưởng — 14/11/2026
 Bỏ dropdown chủ đề cố định, thêm ô ý tưởng riêng 5–500 ký tự. Popup chọn từng trường nội dung để áp dụng; giữ nguyên ngày giờ, địa điểm, hạn đăng ký và sức chứa theo quyết định CLB. Không thêm route/chat. Figma chưa cập nhật thay đổi này; cần ghi nhận khi đối chiếu thiết kế.
+
+## Mobile: vùng an toàn Android — 14/11/2026
+`EventHubApp` bọc toàn bộ navigator bằng `SafeArea` phía dưới để thanh điều hướng hệ thống Android không che nội dung, nút cuối trang hoặc menu app. Inset đã dùng được loại khỏi MediaQuery con để tránh chừa khoảng trống hai lần ở màn đã có SafeArea. Giữ nguyên navigation và nghiệp vụ; cần xác nhận trên điện thoại thật ở cả chế độ cử chỉ và ba nút. Đây là điều chỉnh theo vùng hệ thống của thiết bị, không thay bố cục chức năng Figma.
+
+
+## Đối chiếu ảnh F1/F2/F4A — 14/11/2026
+Nguồn tham chiếu: ba ảnh “Prototype mô phỏng” do nhóm cung cấp. Áp dụng trong mobile, không thay đổi Figma hoặc theme web.
+
+- F1 A02–A04: thẻ danh sách có ảnh, nhãn, metadata kèm icon; chi tiết sự kiện tách thời gian, địa điểm, hạn đăng ký. Ảnh bìa CLB đã lưu được ưu tiên; không thay dữ liệu Firestore bằng dữ liệu cố định trong ảnh. Không khôi phục “Xem tất cả” theo quyết định trước của nhóm.
+- A01: thẻ sự kiện đang đăng ký lấy từ destination thực tế; giữ Google sign-in theo yêu cầu ASM, thêm đích khám phá tự do. Không tạo thông tin workshop giả ở màn đăng nhập độc lập.
+- A05: thẻ tóm tắt sự kiện, điện thoại trước nhóm tự khai, lựa chọn nhóm theo hàng; giữ khóa K và tổ chức theo nghiệp vụ hiện có, hiển thị lỗi thật.
+- F2 A07/A08: nền trắng, trạng thái dạng dải màu, thẻ sự kiện/đăng ký nền xám; nút hủy màu cảnh báo, lịch sử điểm danh được giữ.
+- F4A A11/A12: vùng camera dọc có khung nhận diện; loading/lỗi/chưa rõ kết quả có màn riêng; kết quả có icon và thời gian xác nhận, không hiển thị email/số điện thoại.
+- Khác ảnh có chủ đích: ASM đăng ký chờ CLB duyệt nên kết quả pending không ghi thành công/được duyệt. Các nút “Quét mã hợp lệ”, “QR sai sự kiện”, “Mô phỏng lỗi mạng” chỉ là điều khiển prototype, không thêm vào bản chạy thật. Dữ liệu và thời gian lấy từ cloud, không chép ngày/giờ, số chỗ hoặc tên người trong ảnh vào ứng dụng.
+
+Ảnh `evidence/ui-reference/local-preview/` nếu được tạo bằng test chỉ dùng kiểm tra bố cục với fixture, không phải bằng chứng chạy cloud/thiết bị thật. Chạy bằng `flutter test --dart-define=CAPTURE_REFERENCE=true test/reference_layout_test.dart` trong mobile.

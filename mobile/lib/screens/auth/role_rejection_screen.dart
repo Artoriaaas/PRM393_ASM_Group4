@@ -15,7 +15,7 @@ class RoleRejectionScreen extends ConsumerWidget {
         auth is AuthStateSignedIn &&
         ['unknown', 'unavailable'].contains(auth.role);
     final isStaff = auth is AuthStateSignedIn && auth.role == 'staff';
-    final staffClubId = isStaff ? (auth as AuthStateSignedIn).clubId : null;
+    final staffClubId = isStaff ? auth.clubId : null;
     final state = ref.watch(authViewModelProvider);
     return Scaffold(
       appBar: AppTopBar(title: 'Tài khoản', showBackButton: false),

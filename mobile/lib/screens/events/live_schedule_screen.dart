@@ -49,7 +49,6 @@ class _LiveScheduleState extends ConsumerState<LiveScheduleScreen> {
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: AppRadius.borderR12,
-                border: Border.all(color: AppColors.borderSubtle),
               ),
               child: Row(
                 children: [
@@ -75,18 +74,19 @@ class _LiveScheduleState extends ConsumerState<LiveScheduleScreen> {
                               curve: Curves.easeInOut,
                               decoration: BoxDecoration(
                                 color: tab == item.$1
-                                    ? AppColors.primary
+                                    ? AppColors.surface
                                     : Colors.transparent,
                                 borderRadius: AppRadius.borderR8,
+                                border: tab == item.$1
+                                    ? Border.all(color: AppColors.border)
+                                    : null,
                               ),
                               alignment: Alignment.center,
                               child: Text(
                                 item.$2,
                                 style: AppTypography.textTheme.labelMedium
                                     ?.copyWith(
-                                      color: tab == item.$1
-                                          ? AppColors.onPrimary
-                                          : AppColors.textSecondary,
+                                      color: AppColors.primary,
                                       fontWeight: tab == item.$1
                                           ? FontWeight.bold
                                           : FontWeight.w500,
@@ -124,7 +124,11 @@ class _LiveScheduleState extends ConsumerState<LiveScheduleScreen> {
               data: (rows) {
                 if (rows.isEmpty) {
                   return AppEmptyState(
-                    title: 'Chưa có lịch tham gia',
+                    title: tab == 0
+                        ? 'Chưa có sự kiện sắp tới'
+                        : tab == 1
+                        ? 'Chưa có sự kiện đã kết thúc'
+                        : 'Chưa có đăng ký đã hủy hoặc từ chối',
                     message: 'Khám phá và đăng ký sự kiện phù hợp.',
                     actionLabel: 'Khám phá sự kiện',
                     onAction: () => context.go('/discover'),
@@ -171,19 +175,29 @@ class _ScheduleItem extends ConsumerWidget {
     }
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.s16),
-      child: EventPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
+          EventNotice(
             e.status == 'cancelled'
                 ? 'Sự kiện đã hủy'
                 : ended && r.canCheckIn
-                ? 'Đã kết thúc'
+                ? 'Đã kết thúc${r.checkInAt != null ? " · Đã điểm danh" : ""}'
                 : r.statusLabel,
+            variant: r.canCheckIn && !ended
+                ? AppBadgeVariant.success
+                : AppBadgeVariant.info,
           ),
-          Text(e.title, style: Theme.of(context).textTheme.titleMedium),
-          Text(eventWhen(e)),
-          Text(e.clubName),
-          Text(e.location),
+          const SizedBox(height: 16),
+          EventIdentityCard(e),
+          if (r.checkInAt != null) ...[
+            const SizedBox(height: 8),
+            EventNotice(
+              'Đã điểm danh lúc ${eventTime(r.checkInAt!)} · ${eventDate(r.checkInAt!)}',
+              variant: AppBadgeVariant.success,
+            ),
+          ],
+          const SizedBox(height: 16),
           AppButton(
             label: 'Xem chi tiết đăng ký',
             variant: AppButtonVariant.secondary,

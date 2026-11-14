@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../theme/app_theme.dart';
+import '../theme/app_colors.dart';
 import 'router.dart';
 
 final _messengerKey = GlobalKey<ScaffoldMessengerState>();
@@ -49,7 +50,18 @@ class EventHubApp extends ConsumerWidget {
       title: 'EventHub',
       scaffoldMessengerKey: _messengerKey,
       debugShowCheckedModeBanner: false,
-      theme: EventHubTheme.lightTheme,
+      theme: EventHubTheme.lightTheme.copyWith(
+        scaffoldBackgroundColor: AppColors.surface,
+      ),
+      // Reserve Android's system navigation area for every route, including
+      // screens without a bottom app bar. SafeArea removes the consumed inset
+      // so screen-level SafeAreas do not add the same padding twice.
+      builder: (context, child) => SafeArea(
+        top: false,
+        left: false,
+        right: false,
+        child: child ?? const SizedBox.shrink(),
+      ),
       routerConfig: router,
     );
   }

@@ -95,7 +95,7 @@ class _RegistrationFormState extends ConsumerState<RegistrationFormScreen> {
                   padding: const EdgeInsets.all(AppSpacing.s16),
                   children: [
                     const BookingFeedback(showCheckButton: false),
-                    EventPanel(children: [Text(e.title), Text(eventWhen(e))]),
+                    EventIdentityCard(e),
                     const SizedBox(height: AppSpacing.s16),
                     AppTextField(
                       labelText: 'Họ tên *',
@@ -114,26 +114,36 @@ class _RegistrationFormState extends ConsumerState<RegistrationFormScreen> {
                       enabled: !s.busy && !s.unresolved,
                     ),
                     const SizedBox(height: AppSpacing.s16),
-                    Wrap(
-                      spacing: AppSpacing.s8,
-                      children: [
-                        AppChoiceChip(
-                          label: const Text('Sinh viên FPTU'),
-                          selected: group == 'student',
-                          onSelected: s.busy || s.unresolved
-                              ? null
-                              : (_) => setState(() => group = 'student'),
-                        ),
-                        AppChoiceChip(
-                          label: const Text('Khách ngoài trường'),
-                          selected: group == 'guest',
-                          onSelected: s.busy || s.unresolved
-                              ? null
-                              : (_) => setState(() => group = 'guest'),
-                        ),
-                      ],
+                    AppTextField(
+                      labelText: 'Số điện thoại (tùy chọn)',
+                      controller: phone,
+                      errorText: s.errors['phone'],
+                      keyboardType: TextInputType.phone,
+                      enabled: !s.busy && !s.unresolved,
                     ),
-                    const SizedBox(height: AppSpacing.s16),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Bạn là',
+                      style: Theme.of(context).textTheme.labelLarge,
+                    ),
+                    const SizedBox(height: 8),
+                    for (final option in [
+                      ('student', 'Sinh viên FPTU'),
+                      ('guest', 'Khách ngoài trường'),
+                    ]) ...[
+                      SizedBox(
+                        width: double.infinity,
+                        child: AppChoiceChip(
+                          label: Text(option.$2),
+                          selected: group == option.$1,
+                          onSelected: s.busy || s.unresolved
+                              ? null
+                              : (_) => setState(() => group = option.$1),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                    const SizedBox(height: 8),
                     if (group == 'student')
                       AppTextField(
                         labelText: 'Khóa K *',
@@ -149,14 +159,6 @@ class _RegistrationFormState extends ConsumerState<RegistrationFormScreen> {
                         errorText: s.errors['organization'],
                         enabled: !s.busy && !s.unresolved,
                       ),
-                    const SizedBox(height: AppSpacing.s16),
-                    AppTextField(
-                      labelText: 'Số điện thoại (tùy chọn)',
-                      controller: phone,
-                      errorText: s.errors['phone'],
-                      keyboardType: TextInputType.phone,
-                      enabled: !s.busy && !s.unresolved,
-                    ),
                     const SizedBox(height: AppSpacing.s16),
                     const Text(
                       'Nhóm và khóa do bạn tự khai, không xác minh và không giới hạn quyền đăng ký.',

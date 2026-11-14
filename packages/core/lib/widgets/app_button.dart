@@ -23,6 +23,7 @@ class AppButton extends StatelessWidget {
     this.icon,
     this.isFullWidth = false,
     this.semanticsLabel,
+    this.outlineColor,
   });
 
   final String label;
@@ -33,6 +34,7 @@ class AppButton extends StatelessWidget {
   final Widget? icon;
   final bool isFullWidth;
   final String? semanticsLabel;
+  final Color? outlineColor;
 
   bool get _enabled => !isDisabled && !isLoading && onPressed != null;
 
@@ -107,7 +109,9 @@ class AppButton extends StatelessWidget {
             foregroundColor: AppColors.primary,
             disabledForegroundColor: AppColors.textDisabled,
             side: BorderSide(
-              color: _enabled ? AppColors.primary : AppColors.border,
+              color: _enabled
+                  ? (outlineColor ?? AppColors.primary)
+                  : AppColors.border,
             ),
             shape: const RoundedRectangleBorder(
               borderRadius: AppRadius.borderR12,

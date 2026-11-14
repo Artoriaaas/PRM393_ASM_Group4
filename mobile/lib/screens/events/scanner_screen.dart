@@ -11,7 +11,6 @@ import '../../viewmodels/booking_viewmodel.dart';
 import '../../theme/theme.dart';
 import '../../widgets/widgets.dart';
 import '../../widgets/event_widgets.dart';
-import 'booking_widgets.dart';
 
 class ScannerScreen extends ConsumerStatefulWidget {
   const ScannerScreen({super.key, required this.registrationId, this.eventId});
@@ -63,7 +62,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
       }
     });
     return Scaffold(
-      appBar: AppTopBar(title: 'Quét QR', showBackButton: true),
+      appBar: AppTopBar(title: 'Quét QR điểm danh', showBackButton: true),
       body: registration.when(
         loading: () => const AppLoadingState(),
         error: (_, _) => EventFailure(
@@ -89,42 +88,124 @@ class _ScannerState extends ConsumerState<ScannerScreen>
               ),
             );
           }
+          final failed =
+              camera.phase == ScannerPhase.error ||
+              s.result?.status == 'rejected';
+          if (s.busy || s.unresolved || failed) {
+            final title = s.busy
+                ? 'Đang kiểm tra'
+                : s.unresolved
+                ? 'Chưa xác nhận được kết quả'
+                : camera.phase == ScannerPhase.error
+                ? 'Cần quyền camera'
+                : s.message ?? 'Chưa thể điểm danh';
+            return ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                const SizedBox(height: 32),
+                Center(
+                  child: CircleAvatar(
+                    radius: 32,
+                    backgroundColor: AppColors.warningContainer,
+                    child: s.busy
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(
+                            Icons.warning_amber_rounded,
+                            color: AppColors.textPrimary,
+                            size: 28,
+                          ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  s.busy
+                      ? 'Vui lòng chờ kết quả xác nhận.'
+                      : s.unresolved
+                      ? 'Kiểm tra trạng thái điểm danh trước khi thử lại.'
+                      : camera.message ?? 'Hãy quét mã do CLB hiển thị cho sự kiện bạn đang tham gia.',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
+                if (!s.busy)
+                  AppButton(
+                    label: s.unresolved
+                        ? 'Kiểm tra trạng thái'
+                        : camera.phase == ScannerPhase.error
+                        ? 'Mở cài đặt'
+                        : 'Quét lại',
+                    onPressed: s.unresolved
+                        ? () => ref.read(bookingProvider.notifier).recover()
+                        : camera.phase == ScannerPhase.error
+                        ? cameraVM.openSettings
+                        : cameraVM.retry,
+                  ),
+                const SizedBox(height: 12),
+                AppButton(
+                  label: 'Quay về chi tiết đăng ký',
+                  variant: AppButtonVariant.text,
+                  onPressed: s.busy
+                      ? null
+                      : () => context.go(
+                          '/registrations/${widget.registrationId}',
+                        ),
+                ),
+              ],
+            );
+          }
           return ListView(
-            padding: const EdgeInsets.all(AppSpacing.s16),
+            padding: const EdgeInsets.all(16),
             children: [
-              const Text(
-                'Quét mã QR do CLB hiển thị trên web tại sự kiện. App không mở hoặc điều khiển web CLB.',
-              ),
-              const SizedBox(height: AppSpacing.s16),
+              const Text('Đưa mã QR do CLB hiển thị vào khung hình.'),
+              const SizedBox(height: 20),
               AspectRatio(
-                aspectRatio: 1,
+                aspectRatio: 0.62,
                 child: ClipRRect(
                   borderRadius: AppRadius.borderR16,
-                  child: QrCameraPreview(
-                    handle: camera.previewHandle,
-                    onDetected: cameraVM.detected,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      const ColoredBox(color: Color(0xFF182133)),
+                      QrCameraPreview(
+                        handle: camera.previewHandle,
+                        onDetected: cameraVM.detected,
+                      ),
+                      IgnorePointer(
+                        child: Center(
+                          child: FractionallySizedBox(
+                            widthFactor: 0.76,
+                            heightFactor: 0.50,
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                borderRadius: AppRadius.borderR16,
+                                border: Border.all(
+                                  color: AppColors.primary,
+                                  width: 2,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              if (camera.message != null)
-                EventPanel(children: [Text(camera.message!)]),
-              const SizedBox(height: AppSpacing.s16),
-              const BookingFeedback(),
+              const SizedBox(height: 16),
               AppButton(
-                label: 'Quét lại',
-                isDisabled: s.busy || s.unresolved,
-                onPressed: cameraVM.retry,
-              ),
-              AppButton(
-                variant: AppButtonVariant.text,
-                onPressed: cameraVM.openSettings,
-                label: 'Mở Cài đặt camera',
-              ),
-              AppButton(
+                label: 'Quay về chi tiết đăng ký',
                 variant: AppButtonVariant.text,
                 onPressed: () =>
                     context.go('/registrations/${widget.registrationId}'),
-                label: 'Quay về chi tiết đăng ký',
               ),
             ],
           );

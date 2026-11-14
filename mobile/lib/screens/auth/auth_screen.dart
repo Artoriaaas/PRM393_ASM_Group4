@@ -9,6 +9,8 @@ import '../../models/auth_state.dart';
 import '../../theme/theme.dart';
 import '../../viewmodels/auth_viewmodel.dart';
 import '../../widgets/widgets.dart';
+import '../../widgets/event_widgets.dart';
+import '../../viewmodels/event_data_providers.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key, required this.mode});
@@ -94,6 +96,16 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       isDisabled: state.busy,
       isFullWidth: true,
     );
+    final destination = Uri.tryParse(
+      safeDestination(GoRouterState.of(context).uri.queryParameters['from']),
+    );
+    final parts = destination?.pathSegments ?? <String>[];
+    final eventId = parts.length >= 2 && parts.first == 'events'
+        ? parts[1]
+        : null;
+    final event = eventId == null
+        ? null
+        : ref.watch(eventProvider(eventId)).asData?.value;
     final children = <Widget>[
       if (verify || reset) ...[
         Center(
@@ -116,7 +128,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         ),
       ] else
         Text(title, style: Theme.of(context).textTheme.headlineMedium),
-      if (login) const Text('Đăng nhập để khám phá và theo dõi sự kiện.'),
+      if (login)
+        Text(
+          event == null
+              ? 'Đăng nhập để khám phá và theo dõi sự kiện.'
+              : 'Đăng nhập để tiếp tục với sự kiện đang xem.',
+        ),
+      if (event != null && !reset) EventIdentityCard(event),
       if (reset)
         const Text(
           'Nhập email đã dùng để nhận liên kết đặt lại mật khẩu.',
@@ -208,6 +226,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           variant: AppButtonVariant.secondary,
         ),
       ],
+      if (login)
+        button(
+          'Khám phá không cần đăng nhập',
+          () => context.go('/discover'),
+          variant: AppButtonVariant.text,
+        ),
       if (register)
         button(
           'Điều khoản và chính sách dữ liệu',

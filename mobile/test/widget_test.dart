@@ -13,6 +13,12 @@ void main() {
   testWidgets('App boots into Discover tab and navigates tabs successfully', (
     tester,
   ) async {
+    // Simulate Android's three-button navigation bar in edge-to-edge mode.
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(412, 850);
+    tester.view.padding = const FakeViewPadding(bottom: 48);
+    tester.view.viewPadding = const FakeViewPadding(bottom: 48);
+    addTearDown(tester.view.reset);
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -24,6 +30,11 @@ void main() {
       ),
     );
     await tester.pump(const Duration(milliseconds: 300));
+
+    final rootNavigator = find.byType(Navigator).first;
+    expect(tester.getRect(rootNavigator).bottom, 802);
+    final screenContext = tester.element(find.byType(AppBar).first);
+    expect(MediaQuery.paddingOf(screenContext).bottom, 0);
 
     // Verify initial screen is Discover tab (A02)
     expect(
@@ -72,6 +83,8 @@ void main() {
     expect(find.text('Email đã xác nhận'), findsNothing);
     expect(find.textContaining('Xác nhận email chỉ'), findsNothing);
     expect(find.text('Xem thử Component UI (360/412dp)'), findsNothing);
+    expect(tester.getRect(rootNavigator).bottom, 802);
+    expect(tester.takeException(), isNull);
   });
 }
 

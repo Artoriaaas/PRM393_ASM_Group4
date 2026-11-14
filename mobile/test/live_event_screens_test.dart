@@ -120,7 +120,7 @@ void main() {
         expect(find.text('Đăng ký được xác nhận'), findsOneWidget);
         await tester.drag(find.byType(Scrollable).first, const Offset(0, -500));
         await tester.pump();
-        expect(find.text('Quét QR'), findsOneWidget);
+        expect(find.text('Quét QR điểm danh'), findsOneWidget);
       } else {
         expect(find.text('Đã đủ số lượng tham gia.'), findsOneWidget);
         expect(find.text('Quét QR'), findsNothing);
@@ -187,6 +187,11 @@ void main() {
     final chip = find.ancestor(
       of: find.text('Khách ngoài trường'),
       matching: find.byType(ChoiceChip),
+    );
+    await tester.scrollUntilVisible(
+      chip,
+      160,
+      scrollable: find.byType(Scrollable).first,
     );
     await Scrollable.ensureVisible(tester.element(chip), alignment: 0.3);
     await tester.pumpAndSettle();
